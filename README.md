@@ -6,6 +6,6 @@ Lua scripts for Cockos' REAPER
 To download an individual script:
 1. Enter the folder
 2. Click the script link
-3. Clock "Raw" button in the upper right corner of the script window
+3. Click "Raw" button in the upper right corner of the script window
 4. Download as notmal.
 5. Remove .txt extension only leaving .lua
