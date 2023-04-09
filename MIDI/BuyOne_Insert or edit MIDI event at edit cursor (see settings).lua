@@ -1,5 +1,5 @@
 --[[
-ReaScript name: BuyOne_Insert MIDI event at edit cursor.lua
+ReaScript name: BuyOne_Insert or edit MIDI event at edit cursor.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
