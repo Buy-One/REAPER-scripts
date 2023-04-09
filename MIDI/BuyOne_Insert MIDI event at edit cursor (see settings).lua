@@ -8,34 +8,34 @@ Licence: WTFPL
 REAPER: at least v5.962
 About: 	▓ MIDI Channel handling (only applies to CC events)
 
-		When 'All channels' option is enabled in the MIDI filter 
-		the inserted CC event is assigned the last active MIDI channel
-		which may not be obvious because you may not remember what it was.
-		
-		When 'Multichannel' option is enabled in the MIDI filter 
-		the inserted CC event is assigned the first active MIDI channel, 
-		which can be looked up in the MIDI filter dialogue 
-		(action 'Filter: Show/hide filter window...' default shortcut is F).
-		
-		In all other cases the inserted event is assigned the MIDI channel 
-		currently selected in the MIDI filter.
-		
-		▓ Event properties
-		
-		An event inserted in a lane with pre-existing events is assigned 
-		properties of the event immediately preceding it on the time line 
-		or of the first event in the lane if the edit cursor is placed ahead of it.
-		
-		An event inserted on an empty lane is assigned the value of 0.  
-		To be able to assign such an event desired values enable 
-		EVENT_PROPS_DIALOGUE_WHEN_FIRST_EVENT setting in the USER SETTINGS.
-		
-		When the edit cursor position coincides with existing event position 
-		no new event is inserted.  
-		You can enable EVENT_PROPS_DIALOGUE_WHEN_EVENT_MATCH setting so that 
-		in such cases event properties dialogue is called.
-		
-		Notation events are not supported.
+	When 'All channels' option is enabled in the MIDI filter 
+	the inserted CC event is assigned the last active MIDI channel
+	which may not be obvious because you may not remember what it was.
+
+	When 'Multichannel' option is enabled in the MIDI filter 
+	the inserted CC event is assigned the first active MIDI channel, 
+	which can be looked up in the MIDI filter dialogue 
+	(action 'Filter: Show/hide filter window...' default shortcut is F).
+
+	In all other cases the inserted event is assigned the MIDI channel 
+	currently selected in the MIDI filter.
+
+	▓ Event properties
+
+	An event inserted in a lane with pre-existing events is assigned 
+	properties of the event immediately preceding it on the time line 
+	or of the first event in the lane if the edit cursor is placed ahead of it.
+
+	An event inserted on an empty lane is assigned the value of 0.  
+	To be able to assign such an event desired values enable 
+	EVENT_PROPS_DIALOGUE_WHEN_FIRST_EVENT setting in the USER SETTINGS.
+
+	When the edit cursor position coincides with existing event position 
+	no new event is inserted.  
+	You can enable EVENT_PROPS_DIALOGUE_WHEN_EVENT_MATCH setting so that 
+	in such cases event properties dialogue is called.
+
+	Notation events are not supported.
 ]]
 
 -----------------------------------------------------------------------------
