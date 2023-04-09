@@ -75,12 +75,12 @@ ALWAYS_SELECT_EVENT_AT_EDIT_CURSOR = ""
 -- the desired value manually;
 -- !!! DOESN'T APPLY to first text and sysex events for which
 -- an event properties dialogue is always called
-EVENT_PROPS_DIALOGUE_WHEN_FIRST_EVENT = ""
+EVENT_PROPS_DIALOGUE_WHEN_FIRST_EVENT = "1"
 
 -- Enable this setting if you wish to evoke event properties
 -- dialogue when the edit cursor position matches an existing event position;
 -- but regardless of this setting state in this case no event is inserted
-EVENT_PROPS_DIALOGUE_WHEN_EVENT_MATCH = ""
+EVENT_PROPS_DIALOGUE_WHEN_EVENT_MATCH = "1"
 
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
