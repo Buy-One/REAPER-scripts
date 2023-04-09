@@ -6,7 +6,7 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
-About: 	▓ MIDI Channel handling (only applies to CC events)
+About:   ▓ MIDI Channel handling (only applies to CC events)
 
 	When 'All channels' option is enabled in the MIDI filter 
 	the inserted CC event is assigned the last active MIDI channel
@@ -35,7 +35,7 @@ About: 	▓ MIDI Channel handling (only applies to CC events)
 	You can enable EVENT_PROPS_DIALOGUE_WHEN_EVENT_MATCH setting so that 
 	in such cases event properties dialogue is called.
 
-	Notation events are not supported.
+	Velocity, Notation events are not supported.
 ]]
 
 -----------------------------------------------------------------------------
@@ -202,7 +202,9 @@ local cur_pos_ppqn = r.MIDI_GetPPQPosFromProjTime(take, cur_pos)
 local last_clicked_lane = r.MIDIEditor_GetSetting_int(ME, 'last_clicked_cc_lane')
 
 local err = last_clicked_lane < 0 and '\n\nthe last clicked lane is undefined\n\n  click any lane to make it active \n\n' -- last clicked lane return value is -1 when the Piano roll was last clicked context
-or last_clicked_lane == 520 and '\n\n   notation events \n\n are not supported \n\n'
+or (last_clicked_lane == 512 or last_clicked_lane == 519) and '\n\n velocity is not supported \n\n as this is a note property \n\n'
+or last_clicked_lane == 520 and '\n\n   notation events \n\n are not supported \n\n' 
+or last_clicked_lane > 520 and '\n\n unrecognized lane type \n\n'
 
 		if err then Error_Tooltip(err, 1, 1) -- caps, spaced true
 		return r.defer(no_undo) end
@@ -309,7 +311,7 @@ r.Undo_BeginBlock()
 	if not non_CC and dialogue then ACT(40004, true) end -- Edit: Event properties, midi true
 
 
-Force_MIDI_Undo_Point(take)
+Force_MIDI_Undo_Point(take) -- doesn't create undo point without the function
 
 local undo = not concur_evt_exists and dialogue and 'Insert and edit' or not concur_evt_exists and 'Insert' or dialogue and 'Edit' or concur_evt_exists and ALWAYS_SELECT_EVENT_AT_EDIT_CURSOR and 'Select'
 
