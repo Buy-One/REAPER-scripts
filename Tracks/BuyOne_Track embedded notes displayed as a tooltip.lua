@@ -8,90 +8,90 @@ Licence: WTFPL
 REAPER: at least v5.962
 About: 	##MANAGING TRACK NOTES
 
-	1. Arm the script. The easiest way is to link it
-	to a toolbar button and right click the button. 
-	It will change its color. Now when the mouse cursor 
-	is over the Arrange canvas its pointer is displayed 
-	as the letter 'A' (for armed). This is the edit mode.
-	Be reminded that since arming is exclusive, any other
-	armed action/script will be unarmed.
+1. Arm the script. The easiest way is to link it
+to a toolbar button and right click the button. 
+It will change its color. Now when the mouse cursor 
+is over the Arrange canvas its pointer is displayed 
+as the letter 'A' (for armed). This is the edit mode.
+Be reminded that since arming is exclusive, any other
+armed action/script will be unarmed.
 
-	2. Either hover the mouse cursor over the TCP
-	of a track to write notes for and execute a shortcut
-	the script has been bound to, or simply select the track
-	and click anywehere within the Arrange, a notes track 
-	and item will be created under the target track. 
-	The notes item will be inserted on a new track under
-	the target track spanning the entire project length so
-	it can be accessed from anywhere in the project.  
-	If the track already has notes stored they will
-	be displayed inside the notes item.  
+2. Either hover the mouse cursor over the TCP
+of a track to write notes for and execute a shortcut
+the script has been bound to, or simply select the track
+and click anywehere within the Arrange, a notes track 
+and item will be created under the target track. 
+The notes item will be inserted on a new track under
+the target track spanning the entire project length so
+it can be accessed from anywhere in the project.  
+If the track already has notes stored they will
+be displayed inside the notes item.  
 
-	3. Type in your notes in the notes item notes window
-	or remove the existing notes if you wish to delete them.
+3. Type in your notes in the notes item notes window
+or remove the existing notes if you wish to delete them.
 
-	4. To save notes click Apply (the notes window will 
-	remain open) or OK (the notes window will close).
+4. To save notes click Apply (the notes window will 
+remain open) or OK (the notes window will close).
 
-	5. Click anywhere within the Arrange to exit the edit
-	mode and store the notes inside the track. 
-	If the same track remains the target (selected or pointed
-	at with the mouse cursor) the edit mode will be exited.  
-	If there's nothing to store because there's no change in 
-	the notes, the edit mode will remain active. Leading and
-	trailing spaces and line breaks aren't considered new 
-	content and are ignored.  
-	The edit mode will also remain active if at this moment 
-	another track is targeted as decribed in the step 2, in
-	which case the edit mode will apply to such other track.  
-	In either case the notes track and item for the last target
-	track will be deleted.  
-	This stores the notes for the current session. To keep 
-	the stored notes inside the track permanently the project 
-	must be saved.  
-	The notes are only stored while the edit mode is active.
+5. Click anywhere within the Arrange to exit the edit
+mode and store the notes inside the track. 
+If the same track remains the target (selected or pointed
+at with the mouse cursor) the edit mode will be exited.  
+If there's nothing to store because there's no change in 
+the notes, the edit mode will remain active. Leading and
+trailing spaces and line breaks aren't considered new 
+content and are ignored.  
+The edit mode will also remain active if at this moment 
+another track is targeted as decribed in the step 2, in
+which case the edit mode will apply to such other track.  
+In either case the notes track and item for the last target
+track will be deleted.  
+This stores the notes for the current session. To keep 
+the stored notes inside the track permanently the project 
+must be saved.  
+The notes are only stored while the edit mode is active.
 
-	To exit the edit mode without storing notes click the 
-	armed toolbar button the script is linked to, to unarm it. 
-	In this case the notes track and item won't be deleted.  
-	They will be deleted the next time track notes are viewed 
-	unless you delete them manually. !!! Therefore notes track 
-	and item should not be used for any other purpose because 
-	they will be eventually deleted by the script.
+To exit the edit mode without storing notes click the 
+armed toolbar button the script is linked to, to unarm it. 
+In this case the notes track and item won't be deleted.  
+They will be deleted the next time track notes are viewed 
+unless you delete them manually. !!! Therefore notes track 
+and item should not be used for any other purpose because 
+they will be eventually deleted by the script.
 
 
-	##VIEWING TRACK NOTES
+##VIEWING TRACK NOTES
 
-	When the script is not in the edit mode (the toolbar 
-	button is not lit) either hover the mouse cursor over 
-	the TCP of a track to view the notes for and execute 
-	a shortcut the script has been bound to, or simply 
-	select the track and click either the toolbar button 
-	or a menu item the script is linked to.  
+When the script is not in the edit mode (the toolbar 
+button is not lit) either hover the mouse cursor over 
+the TCP of a track to view the notes for and execute 
+a shortcut the script has been bound to, or simply 
+select the track and click either the toolbar button 
+or a menu item the script is linked to.  
 
-	To display the notes the script uses menu interface, not
-	a traditional tooltip.
+To display the notes the script uses menu interface, not
+a traditional tooltip.
 
-	---
+---
 
-	The advantage if this script over SWS/S&M extension track 
-	notes utility is that it stores notes in a way which makes 
-	them accessible from track templates, if that's important.  
-	The script can also convert them into the format supported 
-	by it.
+The advantage if this script over SWS/S&M extension track 
+notes utility is that it stores notes in a way which makes 
+them accessible from track templates, if that's important.  
+The script can also convert them into the format supported 
+by it.
 
-	##CAVEATS
+##CAVEATS
 
-	The script doesn't support ampersand sign (&). If it
-	is used in the notes it will be converved into +, because
-	plus is often used synonynously with 'and' denoted by
-	ampersand.
+The script doesn't support ampersand sign (&). If it
+is used in the notes it will be converved into +, because
+plus is often used synonynously with 'and' denoted by
+ampersand.
 
-	---
+---
 
-	The script does not create undo points.
+The script does not create undo points.
 
-	See also USER SETTINGS.	
+See also USER SETTINGS.	
 ]]
 
 
