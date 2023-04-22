@@ -102,10 +102,6 @@ About: 	##MANAGING TRACK NOTES
 -- To enable the following settings insert any alphanumeric character
 -- between the quotes.
 
--- Enable so the script can be used
--- then configure the settings below
--- ENABLE_SCRIPT = "1"
-
 -- if enabled the notes will be displayed
 -- in ReaScript console rather than a tooltip,
 -- will have to be closed manually
