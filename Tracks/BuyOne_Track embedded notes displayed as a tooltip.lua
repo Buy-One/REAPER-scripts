@@ -89,9 +89,10 @@ About: 	##MANAGING TRACK NOTES
 
 	---
 
-	The script does not create undo points.
+	The script only creates undo point when notes track and item
+	are inserted.
 
-	See also USER SETTINGS.	
+	See also USER SETTINGS.		
 ]]
 
 
@@ -99,8 +100,8 @@ About: 	##MANAGING TRACK NOTES
 ------------------------------ USER SETTINGS --------------------------------
 -----------------------------------------------------------------------------
 
--- To enable the following settings insert any alphanumeric character
--- between the quotes.
+-- To enable the following settings (bar the last) 
+-- insert any alphanumeric character between the quotes.
 
 -- if enabled the notes will be displayed
 -- in ReaScript console rather than a tooltip,
@@ -139,6 +140,20 @@ _12_HOUR_FORMAT = ""
 -- they can be edited and stored inside the track
 -- which is not the location used by the SWS/S&M extension notes utility;
 ACCESS_SWS_TRACK_NOTES = ""
+
+-- Any character or a combination thereof
+-- to prefix the track name with to indicate that
+-- the track has embedded notes, e.g. 'tag MY TRACK NAME'
+-- for this to work correctly space must be maintained 
+-- between the tag and the track name,
+-- the tag itself doesn't suppport spaces;
+-- will be removed if notes are deleted
+-- unless the NOTES_TAG has been changed or disabled 
+-- in the interim in which case the script will not find it
+-- in the track name unless it was updated manually,
+-- and a new tag will be added on top of the old one
+-- to names of tracks with existing notes
+NOTES_TAG = ""
 
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
@@ -216,6 +231,14 @@ local time_init = r.time_precise()
 repeat
 until condition and r.time_precise()-time_init >= 0.7 or not condition
 ]]
+end
+
+
+function Esc(str)
+	if not str then return end -- prevents error
+-- isolating the 1st return value so that if vars are initialized in a row outside of the function the next var isn't assigned the 2nd return value
+local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
+return str
 end
 
 
@@ -371,30 +394,31 @@ local notes = notes:match('([\0-\255]+)\n \n%d+') or notes -- exlude date if the
 
 local sel_itms_t, sel_trk_t = Re_Store_Selected_Objects() -- store
 local cur_pos = r.GetCursorPosition() -- store
-local st, fin = r.GetSet_LoopTimeRange(false, false, 0, 0, false) -- isSet, isLoop, allowautoseek false // store because 'Insert empty item' action inserts it within time selection if one is active, so it must be cleared
-r.GetSet_LoopTimeRange(true, false, 0, 0, false) -- isSet true, isLoop, allowautoseek false // clear time if any
+
+-- Insert notes track and configure
 local tr_idx = r.CSurf_TrackToID(tr, false) -- mcpView false
 local tr_idx = tr_idx == 0 and 0 or tr_idx -- CSurf_TrackToID returns idx 0 for the master track and 1-based idx for the rest
 r.InsertTrackAtIndex(tr_idx, false) -- wantDefaults false
 local notes_tr = r.CSurf_TrackFromID(tr_idx+1, false) -- mcpView false
 r.GetSetMediaTrackInfo_String(notes_tr, 'P_NAME', 'Track '..tr_idx..' notes', true) -- setNewValue true
 r.GetSetMediaTrackInfo_String(notes_tr, 'P_EXT:NOTES_TRACK', '+', true) -- setNewValue true // add extended data to be able to find the track later if left undeleted
-r.SetOnlyTrackSelected(notes_tr) -- to be able to insert an item on it with action below
+
+-- Insert notes item and configure
 r.SetEditCurPos(-3600, false, false) -- moveview seekplay false // move to -3600 or -1 hour mark in case project time start is negative, will surely move cursor to the very project start to reveal the notes item // thanks to moveview false the notes item will be accessible from anywehere in the project since its length will be set to full project length below
-r.SelectAllMediaItems(0, false) -- selected false // deselect all
-r.Main_OnCommand(40142,0) -- Insert empty item
-local notes_item = r.GetSelectedMediaItem(0,0)
-r.SetMediaItemInfo_Value(notes_item, 'D_LENGTH', r.GetProjectLength(0)) -- set notes item length to full project length
+local notes_item = r.AddMediaItemToTrack(notes_tr)
+r.SetMediaItemSelected(notes_item, true) -- selected true // to be able to open notes with action
+local proj_len = r.GetProjectLength(0)
+r.SetMediaItemInfo_Value(notes_item, 'D_LENGTH', proj_len == 0 and 5 or proj_len) -- set notes item length to full project length if there're time line objects, if there's none and so proj length is 0 then set to 5 sec
 r.AddTakeToMediaItem(notes_item) -- creates a quasi-MIDI item so label can be added to it since label (P_NAME) is a take property // the item is affected by actions 'SWS/BR: Add envelope points...', 'SWS/BR: Insert 2 envelope points...' and 'SWS/BR: Insert envelope points on grid...' when applied to the Tempo envelope which cause creation of stretch markers in the item
 r.GetSetMediaItemTakeInfo_String(r.GetActiveTake(notes_item), 'P_NAME', 'track "'..tr_name..'"', true) -- setNewValue true // add label to the notes item
 r.GetSetMediaItemInfo_String(notes_item, 'P_NOTES', notes, true) -- setNewValue true // load notes
 r.GetSetMediaItemInfo_String(notes_item, 'P_EXT:NOTES_ITEM', tr_GUID, true) -- setNewValue true // add extended data to be able to find the item later if left undeleted and to find the target track to store the notes to
 -- Open the empty item notes
 r.Main_OnCommand(40850,0) -- Item: Show notes for items...
+
 Re_Store_Selected_Objects(sel_itms_t, sel_trk_t) -- restore originally selected objects
 r.SetEditCurPos(-3600, true, false) -- moveview true, seekplay false // move to -3600 or -1 hour mark in case project time because the Arrange view may move when the item is inserted in case Preferences -> Editing behavior -> Move edit cursor when pasing/insering media is enabled
 r.SetEditCurPos(cur_pos, false, false) -- moveview, seekplay false; restore position
-r.GetSet_LoopTimeRange(true, false, st, fin, false) -- isSet, isLoop, allowautoseek false // restore time sel
 
 end
 
@@ -420,12 +444,25 @@ function Store_Notes(tr)
 		-- store notes as extended data
 		local ret, old_notes = r.GetSetMediaTrackInfo_String(target_tr, 'P_EXT:NOTES', '', false) -- setNewValue false
 		local old_notes = old_notes:match('(.+)\n \n%d+') or old_notes -- excluding date
-		local notes = notes:match('.-([\128-\255%w%p].+[\128-\255%w%p])') or '' -- trimming leading / trailing space and line breaks, accounting for utif-8 characters and ignoring leading / trailing space in evaluation of the difference between old and current notes
-			if old_notes ~= notes
-			then
+		local notes = notes:match('.-([\128-\255%w%p].+[\128-\255%w%p])') or '' -- trimming leading / trailing space and line breaks, accounting for utf-8 characters and ignoring leading / trailing space in evaluation of the difference between old and current notes
+			if old_notes ~= notes then -- covers all, adding, changing and deleting notes
+			
 			local date = format_time(US_DATE_ORDER, _12_HOUR_FORMAT, Isr_date, Roman_month, dot)
-			local notes = notes and notes..'\n \n'..date or ''
+			local notes = notes and #notes > 0 and notes..'\n \n'..date or '' -- only adding date when not deleting notes
 			r.GetSetMediaTrackInfo_String(target_tr, 'P_EXT:NOTES', notes, true) -- setNewValue true // store notes
+			
+			-- Managing notes tag in the track name
+			local ret, target_tr_name = r.GetSetMediaTrackInfo_String(target_tr, 'P_NAME', '', false) -- setNewValue false
+				if NOTES_TAG then
+				local name_tagged = target_tr_name:match('^'..Esc(NOTES_TAG))
+					if #notes > 0 and not name_tagged then -- add notes tag when adding or changing notes
+					target_tr_name = NOTES_TAG..' '..target_tr_name
+					elseif #notes == 0 and name_tagged then -- remove notes tag when deleting notes
+					target_tr_name = target_tr_name:match('^'..Esc(NOTES_TAG)..'%s+(.+)') or '' -- exclude tag accounting for nameless tracks and for variable length of space between the tag and the name // string:sub() isn't suitable because a user may use multi-byte characters whose length isn't accurately counted with #string
+					end
+				r.GetSetMediaTrackInfo_String(target_tr, 'P_NAME', target_tr_name, true) -- setNewValue true
+				end
+			
 			local same_track = r.GetTrackGUID(tr) == targ_tr_GUID
 			local resp = same_track and PROMPT_TO_CONTINUE_EDITING and r.MB('   The notes have been stored\n\nWish to remain in the edit mode?', 'PROMPT', 4)
 			local exit_edit_mode = resp == 7 or not resp -- response is No or the setting not enabled
@@ -508,6 +545,7 @@ PROMPT_TO_CONTINUE_EDITING = validate_sett(PROMPT_TO_CONTINUE_EDITING)
 US_DATE_ORDER = validate_sett(US_DATE_ORDER)
 _12_HOUR_FORMAT = validate_sett(_12_HOUR_FORMAT)
 ACCESS_SWS_TRACK_NOTES = validate_sett(ACCESS_SWS_TRACK_NOTES)
+NOTES_TAG = NOTES_TAG:gsub(' ','')
 local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val = r.get_action_context()
 local named_ID = r.ReverseNamedCommandLookup(cmd_ID)
 
@@ -531,16 +569,18 @@ local err = not tr and 'no track under mouse or selected' or notes_tr and 'notes
 	elseif tr and scr_armed then
 	r.PreventUIRefresh(1) -- wrapping the entire routine with these causes delay in deletion of notes item/track while the notes are displayed in the next condition below
 		if Store_Notes(tr) then
+		r.Undo_BeginBlock()
 		Insert_Empty_Item_To_Display_Text(tr)
-	r.PreventUIRefresh(-1)
+		r.Undo_EndBlock('Insert notes track and item', -1)
 		end
+	r.PreventUIRefresh(-1)
 	elseif tr then
 	FindAndDelete_Existing_Notes_TrackAndItem()
 	local ret, notes = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:NOTES', '', false) -- setNewValue false
 	local notes = not ret and ACCESS_SWS_TRACK_NOTES and Load_SWS_Track_Notes(tr) or notes
 	local notes = notes:gsub(' ','') == '' and ('\n   NO TRACK NOTES  \n'):gsub('.', '%0 ') or notes -- for defer loop (if used) notes must be global
 		if DISPLAY_IN_CONSOLE then
-		r.ShowConsoleMsg(notes, r.ClearConsole())
+		r.ShowConsoleMsg(notes:match('^%s*(.+)'), r.ClearConsole())-- removing leading space from 'no track notes' message
 		else
 			if notes == ('\n   NO TRACK NOTES  \n'):gsub('.', '%0 ') then
 			Error_Tooltip(' \n'..notes..'\n ') -- caps, spaced false
