@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Track embedded notes displayed as a tooltip.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Added support for TCP on the right side of the Arrange
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	##MANAGING TRACK NOTES
@@ -245,10 +245,12 @@ end
 function Get_TCP_Under_Mouse() -- based on the function Get_Object_Under_Mouse_Curs()
 -- r.GetTrackFromPoint() covers the entire track timeline hence isn't suitable for getting the TCP
 -- master track is supported
+local right_tcp = r.GetToggleCommandStateEx(0,42373) -- View: Show TCP on right side of arrange
 local curs_pos = r.GetCursorPosition() -- store current edit curs pos
 local start_time, end_time = r.GetSet_ArrangeView2(0, false, 0, 0, start_time, end_time) -- isSet false, screen_x_start, screen_x_end are 0 to get full arrange view coordinates // get time of the current Arrange scroll position to use to move the edit cursor away from the mouse cursor
 r.PreventUIRefresh(1)
-r.SetEditCurPos(end_time+5, false, false) -- moveview, seekplay false // to secure against a vanishing probablility of overlap between edit and mouse cursor positions in which case edit cursor won't move just like it won't if mouse cursor is over the TCP // +5 sec to move edit cursor beyond right edge of the Arrange view to be completely sure that it's far away from the mouse cursor
+local edge = right_tcp and start_time-5 or end_time+5
+r.SetEditCurPos(edge, false, false) -- moveview, seekplay false // to secure against a vanishing probablility of overlap between edit and mouse cursor positions in which case edit cursor won't move just like it won't if mouse cursor is over the TCP // +/-5 sec to move edit cursor beyond right/left edge of the Arrange view to be completely sure that it's far away from the mouse cursor
 r.Main_OnCommand(40514,0) -- View: Move edit cursor to mouse cursor (no snapping) // more sensitive than with snapping
 local tcp_under_mouse = r.GetCursorPosition() == end_time+5
 -- Restore orig. edit cursor pos
