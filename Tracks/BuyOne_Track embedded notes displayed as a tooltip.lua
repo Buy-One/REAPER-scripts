@@ -256,8 +256,8 @@ local tcp_under_mouse = r.GetCursorPosition() == edge
 -- Restore orig. edit cursor pos
 --[[
 local new_curs_pos = r.GetCursorPosition()
-local min_val, subtr_val = table.unpack(new_curs_pos == end_time+5 and {curs_pos, end_time+5} -- TCP found, edit cursor remained at end_time+5
-or new_curs_pos ~= end_time+5 and {curs_pos, new_curs_pos} -- TCP not found, edit cursor moved
+local min_val, subtr_val = table.unpack(new_curs_pos == edge and {curs_pos, edge} -- TCP found, edit cursor remained at edge
+or new_curs_pos ~= edge and {curs_pos, new_curs_pos} -- TCP not found, edit cursor moved
 or {0,0})
 r.MoveEditCursor(min_val - subtr_val, false) -- dosel false = don't create time sel; restore orig. edit curs pos, greater subtracted from the lesser to get negative value meaning to move closer to zero (project start) // MOVES VIEW SO IS UNSUITABLE
 ]]
