@@ -252,7 +252,7 @@ r.PreventUIRefresh(1)
 local edge = right_tcp and start_time-5 or end_time+5
 r.SetEditCurPos(edge, false, false) -- moveview, seekplay false // to secure against a vanishing probablility of overlap between edit and mouse cursor positions in which case edit cursor won't move just like it won't if mouse cursor is over the TCP // +/-5 sec to move edit cursor beyond right/left edge of the Arrange view to be completely sure that it's far away from the mouse cursor
 r.Main_OnCommand(40514,0) -- View: Move edit cursor to mouse cursor (no snapping) // more sensitive than with snapping
-local tcp_under_mouse = r.GetCursorPosition() == end_time+5
+local tcp_under_mouse = r.GetCursorPosition() == edge
 -- Restore orig. edit cursor pos
 --[[
 local new_curs_pos = r.GetCursorPosition()
