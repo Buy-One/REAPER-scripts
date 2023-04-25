@@ -2,8 +2,8 @@
 ReaScript name: Adjust track, item, envelope points, FX parameters with mousewheel
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.0
-Changelog: Initial release
+Version: 1.1
+Changelog: # Corrected calculation of mouse cursor distance from item edge
 Licence: WTFPL
 REAPER: at least v6.36
 About:	The script is meant to allow using mousewheel on controls with a modifier which
@@ -493,10 +493,10 @@ local left_edge, right_edge
 	local right = left + r.GetMediaItemInfo_Value(item, 'D_LENGTH')
 	r.Main_OnCommand(40514, 0) -- View: Move edit cursor to mouse cursor (no snapping)
 	local new_cur_pos = r.GetCursorPosition()
-		if math.abs(left - new_cur_pos) <= 0.01*1000/px_per_sec -- condition the minimal distance by the zoom resolution, the greater the zoom the smaller is the required distance, the base value of 10 ms or 1 px which is valid for zoom at 100 px per 1 sec seems optimal, 1000/px_per_sec is pixels per ms
+		if math.abs(left - new_cur_pos) <= 0.01*(1000/px_per_sec) -- condition the minimal distance by the zoom resolution, the greater the zoom the smaller is the required distance, the base value of 10 ms or 1 px which is valid for zoom at 100 px per 1 sec seems optimal, 1000/px_per_sec is ms per pixel; OR 0.01/(px_per_sec/1000) px_per_sec/1000 is pixels per ms // only cursor position inside item is respected
 		then
 		left_edge = true
-		elseif math.abs(right - new_cur_pos) <= 0.01*1000/px_per_sec then
+		elseif math.abs(right - new_cur_pos) <= 0.01*(1000/px_per_sec) then
 		right_edge = true
 		end
 	r.SetEditCurPos(cur_pos, false, false) -- moveview, seekplay false // restore orig edit cursor pos
