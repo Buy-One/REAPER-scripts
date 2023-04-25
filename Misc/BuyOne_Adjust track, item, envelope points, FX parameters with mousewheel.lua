@@ -3,7 +3,8 @@ ReaScript name: Adjust track, item, envelope points, FX parameters with mousewhe
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
 Version: 1.1
-Changelog: # Corrected calculation of mouse cursor distance from item edge
+Changelog: #Corrected calculation of mouse cursor distance from item edge
+	   #Added support for TCP on the right side of the Arrange
 Licence: WTFPL
 REAPER: at least v6.36
 About:	The script is meant to allow using mousewheel on controls with a modifier which
@@ -287,23 +288,29 @@ end
 
 function Get_TCP_Under_Mouse()
 -- r.GetTrackFromPoint() covers the entire track timeline hence isn't suitable for getting the TCP
+-- master track is supported
+local right_tcp = r.GetToggleCommandStateEx(0,42373) -- View: Show TCP on right side of arrange
 local curs_pos = r.GetCursorPosition() -- store current edit curs pos
-local start_time, end_time = r.GetSet_ArrangeView2(0, false, 0, 0, start_time, end_time) -- isSet false, screen_x_start, screen_x_end are 0 to get full arrange view coordinates // get time of the current Arrange scroll position to use to move the edit cursor away from the mouse cursor
+local start_time, end_time = r.GetSet_ArrangeView2(0, false, 0, 0, start_time, end_time) -- isSet false, screen_x_start, screen_x_end are 0 to get full arrange view coordinates // get time of the current Arrange scroll position to use to move the edit cursor away from the mouse cursor // https://forum.cockos.com/showthread.php?t=227524#2 the function has 6 arguments; screen_x_start and screen_x_end (3d and 4th args) are not return values, they are for specifying where start_time and stop_time should be on the screen when non-zero when isSet is true
 r.PreventUIRefresh(1)
-r.SetEditCurPos(end_time+5, false, false) -- moveview, seekplay false // to secure against a vanishing probablility of overlap between edit and mouse cursor positions in which case edit cursor won't move just like it won't if mouse cursor is over the TCP // +5 sec to move edit cursor beyond right edge of the Arrange view to be completely sure that it's far away from the mouse cursor
+local edge = right_tcp and start_time-5 or end_time+5
+r.SetEditCurPos(edge, false, false) -- moveview, seekplay false // to secure against a vanishing probablility of overlap between edit and mouse cursor positions in which case edit cursor won't move just like it won't if mouse cursor is over the TCP // +/-5 sec to move edit cursor beyond right/left edge of the Arrange view to be completely sure that it's far away from the mouse cursor
 r.Main_OnCommand(40514,0) -- View: Move edit cursor to mouse cursor (no snapping) // more sensitive than with snapping
-local tcp_under_mouse = r.GetCursorPosition() == end_time+5
+local tcp_under_mouse = r.GetCursorPosition() == edge
 -- Restore orig. edit cursor pos
+--[[
 local new_curs_pos = r.GetCursorPosition()
-local min_val, subtr_val = table.unpack(new_curs_pos == end_time+5 and {curs_pos, end_time+5} -- TCP found, edit cursor remained at end_time+5
-or new_curs_pos ~= end_time+5 and {curs_pos, new_curs_pos} -- TCP not found, edit cursor moved
+local min_val, subtr_val = table.unpack(new_curs_pos == edge and {curs_pos, edge} -- TCP found, edit cursor remained at edge
+or new_curs_pos ~= edge and {curs_pos, new_curs_pos} -- TCP not found, edit cursor moved
 or {0,0})
---r.MoveEditCursor(min_val - subtr_val, false) -- dosel false = don't create time sel; restore orig. edit curs pos, greater subtracted from the lesser to get negative value meaning to move closer to zero (project start) // MOVES VIEW SO IS UNSUITABLE
+r.MoveEditCursor(min_val - subtr_val, false) -- dosel false = don't create time sel; restore orig. edit curs pos, greater subtracted from the lesser to get negative value meaning to move closer to zero (project start) // MOVES VIEW SO IS UNSUITABLE
+]]
 -- 	OR SIMPLY
 r.SetEditCurPos(curs_pos, false, false) -- moveview, seekplay false // restore orig. edit curs pos
 r.PreventUIRefresh(-1)
 return tcp_under_mouse and r.GetTrackFromPoint(r.GetMousePosition())
 end
+
 
 function GetMonFXProps() -- get mon fx accounting for floating window, reaper.GetFocusedFX() doesn't detect mon fx in builds prior to 6.20
 
