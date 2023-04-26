@@ -11,3 +11,6 @@ To download an individual script:
 3. Click "Raw" button in the upper right corner of the script window
 4. Download as normal
 5. Remove the .txt extension only leaving .lua
+
+
+Scripts from the **MIDI** folder go to the **MIDI Editor** section of the Action list
