@@ -102,8 +102,6 @@ end
 
 local is_new_value,scr_name,sectID,cmdID,mode,resol,val = r.get_action_context()
 
-local scr_name = 'Scroll left with variable speed.lua' ----------------------- NAME TESTING
-
 local keyword = Invalid_Script_Name(scr_name,' right ',' left ')
 	if not keyword then return r.defer(no_undo) end
 
