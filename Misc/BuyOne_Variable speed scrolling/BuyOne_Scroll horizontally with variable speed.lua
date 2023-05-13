@@ -79,9 +79,9 @@ end
 function Mouse_Wheel_Direction(val, mousewheel_reverse) -- mousewheel_reverse is boolean
 local is_new_value,filename,sectionID,cmdID,mode,resolution,val = r.get_action_context() -- if mouse scrolling up val = 15 - righwards, if down then val = -15 - leftwards
 	if mousewheel_reverse then
-	return val > 0 and -1 or val < 0 and 1 -- up (forward) - leftwards or down (backwards) - rightwards
+	return val > 0 and -1 or val < 0 and 1 -- wheel up (forward) - leftwards/downwards or wheel down (backwards) - rightwards/upwards
 	else -- default
-	return val > 0 and 1 or val < 0 and -1 -- up (forward) - rightwards or down (backwards) - leftwards
+	return val > 0 and 1 or val < 0 and -1 -- wheel up (forward) - rightwards/upwards or wheel down (backwards) - leftwards/downwards
 	end
 end
 
