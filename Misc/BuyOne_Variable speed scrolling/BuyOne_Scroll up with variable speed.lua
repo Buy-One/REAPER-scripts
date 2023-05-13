@@ -414,7 +414,7 @@ function Get_Arrange_and_Header_Heights()
 -- the project under which the script using this function is run must be already saved to a file in order for smooth closure of the temp project tab to work because this project file is used to close the temp tab without save prompt; for edge cases a dummy project file is  generated for this purpose
 -- relies on Error_Tooltip() function
 
-local sws, js --= r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Find')
+local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Find')
 
 	if sws or js then -- if SWS/js_ReaScriptAPI ext is installed
 	-- thanks to Mespotine https://github.com/Ultraschall/ultraschall-lua-api-for-reaper/blob/master/ultraschall_api/misc/misc_docs/Reaper-Windows-ChildIDs.txt
