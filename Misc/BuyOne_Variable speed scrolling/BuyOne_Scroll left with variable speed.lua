@@ -93,8 +93,9 @@ end
 
 
 function Get_Arrange_Len_In_Pixels()
-local start_time, end_time = r.GetSet_ArrangeView2(0, false, 0, 0, start_time, end_time) -- isSet false, screen_x_start & screen_x_end both 0 = GET // https://forum.cockos.com/showthread.php?t=227524#2 the function has 6 arguments; screen_x_start and screen_x_end (3d and 4th args) are not return values, they are for specifying where start_time and stop_time should be on the screen when non-zero when isSet is true
-return math.floor((end_time-start_time)*r.GetHZoomLevel()+0.5) -- GetHZoomLevel() returns px/sec; return rounded since fractional pixel values are invalid
+local start_time, end_time = r.GetSet_ArrangeView2(0, false, 0, 0, start_time, end_time) -- isSet false, screen_x_start & screen_x_end both 0 = GET // https://forum.cockos.com/showthread.php?t=227524#2 the function has 6 arguments; screen_x_start and screen_x_end (3d and 4th args) are not return values, they are for specifying where start_time and stop_time should be on the screen when non-zero when isSet is true // THE TIME INCLUDES VERTICAL SCROLLBAR 17 px wide which will have to be subtracted to get the exact right edge of the time line
+--return math.floor((end_time-start_time)*r.GetHZoomLevel()+0.5) -- GetHZoomLevel() returns px/sec; return rounded since fractional pixel values are invalid
+return (end_time-start_time)*r.GetHZoomLevel() -- no need to round as it will be rounded outside anyway
 end
 
 
@@ -115,7 +116,7 @@ BY_BEATS = #BY_BEATS:gsub(' ','') > 0
 PAGING_SCROLL = #PAGING_SCROLL:gsub(' ','') > 0
 
 	if PAGING_SCROLL then
-	SPEED = math.floor(Get_Arrange_Len_In_Pixels()/16+0.5) -- /16 since its the smallest horiz scroll unit used by CSurf_OnScroll() below, 1 equals 16, round since pixel value cannot be fractional
+	SPEED = math.floor((Get_Arrange_Len_In_Pixels()-17)/16+0.5) -- /16 since its the smallest horiz scroll unit used by CSurf_OnScroll() below, 1 equals 16, round since pixel value cannot be fractional; 17 is the width of vertical scrollbar
 	elseif BY_BEATS then
 	local arrange_len = Get_Arrange_Len_In_Pixels()
 	local step_len = Beat_To_Pixels()*SPEED
