@@ -15,7 +15,7 @@ About: Alternative to the native 'View: Scroll horizontally (MIDI CC relative/mo
 
        Bind to mousewheel (optionally with modifiers).  
 
-       With vertical mousewheel the default is up - right, down - left,
+       With vertical mousewheel the default direction is up - right, down - left,
        to reverse the direction enable MW_REVERSE setting in the USER SETTINGS
 
 ]]
