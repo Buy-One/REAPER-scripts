@@ -37,7 +37,10 @@ SPEED = ""
 -- to ensure slower scrolling for ease of following the time line
 BY_BEATS = ""
 
--- If enabled by placing any alphanumeric character
+-- Alternative to the native
+-- 'View: Scroll view horizontally one page (MIDI CC relative/mousewheel)'
+-- which as the name suggests only works with the mousewheel;
+-- if enabled by placing any alphanumeric character
 -- between the quotes, disables SPEED value and instead
 -- makes the script scroll by the visible Arrange width;
 PAGING_SCROLL = ""
