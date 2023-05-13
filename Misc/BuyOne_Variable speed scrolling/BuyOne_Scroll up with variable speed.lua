@@ -42,7 +42,10 @@ SPEED = ""
 -- when the script retrieves new data if the program window configuration changes
 BY_TRACKS = ""
 
--- If enabled by placing any alphanumeric character
+-- Alternative to the native
+-- 'View: Scroll view vertically one page (MIDI CC relative/mousewheel)'
+-- which as the name suggests only works with the mousewheel;
+-- if enabled by placing any alphanumeric character
 -- between the quotes, disables SPEED value and instead
 -- makes the script scroll by the visible tracklist height;
 -- if neither SWS/S&M or js_ReaScriptAPI extension is installed
