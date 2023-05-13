@@ -8,7 +8,7 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
 About: Alternative to the native 'View: Scroll view left' action
-       which scrolls by exactly 481 px.  
+       which scrolls by exactly 488 px regardless of the zoom level.
 
        The script's scroll unit is 16 px per execution which 
        can be increased with the SPEED setting in the USER SETTINGS.
