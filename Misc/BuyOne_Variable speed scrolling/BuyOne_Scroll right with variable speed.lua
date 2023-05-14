@@ -6,7 +6,6 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
-Extensions: SWS/S&M or js_ReaScriptAPI recommended
 About: Alternative to the native 'View: Scroll view right' action
        which scrolls by exactly 488 px regardless of the zoom level.
 
