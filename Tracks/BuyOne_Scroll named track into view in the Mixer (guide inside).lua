@@ -1,10 +1,14 @@
 --[[
-ReaScript name: Scroll named track into view in the Mixer
+ReaScript name: BuyOne_Scroll named track into view in the Mixer.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.3
-Changelog: #Fixed capture of MCP folder state
-	   #Fixed logic of the search for the parent of a collapsed folder the target track is in
+Version: 1.4
+Changelog: 	
+	v1.4
+	#Fixed error prone pieces of code
+	v1.3
+	#Fixed capture of MCP folder state
+	#Fixed logic of the search for the parent of a collapsed folder the target track is in
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M for best performance
@@ -34,7 +38,7 @@ About:
 	If the script happens to fail to determine whether or not the folder
 	is collapsed, no scrolling occurs.
 
-			U S A G E   W I T H   S C R E E N S E T S
+				U S A G E   W I T H   S C R E E N S E T S
 
 	1. In the TRACK_NAME setting specify the name of the track
 	you want to be scrolled into view in the Mixer when a screenset
@@ -189,8 +193,7 @@ function Find_Parent_Of_1st_Collapsed_Folder(targ_tr, GetTrackChunk)
 -- returns parent track of a collapsed folder (if any) the target belongs to in order to scroll to it, because child track of a collapsed folder can't be scrolled to
 -- r.GetMediaTrackInfo_Value(tr, 'B_SHOWINMIXER') doesn't indicate if it's under collapsed folder, only when it's explicitly hidden
 
-local targ_tr_depth = r.GetTrackDepth(targ_tr)
-	if targ_tr_depth == 0 then return targ_tr end -- if target track isn't a child
+	if r.GetTrackDepth(targ_tr) == 0 then return targ_tr end -- if target track isn't a child
 	
 -- collect all parents of the track
 local targ_tr_idx = r.CSurf_TrackToID(targ_tr, false)-1 -- mcpView false
@@ -271,7 +274,7 @@ local mixer_dockermode = cont:match('%[REAPERdockpref%].-%f[%a]mixer=[%d%.]-%s(%
 local mixer_dock_pos = cont:match('dockermode'..mixer_dockermode..'=(%d+)') -- get mixer docker position
 
 	if wantDockPos then return mixer_dock_pos end -- if requested, return pos in case the entire docker is closed and not the Mixer window itself, to condition the rightmost position routine because in this case it won't work, but nevertheless will run because Mixer toggle state will still be OFF and hence true; plus if dockerpos is not 0 or 2 the rightmost position won't be needed anyway as without SWS extension in other docks and in floating window only the leftmost pos is honored; must come before the next condition so it's not blocked by it if the latter is true
-	if not mixwnd_dock -- in floating Mixer window wihtout SWS extension only use leftmost position
+	if not mixwnd_dock -- in floating Mixer window without SWS extension only use leftmost position
 	or (mixer_dock_pos ~= '0' and mixer_dock_pos ~= '2') -- if sits in side dockers, only use leftmost position because the Mixer window cannot have full width anyway
 	then return false
 	elseif mixwnd_dock and mixer_dockermode and (mixer_dock_pos == '0' or mixer_dock_pos == '2') -- bottom or top, where Mixer window can stretch to the full width of the main window
@@ -313,7 +316,7 @@ local mixer_dock_pos = cont:match('dockermode'..mixer_dockermode..'=(%d+)') -- g
 					if cont:match(t[1]..'=1') and cont:match(t[2]..'=1') then
 					return false end
 				elseif t and t[1] == 'toolbar' then -- or if v == 'toolbar'
-				local sect = cont:match('%['..v..'%](.-)%[') or cont:match('%['..v..'%](.-)$') -- capture section content either followed by another section or at the very end of the file
+				local sect = cont:match('%['..v..'.-%](.-)%[') or cont:match('%['..v..'.-%](.-)$') -- capture section content either followed by another section or at the very end of the file
 					if sect and sect:match(t[2]..'=1') and sect:match(t[3]..'=1') then return false end -- sect can be false if the stored toolbar has no section, in particular 'toolbar' (without a number) representing Arrange main toolbar
 				end
 			end
@@ -330,7 +333,7 @@ function Scroll_Track_Into_View(targ_tr, loc, not_shared) -- loc corresponds to 
 -- Being set with the function SetMixerScroll() the leftmost track is always displayed in full which may cause the rightmost track be partially shifted beyond the Mixer right edge or the Master track if it's displayed on the right side (because MCPs combined width doesn't fit within the Mixer window); this is mitigated by shifting the target track back leftwards which is a trade-off and may reveal one or more extra tracks on the right, depending on the width of the leftmost track
 
 local sws = r.APIExists('BR_Win32_GetMainHwnd')
-local mixer_hwnd = r.BR_Win32_GetMixerHwnd() -- used outside of BR_Win32_GetWindowRect since it returns two values
+local mixer_hwnd = sws and r.BR_Win32_GetMixerHwnd() -- used outside of BR_Win32_GetWindowRect since it returns two values
 local dimens = sws and {r.BR_Win32_GetWindowRect(mixer_hwnd)} or {r.my_getViewport(0, 0, 0, 0, 0, 0, 0, 0, true)} -- wantWorkArea true
 
 	if #dimens == 5 then table.remove(dimens, 1) end -- remove retval from BR's function
@@ -412,7 +415,7 @@ POSITION = (POSITION:match('[CR]') or #POSITION == 0) and POSITION or '' -- left
 
 		if TRACK_NAME and some_tracks then
 
-		local sel_trks_t = re_store_sel_trks() -- store sel tracks and unselect all	// METHOD II-a (make target track last touched)
+		local sel_trks_t = re_store_sel_trks() -- store sel tracks and unselect all
 
 			for i = 0, tr_cnt-1 do -- scroll stored track into view
 			targ_tr = r.GetTrack(0,i) -- will be used outside of the loop and in the deferred Set_Mixer_Scroll() function if target track
@@ -434,7 +437,7 @@ POSITION = (POSITION:match('[CR]') or #POSITION == 0) and POSITION or '' -- left
 			
 		end
 				
-		local is_dock_closed = mixer_closed and Get_Mixer_Wnd_Dock_State(wnd_ident_t, true):match('6553') -- wantDockPos is true // rightmost position routine below meant to place track on the right side of the Mixer when it's initially closed doesn't work if the entire docker is hidden and not just the Mixer window (whose toggle state becomes OFF in this case as well and makes the routine condition true), so this is meant to counterbalance mixer_closed condition and prevent the routine from running when the condition is true and proceed to the main rouitne which can handle the situation; placed before loading a screenset because after that the dock position will get updated and won't indicate dock being hidden any longer
+		local is_dock_closed = mixer_closed and Get_Mixer_Wnd_Dock_State(wnd_ident_t, true):match('6553') -- wantDockPos is true // rightmost position routine below meant to place track on the right side of the Mixer when it's initially closed doesn't work if the entire docker is hidden and not just the Mixer window (whose toggle state becomes OFF in this case as well and makes the routine condition true), so this is meant to counterbalance mixer_closed condition and prevent the routine from running when the condition is true and proceed to the main rouitne which can handle the situation; placed before loading a screenset because after that the dock position will get updated and won't indicate dock being hidden any longer // same as r.GetToggleCommandStateEx(0,40279) == 0 -- View: Show docker
 
 		if SCREENSET then
 		local id = 404 -- 1st three digits of save/load screenset actions command IDs
