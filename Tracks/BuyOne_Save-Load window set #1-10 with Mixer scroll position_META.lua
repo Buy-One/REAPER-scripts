@@ -1,142 +1,146 @@
 --[[
-ReaScript name: Save-Load window set #1-10 with Mixer scroll position (10 scripts)
+ReaScript name: BuyOne_Save-Load window set #1-10 with Mixer scroll position (10 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.2
-Changelog: #Fixed capture of MCP folder state
-	   #Fixed logic of the search for the parent of a collapsed folder the target track is in
+Version: 1.3
+Changelog: 	
+	v1.3
+	#Fixed error prone pieces of code
+	v1.2
+	#Fixed capture of MCP folder state
+	#Fixed logic of the search for the parent of a collapsed folder the target track is in
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M for best performance
 Metapackage: true
 Provides: 
-		[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #1 with Mixer scroll position (guide inside).lua
-		[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #2 with Mixer scroll position (guide inside).lua
-		[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #3 with Mixer scroll position (guide inside).lua
-		[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #4 with Mixer scroll position (guide inside).lua
-		[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #5 with Mixer scroll position (guide inside).lua
-		[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #6 with Mixer scroll position (guide inside).lua
-		[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #7 with Mixer scroll position (guide inside).lua
-		[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #8 with Mixer scroll position (guide inside).lua
-		[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #9 with Mixer scroll position (guide inside).lua
-		[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #10 with Mixer scroll position (guide inside).lua	
+	[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #1 with Mixer scroll position (guide inside).lua
+	[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #2 with Mixer scroll position (guide inside).lua
+	[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #3 with Mixer scroll position (guide inside).lua
+	[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #4 with Mixer scroll position (guide inside).lua
+	[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #5 with Mixer scroll position (guide inside).lua
+	[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #6 with Mixer scroll position (guide inside).lua
+	[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #7 with Mixer scroll position (guide inside).lua
+	[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #8 with Mixer scroll position (guide inside).lua
+	[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #9 with Mixer scroll position (guide inside).lua
+	[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #10 with Mixer scroll position (guide inside).lua	
 About:	
-		To be used instead of native 'Screenset: Save/Load window set #[number]' actions
-		in situations where track position in the Mixer is important. Position means
-		the leftmost, center and the rightmost.   
-		The script does both:  
-		a) concurrently with saving the actual screenset stores the track 
-		to be scrolled into view when the Mixer is opened with the screenset 
-		whose number is included in the script name; and   
-		b) loads the screenset scrolling the associated track into view.		
-		
-		To save a screenset with a track to be scrolled into view in the Mixer:  
-		1) make sure that the track which is supposed to be scrolled into view 
-		on opening has a name and it's unique to avoid confusion;   
-		2) open the Mixer and either select the target track or make it 
-		the leftmost;  
-		3) !!!! CRUCIAL: open 'Screensets/Layout' window (is used to signal 
-		to the script that saving needs to be performed, it's not stored 
-		in screensets);   
-		4) run the script ('Screensets/Layout' window will auto-close);   
-		5) 'Save Windows Screenset' dialogue will appear.  
-		On Windows once you click save in the 'Save Windows Screenset' dialogue, 
-		the chosen track name will be stored concurrenty with the screenset (re)saving. 
-		If the dialogue is cancelled no storage occurs.   
-		On MacOS and on Linux track name storage will have to be manually 
-		confirmed or declined via a dialogue which will appear once 'Save Windows Screenset' 
-		dialogue closes. That's because without access to MacOS or Linux i couldn't 
-		devise the same way of track name storage as on Windows.
-				
-		To change track name associated with a screenset, load the screenset 
-		and follow the abovelisted steps.  
-		On Windows track name is only stored if the screenset itself 
-		is re-saved even with no changes to it.   
-		On MacOS and on Linux they can be stored independently thanks to the 
-		additional dialogue, which turns out to be both the curse and the 
-		blessing so to speak.
-		
-		When storing, selected track gets preference, when no track is selected 
-		the script looks for the leftmost track in the Mixer.   
-		If 'Screensets/Layout' window isn't open while the Mixer is open, the script 
-		will work in screenset loading mode provided there's a stored track name.
-		
-		To determine the position to scroll the track to, the script evaluates the 
-		track displayed name. By default without any tags in its name the track is 
-		scrolled to the leftmost position. To change that precede the track displayed 
-		name with a scroll tag in the following format: C/c> (center); R/r> (rightmost)
-		e.g. "C> My track name"   
-		The register of the characters doesn't matter hence both types are listed.
-		To have the track scroll into view at the start of the Mixer (leftmost position)
-		when its name is already tagged, it suffices to strip the scroll tag of the 
-		letter, leaving only the greater '>' sign intact, e.g. "> My track name".
-		
-		To load the screenset and scroll into view a track whose name was stored,
-		run the script.
-		
-		After saving the screenset using this script, if the need arises to modify 
-		the screenset by changing Mixer dock state, window size, it can be done
-		the usual way via the corresponding action or 'Screensets/Layouts window',
-		but loaded this screenset must still be with this script.
-		
-		The script is linked to the track name, so if the stored name is applied 
-		to a different track, it will become the one to be scrolled into view in the Mixer 
-		when the screenset is loaded, provided the name isn't shared with any other track.
-		
-		When the target track is a child in a folder and the folder 
-		is collapsed in the Mixer, the parent track will be scrolled into view
-		instead. If the target track belongs to one of several nested folders the parent 
-		track of the first collapsed folder (if any) to which it belongs will be 
-		scrolled into view.   
-		If the script happens to fail to determine whether or not the folder
-		is collapsed, no scrolling occurs.
-		
-		SWS/S&M Extension
-		
-		It's recommended to have the SWS/S&M extension installed so that all
-		3 track scroll positions are available regardless of the Mixer window width 
-		and that child and parent tracks of collapsed folders are always recognized.    
-		If not installed then worth being aware of the following:  
-		A) in the docked Mixer, central and rightmost positions will only be respected 
-		when the Mixer window is open to its full width,   
-		if it shares the docker with other windows in split mode (but not in tabbed
-		mode) and such other windows are visible any POSITION setting will be clamped 
-		to the leftmost;   
-		B) in the floating Mixer window only any POSITION setting will be clamped 
-		to the leftmost;  
-		C) if the MIDI Editor is docked in the same docker as the Mixer, visible or not,
-		any POSITION setting will be clamped to the leftmost.  
-		D) child target tracks or their folder parent tracks may go unrecognized 
-		depeding on the number and size of inserted FX and number of items on the track;		
+	To be used instead of native 'Screenset: Save/Load window set #[number]' actions
+	in situations where track position in the Mixer is important. Position means
+	the leftmost, center and the rightmost.   
+	The script does both:  
+	a) concurrently with saving the actual screenset stores the track 
+	to be scrolled into view when the Mixer is opened with the screenset 
+	whose number is included in the script name; and   
+	b) loads the screenset scrolling the associated track into view.		
 
-		BOTTOM LINE, absent the SWS/S&M extension use only leftmost position so the track
-		is sure to scroll into view. It could have been hard coded but i opted out just
-		to give the user some freedom of choice.
-				
-		CAVEATS
-		
-		If there're too few tracks on either end of the tracklist or their combined MCPs 
-		are too narrow to allow sufficient distance for scrolling, the stored track will 
-		be placed only as close to the target position as conditions permit.
-		
-		Generally the relative placement of a track at the center and on the right side 
-		of the Mixer is accurate. But it still depends on the stored track and adjacent 
-		tracks MCP width especially with a tracklist mixed in terms of MCP layouts.  
-		Therefore at times some track may appear slightly off center or slightly to the 
-		left of the right edge instead of being flush with it.   
-		However in determining track placement its visibility is given top priority.
-		At the leftmost position the track is always flush with the left edge of the 
-		window or with the Master track.
-		
-		Mind that as of build 6.28 the Mixer window is global for all projects 
-		open in tabs, just the contents differ. Therefore changing Mixer scroll 
-		position in one such project will affect it across all open projects.
-		
-		* * *
-		Check out also BuyOne_Scroll named track into view in the Mixer (guide inside).lua
-		for a method of scrolling named track into view without hard linking between
-		track name and screenset number.
-		
+	To save a screenset with a track to be scrolled into view in the Mixer:  
+	1) make sure that the track which is supposed to be scrolled into view 
+	on opening has a name and it's unique to avoid confusion;   
+	2) open the Mixer and either select the target track or make it 
+	the leftmost;  
+	3) !!!! CRUCIAL: open 'Screensets/Layout' window (is used to signal 
+	to the script that saving needs to be performed, it's not stored 
+	in screensets);   
+	4) run the script ('Screensets/Layout' window will auto-close);   
+	5) 'Save Windows Screenset' dialogue will appear.  
+	On Windows once you click save in the 'Save Windows Screenset' dialogue, 
+	the chosen track name will be stored concurrenty with the screenset (re)saving. 
+	If the dialogue is cancelled no storage occurs.   
+	On MacOS and on Linux track name storage will have to be manually 
+	confirmed or declined via a dialogue which will appear once 'Save Windows Screenset' 
+	dialogue closes. That's because without access to MacOS or Linux i couldn't 
+	devise the same way of track name storage as on Windows.
+
+	To change track name associated with a screenset, load the screenset 
+	and follow the abovelisted steps.  
+	On Windows track name is only stored if the screenset itself 
+	is re-saved even with no changes to it.   
+	On MacOS and on Linux they can be stored independently thanks to the 
+	additional dialogue, which turns out to be both the curse and the 
+	blessing so to speak.
+
+	When storing, selected track gets preference, when no track is selected 
+	the script looks for the leftmost track in the Mixer.   
+	If 'Screensets/Layout' window isn't open while the Mixer is open, the script 
+	will work in screenset loading mode provided there's a stored track name.
+
+	To determine the position to scroll the track to, the script evaluates the 
+	track displayed name. By default without any tags in its name the track is 
+	scrolled to the leftmost position. To change that precede the track displayed 
+	name with a scroll tag in the following format: C/c> (center); R/r> (rightmost)
+	e.g. "C> My track name"   
+	The register of the characters doesn't matter hence both types are listed.
+	To have the track scroll into view at the start of the Mixer (leftmost position)
+	when its name is already tagged, it suffices to strip the scroll tag of the 
+	letter, leaving only the greater '>' sign intact, e.g. "> My track name".
+
+	To load the screenset and scroll into view a track whose name was stored,
+	run the script.
+
+	After saving the screenset using this script, if the need arises to modify 
+	the screenset by changing Mixer dock state, window size, it can be done
+	the usual way via the corresponding action or 'Screensets/Layouts window',
+	but loaded this screenset must still be with this script.
+
+	The script is linked to the track name, so if the stored name is applied 
+	to a different track, it will become the one to be scrolled into view in the Mixer 
+	when the screenset is loaded, provided the name isn't shared with any other track.
+
+	When the target track is a child in a folder and the folder 
+	is collapsed in the Mixer, the parent track will be scrolled into view
+	instead. If the target track belongs to one of several nested folders the parent 
+	track of the first collapsed folder (if any) to which it belongs will be 
+	scrolled into view.   
+	If the script happens to fail to determine whether or not the folder
+	is collapsed, no scrolling occurs.
+
+	SWS/S&M Extension
+
+	It's recommended to have the SWS/S&M extension installed so that all
+	3 track scroll positions are available regardless of the Mixer window width 
+	and that child and parent tracks of collapsed folders are always recognized.    
+	If not installed then worth being aware of the following:  
+	A) in the docked Mixer, central and rightmost positions will only be respected 
+	when the Mixer window is open to its full width,   
+	if it shares the docker with other windows in split mode (but not in tabbed
+	mode) and such other windows are visible any POSITION setting will be clamped 
+	to the leftmost;   
+	B) in the floating Mixer window only any POSITION setting will be clamped 
+	to the leftmost;  
+	C) if the MIDI Editor is docked in the same docker as the Mixer, visible or not,
+	any POSITION setting will be clamped to the leftmost.  
+	D) child target tracks or their folder parent tracks may go unrecognized 
+	depeding on the number and size of inserted FX and number of items on the track;		
+
+	BOTTOM LINE, absent the SWS/S&M extension use only leftmost position so the track
+	is sure to scroll into view. It could have been hard coded but i opted out just
+	to give the user some freedom of choice.
+
+	CAVEATS
+
+	If there're too few tracks on either end of the tracklist or their combined MCPs 
+	are too narrow to allow sufficient distance for scrolling, the stored track will 
+	be placed only as close to the target position as conditions permit.
+
+	Generally the relative placement of a track at the center and on the right side 
+	of the Mixer is accurate. But it still depends on the stored track and adjacent 
+	tracks MCP width especially with a tracklist mixed in terms of MCP layouts.  
+	Therefore at times some track may appear slightly off center or slightly to the 
+	left of the right edge instead of being flush with it.   
+	However in determining track placement its visibility is given top priority.
+	At the leftmost position the track is always flush with the left edge of the 
+	window or with the Master track.
+
+	Mind that as of build 6.28 the Mixer window is global for all projects 
+	open in tabs, just the contents differ. Therefore changing Mixer scroll 
+	position in one such project will affect it across all open projects.
+
+	* * *
+	Check out also BuyOne_Scroll named track into view in the Mixer (guide inside).lua
+	for a method of scrolling named track into view without hard linking between
+	track name and screenset number.
+
 ]]
 
 
@@ -339,7 +343,7 @@ local mixer_dock_pos = cont:match('dockermode'..mixer_dockermode..'=(%d+)') -- g
 					if cont:match(t[1]..'=1') and cont:match(t[2]..'=1') then
 					return false end
 				elseif t and t[1] == 'toolbar' then -- or if v == 'toolbar'
-				local sect = cont:match('%['..v..'%](.-)%[') or cont:match('%['..v..'%](.-)$') -- capture section content either followed by another section or at the very end of the file
+				local sect = cont:match('%['..v..'.-%](.-)%[') or cont:match('%['..v..'.-%](.-)$') -- capture section content either followed by another section or at the very end of the file
 					if sect and sect:match(t[2]..'=1') and sect:match(t[3]..'=1') then return false end -- sect can be false if the stored toolbar has no section, in particular 'toolbar' (without a number) representing Arrange main toolbar
 				end
 			end
@@ -356,7 +360,7 @@ function Scroll_Track_Into_View(targ_tr, loc, not_shared) -- loc corresponds to 
 -- Being set with the function SetMixerScroll() the leftmost track is always displayed in full which may cause the rightmost track be partially shifted beyond the Mixer right edge or the Master track if it's displayed on the right side (because MCPs combined width doesn't fit within the Mixer window); this is mitigated by shifting the target track back leftwards which is a trade-off and may reveal one or more extra tracks on the right, depending on the width of the leftmost track
 
 local sws = r.APIExists('BR_Win32_GetMainHwnd')
-local mixer_hwnd = r.BR_Win32_GetMixerHwnd() -- used outside of BR_Win32_GetWindowRect since it returns two values
+local mixer_hwnd = sws and r.BR_Win32_GetMixerHwnd() -- used outside of BR_Win32_GetWindowRect since it returns two values
 local dimens = sws and {r.BR_Win32_GetWindowRect(mixer_hwnd)} or {r.my_getViewport(0, 0, 0, 0, 0, 0, 0, 0, true)} -- wantWorkArea true
 
 	if #dimens == 5 then table.remove(dimens, 1) end -- remove retval from BR's function
@@ -502,7 +506,7 @@ local not_screenset = r.GetToggleCommandStateEx(0, 40422) == 0 -- View: Show scr
 
 		if some_tracks then
 
-		local sel_trks_t = re_store_sel_trks() -- store sel tracks and unselect all	// METHOD II-a
+		local sel_trks_t = re_store_sel_trks() -- store sel tracks and unselect all
 			for i = 0, r.CountTracks(0)-1 do -- scroll stored track into view
 			targ_tr = r.GetTrack(0,i) -- will be used outside of the loop and in the deferred Set_Mixer_Scroll() function if target track
 			name_t = targ_tr and {r.GetTrackName(targ_tr)} -- 2 return values; global to be evaluated below
@@ -525,7 +529,7 @@ local not_screenset = r.GetToggleCommandStateEx(0, 40422) == 0 -- View: Show scr
 
 		end
 
-	local is_dock_closed = mixer_closed and Get_Mixer_Wnd_Dock_State(wnd_ident_t, true):match('6553') -- wantDockPos is true // rightmost position routine below meant to place track on the right side of the Mixer when it's initially closed doesn't work if the entire docker is hidden and not just the Mixer window (whose toggle state becomes OFF in this case as well and makes the routine condition true), so this is meant to counterbalance mixer_closed condition and prevent the routine from running when the condition is true and proceed to the main rouitne which can handle the situation; placed before loading a screenset because after that the dock position will get updated and won't indicate dock being hidden any longer
+	local is_dock_closed = mixer_closed and Get_Mixer_Wnd_Dock_State(wnd_ident_t, true):match('6553') -- wantDockPos is true // rightmost position routine below meant to place track on the right side of the Mixer when it's initially closed doesn't work if the entire docker is hidden and not just the Mixer window (whose toggle state becomes OFF in this case as well and makes the routine condition true), so this is meant to counterbalance mixer_closed condition and prevent the routine from running when the condition is true and proceed to the main rouitne which can handle the situation; placed before loading a screenset because after that the dock position will get updated and won't indicate dock being hidden any longer // same as r.GetToggleCommandStateEx(0,40279) == 0 -- View: Show docker
 
 	-- LOAD SCREENSET WITH MIXER, the Mixer must first be opened for the scrolling routine to succeed
 	local t = {54, 55, 56, 57, 58, 59, 60, 61, 62, 63} -- Screenset: Load window set #.. actions
