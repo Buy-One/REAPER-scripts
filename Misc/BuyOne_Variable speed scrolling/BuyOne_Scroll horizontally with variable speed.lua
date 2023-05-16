@@ -86,7 +86,7 @@ local is_new_value,filename,sectionID,cmdID,mode,resolution,val = r.get_action_c
 end
 
 
-SPEED = (not tonumber(SPEED) or tonumber(SPEED) and (#SPEED:gsub(' ','') == 0 or SPEED + 0 == 0)) and 1 or math.floor(math.abs(tonumber(SPEED))) -- ignoring non-numerals, zero, any decimal and negative values
+SPEED = (not tonumber(SPEED) or tonumber(SPEED) and SPEED+0 == 0) and 1 or math.floor(math.abs(tonumber(SPEED))) -- ignoring non-numerals, zero, any decimal and negative values
 BY_BEATS = #BY_BEATS:gsub(' ','') > 0
 PAGING_SCROLL = #PAGING_SCROLL:gsub(' ','') > 0
 MW_REVERSE = #MW_REVERSE:gsub(' ','') > 0
