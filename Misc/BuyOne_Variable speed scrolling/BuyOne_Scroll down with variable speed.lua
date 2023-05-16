@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Scroll down with variable speed.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Fixed scrolling all the way down when BY_TRACKS setting is enabled
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
@@ -525,7 +525,7 @@ local st, fin, step = table.unpack(down and {0, tr_cnt, 1} or up and {tr_cnt, 0,
 		end
 		if found and math.abs(found-i) == SPEED-1 then return math.abs(tracks_h) end -- 1st math.abs to account for negative result when the loop runs in forward direction, 2nd to rectify negative value for scrolling up because it will be multiplied by -1 outside of the function anyway; SPEED-1 because by the time the difference is equal to original SPEED value the tracks_h will have stored height if 4 tracks, e.g. when SPEED = 3 and found = 10 the forward loop should exit at i=13 because 13-10=3, but the height of the first track was already stored at 10 so by 13 it will be storing height of 4 tracks: 10,11,12,13, hence the subtraction, alternatively found = i+1 could be used or a counter which would be more straightforward
 	end
-return tracks_h*2 -- when nothing is returned from the loop because there're not enough tracks out of sight to satisfy the condition of equality to SPEED value // *2 to make sure that the tracklist is scrolled all the way down, because at the end of the tracklist there's some empty space which can still be scrolled through, upward scrolling naturally stops at the top of the topmost track
+return tracks_h > 0 and tracks_h*5 or 600 -- when nothing is returned from the loop because there're not enough or no tracks out of sight to satisfy the condition of equality to SPEED value // *5 or 600 are provisional values just to make sure that the tracklist is scrolled all the way down, because at the end of the tracklist there's some empty space which can still be scrolled through, upward scrolling naturally stops at the top of the topmost track
 end
 
 
