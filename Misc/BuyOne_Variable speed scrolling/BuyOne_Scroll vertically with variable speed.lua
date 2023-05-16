@@ -503,7 +503,7 @@ local st, fin, step = table.unpack(down and {0, tr_cnt, 1} or up and {tr_cnt, 0,
 		end
 		if found and math.abs(found-i) == SPEED-1 then return math.abs(tracks_h) end -- 1st math.abs to account for negative result when the loop runs in forward direction, 2nd to rectify negative value for scrolling up because it will be multiplied by -1 outside of the function anyway; SPEED-1 because by the time the difference is equal to original SPEED value the tracks_h will have stored height if 4 tracks, e.g. when SPEED = 3 and found = 10 the forward loop should exit at i=13 because 13-10=3, but the height of the first track was already stored at 10 so by 13 it will be storing height of 4 tracks: 10,11,12,13, hence the subtraction, alternatively found = i+1 could be used or a counter which would be more straightforward
 	end
-return tracks_h*2 -- when nothing is returned from the loop because there're not enough tracks out of sight to satisfy the condition of equality to SPEED value // *2 to make sure that the tracklist is scrolled all the way down, because at the end of the tracklist there's some empty space which can still be scrolled through, upward scrolling naturally stops at the top of the topmost track
+return tracks_h > 0 and tracks_h*5 or 600 -- when nothing is returned from the loop because there're not enough or no tracks out of sight to satisfy the condition of equality to SPEED value // *5 or 600 are provisional values just to make sure that the tracklist is scrolled all the way down, because at the end of the tracklist there's some empty space which can still be scrolled through, upward scrolling naturally stops at the top of the topmost track
 end
 
 
@@ -530,8 +530,8 @@ end
 local is_new_value,scr_name,sectID,cmdID,mode,resol,val = r.get_action_context()
 local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Find')
 
-	if not sws and not js and Is_Ctrl_And_Shift() then return r.defer(no_undo) -- prevent using script with Ctrl+Shift modifier when no extension is installed since it's likely to interfere with loading temporary project to get updated Arrange height from track max zoom as this will generate prompt to load project with fx offline; this will be true regardless of existence of any alternative shortcuts, if more than one is assigned, because it's impossible to determine which one is used to run the script // ONLY RELEVANT FOR DOWN/UP
-	end
+	if not r.GetTrack(0,0) then return r.defer(no_undo)
+	elseif not sws and not js and Is_Ctrl_And_Shift() then return r.defer(no_undo) -- prevent using script with Ctrl+Shift modifier when no extension is installed since it's likely to interfere with loading temporary project to get updated Arrange height from track max zoom as this will generate prompt to load project with fx offline; this will be true regardless of existence of any alternative shortcuts, if more than one is assigned, because it's impossible to determine which one is used to run the script // ONLY RELEVANT FOR DOWN/UP	
 
 SPEED = (not tonumber(SPEED) or tonumber(SPEED) and (#SPEED:gsub(' ','') == 0 or SPEED + 0 == 0)) and 1 or math.floor(math.abs(tonumber(SPEED))) -- ignoring non-numerals, zero, any decimal and negative values
 BY_TRACKS = #BY_TRACKS:gsub(' ','') > 0
@@ -547,6 +547,7 @@ MW_REVERSE = #MW_REVERSE:gsub(' ','') > 0
 	local diviation = r.GetExtState(cmdID, 'by-track diviation')
 	local diviation = #diviation > 0 and diviation or 0
 	local arrange_h = Get_Arrange_and_Header_Heights() -- only the 1st return value is used, arrange height
+	local down, up = MW_REVERSE and dir < 0 or dir > 0, MW_REVERSE and dir > 0 or dir < 0
 	local tracks_h = Get_Combined_Tracks_Height(down, up, arrange_h, SPEED)/8
 	SPEED = Calc_and_Store_Diviation(tracks_h, diviation, cmdID, 'by-track diviation')
 	end
