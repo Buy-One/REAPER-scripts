@@ -533,7 +533,7 @@ local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Fin
 	if not r.GetTrack(0,0) then return r.defer(no_undo)
 	elseif not sws and not js and Is_Ctrl_And_Shift() then return r.defer(no_undo) -- prevent using script with Ctrl+Shift modifier when no extension is installed since it's likely to interfere with loading temporary project to get updated Arrange height from track max zoom as this will generate prompt to load project with fx offline; this will be true regardless of existence of any alternative shortcuts, if more than one is assigned, because it's impossible to determine which one is used to run the script // ONLY RELEVANT FOR DOWN/UP	
 
-SPEED = (not tonumber(SPEED) or tonumber(SPEED) and (#SPEED:gsub(' ','') == 0 or SPEED + 0 == 0)) and 1 or math.floor(math.abs(tonumber(SPEED))) -- ignoring non-numerals, zero, any decimal and negative values
+SPEED = (not tonumber(SPEED) or tonumber(SPEED) and SPEED+0 == 0) and 1 or math.floor(math.abs(tonumber(SPEED))) -- ignoring non-numerals, zero, any decimal and negative values
 BY_TRACKS = #BY_TRACKS:gsub(' ','') > 0
 PAGING_SCROLL = #PAGING_SCROLL:gsub(' ','') > 0
 MW_REVERSE = #MW_REVERSE:gsub(' ','') > 0
