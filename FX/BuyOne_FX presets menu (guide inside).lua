@@ -2,10 +2,11 @@
 ReaScript name: FX presets menu
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.6
+Version: 1.7
 Changelog: 
-	  1.6 #Added support for TCP on the right side of the Arrange
-	  1.5 #Fixed error on loading preset menu of plugins with embedded presets and no external preset file
+	1.7 #Fixed logic of TCP detection under mouse
+	1.6 #Added support for TCP on the right side of the Arrange
+	1.5 #Fixed error on loading preset menu of plugins with embedded presets and no external preset file
 Provides: [main] .
 Licence: WTFPL
 REAPER: at least v5.962
@@ -418,9 +419,9 @@ local obj, obj_type
 			if not obj then -- before build 6.37, EDIT CURSOR ACTIONS MAKE RUNNING TRANSPORT STOP !!!!!
 			local curs_pos = r.GetCursorPosition() -- store current edit curs pos
 			local start_time, end_time = r.GetSet_ArrangeView2(0, false, 0, 0) -- isSet false, screen_x_start, screen_x_end are 0 to get full arrange view coordinates // get time of the current Arrange scroll position to use to move the edit cursor away from the mouse cursor // https://forum.cockos.com/showthread.php?t=227524#2 the function has 6 arguments; screen_x_start and screen_x_end (3d and 4th args) are not return values, they are for specifying where start_time and stop_time should be on the screen when non-zero when isSet is true
-			local right_tcp = r.GetToggleCommandStateEx(0,42373) -- View: Show TCP on right side of arrange
+			local right_tcp = r.GetToggleCommandStateEx(0,42373) == 1 -- View: Show TCP on right side of arrange
 			local edge = right_tcp and start_time-5 or end_time+5
-			r.SetEditCurPos(edge, false, false) -- moveview, seekplay false // to secure against a vanishing probablility of overlap between edit and mouse cursor positions in which case edit cursor won't move just like it won't if mouse cursor is over the TCP // +/-5 sec to move edit cursor beyond right/left edge of the Arrange view to be completely sure that it's far away from the mouse cursor
+			r.SetEditCurPos(edge, false, false) -- moveview, seekplay false // to secure against a vanishing probablility of overlap between edit and mouse cursor positions in which case edit cursor won't move just like it won't if mouse cursor is over the TCP // +/-5 sec to move edit cursor beyond right/left edge of the Arrange view to be completely sure that it's far away from the mouse cursor // if start_time is 0 and there's negative project start offset the edit cursor is still moved to the very start, that is past 0
 			r.Main_OnCommand(40514,0) -- View: Move edit cursor to mouse cursor (no snapping) // more sensitive than with snapping
 				if r.GetCursorPosition() == edge or r.GetCursorPosition() == start_time then -- the edit cursor stayed put at the pos set above since the mouse cursor is over the TCP // if the TCP is on the right and the Arrange is scrolled all the way to the project start start_time-5 won't make the edit cursor move past project start hence the 2nd condition, but it can move past the right edg
 				--[-[------------------------- WITHOUT SELECTION --------------------------------------------
