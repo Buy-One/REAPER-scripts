@@ -2,8 +2,12 @@
 ReaScript name: BuyOne_Track embedded notes displayed as a tooltip.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #Added support for TCP on the right side of the Arrange
+Version: 1.2
+Changelog: 
+	  v1.2
+	  #Fixed logic of TCP detection under mouse
+	  v1.1
+	  #Added support for TCP on the right side of the Arrange
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	##MANAGING TRACK NOTES
@@ -245,7 +249,7 @@ end
 function Get_TCP_Under_Mouse() -- based on the function Get_Object_Under_Mouse_Curs()
 -- r.GetTrackFromPoint() covers the entire track timeline hence isn't suitable for getting the TCP
 -- master track is supported
-local right_tcp = r.GetToggleCommandStateEx(0,42373) -- View: Show TCP on right side of arrange
+local right_tcp = r.GetToggleCommandStateEx(0,42373) == 1 -- View: Show TCP on right side of arrange
 local curs_pos = r.GetCursorPosition() -- store current edit curs pos
 local start_time, end_time = r.GetSet_ArrangeView2(0, false, 0, 0, start_time, end_time) -- isSet false, screen_x_start, screen_x_end are 0 to get full arrange view coordinates // get time of the current Arrange scroll position to use to move the edit cursor away from the mouse cursor
 r.PreventUIRefresh(1)
