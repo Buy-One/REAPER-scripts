@@ -2,9 +2,13 @@
 ReaScript name: Adjust track, item, envelope points, FX parameters with mousewheel
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.1
-Changelog: #Corrected calculation of mouse cursor distance from item edge
-	   #Added support for TCP on the right side of the Arrange
+Version: 1.2
+Changelog:
+	v1.2
+	#Corrected logic of TCP detection under mouse
+	v1.1
+	#Corrected calculation of mouse cursor distance from item edge
+   	#Added support for TCP on the right side of the Arrangee
 Licence: WTFPL
 REAPER: at least v6.36
 About:	The script is meant to allow using mousewheel on controls with a modifier which
@@ -289,7 +293,7 @@ end
 function Get_TCP_Under_Mouse()
 -- r.GetTrackFromPoint() covers the entire track timeline hence isn't suitable for getting the TCP
 -- master track is supported
-local right_tcp = r.GetToggleCommandStateEx(0,42373) -- View: Show TCP on right side of arrange
+local right_tcp = r.GetToggleCommandStateEx(0,42373) == 1 -- View: Show TCP on right side of arrange
 local curs_pos = r.GetCursorPosition() -- store current edit curs pos
 local start_time, end_time = r.GetSet_ArrangeView2(0, false, 0, 0, start_time, end_time) -- isSet false, screen_x_start, screen_x_end are 0 to get full arrange view coordinates // get time of the current Arrange scroll position to use to move the edit cursor away from the mouse cursor // https://forum.cockos.com/showthread.php?t=227524#2 the function has 6 arguments; screen_x_start and screen_x_end (3d and 4th args) are not return values, they are for specifying where start_time and stop_time should be on the screen when non-zero when isSet is true
 r.PreventUIRefresh(1)
