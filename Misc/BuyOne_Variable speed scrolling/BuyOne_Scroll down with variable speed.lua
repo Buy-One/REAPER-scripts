@@ -539,6 +539,8 @@ return SPEED
 end
 
 
+	if not r.GetTrack(0,0) then return r.defer(no_undo) end
+
 local is_new_value,scr_name,sectID,cmdID,mode,resol,val = r.get_action_context()
 local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Find')
 
