@@ -6,7 +6,6 @@ Version: 1.1
 Changelog: #Added support for fractional beats
 Licence: WTFPL
 REAPER: at least v5.962
-Extensions: SWS/S&M or js_ReaScriptAPI recommended
 About: 	Alternative to the native 'View: Scroll horizontally (MIDI CC relative/mousewheel)' 
 	action which scrolls by exactly 122 px regardless of the zoom level.
 	   
