@@ -9,9 +9,6 @@ REAPER: at least v5.962
 About: Alternative to the native 'View: Scroll view left' action
        which scrolls by exactly 488 px regardless of the zoom level.
 
-       The script's scroll unit is 16 px per execution which 
-       can be increased with the SPEED setting in the USER SETTINGS.
-
        Bind to left arrow key (optionally with modifiers).
 
 ]]
