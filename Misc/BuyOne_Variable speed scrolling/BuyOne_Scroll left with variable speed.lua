@@ -21,7 +21,7 @@ About: Alternative to the native 'View: Scroll view left' action
 -----------------------------------------------------------------------------
 
 -- Insert integer (whole number) between the quotes;
--- empty defaults to 16 px per one script execution,
+-- empty or invalid defaults to 16 px per one script execution,
 -- otherwise the value is used as a factor
 -- by which the default value (16 px) is multiplied
 SPEED = ""
