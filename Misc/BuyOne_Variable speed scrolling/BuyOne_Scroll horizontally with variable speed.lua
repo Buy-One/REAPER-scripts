@@ -96,7 +96,6 @@ BY_BEATS = #BY_BEATS:gsub(' ','') > 0
 local a,b = SPEED:match('(%d+)/(%d+)')
 SPEED = BY_BEATS and a and b and a/b or SPEED
 SPEED = (not tonumber(SPEED) or tonumber(SPEED) and SPEED+0 == 0 or not BY_BEATS and SPEED:match('%.')) and 1 or BY_BEATS and math.abs(SPEED) or math.floor(math.abs(SPEED)) -- ignoring non-numerals, zero, decimals when beats aren't enabled and negative values // negative numerals math.floor rounds down to a greater natural number, -1.1 is rounded down to -2
-
 PAGING_SCROLL = #PAGING_SCROLL:gsub(' ','') > 0
 MW_REVERSE = #MW_REVERSE:gsub(' ','') > 0
 
