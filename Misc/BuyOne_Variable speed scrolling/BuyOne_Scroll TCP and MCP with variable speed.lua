@@ -1,26 +1,41 @@
 --[[
-ReaScript name: BuyOne_Scroll vertically with variable speed.lua
+ReaScript name: BuyOne_Scroll TCP and MCP with variable speed.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Fixed scrolling by tracks
+	   #Fixed scrolling all the way down when BY_TRACKS setting is enabled
+	   #Added support for Mixer scrolling
+	   #Renamed the script
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
 About: Alternative to the native 'View: Scroll vertically (MIDI CC relative/mousewheel)' 
-       which doesn't allow variable scroll step size and scrolls exactly
-       by tracks although not very precise when tracks have different heights.
-
-       Bind to mousewheel (optionally with modifiers).  
-
-       With vertical mousewheel the default direction is up - up, down - down,
-       to reverse the direction enable MW_REVERSE setting in the USER SETTINGS
+	   which doesn't allow variable scroll step size and scrolls exactly
+	   by tracks although not very precise when tracks have different heights,
+	   and to the native Mixer scroll which also scrolls track by track.
+	   
+	   Bind to mousewheel (optionally with modifiers).  
+	   
+	   With vertical mousewheel the default direction is up - up, down - down
+	   for Arrange track list, and up - right, down - left for the Mixer.  
+	   To reverse the direction enable MW_REVERSE and MW_REVERSE_MIXER
+	   settings respectively in the USER SETTINGS.
 
 ]]
 
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
 -----------------------------------------------------------------------------
+
+-- if MIXER setting is enabled below, Arrange track list
+-- will only be scrolled if the mouse cursor is placed
+-- directly over it, otherwise it can be placed anywhere
+-- bar elements which respond to mousewheel natively,
+-- such as the Mixer and windows with a scrollbar while
+-- corresponding settings are enabled in
+-- Preferences -> Editing behavior -> Mouse -> Mousewheel behavior
+-- because the native mousewheel action will take over
 
 -- Insert integer (whole number) between the quotes;
 -- empty or invalid defaults to 8 px per one script execution,
@@ -37,7 +52,8 @@ SPEED = ""
 -- if neither SWS/S&M or js_ReaScriptAPI extension is installed
 -- will only work when the program window is maximized,
 -- may not work consistently and for a second will slightly affect UX
--- when the script retrieves new data if the program window configuration changes
+-- when the script retrieves new data
+-- if the program window configuration changes
 BY_TRACKS = ""
 
 -- Basically the same as the native
@@ -46,13 +62,55 @@ BY_TRACKS = ""
 -- between the quotes, disables SPEED value and instead
 -- makes the script scroll by the visible tracklist height;
 -- if neither SWS/S&M or js_ReaScriptAPI extension is installed
--- will only work when the program window is maximized,
+-- will only work when the program window is fully open,
 -- may not work consistently and for a second will slightly affect UX
--- when the script retrieves new data if the program window configuration changes
+-- when the script retrieves new data
+-- if the program window configuration changes
 PAGING_SCROLL = ""
 
--- To enable insert any alphanumeric character between the quotes
+-- Reverse the default mousewheel direction,
+-- to enable insert any alphanumeric character between the quotes
 MW_REVERSE = ""
+
+------------------------------------------------------------------
+
+-- If enabled by placing any alphanumeric character between the quotes
+-- Mixer scrolling will occur as long as the Mixer is visible
+-- and the mouse cursor is anywhere but over the track list in Arrange
+-- or over the Mixer itself depending on REAPER preferences:
+-- over the track list vertical scroll will take over,
+-- over the Mixer REAPER's own scroll action will take over if
+-- Preferences -> Editing behavior -> Mouse -> Mousewheel targets
+-- setting is 'Window under cursor'
+-- if the setting is 'Window with focus' then the script will work
+-- when the mouse is over the Mixer as long as the Mixer isn't focused
+-- that is MCP is not the last touched object
+MIXER = "1"
+
+-- The Mixer is only scrolled by tracks;
+-- insert any integer (whole number) between the quotes
+-- to increase the speed;
+-- if empty or invalid defaults to 1 track per mouswheel nudge,
+-- which is the same as REAPER's default Mixer mousewheel
+-- scroll step
+SPEED_MIXER = ""
+
+-- Same concept as above, scrolling occurs
+-- by the entire Mixer width whatever it is at the moment;
+-- if enabled by placing any alphanumeric character
+-- between the quotes, disables SPEED_MIXER setting above;
+-- if SWS/S&M or js_ReaScriptAPI extensions aren't installed
+-- will only be valid if the Mixer is docked at the bottom
+-- or at the top, otherwise ignored yielding to SPEED_MIXER
+-- setting above
+PAGING_SCROLL_MIXER = ""
+
+-- Same concept as above;
+-- the default is mousewheel up = right, mousewheel down = left
+-- which is opposite to REAPER's native Mixer scroll;
+-- to override the default insert any alphanumeric character
+-- between the quotes
+MW_REVERSE_MIXER = ""
 
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
@@ -68,6 +126,11 @@ local r = reaper
 
 function no_undo()
 do return end
+end
+
+
+function validate_sett(sett) -- validate setting, can be either a non-empty string or any number
+return type(sett) == 'string' and #sett:gsub(' ','') > 0 or type(sett) == 'number'
 end
 
 
@@ -388,7 +451,6 @@ function Get_Arrange_and_Header_Heights()
 -- fetches data from a temporary project tab, isn't ideal because of being way too intrusive, project loading process is usually visible
 -- BUT is the only workable solution in the absence of extensions after botched track zoom overhaul in 6.76 https://forum.cockos.com/showthread.php?t=278646
 -- if no SWS or js_ReaScriptAPI exstension only works if the program window is fully open, change in program window size isn't detected
--- only updates values when there's track or item under mouse cursor
 -- the project under which the script using this function is run must be already saved to a file in order for smooth closure of the temp project tab to work because this project file is used to close the temp tab without save prompt; for edge cases a dummy project file is  generated for this purpose
 -- relies on Error_Tooltip() function
 
@@ -517,6 +579,147 @@ return SPEED
 end
 
 
+function Get_TCP_Under_Mouse() -- based on the function Get_Object_Under_Mouse_Curs()
+-- r.GetTrackFromPoint() covers the entire track timeline hence isn't suitable for getting the TCP
+-- master track is supported
+local right_tcp = r.GetToggleCommandStateEx(0,42373) == 1 -- View: Show TCP on right side of arrange
+local curs_pos = r.GetCursorPosition() -- store current edit curs pos
+local start_time, end_time = r.GetSet_ArrangeView2(0, false, 0, 0, start_time, end_time) -- isSet false, screen_x_start, screen_x_end are 0 to get full arrange view coordinates // get time of the current Arrange scroll position to use to move the edit cursor away from the mouse cursor // https://forum.cockos.com/showthread.php?t=227524#2 the function has 6 arguments; screen_x_start and screen_x_end (3d and 4th args) are not return values, they are for specifying where start_time and end_time should be on the screen when non-zero when isSet is true // when the Arrange is scrolled all the way to the start the function ignores project start time offset and any offset start still treats as 0
+--local TCP_width = tonumber(cont:match('leftpanewid=(.-)\n')) -- only changes in reaper.ini when dragged
+r.PreventUIRefresh(1)
+local edge = right_tcp and start_time-5 or end_time+5
+r.SetEditCurPos(edge, false, false) -- moveview, seekplay false // to secure against a vanishing probablility of overlap between edit and mouse cursor positions in which case edit cursor won't move just like it won't if mouse cursor is over the TCP // +/-5 sec to move edit cursor beyond right/left edge of the Arrange view to be completely sure that it's far away from the mouse cursor // if start_time is 0 and there's negative project start offset the edit cursor is still moved to the very start, that is past 0
+r.Main_OnCommand(40514,0) -- View: Move edit cursor to mouse cursor (no snapping) // more sensitive than with snapping
+local tcp_under_mouse = r.GetCursorPosition() == edge or r.GetCursorPosition() == start_time -- if the TCP is on the right and the Arrange is scrolled all the way to the project start start_time-5 won't make the edit cursor move past project start hence the 2nd condition, but it can move past the right edge
+-- Restore orig. edit cursor pos
+r.SetEditCurPos(curs_pos, false, false) -- moveview, seekplay false // restore orig. edit curs pos
+r.PreventUIRefresh(-1)
+return tcp_under_mouse and r.GetTrackFromPoint(r.GetMousePosition())
+
+end
+
+
+function Get_Mixer_Width(wnd_ident_t)
+
+local GetToggle = r.GetToggleCommandStateEx
+	if GetToggle(0, 40078) == 0 then return end -- View: Toggle mixer visible // also if open along with other windows in a tabbed docker and its tab isn't selected
+local master_vis = GetToggle(0, 41209) == 1 -- Mixer: Master track visible
+-- OR
+-- local master_vis = r.GetMasterTrackVisibility()&2 == 2
+local master_right = GetToggle(0, 40389) == 1 -- Mixer: Toggle show master track on right side
+local master_docked = GetToggle(0, 41610) == 1 -- Mixer: Toggle master track in docked window
+-- OR
+-- local master_docked = r.GetToggleCommandStateEx(0, 41609) == 1 -- View: Toggle master track in separate/docked window
+local master_w = master_vis and not master_docked and r.GetMediaTrackInfo_Value(r.GetMasterTrack(0), 'I_MCPW') or 0
+local sws, js = r.APIExists('BR_Win32_GetMixerHwnd'), r.APIExists('JS_Window_Find')
+
+	if sws or js then -- if SWS/js_ReaScriptAPI ext is installed
+	local mixer = sws and r.BR_Win32_GetMixerHwnd() or js and r.JS_Window_Find('Mixer', false) -- exact is false because  in a floating docker it's 'Mixer (docked)'
+	local retval, rt, top, lt, bot = table.unpack(sws and {r.BR_Win32_GetWindowRect(mixer)} or js and {r.JS_Window_GetRect(mixer)})
+	return lt-rt-master_w
+	end
+
+	if GetToggle(0, 40083) == 0 then return end -- Mixer: Toggle docking in docker // Mixer isn't docked, with native API its window size cannot be determined
+
+-- without the extensions only respect docked Mixer, at the top/bottom its width will be considered equal full screen width, on the left/right it will be equal 1 track
+
+local ini = r.get_ini_file()
+	-- a floating docker cannot be split, only tabbed
+local found, dockermode_init
+	for line in io.lines(ini) do -- get Mixer dockermode
+		if line:match('REAPERdockpref') then found = 1
+		elseif found and line:match('^mixer=') then
+		dockermode_init = line:match('.+ (%d+)')
+		break end
+	end
+local pos
+	for line in io.lines(ini) do
+	pos = line:match('dockermode'..dockermode_init..'=(%d+)')
+		if pos then break end
+	end
+
+	if pos == '32768' or pos == '32770' then return end -- floating docker, no point to continue because with native API size of a floating Mixer window cannot be determined
+
+local t = {}
+	for line in io.lines(ini) do -- collect dockermodes assigned to the same pos as the Mixer
+	local dockermode = line:match('dockermode(%d+)='..pos)
+		if dockermode and dockermode ~= dockermode_init then t[dockermode] = '' end -- dummy field // if dockermodes are the same the windows aren't displayed in the docker in the split mode in which case part of the docker width occupied by a window doesn't change, in this case only one window can be visible at a time within the same docker space
+	end
+local splits_num, found = 1
+	for line in io.lines(ini) do -- count windows associated with the collected dockermodes and visible, that is which share the docker with the Mixer in split mode (different dockermodes, same position)
+		if line:match('REAPERdockpref') then found = 1
+		elseif found and line:match('%[.-%]') then break -- new section after 'REAPERdockpref'
+		elseif found then
+		local dockermode = line:match('.-=.+ (%d+)')
+			if t[dockermode] then
+			local wnd = line:match('(.+)=')
+				if wnd ~= 'mixer' and wnd_ident_t[wnd] then
+				local tab = wnd_ident_t[wnd]
+					if wnd == 'routing' then
+						for line in io.lines(ini) do
+							if line:match(tab[2]..'=1') then
+							splits_num = splits_num+1 break
+							end
+						end
+					elseif wnd == 'undo' or wnd == 'fxbrowser' then
+						if GetToggle(0, tab[2]) == 1 then
+						splits_num = splits_num+1
+						end
+					elseif wnd == 'midiedit' then
+						if tab[3] then splits_num = splits_num+1 end
+					elseif GetToggle(0, tab[3]) == 1 then
+					splits_num = splits_num+1
+					end
+				end
+			end
+		end
+	end
+local lt, top, rt, bot = r.my_getViewport(0, 0, 0, 0, 0, 0, 0, 0, true) -- true/1 - work area, false/0 - the entire screen // https://forum.cockos.com/showthread.php?t=195629#4 // !!!! MAY NOT WORK ON MAC since there Y axis starts at the bottom
+local mixer_w = rt/splits_num - master_w
+return mixer_w, pos -- pos will determine scroll type, full range of options when it's 0/2 (bottom/top) and by track only if it's 1/3 (left/right)
+end
+
+
+
+function Mixer_Scroll(mixer_w, pos, dir, SPEED_MIXER, PAGING_SCROLL_MIXER) -- args mixer_w & pos are return values from Get_Mixer_Width()
+
+local start_tr = r.GetMixerScroll()
+	if not start_tr then return end
+local start_tr_idx = r.CSurf_TrackToID(start_tr, true) -- mcpView true
+local st, fin, incr = table.unpack(dir > 0 and {start_tr_idx,r.CountTracks(0)-1,1} or dir < 0 and {start_tr_idx-2,0,-1}) -- starting from a track next or previous to the current leftmost
+local GetVal = r.GetMediaTrackInfo_Value
+	if pos == '1' or pos == '3' or not PAGING_SCROLL_MIXER or PAGING_SCROLL_MIXER and not mixer_w -- if extensions aren't installed mixer_w is nil when the Mixer floats in which case ignore PAGING_SCROLL_MIXER falling back to scrolling by tracks
+	then -- Mixer is docked on the left/right or scrolling is done by tracks
+	local track
+		for i = st, fin, incr do
+		local tr = r.GetTrack(0,i)
+			if GetVal(tr, 'B_SHOWINMIXER') == 1 then
+			track = tr
+			SPEED_MIXER = SPEED_MIXER-1
+			end
+			if SPEED_MIXER == 0 then
+			r.SetMixerScroll(tr)
+			return end
+		end
+		if track then r.SetMixerScroll(track) end -- if the loop didn't exit above because there weren't enough tracks to satisfy SPEED value, scroll to the last valid
+	elseif PAGING_SCROLL_MIXER and mixer_w then -- mixer_w will be nil if no extensions and Mixer is floating
+	local track
+		for i = st, fin, incr do
+		local tr = r.GetTrack(0,i)
+			if GetVal(tr, 'B_SHOWINMIXER') == 1 then
+			mixer_w = mixer_w - GetVal(tr, 'I_MCPW')
+			track = tr
+			end
+			if mixer_w <= 0 then
+			r.SetMixerScroll(tr)
+			return end
+		end
+	if track then r.SetMixerScroll(track) end -- if the loop didn't exit above because there weren't enough tracks to reduce mixer_w value, scroll to the last valid
+	end
+end
+
+
+
 function Mouse_Wheel_Direction(val, mousewheel_reverse) -- mousewheel_reverse is boolean
 --local is_new_value,filename,sectionID,cmdID,mode,resolution,val = r.get_action_context() -- val seems to not be able to co-exist with itself retrieved outside of the function, in such cases inside the function it's returned as 0
 	if mousewheel_reverse then
@@ -531,12 +734,24 @@ local is_new_value,scr_name,sectID,cmdID,mode,resol,val = r.get_action_context()
 local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Find')
 
 	if not r.GetTrack(0,0) then return r.defer(no_undo)
-	elseif not sws and not js and Is_Ctrl_And_Shift() then return r.defer(no_undo) -- prevent using script with Ctrl+Shift modifier when no extension is installed since it's likely to interfere with loading temporary project to get updated Arrange height from track max zoom as this will generate prompt to load project with fx offline; this will be true regardless of existence of any alternative shortcuts, if more than one is assigned, because it's impossible to determine which one is used to run the script // ONLY RELEVANT FOR DOWN/UP	
+	elseif not sws and not js and Is_Ctrl_And_Shift() then return r.defer(no_undo) -- prevent using script with Ctrl+Shift modifier when no extension is installed since it's likely to interfere with loading temporary project to get updated Arrange height from track max zoom as this will generate prompt to load project with fx offline; this will be true regardless of existence of any alternative shortcuts, if more than one is assigned, because it's impossible to determine which one is used to run the script
+	end
 
 SPEED = (not tonumber(SPEED) or tonumber(SPEED) and SPEED+0 == 0) and 1 or math.floor(math.abs(tonumber(SPEED))) -- ignoring non-numerals, zero, any decimal and negative values
-BY_TRACKS = #BY_TRACKS:gsub(' ','') > 0
-PAGING_SCROLL = #PAGING_SCROLL:gsub(' ','') > 0
-MW_REVERSE = #MW_REVERSE:gsub(' ','') > 0
+BY_TRACKS = validate_sett(BY_TRACKS)
+PAGING_SCROLL = validate_sett(PAGING_SCROLL)
+MW_REVERSE = validate_sett(MW_REVERSE)
+MIXER = validate_sett(MIXER)
+SPEED_MIXER = (not tonumber(SPEED_MIXER) or tonumber(SPEED_MIXER) and SPEED_MIXER+0 == 0) and 1 or math.floor(math.abs(tonumber(SPEED_MIXER))) -- ignoring non-numerals, zero, any decimal and negative values
+PAGING_SCROLL_MIXER = validate_sett(PAGING_SCROLL_MIXER)
+MW_REVERSE_MIXER = validate_sett(MW_REVERSE_MIXER)
+
+
+	if MIXER and not Get_TCP_Under_Mouse() then
+	local mixer_w, pos = Get_Mixer_Width(wnd_ident_t)
+	local dir = Mouse_Wheel_Direction(val, MW_REVERSE_MIXER)
+	Mixer_Scroll(mixer_w, pos, dir, SPEED_MIXER, PAGING_SCROLL_MIXER)
+	return r.defer(no_undo) end
 
 	if PAGING_SCROLL then
 	local diviation = r.GetExtState(cmdID, 'paging scroll diviation')
