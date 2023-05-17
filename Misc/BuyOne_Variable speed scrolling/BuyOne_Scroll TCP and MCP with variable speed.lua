@@ -10,17 +10,17 @@ Changelog: #Fixed scrolling by tracks
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
-About: Alternative to the native 'View: Scroll vertically (MIDI CC relative/mousewheel)' 
-	   which doesn't allow variable scroll step size and scrolls exactly
-	   by tracks although not very precise when tracks have different heights,
-	   and to the native Mixer scroll which also scrolls track by track.
-	   
-	   Bind to mousewheel (optionally with modifiers).  
-	   
-	   With vertical mousewheel the default direction is up - up, down - down
-	   for Arrange track list, and up - right, down - left for the Mixer.  
-	   To reverse the direction enable MW_REVERSE and MW_REVERSE_MIXER
-	   settings respectively in the USER SETTINGS.
+About:  Alternative to the native 'View: Scroll vertically (MIDI CC relative/mousewheel)' 
+	which doesn't allow variable scroll step size and scrolls exactly
+	by tracks although not very precise when tracks have different heights,
+	and to the native Mixer scroll which also scrolls track by track.
+
+	Bind to mousewheel (optionally with modifiers).  
+
+	With vertical mousewheel the default direction is up - up, down - down
+	for Arrange track list, and up - right, down - left for the Mixer.  
+	To reverse the direction enable MW_REVERSE and MW_REVERSE_MIXER
+	settings respectively in the USER SETTINGS.
 
 ]]
 
