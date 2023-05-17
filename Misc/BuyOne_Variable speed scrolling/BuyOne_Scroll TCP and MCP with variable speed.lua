@@ -81,10 +81,15 @@ MW_REVERSE = ""
 -- over the track list vertical scroll will take over,
 -- over the Mixer REAPER's own scroll action will take over if
 -- Preferences -> Editing behavior -> Mouse -> Mousewheel targets
--- setting is 'Window under cursor'
--- if the setting is 'Window with focus' then the script will work
--- when the mouse is over the Mixer as long as the Mixer isn't focused
--- that is MCP is not the last touched object
+-- setting is 'Window under cursor',
+-- if however the setting is 'Window with focus' the script will work
+-- when the mouse is over the Mixer as long as the Mixer isn't focused,
+-- that is MCP is not the last touched object,
+-- also regardless of the Preferences, if the Mixer is docked beside
+-- the track list, when the mouse is over the Mixer track list scroll 
+-- will take over, thus basically to scroll the Mixer the safest bet 
+-- is to place the mouse cursor within the Arrange view, 
+-- this works in all situations
 MIXER = "1"
 
 -- The Mixer is only scrolled by tracks;
