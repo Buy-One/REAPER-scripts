@@ -49,7 +49,8 @@ BY_BEATS = ""
 -- basically the same as the native
 PAGING_SCROLL = ""
 
--- To enable insert any alphanumeric character between the quotes 
+-- Reverse the default mousewheel direction,
+-- to enable insert any alphanumeric character between the quotes
 MW_REVERSE = ""
 
 -----------------------------------------------------------------------------
