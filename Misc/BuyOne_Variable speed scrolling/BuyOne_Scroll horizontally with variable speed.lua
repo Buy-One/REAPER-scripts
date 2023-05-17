@@ -3,8 +3,7 @@ ReaScript name: BuyOne_Scroll horizontally with variable speed.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
-Changelog: 
-	 1.1 #Added support for fractional beats
+Changelog: #Added support for fractional beats
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
