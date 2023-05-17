@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Scroll up with variable speed.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Added condition to prevent scrolling when the track list is hidden
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
@@ -98,6 +98,15 @@ r.MB([[The script name has been changed]]..br..Rep(7)..[[which renders it inoper
 [[   please restore the original name]]..br..[[  referring to the name in the header,]]..br..
 Rep(20)..[[or reinstall it.]], 'ERROR', 0)
 
+end
+
+
+function Is_TrackList_Hidden()
+-- after double click the the divider between it and the Arrange view
+	for line in io.lines(r.get_ini_file()) do
+	local leftpane = line:match('leftpanewid=(%d+)')
+		if leftpane then return leftpane == '0' end
+	end
 end
 
 
@@ -545,7 +554,7 @@ local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Fin
 
 local keyword = Invalid_Script_Name(scr_name,' down ',' up ')
 
-	if not keyword then return r.defer(no_undo)
+	if not keyword or Is_TrackList_Hidden() then return r.defer(no_undo)
 	elseif not sws and not js and Is_Ctrl_And_Shift() then return r.defer(no_undo) -- prevent using script with Ctrl+Shift modifier when no extension is installed since it's likely to interfere with loading temporary project to get updated Arrange height from track max zoom as this will generate prompt to load project with fx offline; this will be true regardless of existence of any alternative shortcuts, if more than one is assigned, because it's impossible to determine which one is used to run the script // ONLY RELEVANT FOR DOWN/UP
 	end
 
