@@ -23,7 +23,7 @@ About: Alternative to the native 'View: Scroll vertically (MIDI CC relative/mous
 -----------------------------------------------------------------------------
 
 -- Insert integer (whole number) between the quotes;
--- empty defaults to 8 px per one script execution,
+-- empty or invalid defaults to 8 px per one script execution,
 -- otherwise the value is used as a factor
 -- by which the default value (8 px) is multiplied
 SPEED = ""
