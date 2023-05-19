@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Scroll up with variable speed.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #Added condition to prevent scrolling when the track list is hidden
+Version: 1.2
+Changelog: 
+	v1.2 #Improved logic of updating Arrange window height data absent the extensions
+	v1.1 #Added condition to prevent scrolling when the track list is hidden
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
@@ -416,12 +418,8 @@ end
 
 
 function Get_Arrange_and_Header_Heights()
--- fetches data from a temporary project tab, isn't ideal because of being way too intrusive, project loading process is usually visible
--- BUT is the only workable solution in the absence of extensions after botched track zoom overhaul in 6.76 https://forum.cockos.com/showthread.php?t=278646
 -- if no SWS or js_ReaScriptAPI exstension only works if the program window is fully open, change in program window size isn't detected
--- only updates values when there's track or item under mouse cursor
--- the project under which the script using this function is run must be already saved to a file in order for smooth closure of the temp project tab to work because this project file is used to close the temp tab without save prompt; for edge cases a dummy project file is  generated for this purpose
--- relies on Error_Tooltip() function
+-- relies of Error_Tooltip() function
 
 local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Find')
 
@@ -431,7 +429,7 @@ local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Fin
 	-- trackview wnd height includes bottom scroll bar, which is equal to track 100% max height + 17 px, also changes depending on the header height and presence of the bottom docker
 	local arrange_wnd = sws and r.BR_Win32_FindWindowEx(r.BR_Win32_HwndToString(main_wnd), 0, '', 'trackview', false, true) -- search by window name // OR r.BR_Win32_FindWindowEx(r.BR_Win32_HwndToString(main_wnd), 0, 'REAPERTrackListWindow', '', true, false) -- search by window class name
 	or js and r.JS_Window_Find('trackview', true) -- exact true // OR r.JS_Window_FindChildByID(r.GetMainHwnd(), 1000)
-	local retval, rt1, top1, lt1, bot1 = table.unpack(sws and {r.BR_Win32_GetWindowRect(arrange_wnd)}
+	local retval, rt1, top1, lt1, bot1 = table.unpack(sws and {r.BR_Win32_GetWindowRect(arrange_wnd)} 
 	or js and {r.JS_Window_GetRect(arrange_wnd)})
 	local retval, rt2, top2, lt2, bot2 = table.unpack(sws and {r.BR_Win32_GetWindowRect(main_wnd)} or js and {r.JS_Window_GetRect(main_wnd)})
 	local top2 = top2 == -4 and 0 or top2 -- top2 can be negative (-4) if window is maximized
@@ -439,13 +437,9 @@ local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Fin
 	return arrange_h, header_h, wnd_h_offset -- arrange_h tends to be 1 px smaller than the one obtained via calculations following 'View: Toggle track zoom to maximum height' when extensions aren't installed, using 16 px instead of 17 fixes the discrepancy
 	end
 
--- Item condition isn't necessary, works perfectly without it // on the other hand it makes sure that there's at least one track so that ref_tr var below is valid
-local x, y = r.GetMousePosition() -- the coordinates are absolute, relative to the full screen size
---local item, take = r.GetItemFromPoint(x, y, false) -- allow_locked false // item is needed to have some anchor to restore scroll state after track heights restoration, item under cursor is 100% within view so is a good reference
-local track, info = r.GetTrackFromPoint(x, y)
 local lt, top, rt, bot = r.my_getViewport(0, 0, 0, 0, 0, 0, 0, 0, true) -- true/1 - work area, false/0 - the entire screen // https://forum.cockos.com/showthread.php?t=195629#4 // !!!! MAY NOT WORK ON MAC since there Y axis starts at the bottom
 local retval, arrange_h = r.GetProjExtState(0,'ARRANGE HEIGHT','arrange_height')
-local arrange_h = not retval and r.GetExtState('ARRANGE HEIGHT','arrange_height') or arrange_h
+local arrange_h = not retval and r.GetExtState('ARRANGE HEIGHT','arrange_height') or arrange_h	
 
 -- Update/evaluate data for both docks at once so that dock_change is only true once
 -- if the functions are placed in sequence like 'or A or B', the data is updated/evaluated in sequence
@@ -455,62 +449,65 @@ local arrange_h = not retval and r.GetExtState('ARRANGE HEIGHT','arrange_height'
 local dock_change = Detect_Docker_Pane_Change(wnd_ident_t, 0)
 local dock_change = Detect_Docker_Pane_Change(wnd_ident_t, 2) or dock_change
 
+	-- track cond can be added after adding a user setting to only scroll when cursor is over the tracklist in a version of the script working both ways and supposed to be bound to the mousewheel, namely right/left and down/up --- DONE OUTSIDE WITH Get_TCP_Under_Mouse()
 	if #arrange_h == 0 or dock_change then -- pos is 0 (bottom) and 2 (top) because properties of both dockers affect Arrange height relevant in this application
-
+	
+	Error_Tooltip(' \n\n          updating data \n\n sorry about the artefacts \n\n ', 1, 1) -- caps, spaced true
+	
 	-- get 'Maximum vertical zoom' set at Preferences -> Editing behavior, which affects max track height set with 'View: Toggle track zoom to maximum height', introduced in build 6.76
-
-	Error_Tooltip(' \n\n\t     updating data \n\n sorry about the interruption \n\n ', 1, 1) -- caps, spaced true
-
 	local cont
 		if tonumber(r.GetAppVersion():match('(.+)/')) >= 6.76 then
 		local f = io.open(r.get_ini_file(),'r')
 		cont = f:read('*a')
 		f:close()
 		end
-
 	local max_zoom = cont and cont:match('maxvzoom=([%.%d]+)\n') -- min value is 0.125 (13%) which is roughly 1/8th, max is 8 (800%)
-	local max_zoom = not max_zoom and 100 or max_zoom*100 -- ignore in builds prior to 6.76 by assigning 100 so that when track height is divided by 100 and multiplied by 100% nothing changes, otherwise convert to conventional percentage value; if 100 can be divided by the percentage (max_zoom) value without remainder (such as 50, 25, 20) the resulting value is accurate, otherwise there's ±1 px diviation, because the actual track height in pixels isn't fractional like the one obtained through calculation therefore some part is lost
-
-	-- Get Arrange and window header height
-	local cur_proj, projfn = r.EnumProjects(-1) -- store cur project pointer
-	-- r.PreventUIRefresh(1) -- PREVENTS GetMediaTrackInfo_Value RETURN VALUE PROBABLY BECAUSE THE HIGHT ISN'T UPDATED AFTER ACTION
-	r.Main_OnCommand(41929, 0) -- New project tab (ignore default template) // open new proj tab
-
-	-- USEFUL to be able to smoothly close temp project tab when the user's current session doesn't have an associated project file which is supposed to be used for that purpose
-	local _, scr_name, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
-	local dummy_proj = scr_name:match('.+[\\/]')..'BuyOne_dummy project (do not rename).RPP'
-		if projfn == '' and not r.file_exists(dummy_proj) then -- create a dummy project file next to the script
-		local f = io.open(dummy_proj,'w')
-		f:write('<REAPER_PROJECT\n>')
-		f:close()
+	local max_zoom = not max_zoom and 100 or math.floor(max_zoom*100+0.5) -- ignore in builds prior to 6.76 by assigning 100 so that when track height is divided by 100 and multiplied by 100% nothing changes, otherwise convert to conventional percentage value
+	
+	-- Store track heights
+	local t = {}
+		for i=0, r.CountTracks(0)-1 do
+		local tr = r.GetTrack(0,i)
+		t[#t+1] = r.GetMediaTrackInfo_Value(tr, 'I_TCPH')
 		end
+	local ref_tr = r.GetTrack(0,0) -- reference track (any) to scroll back to in order to restore scroll state after track heights restoration
+	local ref_tr_y = r.GetMediaTrackInfo_Value(ref_tr, 'I_TCPY')
 
-	local projfn = projfn == '' and dummy_proj or projfn -- if no saved project in the current tab, use dummy for the new tab
-
-	r.InsertTrackAtIndex(0, false) -- wantDefaults false
-	local ref_tr = r.GetTrack(0,0)
-	--	if r.GetToggleCommandStateEx(0,40113) == 0 then
-		r.Main_OnCommand(40113, 0) -- View: Toggle track zoom to maximum height (i.e. height of the Arrange) // selection isn't needed, all are toggled
-	--	end
+	-- Get the data
+	-- When the actions are applied the UI jolts, but PreventUIRefresh() is not suitable because it blocks the function GetMediaTrackInfo_Value() from getting the return value
+	-- toggle to minimum and to maximum height are mutually exclusive // selection isn't needed, all are toggled
+	r.Main_OnCommand(40110, 0) -- View: Toggle track zoom to minimum height
+	r.Main_OnCommand(40113, 0) -- View: Toggle track zoom to maximum height
 	local tr_h = r.GetMediaTrackInfo_Value(ref_tr, 'I_TCPH')/max_zoom*100 -- not including envelopes, action 40113 doesn't take envs into account; calculating track height as if it were zoomed out to the entire Arrange height by taking into account 'Maximum vertical zoom' setting at Preferences -> Editing behavior
 	local tr_h = math.floor(tr_h+0.5) -- round; if 100 can be divided by the percentage (max_zoom) value without remainder (such as 50, 25, 20) the resulting value is integer, otherwise the calculated Arrange height is fractional because the actual track height in pixels is integer which is not what it looks like after calculation based on percentage (max_zoom) value, which means the value is rounded in REAPER internally because pixels cannot be fractional and the result is ±1 px diviation compared to the Arrange height calculated at percentages by which 100 can be divided without remainder
-
+	r.Main_OnCommand(40110, 0) -- View: Toggle track zoom to minimum height
 	r.SetExtState('ARRANGE HEIGHT','arrange_height', tr_h, false) -- persist false
-	r.SetProjExtState(cur_proj, 'ARRANGE HEIGHT','arrange_height', tr_h)
+	r.SetProjExtState(0, 'ARRANGE HEIGHT','arrange_height', tr_h)
 
-	-- Close temp project tab without save prompt; when a freshly opened project closes there's no prompt
-	-- the problem may emerge if the script is bound to a shortcut where Ctrl & Shift are used because this modifier combination is used to generate a prompt to load project with fx offlined, so the script shortcut must not include this combination which is ensured with the function Is_Ctrl_And_Shift(); in reaper-kb.ini KEY codes Ctrl+Shift code (the first number) seems to be consistently 13, Ctrl+Alt+Shift is 29
-	r.Main_openProject('noprompt:'..projfn) -- load proj in the temp tab without save prompt
-	r.Main_OnCommand(40860, 0) -- Close current (temp) project tab
-	r.SelectProjectInstance(cur_proj) -- re-open orig proj tab
-
-	local header_h = bot-tr_h-23 -- size between program window top edge and Arrange // 18 is horiz scrollbar height (regardless of the theme) and 'bot' / 'window_h' value is greater by 4 px than the actual program window height hence 18+4 = 22 has to be subtracted + 1 more pixel for greater precision in targeting item top/bottom edges
+	-- Restore
+		for k, height in ipairs(t) do -- restore track heights
+		local tr = r.GetTrack(0,k-1)
+		r.SetMediaTrackInfo_Value(tr, 'I_HEIGHTOVERRIDE', height)
+		end
+	r.TrackList_AdjustWindows(true) -- isMinor is true // updates TCP only https://forum.cockos.com/showthread.php?t=208275
+	
+	r.PreventUIRefresh(1)
+	r.CSurf_OnScroll(0, -1000) -- scroll all the way up as a preliminary measure to simplify scroll pos restoration because in this case you only have to scroll in one direction so no need for extra conditions
+	local Y_init = 0
+		repeat -- restore track scroll
+		r.CSurf_OnScroll(0, 1) -- 1 vert scroll unit is 8 px	
+		local Y = r.GetMediaTrackInfo_Value(ref_tr, 'I_TCPY')
+			if Y ~= Y_init then Y_init = Y else break end -- when the track list is scrolled all the way down and the script scrolls up the loop tends to become endless because for some reason the 1st track whose Y coord is used as a reference can't reach its original pos, this happens regardless of the preliminary scroll direction above, therefore exit loop if it's got stuck, i.e. Y value hasn't changed in the next cycle; this doesn't affect the actual scrolling result, tracks end up where they should // unlike track size value, track Y coordinate accessibility for monitoring isn't affected by PreventUIRefresh()
+		until Y <= ref_tr_y
+	r.PreventUIRefresh(-1)
+	
+	local header_h = bot - tr_h - 23 -- size between program window top edge and Arrange // 18 is horiz scrollbar height (regardless of the theme) and 'bot / window_h' value is greater by 4 px than the actual program window height hence 18+4 = 22 has to be subtracted + 1 more pixel for greater precision in targeting item top/bottom edges
 	return tr_h, header_h, 0 -- tr_h represents Arrange height, 0 is window height offset, that is screen 0 Y coordinate // return updated data
 
-	else
-
+	else 
+	
 	return tonumber(arrange_h), bot-arrange_h-23, 0 -- return previously stored arrange_h, header height and window height offset which is 0 when no extension is installed, that is screen 0 Y coordinate // calculation explication see above
-
+	
 	end
 
 end
