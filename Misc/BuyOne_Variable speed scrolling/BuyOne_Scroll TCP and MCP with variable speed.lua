@@ -2,9 +2,9 @@
 ReaScript name: BuyOne_Scroll TCP and MCP with variable speed.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: v1.2
-	   #Improved logic of updating Arrange window height data absent the extensions
+Version: 1.3
+Changelog: v1.3 Fixed scrolling by tracks		
+	   v1.2 #Improved logic of updating Arrange window height data absent the extensions
 	   v1.1
 	   #Fixed scrolling by tracks
 	   #Fixed scrolling all the way down when BY_TRACKS setting is enabled
@@ -766,7 +766,7 @@ MW_REVERSE_MIXER = validate_sett(MW_REVERSE_MIXER)
 	local diviation = r.GetExtState(cmdID, 'by-track diviation')
 	local diviation = #diviation > 0 and diviation or 0
 	local arrange_h = Get_Arrange_and_Header_Heights() -- only the 1st return value is used, arrange height
-	local down, up = MW_REVERSE and dir < 0 or dir > 0, MW_REVERSE and dir > 0 or dir < 0
+	local down, up = MW_REVERSE and val < 0 or val > 0, MW_REVERSE and val > 0 or val < 0
 	local tracks_h = Get_Combined_Tracks_Height(down, up, arrange_h, SPEED)/8
 	SPEED = Calc_and_Store_Diviation(tracks_h, diviation, cmdID, 'by-track diviation')
 	end
