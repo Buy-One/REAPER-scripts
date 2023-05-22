@@ -59,16 +59,19 @@ SPEED = ""
 -- if the program window configuration changes
 BY_TRACKS = ""
 
--- Basically the same as the native
--- 'View: Scroll view vertically one page (MIDI CC relative/mousewheel)';
--- if enabled by placing any alphanumeric character
--- between the quotes, disables SPEED value and instead
--- makes the script scroll by the visible tracklist height;
+-- Enable by placing any alphanumeric character between the quotes,
+-- only relevant for SPEED setting above,
+-- if enabled, the numeric value of the SPEED setting becomes
+-- the number of tracks to scroll by rather than a factor
+-- to multiply pixels by, empty SPEED setting in this case equals 1;
+-- doesn't have any effect if PAGING_SCROLL setting is enabled below;
 -- if neither SWS/S&M or js_ReaScriptAPI extension is installed
--- will only work when the program window is fully open,
+-- will only work when the program window is maximized,
 -- may not work consistently and for a second will slightly affect UX
--- when the script retrieves new data
--- if the program window configuration changes
+-- when the script retrieves new data if the program window configuration changes;
+-- when scrolling towards the end of the track list tracks
+-- are counted (using SPEED setting) from the bottom down, 
+-- when scrolling towards its start they're counted from the top up
 PAGING_SCROLL = ""
 
 -- Reverse the default mousewheel direction,
