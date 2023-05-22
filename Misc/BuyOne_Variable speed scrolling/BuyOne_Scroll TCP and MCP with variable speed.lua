@@ -53,7 +53,7 @@ SPEED = ""
 -- to multiply pixels by, empty SPEED setting in this case equals 1;
 -- doesn't have any effect if PAGING_SCROLL setting is enabled below;
 -- if neither SWS/S&M or js_ReaScriptAPI extension is installed
--- will only work when the program window is maximized,
+-- will only work when the program window is fully open,
 -- may not work consistently and for a second will slightly affect UX
 -- when the script retrieves new data
 -- if the program window configuration changes
