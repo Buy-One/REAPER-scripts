@@ -56,7 +56,10 @@ SPEED = ""
 -- will only work when the program window is fully open,
 -- may not work consistently and for a second will slightly affect UX
 -- when the script retrieves new data
--- if the program window configuration changes
+-- if the program window configuration changes;
+-- when scrolling towards the end of the track list tracks
+-- are counted (using SPEED setting) from the bottom down, 
+-- when scrolling towards its start they're counted from the top up
 BY_TRACKS = ""
 
 -- Enable by placing any alphanumeric character between the quotes,
@@ -68,10 +71,7 @@ BY_TRACKS = ""
 -- if neither SWS/S&M or js_ReaScriptAPI extension is installed
 -- will only work when the program window is maximized,
 -- may not work consistently and for a second will slightly affect UX
--- when the script retrieves new data if the program window configuration changes;
--- when scrolling towards the end of the track list tracks
--- are counted (using SPEED setting) from the bottom down, 
--- when scrolling towards its start they're counted from the top up
+-- when the script retrieves new data if the program window configuration changes
 PAGING_SCROLL = ""
 
 -- Reverse the default mousewheel direction,
