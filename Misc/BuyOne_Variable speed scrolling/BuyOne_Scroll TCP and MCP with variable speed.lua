@@ -109,7 +109,8 @@ SPEED_MIXER = ""
 -- between the quotes, disables SPEED_MIXER setting above;
 -- if SWS/S&M or js_ReaScriptAPI extensions aren't installed
 -- will only be valid if the Mixer is docked at the bottom
--- or at the top, otherwise ignored yielding to SPEED_MIXER
+-- or at the top and will only work accurately if the program 
+-- window is fully open, otherwise ignored yielding to SPEED_MIXER
 -- setting above
 PAGING_SCROLL_MIXER = ""
 
