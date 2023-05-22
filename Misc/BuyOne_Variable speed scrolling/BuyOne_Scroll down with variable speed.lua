@@ -42,7 +42,8 @@ SPEED = ""
 -- if neither SWS/S&M or js_ReaScriptAPI extension is installed
 -- will only work when the program window is fully open,
 -- may not work consistently and for a second will slightly affect UX
--- when the script retrieves new data if the program window configuration changes
+-- when the script retrieves new data if the program window configuration changes;
+-- the tracks are counted (using SPEED setting) from the bottom down
 BY_TRACKS = ""
 
 -- Alternative to the native
