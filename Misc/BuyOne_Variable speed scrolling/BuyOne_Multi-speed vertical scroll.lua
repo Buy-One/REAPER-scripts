@@ -10,7 +10,7 @@ Extensions: SWS/S&M or js_ReaScriptAPI recommended
 About: Alternative to the native 'View: Scroll vertically (MIDI CC relative/mousewheel)' 
        which doesn't allow variable scroll step size and scrolls exactly
        by tracks although not very precise when tracks have different heights,
-	     and certainly doesn't support multi-speed functionality.
+       and certainly doesn't support multi-speed functionality.
 
        The script offers 4 scroll speed presets. The active scroll preset is
        determined by the position of the mouse cursor within the Arrange view, 
@@ -128,7 +128,7 @@ PAGING_SCROLL_1 = ""
 -- with a single mouswheel nudge;
 -- if enabled by placing any alphanumeric character
 -- between the quotes, disables all preceeding settings
-FULL_SCROLL_1 = "1"
+FULL_SCROLL_1 = ""
 
 --------------------------------------------------
 
@@ -138,10 +138,10 @@ FULL_SCROLL_1 = "1"
 SPEED_2 = ""
 BY_TRACKS_2 = ""
 PAGING_SCROLL_2 = ""
-FULL_SCROLL_2 = "1"
+FULL_SCROLL_2 = ""
 
 SPEED_3 = ""
-BY_TRACKS_3 = "1"
+BY_TRACKS_3 = ""
 PAGING_SCROLL_3 = ""
 FULL_SCROLL_3 = ""
 
