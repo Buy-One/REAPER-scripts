@@ -163,46 +163,6 @@ end
 local r = reaper
 
 
---[[TESTING
-
-function validate_settings(...)
-local t = {...}
-	for k, sett in ipairs(t) do
-		if type(sett) == 'string' and #sett:gsub(' ','') > 0
-		or type(sett) == 'number' then
-		t[k] = true
-		else
-		t[k] = false
-		end
-	end
-return table.unpack(t)
-end
-
-sett1, sett2, sett3 = "",""," 1"
-
-sett1, sett2, sett3 = validate_settings(sett1, sett2, sett3)
---Msg(sett1) Msg(sett2) Msg(sett3)
-
---r.SetMediaTrackInfo_Value(r.GetSelectedTrack(0,0),'I_HEIGHTOVERRIDE', 1)
---r.TrackList_AdjustWindows(true)
-
-local start_time, end_time = r.GetSet_ArrangeView2(0, false, 0, 0, start_time, end_time)
-
-Msg(start_time) Msg(end_time)
-
-r.SetEditCurPos(8, false, false)
-Msg(r.GetCursorPosition(), 'cursor')
-
---Msg(r.GetMediaItemInfo_Value(r.GetSelectedMediaItem(0,0), 'D_POSITION'))
-
-Msg(r.GetMediaTrackInfo_Value(r.GetSelectedTrack(0,0), 'I_TCPH'))
-
-do return end
-
---]]
-
-
-
 function no_undo()
 do return end
 end
@@ -570,7 +530,7 @@ local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Fin
 	-- trackview wnd height includes bottom scroll bar, which is equal to track 100% max height + 17 px, also changes depending on the header height and presence of the bottom docker
 	local arrange_wnd = sws and r.BR_Win32_FindWindowEx(r.BR_Win32_HwndToString(main_wnd), 0, '', 'trackview', false, true) -- search by window name // OR r.BR_Win32_FindWindowEx(r.BR_Win32_HwndToString(main_wnd), 0, 'REAPERTrackListWindow', '', true, false) -- search by window class name
 	or js and r.JS_Window_Find('trackview', true) -- exact true // OR r.JS_Window_FindChildByID(r.GetMainHwnd(), 1000)
-	local retval, rt1, top1, lt1, bot1 = table.unpack(sws and {r.BR_Win32_GetWindowRect(arrange_wnd)}
+	local retval, rt1, top1, lt1, bot1 = table.unpack(sws and {r.BR_Win32_GetWindowRect(arrange_wnd)} 
 	or js and {r.JS_Window_GetRect(arrange_wnd)})
 	local retval, rt2, top2, lt2, bot2 = table.unpack(sws and {r.BR_Win32_GetWindowRect(main_wnd)} or js and {r.JS_Window_GetRect(main_wnd)})
 	local top2 = top2 == -4 and 0 or top2 -- top2 can be negative (-4) if window is maximized
@@ -580,7 +540,7 @@ local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Fin
 
 local lt, top, rt, bot = r.my_getViewport(0, 0, 0, 0, 0, 0, 0, 0, true) -- true/1 - work area, false/0 - the entire screen // https://forum.cockos.com/showthread.php?t=195629#4 // !!!! MAY NOT WORK ON MAC since there Y axis starts at the bottom
 local retval, arrange_h = r.GetProjExtState(0,'ARRANGE HEIGHT','arrange_height')
-local arrange_h = not retval and r.GetExtState('ARRANGE HEIGHT','arrange_height') or arrange_h
+local arrange_h = not retval and r.GetExtState('ARRANGE HEIGHT','arrange_height') or arrange_h	
 
 -- Update/evaluate data for both docks at once so that dock_change is only true once
 -- if the functions are placed in sequence like 'or A or B', the data is updated/evaluated in sequence
@@ -592,9 +552,9 @@ local dock_change = Detect_Docker_Pane_Change(wnd_ident_t, 2) or dock_change
 
 	-- track cond can be added after adding a user setting to only scroll when cursor is over the tracklist in a version of the script working both ways and supposed to be bound to the mousewheel, namely right/left and down/up --- DONE OUTSIDE WITH Get_TCP_Under_Mouse()
 	if #arrange_h == 0 or dock_change then -- pos is 0 (bottom) and 2 (top) because properties of both dockers affect Arrange height relevant in this application
-
+	
 	Error_Tooltip(' \n\n          updating data \n\n sorry about the artefacts \n\n ', 1, 1) -- caps, spaced true
-
+	
 	-- get 'Maximum vertical zoom' set at Preferences -> Editing behavior, which affects max track height set with 'View: Toggle track zoom to maximum height', introduced in build 6.76
 	local cont
 		if tonumber(r.GetAppVersion():match('(.+)/')) >= 6.76 then
@@ -604,7 +564,7 @@ local dock_change = Detect_Docker_Pane_Change(wnd_ident_t, 2) or dock_change
 		end
 	local max_zoom = cont and cont:match('maxvzoom=([%.%d]+)\n') -- min value is 0.125 (13%) which is roughly 1/8th, max is 8 (800%)
 	local max_zoom = not max_zoom and 100 or math.floor(max_zoom*100+0.5) -- ignore in builds prior to 6.76 by assigning 100 so that when track height is divided by 100 and multiplied by 100% nothing changes, otherwise convert to conventional percentage value
-
+	
 	-- Store track heights
 	local t = {}
 		for i=0, r.CountTracks(0)-1 do
@@ -631,24 +591,24 @@ local dock_change = Detect_Docker_Pane_Change(wnd_ident_t, 2) or dock_change
 		r.SetMediaTrackInfo_Value(tr, 'I_HEIGHTOVERRIDE', height)
 		end
 	r.TrackList_AdjustWindows(true) -- isMinor is true // updates TCP only https://forum.cockos.com/showthread.php?t=208275
-
+	
 	r.PreventUIRefresh(1)
 	r.CSurf_OnScroll(0, -1000) -- scroll all the way up as a preliminary measure to simplify scroll pos restoration because in this case you only have to scroll in one direction so no need for extra conditions
 	local Y_init = 0
 		repeat -- restore track scroll
-		r.CSurf_OnScroll(0, 1) -- 1 vert scroll unit is 8 px
+		r.CSurf_OnScroll(0, 1) -- 1 vert scroll unit is 8 px	
 		local Y = r.GetMediaTrackInfo_Value(ref_tr, 'I_TCPY')
 			if Y ~= Y_init then Y_init = Y else break end -- when the track list is scrolled all the way down and the script scrolls up the loop tends to become endless because for some reason the 1st track whose Y coord is used as a reference can't reach its original pos, this happens regardless of the preliminary scroll direction above, therefore exit loop if it's got stuck, i.e. Y value hasn't changed in the next cycle; this doesn't affect the actual scrolling result, tracks end up where they should // unlike track size value, track Y coordinate accessibility for monitoring isn't affected by PreventUIRefresh()
 		until Y <= ref_tr_y
 	r.PreventUIRefresh(-1)
-
+	
 	local header_h = bot - tr_h - 23 -- size between program window top edge and Arrange // 18 is horiz scrollbar height (regardless of the theme) and 'bot / window_h' value is greater by 4 px than the actual program window height hence 18+4 = 22 has to be subtracted + 1 more pixel for greater precision in targeting item top/bottom edges
 	return tr_h, header_h, 0 -- tr_h represents Arrange height, 0 is window height offset, that is screen 0 Y coordinate // return updated data
 
-	else
-
+	else 
+	
 	return tonumber(arrange_h), bot-arrange_h-23, 0 -- return previously stored arrange_h, header height and window height offset which is 0 when no extension is installed, that is screen 0 Y coordinate // calculation explication see above
-
+	
 	end
 
 end
@@ -739,10 +699,8 @@ local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Fin
 
 MW_REVERSE = #MW_REVERSE:gsub(' ','') > 0
 HORIZ_ZONES = #HORIZ_ZONES:gsub(' ','') > 0
-
+	
 SPEED_1, SPEED_2, SPEED_3, SPEED_4 = validate_SPEED(SPEED_1, SPEED_2, SPEED_3, SPEED_4)
-
---Msg(SPEED_3)
 
 	if not SPEED_1 and not SPEED_2 and not SPEED_3 and not SPEED_4 then
 	Error_Tooltip('\n\n no enabled scroll speed presets\n\n', 1, 1) -- caps, spaced true
@@ -764,57 +722,33 @@ local preset_t = {SPEED_2, SPEED_3, SPEED_4, truth={}} -- excluding SPEED_1 beca
 			if pres1 and (SPEED_1 or k2 < k1 and pres2) then -- k2 < k1 to prevent evaluation against itself, doesn't apply to the very 1st entry because in this case k2 == k1, so it's only evaluated against SPEED_1 as the only preset which precedes it
 			preset_t.truth[k1] = true
 			break end
-	--	preset_t.truth[k1] = pres1 and (SPEED_1 or k2 < k1 and pres2) or preset_t.truth[k1] -- will be collated with itself before exiting but it's not a problem, needed that for the first field SPEED_2 otherwise this loop would exit before it was evaluated
---Msg(preset_t.truth[k1])
 			if k2 == k1 then break end -- exit as soon as the same preset entry is selected to prevent evaluation against next preset
 		end
 	end
 
---Msg(#preset_t.truth)
 
 local right_tcp = r.GetToggleCommandStateEx(0,42373) == 1 -- View: Show TCP on right side of arrange
 local st, fin, step = table.unpack( (not right_tcp or right_tcp and HORIZ_ZONES) and {1, #preset_t.truth, 1} or right_tcp and {#preset_t.truth, 1, -1}) -- store presets in reveresed order if TCP is located on the right side of the Arrange; must be reversed since zone allocation calculation depends on the table index a preset is stored at, i.e. to allocate 4th preset to the left side of the Arrange it must be stored at index 1; when HORIZ_ZONES setting is enabled the zone order isn't affected by the TCP position, they still flow from top to bottom
 local zones = {}
---[[OLD, doesn't account for TCP on the right side of the Arrange
-	for k, truth in ipairs(preset_t.truth) do
-		if truth then zones[#zones+1] = 'SPEED_'..(k+1) end -- store preset name to be used as a key, +1 to match the preset number // creating an indexed table to be able to traverse it in ascending order below while storing zone ranges
-	end
---]]
 	for i = st, fin, step do
 	local truth = preset_t.truth[i]
 		if truth then zones[#zones+1] = 'SPEED_'..(i+1) end -- store preset name to be used as a key, +1 to match the preset number // creating an indexed table to be able to traverse it in ascending order below while storing zone ranges
 	end
-
-Msg(#zones, 'zones')
---do return end
 
 local start_time, end_time = Get_Arrange_Len()
 local arrange_h, header_h, wnd_h_offset = table.unpack(HORIZ_ZONES and {Get_Arrange_and_Header_Heights()} or {}) -- DATA FOR HORIZONTAL ZONES
 local zone_size = not HORIZ_ZONES and (end_time-start_time)/#zones or arrange_h/#zones
 
 	for k, preset in ipairs(zones) do -- associate preset name as a key with zone bounds
---Msg(preset)
-	zones[preset] = not HORIZ_ZONES and {start=start_time+zone_size*(k-1), fin=start_time+zone_size*k}
+	zones[preset] = not HORIZ_ZONES and {start=start_time+zone_size*(k-1), fin=start_time+zone_size*k} 
 	or {start=zone_size*(k-1), fin=zone_size*k} -- MAY NOT WORK ON MAC since there Y axis starts at the bottom
 	end
-
---[[UNNECESSARY alternative
-local st, fin, step = table.unpack(not right_tcp and {1, #zones, 1} or {#zones, 1, -1}) -- allocate zones in reverse if TCP is located on the right side of the Arrange
-	for i = st, fin, step do
-	local preset = zones[i]
-	zones[preset] = {start=start_time+zone_size*(i-1), fin=start_time+zone_size*i}
-	end
---]]
-
---Msg(zones.SPEED_3)
 
 local TCP = Get_Mouse_TimeLine_Pos() -- targeting the TCP (no table argument)
 --local pres1, pres2, pres3, pres4 = SPEED_1 and TCP, SPEED_2 and TCP, SPEED_3 and TCP, SPEED_4 and TCP
 local TCP = SPEED_1 and TCP and 'SPEED_1' or SPEED_2 and TCP and 'SPEED_2' or SPEED_3 and TCP and 'SPEED_3' or SPEED_4 and TCP and 'SPEED_4'
 local pres1, pres2, pres3, pres4 = TCP == 'SPEED_1', TCP == 'SPEED_2', TCP == 'SPEED_3', TCP == 'SPEED_4'
 local disabled = pres1 and SPEED_1 == 0 or pres2 and SPEED_2 == 0 or pres3 and SPEED_3 == 0 or pres4 and SPEED_4 == 0 -- evaluate if there's a disabled preset (only relevant for the 1st in the list with SPEED_n var being valid) so that no scrolling will take place when the mouse cursor is over the TCP
-
-Msg(disabled, 'disabled')
 
 function Paging_Scroll(cmdID)
 local diviation = r.GetExtState(cmdID, 'paging scroll diviation')
@@ -828,7 +762,7 @@ local diviation = r.GetExtState(cmdID, 'by-track diviation')
 local diviation = #diviation > 0 and diviation or 0
 local arrange_h = Get_Arrange_and_Header_Heights() -- only the 1st return value is used, arrange height
 local down, up = MW_REVERSE and val < 0 or val > 0, MW_REVERSE and val > 0 or val < 0
-local tracks_h = Get_Combined_Tracks_Height(down, up, arrange_h, SPEED)/8
+local tracks_h = Get_Combined_Tracks_Height(down, up, arrange_h, SPEED)/8		
 return Calc_and_Store_Diviation(tracks_h, diviation, cmdID, 'by-track diviation')
 end
 
@@ -863,9 +797,9 @@ end
 		SPEED = By_Tracks_Scroll(cmdID, val, SPEED)
 		else
 		SPEED = SPEED_1 or SPEED_2 or SPEED_3 or SPEED_4
-		end
+		end	
 	elseif validate_preset(SPEED_2, zones.SPEED_2) and (not HORIZ_ZONES and Get_Mouse_TimeLine_Pos(zones.SPEED_2) or HORIZ_ZONES and not TCP and Get_Mouse_Y_Axis_Pos(zones.SPEED_2, header_h, wnd_h_offset)) then --  'or HORIZ_ZONES' cond is required to prevent error when HORIZ_ZONES sett is disabled and the cursor is outside of the zone which will otherwise make next option, that is Get_Mouse_Y_Axis_Pos(), automatically active with header_h and wnd_h_offset vars being nil; 'not TCP' ensures that the preset won't work over the TCP when the linkage to the TCP is disabled by activating a preset earlier in the list with '0' value because horizontal zone covers the TCP as well -- here and below
-	SPEED = ZONE_SCROLL(SPEED_2, FULL_SCROLL_2, PAGING_SCROLL_2, BY_TRACKS_2, cmdID, val)
+	SPEED = ZONE_SCROLL(SPEED_2, FULL_SCROLL_2, PAGING_SCROLL_2, BY_TRACKS_2, cmdID, val)	
 	elseif validate_preset(SPEED_3, zones.SPEED_3) and (not HORIZ_ZONES and Get_Mouse_TimeLine_Pos(zones.SPEED_3) or HORIZ_ZONES and not TCP and Get_Mouse_Y_Axis_Pos(zones.SPEED_3, header_h, wnd_h_offset)) then
 	SPEED = ZONE_SCROLL(SPEED_3, FULL_SCROLL_3, PAGING_SCROLL_3, BY_TRACKS_3, cmdID, val)
 	elseif validate_preset(SPEED_4, zones.SPEED_4) and (not HORIZ_ZONES and Get_Mouse_TimeLine_Pos(zones.SPEED_4) or HORIZ_ZONES and not TCP and Get_Mouse_Y_Axis_Pos(zones.SPEED_4, header_h, wnd_h_offset)) then
