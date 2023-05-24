@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Multi-speed vertical scroll.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: v1.1 #Removed limitation on using Ctrl+Shift modifier when extensions aren't installed
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
@@ -181,27 +181,6 @@ function Is_TrackList_Hidden()
 	for line in io.lines(r.get_ini_file()) do
 	local leftpane = line:match('leftpanewid=(%d+)')
 		if leftpane then return leftpane == '0' end
-	end
-end
-
-
-function Is_Ctrl_And_Shift()
--- check if the script is bound to a shortcut containing both Ctrl & Shift
--- which is not advised when the version of Get_Arrange_and_Header_Heights() function is used which creates temporary project tab to fetch the Arrange height data because in this case if the key combination is long pressed a prompt will appear offering to load project with FX offline
--- only relevant if SWS and js_ReaScriptAPI extensions are not installed
--- because only in this case to get the Arrange height a track max zoom is used in a temp proj tab
-local is_new_value,filename,sectID,cmdID,mode,resol,val = r.get_action_context()
-local named_ID = r.ReverseNamedCommandLookup(cmdID) -- convert numeric returned by get_action_context to alphanumeric listed in reaper-kb.ini
-local res_path = r.GetResourcePath()..r.GetResourcePath():match('[\\/]') -- path with separator
-local s,R = ' ', string.rep
-	for line in io.lines(res_path..'reaper-kb.ini') do
-		if line:match('_'..named_ID) then -- in the shortcut data section command IDs are preceded with the underscore
-		local modif = line:match('KEY (%d+)')
-			if modif == '13' or modif == '29' then -- Ctrl+Shift or Ctrl+Shift+Alt
-			r.MB(R(s,3)..'The script is bound to a shotrcut\n\n'..R(s,5)..'containing Ctrl and Shift keys.\n\n'..R(s,12)..'This will unfortunately\n\n intefere with the script performance.\n\n'..R(s,7)..'It\'s strongly advised to remap\n\n'..R(s,6)..'the script to another shortcut.\n\n\tSincere apologies!','ERROR',0)
-			return true
-			end
-		end
 	end
 end
 
@@ -693,9 +672,7 @@ end
 local is_new_value,scr_name,sectID,cmdID,mode,resol,val = r.get_action_context()
 local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Find')
 
-	if not r.GetTrack(0,0) or Is_TrackList_Hidden() then return r.defer(no_undo)
-	elseif not sws and not js and Is_Ctrl_And_Shift() then return r.defer(no_undo) -- prevent using script with Ctrl+Shift modifier when no extension is installed since it's likely to interfere with loading temporary project to get updated Arrange height from track max zoom as this will generate prompt to load project with fx offline; this will be true regardless of existence of any alternative shortcuts, if more than one is assigned, because it's impossible to determine which one is used to run the script // ONLY RELEVANT FOR DOWN/UP
-	end
+	if not r.GetTrack(0,0) or Is_TrackList_Hidden() then return r.defer(no_undo) end
 
 MW_REVERSE = #MW_REVERSE:gsub(' ','') > 0
 HORIZ_ZONES = #HORIZ_ZONES:gsub(' ','') > 0
