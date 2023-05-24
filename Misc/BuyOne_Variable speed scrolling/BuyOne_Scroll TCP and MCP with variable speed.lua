@@ -4,13 +4,13 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.4
 Changelog: v1.4 #Removed limitation on using Ctrl+Shift modifier when extensions aren't installed
+		#Added evaluation of tracklist visibility in the Arrange view
 	   v1.3 Fixed scrolling by tracks		
 	   v1.2 #Improved logic of updating Arrange window height data absent the extensions
-	   v1.1
-	   #Fixed scrolling by tracks
-	   #Fixed scrolling all the way down when BY_TRACKS setting is enabled
-	   #Added support for Mixer scrolling
-	   #Renamed the script
+	   v1.1 #Fixed scrolling by tracks
+		#Fixed scrolling all the way down when BY_TRACKS setting is enabled
+		#Added support for Mixer scrolling
+		#Renamed the script
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
@@ -152,6 +152,15 @@ function Esc(str)
 -- isolating the 1st return value so that if vars are initialized in a row outside of the function the next var isn't assigned the 2nd return value
 local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
 return str
+end
+
+
+function Is_TrackList_Hidden()
+-- after double click the the divider between it and the Arrange view
+	for line in io.lines(r.get_ini_file()) do
+	local leftpane = line:match('leftpanewid=(%d+)')
+		if leftpane then return leftpane == '0' end
+	end
 end
 
 
@@ -732,6 +741,7 @@ SPEED_MIXER = (not tonumber(SPEED_MIXER) or tonumber(SPEED_MIXER) and SPEED_MIXE
 PAGING_SCROLL_MIXER = validate_sett(PAGING_SCROLL_MIXER)
 MW_REVERSE_MIXER = validate_sett(MW_REVERSE_MIXER)
 
+	if not MIXER and Is_TrackList_Hidden() then return r.defer(no_undo) end -- if the tracklist is hidden in Arrange
 
 	if MIXER and not Get_TCP_Under_Mouse() then
 	local mixer_w, pos = Get_Mixer_Width(wnd_ident_t)
