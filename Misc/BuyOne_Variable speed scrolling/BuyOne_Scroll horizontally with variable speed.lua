@@ -110,7 +110,7 @@ local arrange_len_in_px = (end_time-start_time)*r.GetHZoomLevel()-17 -- 17 px is
 local dir = Mouse_Wheel_Direction(MW_REVERSE)
 local right = MW_REVERSE and dir < 0 or dir > 0
 
-	if right and end_time-vert_scrollbar_w_sec >= proj_len then SPEED = 0 -- accounting for vertical scrollbar which is included in the Arrange view length and is 17 px wide although here it's not really necessary due to the size of scroll step
+	if right and end_time-vert_scrollbar_w_sec >= proj_len then SPEED = 0 -- accounting for vertical scrollbar which is included in the Arrange view length and is 17 px wide
 	Error_Tooltip('\n\n end of ptoject reached \n\n', 1, 1) -- caps and spaced are true
 	elseif PAGING_SCROLL then
 	SPEED = math.floor(arrange_len_in_px/16+0.5) -- /16 since its the smallest horiz scroll unit used by CSurf_OnScroll() below, 1 equals 16, round since pixel value cannot be fractional;
