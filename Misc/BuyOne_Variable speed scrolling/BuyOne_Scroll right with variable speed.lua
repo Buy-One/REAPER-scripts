@@ -137,7 +137,7 @@ local start_time, end_time = r.GetSet_ArrangeView2(0, false, 0, 0, start_time, e
 local vert_scrollbar_w_sec = 17/r.GetHZoomLevel() -- in sec; vertical scrollbar which is included in the Arrange view length, is 17 px wide and must be subtracted to get true visible area size
 local arrange_len_in_px = (end_time-start_time)*r.GetHZoomLevel()-17 -- 17 px is the width of vertical scrollbar included in the Arrange view length which must be subtracted to get true visible area size
 
-	if right and end_time-vert_scrollbar_w_sec >= proj_len then SPEED = 0 -- accounting for vertical scrollbar which is included in the Arrange view length and is 17 px wide although here it's not really necessary due to the size of scroll step
+	if right and end_time-vert_scrollbar_w_sec >= proj_len then SPEED = 0 -- accounting for vertical scrollbar which is included in the Arrange view length and is 17 px wide
 	Error_Tooltip('\n\n end of ptoject reached \n\n', 1, 1) -- caps and spaced are true
 	elseif PAGING_SCROLL then
 	SPEED = math.floor(arrange_len_in_px/16+0.5) -- /16 since its the smallest horiz scroll unit used by CSurf_OnScroll() below, 1 equals 16, round since pixel value cannot be fractional;
