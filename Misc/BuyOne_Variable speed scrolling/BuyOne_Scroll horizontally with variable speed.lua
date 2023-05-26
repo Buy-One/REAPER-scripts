@@ -50,8 +50,7 @@ BY_BEATS = ""
 -- which only scrolls by about half of the Arrange width;
 -- if enabled by placing any alphanumeric character
 -- between the quotes, disables SPEED value and instead
--- makes the script scroll by the visible Arrange width;
--- basically the same as the native
+-- makes the script scroll by the visible Arrange width
 PAGING_SCROLL = ""
 
 -- Reverse the default mousewheel direction,
