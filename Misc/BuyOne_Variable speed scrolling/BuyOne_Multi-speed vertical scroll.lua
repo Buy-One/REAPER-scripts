@@ -50,7 +50,7 @@ MW_REVERSE = ""
 -- it the TCP itself is located on the right side of the Arrange view
 -- the zones are aligned in reversed order, i.e. SPEED_4 -> SPEED_1;
 -- if you wish to have the same behavior regardless of the mouse cursor
--- position, enable all presets and confugure them identically;
+-- position, enable all presets and configure them identically;
 -- if you don't want any preset to be active over the TCP, enable any
 -- preset above those which should be active within the Arrange view
 -- by inserting 0 in the SPEED_No setting instead of a natural number,
