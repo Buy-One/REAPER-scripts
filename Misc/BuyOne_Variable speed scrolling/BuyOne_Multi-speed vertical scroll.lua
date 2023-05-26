@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Multi-speed vertical scroll.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: v1.1 #Removed limitation on using Ctrl+Shift modifier when extensions aren't installed
+Version: 1.2
+Changelog: v1.2 #Fixed scroll when the mouse is over the TCP displayed on the right side of the Arrange
+	   view at certain horizontal scroll position
+	   v1.1 #Removed limitation on using Ctrl+Shift modifier when extensions aren't installed
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
@@ -639,7 +641,7 @@ r.Main_OnCommand(40514,0) -- View: Move edit cursor to mouse cursor (no snapping
 local new_cur_pos = r.GetCursorPosition()
 local target
 	if not zones_t then
-	target = new_cur_pos == edge or new_cur_pos == start_time -- if the TCP is on the right and the Arrange is scrolled all the way to the project start start_time-5 won't make the edit cursor move past project start hence the 2nd condition, but it can move past the right edge
+	target = new_cur_pos == edge or new_cur_pos == start_time or new_cur_pos == 0 -- if the TCP is on the right and the Arrange is scrolled all the way to the project start start_time-5 won't make the edit cursor move past project start hence the 2nd condition, still it may not be scrolled all the way to the project start but if start_time-5 exceeds the start time the cursor will be moved to the very start which is 0, but it can move past the right edge
 	else
 	target = new_cur_pos >= zones_t.start and new_cur_pos <= zones_t.fin -- when HORIZ_ZONES setting is enabled start is zone top edge, fin is its bottom edge
 	end
