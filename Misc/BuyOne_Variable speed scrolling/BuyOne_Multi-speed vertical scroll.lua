@@ -70,9 +70,8 @@ MW_REVERSE = ""
 -- this will keep the zone but disable the preset effectively creating holes
 -- in the zone sequence within the Arrange view, e.g. if all presets are enabled,
 -- insering 0 in the SPEED_3 setting will disable preset 3 for the zone it's
--- supposed to be active in (right 3d of the Arrange area if the TCP is displayed
--- on the left, middle 3d the Arrange area if the TCP is displayed in the right,
--- or its middle 3d if HORIZ_ZONES setting is enabled below), or if presets 2, 3 
+-- supposed to be active in (middle 3d of the Arrange area regardless of the TCP
+-- position and whether HORIZ_ZONES setting is enabled below), or if presets 2, 3 
 -- and 4 are supposed to be active when the TCP is displayed on the right side 
 -- of the Arrange view, then inserting 0 in the SPEED_2 and SPEED_4 settings 
 -- disables preset 2 over the TCP and disables preset 4 in the left half of the 
