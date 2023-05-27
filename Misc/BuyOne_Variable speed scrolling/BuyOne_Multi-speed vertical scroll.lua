@@ -2,9 +2,10 @@
 ReaScript name: BuyOne_Multi-speed vertical scroll.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: v1.2 #Fixed scroll when the mouse is over the TCP displayed on the right side of the Arrange
-	   view at certain horizontal scroll position
+Version: 1.3
+Changelog: v1.3 #Updated USER SETTINGS instructions
+	   v1.2 #Fixed scroll when the mouse is over the TCP displayed on the right side of the Arrange
+		view at certain horizontal scroll position
 	   v1.1 #Removed limitation on using Ctrl+Shift modifier when extensions aren't installed
 Licence: WTFPL
 REAPER: at least v5.962
@@ -45,14 +46,8 @@ MW_REVERSE = ""
 -- to TCP meaning it'll only work when the mouse cursor is over the TCP,
 -- i.e. if only presets 1 and 4 are enabled, preset 1 will be linked to the TCP,
 -- if only presets 2, 3 and 4 are enabled, preset 2 will be linked to the TCP;
--- for other presets REAPER Arrange view is divided along the X axis
--- into as many equal width zones as there're enabled presets;
--- such scroll speed presets are activated by positioning the mouse cursor
--- within the zone allocated to it starting from the TCP rightwards;
--- it the TCP itself is located on the right side of the Arrange view
--- the zones are aligned in reversed order, i.e. SPEED_4 -> SPEED_1;
--- if you wish to have the same behavior regardless of the mouse cursor
--- position, enable all presets and configure them identically;
+-- when the tracklist is hidden in the Arrange view the 1st of enabled presets 
+-- won't be accessible because it's hard linked to the TCP;
 -- if you don't want any preset to be active over the TCP, enable any
 -- preset above those which should be active within the Arrange view
 -- by inserting 0 in the SPEED_No setting instead of a natural number,
@@ -60,10 +55,33 @@ MW_REVERSE = ""
 -- insert 0 in the SPEED_1 setting, to only be able to use presets 3
 -- and 4 within the Arrange view insert 0 in the SPEED_1 or SPEED_2
 -- settings;
--- preset 1 cannot be made to work within the Arrange view;
--- for all presets other than the first in the list of enabled ones
--- 0 value is invalid and is tantamount to preset being disabled, that is
--- having no value at all
+-- for other presets REAPER Arrange view is divided along the X axis
+-- into as many equal width zones as there're enabled presets, to a single
+-- enabled preset besides the one linked to the TCP the entire Arrange area
+-- is allocated;
+-- such scroll speed presets are activated by positioning the mouse cursor
+-- within the zone allocated to it starting from the TCP rightwards;
+-- it the TCP itself is located on the right side of the Arrange view
+-- the zones are aligned in reversed order, i.e. SPEED_4 -> SPEED_1;
+-- preset 1 cannot be made to work within the Arrange view due to its hard 
+-- linkage to the TCP;
+-- if you don't want any preset to be active in the zone of the Arrange view
+-- allocated to it insert 0 in its SPEED_No setting instead of a natural number,
+-- this will keep the zone but disable the preset effectively creating holes
+-- in the zone sequence within the Arrange view, e.g. if all presets are enabled,
+-- insering 0 in the SPEED_3 setting will disable preset 3 for the zone it's
+-- supposed to be active in (right 3d of the Arrange area if the TCP is displayed
+-- on the left, middle 3d the Arrange area if the TCP is displayed in the right,
+-- or its middle 3d if HORIZ_ZONES setting is enabled below), or if presets 2, 3 
+-- and 4 are supposed to be active when the TCP is displayed on the right side 
+-- of the Arrange view, then inserting 0 in the SPEED_2 and SPEED_4 settings 
+-- disables preset 2 over the TCP and disables preset 4 in the left half of the 
+-- Arrange view (its bottom half if HORIZ_ZONES setting is enabled below);
+-- if a preset SPEED_No setting is empty or invalid no zone is allocated to it
+-- and the Arrange view is divided equally between or allocated in is entirety
+-- to the enabled presets, depending on their number;
+-- if you wish to have the same behavior regardless of the mouse cursor
+-- position, enable all presets and configure them identically
 
 
 -- By default the Arrange is divided into zones along the X axis, i.e |||;
