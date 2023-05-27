@@ -2,11 +2,12 @@
 ReaScript name: FX presets menu
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.7
-Changelog: 
-	1.7 #Fixed logic of TCP detection under mouse
-	1.6 #Added support for TCP on the right side of the Arrange
-	1.5 #Fixed error on loading preset menu of plugins with embedded presets and no external preset file
+Version: 1.8
+Changelog: v1.8 #Improved detection of the TCP under mouse when it's displayed on the right side of the Arrange
+	   view at certain horizontal scroll position 
+	   v1.7 #Fixed logic of TCP detection under mouse
+	   v1.6 #Added support for TCP on the right side of the Arrange
+	   v1.5 #Fixed error on loading preset menu of plugins with embedded presets and no external preset file
 Provides: [main] .
 Licence: WTFPL
 REAPER: at least v5.962
@@ -423,7 +424,8 @@ local obj, obj_type
 			local edge = right_tcp and start_time-5 or end_time+5
 			r.SetEditCurPos(edge, false, false) -- moveview, seekplay false // to secure against a vanishing probablility of overlap between edit and mouse cursor positions in which case edit cursor won't move just like it won't if mouse cursor is over the TCP // +/-5 sec to move edit cursor beyond right/left edge of the Arrange view to be completely sure that it's far away from the mouse cursor // if start_time is 0 and there's negative project start offset the edit cursor is still moved to the very start, that is past 0
 			r.Main_OnCommand(40514,0) -- View: Move edit cursor to mouse cursor (no snapping) // more sensitive than with snapping
-				if r.GetCursorPosition() == edge or r.GetCursorPosition() == start_time then -- the edit cursor stayed put at the pos set above since the mouse cursor is over the TCP // if the TCP is on the right and the Arrange is scrolled all the way to the project start start_time-5 won't make the edit cursor move past project start hence the 2nd condition, but it can move past the right edg
+			local new_cur_pos = r.GetCursorPosition()
+				if new_cur_pos == edge or new_cur_pos == 0 then -- the edit cursor stayed put at the pos set above since the mouse cursor is over the TCP // if the TCP is on the right and the Arrange is scrolled all the way to the project start or close enough to it start_time-5 won't make the edit cursor move past the project start hence the 2nd condition, but it can move past the right edge
 				--[-[------------------------- WITHOUT SELECTION --------------------------------------------
 				obj, obj_type = r.GetTrackFromPoint(x, y), 0 -- get without selection, works for focused track FX chain as well
 				--]]
