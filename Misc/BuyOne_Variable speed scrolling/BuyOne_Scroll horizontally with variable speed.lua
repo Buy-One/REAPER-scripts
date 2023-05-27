@@ -74,7 +74,7 @@ function Error_Tooltip(text, caps, spaced) -- caps and spaced are booleans
 local x, y = r.GetMousePosition()
 local text = caps and text:upper() or text
 local text = spaced and text:gsub('.','%0 ') or text
-r.TrackCtl_SetToolTip(text, x+10, y-70, true) -- topmost true; -70 to display above mouse cursor thereby preventing cursor being blocked by it which empedes script execution
+r.TrackCtl_SetToolTip(text, x+10, y-70, true) -- topmost true; -70 to display above mouse cursor thereby preventing cursor being blocked by it which impedes script execution
 -- r.TrackCtl_SetToolTip(text:upper(), x, y, true) -- topmost true
 -- r.TrackCtl_SetToolTip(text:upper():gsub('.','%0 '), x, y, true) -- spaced out // topmost true
 --[[
