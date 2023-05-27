@@ -135,7 +135,8 @@ SPEED_1 = "1"
 -- the number of beats to scroll by rather than a factor
 -- to multiply pixels by, empty or invalid SPEED setting
 -- in this case equals 1;
--- doesn't have any effect if PAGING_SCROLL setting is enabled below;
+-- doesn't have any effect if PAGING_SCROLL_1 or FULL_SCROLL_1 
+-- settings are enabled below;
 -- at higher zoom-in levels scroll step (beat * SPEED) is reduced
 -- to ensure slower scrolling for ease of following the time line
 BY_BEATS_1 = ""
