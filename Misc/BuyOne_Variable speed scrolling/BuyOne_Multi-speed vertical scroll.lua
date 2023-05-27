@@ -120,7 +120,8 @@ SPEED_1 = "1"
 -- if enabled, the numeric value of the SPEED_1 setting becomes
 -- the number of tracks to scroll by rather than a factor
 -- to multiply pixels by, empty SPEED_1 setting in this case equals 1;
--- doesn't have any effect if PAGING_SCROLL setting is enabled below;
+-- doesn't have any effect if PAGING_SCROLL_1 or FULL_SCROLL_1 settings
+-- are enabled below;
 -- if neither SWS/S&M or js_ReaScriptAPI extension is installed
 -- will only work when the program window is maximized,
 -- may not work consistently and for a second will slightly affect UX
