@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Scroll horizontally with variable speed.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: v1.2 #Added means to prevent scrolling beyond project end
+Version: 1.3
+Changelog: v1.3 #Improved end of project tooltip position relative to the mouse cursor
+	   v1.2 #Added means to prevent scrolling beyond project end
 	   v1.1 #Added support for fractional beats
 Licence: WTFPL
 REAPER: at least v5.962
@@ -73,7 +74,7 @@ function Error_Tooltip(text, caps, spaced) -- caps and spaced are booleans
 local x, y = r.GetMousePosition()
 local text = caps and text:upper() or text
 local text = spaced and text:gsub('.','%0 ') or text
-r.TrackCtl_SetToolTip(text, x, y, true) -- topmost true
+r.TrackCtl_SetToolTip(text, x+10, y-70, true) -- topmost true; -70 to display above mouse cursor thereby preventing cursor being blocked by it which empedes script execution
 -- r.TrackCtl_SetToolTip(text:upper(), x, y, true) -- topmost true
 -- r.TrackCtl_SetToolTip(text:upper():gsub('.','%0 '), x, y, true) -- spaced out // topmost true
 --[[
