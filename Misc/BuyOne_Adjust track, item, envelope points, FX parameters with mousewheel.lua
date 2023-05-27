@@ -2,13 +2,13 @@
 ReaScript name: Adjust track, item, envelope points, FX parameters with mousewheel
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.2
-Changelog:
-	v1.2
-	#Corrected logic of TCP detection under mouse
-	v1.1
-	#Corrected calculation of mouse cursor distance from item edge
-   	#Added support for TCP on the right side of the Arrangee
+Version: 1.3
+Changelog: v1.3 #Improved detection of the TCP under mouse when it's displayed on the right side of the Arrange
+	   view at certain horizontal scroll position 
+	   v1.2 #Corrected logic of TCP detection under mouse
+	   v1.1
+	   #Corrected calculation of mouse cursor distance from item edge
+	   #Added support for TCP on the right side of the Arrange
 Licence: WTFPL
 REAPER: at least v6.36
 About:	The script is meant to allow using mousewheel on controls with a modifier which
@@ -300,12 +300,12 @@ r.PreventUIRefresh(1)
 local edge = right_tcp and start_time-5 or end_time+5
 r.SetEditCurPos(edge, false, false) -- moveview, seekplay false // to secure against a vanishing probablility of overlap between edit and mouse cursor positions in which case edit cursor won't move just like it won't if mouse cursor is over the TCP // +/-5 sec to move edit cursor beyond right/left edge of the Arrange view to be completely sure that it's far away from the mouse cursor
 r.Main_OnCommand(40514,0) -- View: Move edit cursor to mouse cursor (no snapping) // more sensitive than with snapping
-local tcp_under_mouse = r.GetCursorPosition() == edge or r.GetCursorPosition() == start_time -- if the TCP is on the right and the Arrange is scrolled all the way to the project start start_time-5 won't make the edit cursor move past project start hence the 2nd condition, but it can move past the right edge
+local new_cur_pos = r.GetCursorPosition()
+local tcp_under_mouse = new_cur_pos == edge or new_cur_pos == 0 -- if the TCP is on the right and the Arrange is scrolled all the way to the project start or close enough to it start_time-5 won't make the edit cursor move past the project start hence the 2nd condition, but it can move past the right edge
 -- Restore orig. edit cursor pos
 --[[
-local new_curs_pos = r.GetCursorPosition()
-local min_val, subtr_val = table.unpack(new_curs_pos == edge and {curs_pos, edge} -- TCP found, edit cursor remained at edge
-or new_curs_pos ~= edge and {curs_pos, new_curs_pos} -- TCP not found, edit cursor moved
+local min_val, subtr_val = table.unpack(new_cur_pos == edge and {curs_pos, edge} -- TCP found, edit cursor remained at edge
+or new_cur_pos ~= edge and {curs_pos, new_cur_pos} -- TCP not found, edit cursor moved
 or {0,0})
 r.MoveEditCursor(min_val - subtr_val, false) -- dosel false = don't create time sel; restore orig. edit curs pos, greater subtracted from the lesser to get negative value meaning to move closer to zero (project start) // MOVES VIEW SO IS UNSUITABLE
 ]]
