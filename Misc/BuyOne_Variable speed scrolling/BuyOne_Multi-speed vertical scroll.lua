@@ -762,7 +762,7 @@ local tracks_h = Get_Combined_Tracks_Height(down, up, arrange_h, SPEED)/8
 return Calc_and_Store_Diviation(tracks_h, diviation, cmdID, 'by-track diviation')
 end
 
-function validate_preset(a,b) -- validate_SPEED() doesn't filter out 0 value since it's used to disable preset over the TCP
+function validate_preset(a,b) -- validate_SPEED() doesn't filter out 0 value since it's used to disable preset over the TCP or while keeping the zone
 return a and a ~= 0 and b
 end
 
