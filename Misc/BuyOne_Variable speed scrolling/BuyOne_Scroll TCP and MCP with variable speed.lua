@@ -590,7 +590,7 @@ local edge = right_tcp and start_time-5 or end_time+5
 r.SetEditCurPos(edge, false, false) -- moveview, seekplay false // to secure against a vanishing probablility of overlap between edit and mouse cursor positions in which case edit cursor won't move just like it won't if mouse cursor is over the TCP // +/-5 sec to move edit cursor beyond right/left edge of the Arrange view to be completely sure that it's far away from the mouse cursor // if start_time is 0 and there's negative project start offset the edit cursor is still moved to the very start, that is past 0
 r.Main_OnCommand(40514,0) -- View: Move edit cursor to mouse cursor (no snapping) // more sensitive than with snapping
 local new_cur_pos = r.GetCursorPosition()
-local tcp_under_mouse = new_cur_pos == edge or new_cur_pos == start_time or new_cur_pos == 0 -- if the TCP is on the right and the Arrange is scrolled all the way to the project start start_time-5 won't make the edit cursor move past project start hence the 2nd condition, still it may not be scrolled all the way to the project start but if start_time-5 exceeds the start time the cursor will be moved to the very start which is 0, but it can move past the right edge
+local tcp_under_mouse = new_cur_pos == edge or new_cur_pos == 0 -- if the TCP is on the right and the Arrange is scrolled all the way to the project start or close enough to it start_time-5 won't make the edit cursor move past the project start hence the 2nd condition, but it can move past the right edge
 -- Restore orig. edit cursor pos
 r.SetEditCurPos(curs_pos, false, false) -- moveview, seekplay false // restore orig. edit curs pos
 r.PreventUIRefresh(-1)
