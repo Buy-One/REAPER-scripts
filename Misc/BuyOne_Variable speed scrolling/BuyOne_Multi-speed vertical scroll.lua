@@ -781,7 +781,7 @@ return SPEED
 end
 
 
-	if TCP and not disabled then -- targeting the TCP, 1st enabled preset is always linked to the TCP unless it's disabled with '0' value in which case only presets within the Arrange will work
+	if TCP and not disabled then -- targeting the TCP, 1st enabled preset is always linked to the TCP unless it's disabled with '0' value
 		if pres1 and FULL_SCROLL_1 or pres2 and FULL_SCROLL_2 or pres3 and FULL_SCROLL_3 or pres4 and FULL_SCROLL_4
 		then
 		SPEED = 13000 -- assuming 1000 tracks 100 px high each, which would amount to 100,000 px, 100,000/8 = 12500, rounded up to 13
