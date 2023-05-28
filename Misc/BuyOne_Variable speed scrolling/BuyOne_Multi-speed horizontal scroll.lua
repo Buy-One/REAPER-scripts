@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Multi-speed horizontal scroll.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: v1.1 #Corrected typo in the end of project tooltip
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
@@ -719,7 +719,7 @@ local dir = Mouse_Wheel_Direction(MW_REVERSE)
 local right = MW_REVERSE and dir < 0 or dir > 0
 
 	if right and end_time-vert_scrollbar_w_sec >= proj_len then SPEED = 0 -- project end has been reached, accounting for vertical scrollbar which is included in the Arrange view length and is 17 px wide
-	Error_Tooltip('\n\n end of ptoject reached \n\n', 1, 1) -- caps and spaced are true
+	Error_Tooltip('\n\n end of project reached \n\n', 1, 1) -- caps and spaced are true
 	return r.defer(no_undo) end
 
 local TCP = Get_Mouse_TimeLine_Pos() -- targeting the TCP (no table argument)
