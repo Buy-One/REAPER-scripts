@@ -753,7 +753,7 @@ return SPEED
 end
 
 
-	if (TCP_left or TCP_right) and not disabled then -- targeting the TCP, 1st enabled preset is always linked to the TCP unless it's disabled with '0' value in which case only presets within the Arrange will work
+	if (TCP_left or TCP_right) and not disabled then -- targeting the TCP, 1st enabled preset is always linked to the TCP when it's displayed on the left and the last enabled is linked to it when it's displayed on the right, unless it's disabled with '0' value
 	local FULL_SCROLL = pres1 and FULL_SCROLL_1 or pres2 and FULL_SCROLL_2 or pres3 and FULL_SCROLL_3 or pres4 and FULL_SCROLL_4
 	local PAGING_SCROLL = pres1 and PAGING_SCROLL_1 or pres2 and PAGING_SCROLL_2 or pres3 and PAGING_SCROLL_3 or pres4 and PAGING_SCROLL_4
 	local BY_BEATS = pres1 and BY_BEATS_1 or pres2 and BY_BEATS_2 or pres3 and BY_BEATS_3 or pres4 and BY_BEATS_4
