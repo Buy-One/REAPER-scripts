@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Scroll left with variable speed.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: v1.2 #Added means to prevent scrolling beyond project end
+Version: 1.3
+Changelog: v1.3 #Corrected typo in the end of project tooltip
+	   v1.2 #Added means to prevent scrolling beyond project end
 	   v1.1 #Added support for fractional beats
 Licence: WTFPL
 REAPER: at least v5.962
@@ -138,7 +139,7 @@ local vert_scrollbar_w_sec = 17/r.GetHZoomLevel() -- in sec; vertical scrollbar 
 local arrange_len_in_px = (end_time-start_time)*r.GetHZoomLevel()-17 -- 17 px is the width of vertical scrollbar included in the Arrange view length which must be subtracted to get true visible area size
 
 	if right and end_time-vert_scrollbar_w_sec >= proj_len then SPEED = 0 -- accounting for vertical scrollbar which is included in the Arrange view length and is 17 px wide
-	Error_Tooltip('\n\n end of ptoject reached \n\n', 1, 1) -- caps and spaced are true
+	Error_Tooltip('\n\n end of project reached \n\n', 1, 1) -- caps and spaced are true
 	elseif PAGING_SCROLL then
 	SPEED = math.floor(arrange_len_in_px/16+0.5) -- /16 since its the smallest horiz scroll unit used by CSurf_OnScroll() below, 1 equals 16, round since pixel value cannot be fractional;
 	elseif BY_BEATS then
