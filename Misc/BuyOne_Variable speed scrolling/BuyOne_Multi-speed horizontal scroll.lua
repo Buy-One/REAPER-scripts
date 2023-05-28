@@ -202,15 +202,6 @@ return str
 end
 
 
-function Is_TrackList_Hidden()
--- after double click the the divider between it and the Arrange view
-	for line in io.lines(r.get_ini_file()) do
-	local leftpane = line:match('leftpanewid=(%d+)')
-		if leftpane then return leftpane == '0' end
-	end
-end
-
-
 function Error_Tooltip(text, caps, spaced) -- caps and spaced are booleans
 local x, y = r.GetMousePosition()
 local text = caps and text:upper() or text
