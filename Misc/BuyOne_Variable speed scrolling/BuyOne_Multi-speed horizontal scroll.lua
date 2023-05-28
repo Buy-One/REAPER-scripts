@@ -717,7 +717,7 @@ local TCP = Get_Mouse_TimeLine_Pos() -- targeting the TCP (no table argument)
 local TCP_left = not right_tcp and (SPEED_1 and TCP and 'SPEED_1' or SPEED_2 and TCP and 'SPEED_2' or SPEED_3 and TCP and 'SPEED_3' or SPEED_4 and TCP and 'SPEED_4')
 local TCP_right = right_tcp and (SPEED_4 and TCP and 'SPEED_4' or SPEED_3 and TCP and 'SPEED_3' or SPEED_2 and TCP and 'SPEED_2' or SPEED_1 and TCP and 'SPEED_1')
 local pres1, pres2, pres3, pres4 = TCP_left == 'SPEED_1' or TCP_right == 'SPEED_1', TCP_left == 'SPEED_2' or TCP_right == 'SPEED_2',  TCP_left == 'SPEED_3' or TCP_right == 'SPEED_3', TCP_left == 'SPEED_4' or TCP_right == 'SPEED_4'
-local disabled = pres1 and SPEED_1 == 0 or pres2 and SPEED_2 == 0 or pres3 and SPEED_3 == 0 or pres4 and SPEED_4 == 0 -- evaluate if there's a disabled preset (only relevant for the 1st in the list with SPEED_n var being valid) so that no scrolling will take place when the mouse cursor is over the TCP
+local disabled = pres1 and SPEED_1 == 0 or pres2 and SPEED_2 == 0 or pres3 and SPEED_3 == 0 or pres4 and SPEED_4 == 0 -- evaluate if there's a disabled preset (only relevant for the 1st or the last in the list with SPEED_n var being valid, depending on the TCP position) so that no scrolling will take place when the mouse cursor is over the TCP
 
 
 function By_Beats_Scroll(arrange_len_px, SPEED)
