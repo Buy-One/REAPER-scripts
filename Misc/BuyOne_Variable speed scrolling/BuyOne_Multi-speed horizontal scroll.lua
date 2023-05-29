@@ -109,6 +109,9 @@ MW_REVERSE = ""
 -- may not work consistently and for a second will slightly affect UX
 -- when the script retrieves new data if the program window
 -- configuration changes;
+-- if this setting doesn't work accurately on Mac, submit a bug report 
+-- at the addresses listed in the Website tag above and this will be 
+-- looked into.
 HORIZ_ZONES = ""
 
 --/////////////// SCROLL SPEED PRESETS //////////////////
