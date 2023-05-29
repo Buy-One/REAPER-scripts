@@ -31,7 +31,10 @@ About: Alternative to the native 'View: Scroll vertically (MIDI CC relative/mous
        Bind to mousewheel (optionally with modifiers).  
 
        With vertical mousewheel the default direction is up - up, down - down,
-       to reverse the direction enable MW_REVERSE setting in the USER SETTINGS
+       to reverse the direction enable MW_REVERSE setting in the USER SETTINGS.
+
+       If the script doesn't work accurately on Mac, submit a bug report at the 
+       addresses listed in the Website tag above and this will be looked into.
 
 ]]
 
