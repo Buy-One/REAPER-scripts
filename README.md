@@ -16,7 +16,11 @@ To download an individual script:
 6. Or use the download button which has appeared in the updated interface
 
 
-Scripts from the **MIDI** folder go to the **MIDI Editor** section of the Action list
+Scripts from the **MIDI** folder go to the **MIDI Editor** section of the Action list  
+  
+  
+</br>
+</br>
+</br>
 
-
-REAPER is a DAW able to mimic the look and feel of other DAWs. Thanks to the ReaScript API scheduled ProTools crashes can again become integral part of your workflow.
+_REAPER is a DAW able to mimic the look and feel of other DAWs. If you so wish, thanks to the ReaScript API scheduled ProTools crashes can again become integral part of your workflow._
