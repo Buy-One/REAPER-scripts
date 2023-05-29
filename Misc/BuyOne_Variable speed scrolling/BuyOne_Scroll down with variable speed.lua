@@ -21,6 +21,9 @@ About: Alternative to the native 'View: Scroll view down' which
 
        Bind to down arrow key (optionally with modifiers).
 
+       If the script doesn't work accurately on Mac, submit a bug report at the 
+       addresses listed in the Website tag above and this will be looked into.
+
 ]]
 
 -----------------------------------------------------------------------------
