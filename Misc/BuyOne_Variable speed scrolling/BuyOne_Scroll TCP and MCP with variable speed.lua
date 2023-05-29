@@ -26,7 +26,10 @@ About:  Alternative to the native 'View: Scroll vertically (MIDI CC relative/mou
 	With vertical mousewheel the default direction is up - up, down - down
 	for Arrange track list, and up - right, down - left for the Mixer.  
 	To reverse the direction enable MW_REVERSE and MW_REVERSE_MIXER
-	settings respectively in the USER SETTINGS.
+	settings respectively in the USER SETTINGS.  
+
+	If TCP scrolling doesn't work accurately on Mac, submit a bug report at 
+	the addresses listed in the Website tag above and this will be looked into.
 
 ]]
 
