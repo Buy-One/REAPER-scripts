@@ -18,8 +18,10 @@ About: Alternative to the native 'View: Scroll view up' which
        The script's scroll unit is 8 px per execution which 
        can be increased with the SPEED setting in the USER SETTINGS.
 
-
        Bind to up arrow key (optionally with modifiers).
+
+       If the script doesn't work accurately on Mac, submit a bug report at the 
+       addresses listed in the Website tag above and this will be looked into.
 
 ]]
 
