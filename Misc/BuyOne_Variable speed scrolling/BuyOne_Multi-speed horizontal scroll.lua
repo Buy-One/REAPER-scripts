@@ -679,7 +679,7 @@ SPEED_1, SPEED_2, SPEED_3, SPEED_4 = validate_SPEED(SPEED_1, SPEED_2, SPEED_3, S
 -- a preset is not the 1st enabled one as long as there's at least one enabled preset preceding it in the order in which they're listed in the USER SETTINGS and it's not the last enabled as long as at least one enabled preset follows it in such order
 local right_tcp = r.GetToggleCommandStateEx(0,42373) == 1 -- View: Show TCP on right side of arrange
 local preset_t = {SPEED_1, SPEED_2, SPEED_3, SPEED_4, truth={}}
--- after the loop in the table only those preset vars will be true which aren't the 1st enabled because to the 1st no zone is allocated, it's hard linked to the TCP
+-- after the loop in the table only those slot vars will be true which aren't the 1st or not the last enabled (depending on the TCP position) because to these no zone is allocated as they're hard linked to the TCP
 	for k1, pres1 in ipairs(preset_t) do -- evaluate each next preset against all preceding presets or against all following depending on which side the TCP is displayed on in Arrange view
 	preset_t.truth[k1] = false
 		for k2, pres2 in ipairs(preset_t) do
