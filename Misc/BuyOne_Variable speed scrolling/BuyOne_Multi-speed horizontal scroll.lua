@@ -628,7 +628,7 @@ local target
 	if not zones_t then
 	target = new_cur_pos == edge or new_cur_pos == 0 -- if the TCP is on the right and the Arrange is scrolled all the way to the project start or close enough to it start_time-5 won't make the edit cursor move past the project start hence the 2nd condition, but it can move past the right edge
 	else
-	target = new_cur_pos >= zones_t.start and new_cur_pos <= zones_t.fin -- when HORIZ_ZONES setting is enabled start is zone top edge, fin is its bottom edge
+	target = new_cur_pos >= zones_t.start and new_cur_pos <= zones_t.fin
 	end
 -- Restore orig. edit cursor pos
 r.SetEditCurPos(curs_pos, false, false) -- moveview, seekplay false // restore orig. edit curs pos
