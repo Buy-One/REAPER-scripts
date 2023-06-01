@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Multi-speed vertical scroll.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
-Changelog: v1.3 #Updated USER SETTINGS instructions
+Version: 1.4
+Changelog: v1.4 #Updated info text in the USER SETTINGS
+	   v1.3 #Updated info text in the USER SETTINGS
 	   v1.2 #Fixed scroll when the mouse is over the TCP displayed on the right side of the Arrange
 		view at certain horizontal scroll position
 	   v1.1 #Removed limitation on using Ctrl+Shift modifier when extensions aren't installed
@@ -63,9 +64,14 @@ MW_REVERSE = ""
 -- enabled preset besides the one linked to the TCP the entire Arrange area
 -- is allocated;
 -- such scroll speed presets are activated by positioning the mouse cursor
--- within the zone allocated to it starting from the TCP rightwards;
--- it the TCP itself is located on the right side of the Arrange view
--- the zones are aligned in reversed order, i.e. SPEED_4 -> SPEED_1;
+-- within the zone allocated to it starting from the TCP rightwards if the 
+-- TCP is displayed on the left sight of the Arrange view and leftwards, if
+-- its displayed on the right side, in which case the zones are aligned in 
+-- reversed order, i.e. SPEED_4 -> SPEED_1;
+-- the zones are valid along the entire screen hight within their limits on
+-- the X axis, that is when the mouse cursor is above or below the Arrange 
+-- view and even below or above the program window, but it's safer to trigger 
+-- them while the mouse cursor is inside the Arrange area;
 -- preset 1 cannot be made to work within the Arrange view due to its hard 
 -- linkage to the TCP;
 -- if you don't want any preset to be active in the zone of the Arrange view
