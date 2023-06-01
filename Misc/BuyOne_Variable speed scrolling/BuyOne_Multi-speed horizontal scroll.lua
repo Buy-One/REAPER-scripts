@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Multi-speed horizontal scroll.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: v1.1 #Corrected typo in the end of project tooltip
+Version: 1.2
+Changelog: v1.2 #Updated info text in the USER SETTINGS 
+	   v1.1 #Corrected typo in the end of project tooltip
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
@@ -67,7 +68,11 @@ MW_REVERSE = ""
 -- such scroll speed presets are activated by positioning the mouse cursor
 -- within the zone allocated to it starting from the TCP rightwards if the
 -- TCP is on the left or starting from the left edge of the Arrange view
--- rightwards if the TCP is on the right;
+-- rightwards if the TCP is on the right and they're valid along the entire
+-- screen hight within the limits of the zone, that is when the mouse cursor
+-- is above or below the Arrange view and even below or above the program 
+-- window, but it's safer to trigger them while the mouse cursor is inside
+-- the Arrange area;
 -- due to their hard linkage to the TCP, preset 1 cannot be made to work
 -- within the Arrange view when the TCP is displayed on the left while
 -- preset 4 cannot when the TCP is displayed on the right;
@@ -90,7 +95,7 @@ MW_REVERSE = ""
 -- position, enable all presets and configure them identically
 
 
--- By default the Arrange is divided into zones along the X axis, i.e |||;
+-- By default the Arrange is divided into zones along the X axis, i.e ||||;
 -- enable this setting by placing any alphanumeric character between
 -- the quotes to make the division into zones occur along the Y axis,
 -- i.e. ≡, instead; the first and last enabled scroll speed preset will
@@ -98,6 +103,9 @@ MW_REVERSE = ""
 -- in tha Arrange view as described above, other enabled presets will be
 -- activated by positioning the mouse cursor at a certain height within
 -- the Arrange view;
+-- positioning the mouse cursor outside of the program window on the left 
+-- or the right side will still trigger the scroll speed preset linked 
+-- to the TCP;
 -- the zones follow each other from top to bottom in the same order
 -- as the scroll speed presets in these USER SETTINGS
 -- regardless of the Arrange side which TCP is displayed on,
@@ -149,8 +157,7 @@ BY_BEATS_1 = ""
 -- which only scrolls by about half of the Arrange width;
 -- if enabled by placing any alphanumeric character
 -- between the quotes, disables SPEED value and instead
--- makes the script scroll by the visible Arrange width;
--- basically the same as the native
+-- makes the script scroll by the visible Arrange width
 PAGING_SCROLL_1 = ""
 
 -- Enable to be able to scroll all the way to the end and start
