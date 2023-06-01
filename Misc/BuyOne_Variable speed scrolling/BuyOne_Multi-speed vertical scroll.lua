@@ -92,7 +92,7 @@ MW_REVERSE = ""
 -- position, enable all presets and configure them identically
 
 
--- By default the Arrange is divided into zones along the X axis, i.e |||;
+-- By default the Arrange is divided into zones along the X axis, i.e ||||;
 -- enable this setting by placing any alphanumeric character between
 -- the quotes to make the division into zones occur along the Y axis,
 -- i.e. ≡, instead; the first enabled scroll speed preset is still hard
