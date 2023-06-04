@@ -89,7 +89,7 @@ MW_REVERSE = ""
 -- left half of the Arrange view (bottom half if HORIZ_ZONES setting is enabled
 -- below) and disables preset 4 over the TCP;
 -- if a preset SPEED_No setting is empty or invalid no zone is allocated to it
--- and the Arrange view is divided equally between or allocated in is entirety
+-- and the Arrange view is divided equally between or allocated in its entirety
 -- to the enabled presets, depending on their number;
 -- if you wish to have the same behavior regardless of the mouse cursor
 -- position, enable all presets and configure them identically
