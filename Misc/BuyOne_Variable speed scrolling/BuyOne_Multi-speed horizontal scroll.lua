@@ -23,7 +23,10 @@ About: Alternative to the native 'View: Scroll horizontally (MIDI CC relative/mo
        view and the 4th - within the 2nd half of the Arrange view; when presets
        3 and 4 are enabled, preset 3 will be activated when the mouse cursor
        is over the TCP while preset 4 - while it's placed anywhere within 
-       the Arrange view which in this case becomes a single zone.
+       the Arrange view which in this case becomes a single zone. 
+
+       If zoning doesn't work accurately on Mac, submit a bug report at the 
+       addresses listed in the Website tag above and this will be looked into.
 
        Bind to mousewheel (optionally with modifiers).  
 
