@@ -68,7 +68,7 @@ MW_REVERSE = ""
 -- such scroll speed presets are activated by positioning the mouse cursor
 -- within the zone allocated to it starting from the TCP rightwards if the
 -- TCP is on the left or starting from the left edge of the Arrange view
--- rightwards if the TCP is on the right and they're valid along the entire
+-- rightwards if the TCP is on the right and they're valid across the entire
 -- screen hight within the limits of the zone, that is when the mouse cursor
 -- is above or below the Arrange view and even below or above the program 
 -- window, but it's safer to trigger them while the mouse cursor is inside
