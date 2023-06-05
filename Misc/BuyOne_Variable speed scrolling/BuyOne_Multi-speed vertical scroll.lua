@@ -68,7 +68,7 @@ MW_REVERSE = ""
 -- TCP is displayed on the left sight of the Arrange view and leftwards, if
 -- its displayed on the right side, in which case the zones are aligned in 
 -- reversed order, i.e. SPEED_4 -> SPEED_1;
--- the zones are valid along the entire screen hight within their limits on
+-- the zones are valid across the entire screen hight within their limits on
 -- the X axis, that is when the mouse cursor is above or below the Arrange 
 -- view and even below or above the program window, but it's safer to trigger 
 -- them while the mouse cursor is inside the Arrange area;
