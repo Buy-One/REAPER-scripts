@@ -8,38 +8,38 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
 About: 	The script allows running up to 7 different actions/functions depending
-		on the mouse cursor position within the Arrange view, which is divided 
-		into as many zones and subzones as there're enabled presets minus 1, 
-		since the 1st enabled action slot, whatever it is, is always hard linked 
-		to the TCP and will only be activated when the mouse cursor hovers over 
-		the track list.  
-		
-		For example if action slots 1, 3 and 4 are enabled, slot 1 will work over 
-		the TCP, slot 3 will work within the 1st half of the Arrange view and slot 4
-		within the 2nd half of the Arrange view; when slots 3 and 4 are enabled, 
-		slot 3 will be activated when the mouse cursor is over the TCP while slot 4 - 
-		while it's placed anywhere within the Arrange area which in this case becomes 
-		a single zone.
-	   
-		Further instructions see in the USER SETTINGS.
-		
-		If zoning doesn't work accurately on Mac, submit a bug report at the 
-		addresses listed in the Website tag above and this will be looked into.
-	   
-		Bind to a shortcut so that the mouse cursor isn't engaged in clicking
-		a toolbar button or a menu item.  
+	on the mouse cursor position within the Arrange view, which is divided 
+	into as many zones and subzones as there're enabled presets minus 1, 
+	since the 1st enabled action slot, whatever it is, is always hard linked 
+	to the TCP and will only be activated when the mouse cursor hovers over 
+	the track list.  
 
-		Unless it's an action which targets track and assigned to a slot hard 
-		linked to the TCP, it's not recommended running actions which target 
-		objects under the mouse cursor because by placing the mouse cursor within 
-		a particular zone you may inadvertently target the wrong object.
+	For example if action slots 1, 3 and 4 are enabled, slot 1 will work over 
+	the TCP, slot 3 will work within the 1st half of the Arrange view and slot 4
+	within the 2nd half of the Arrange view; when slots 3 and 4 are enabled, 
+	slot 3 will be activated when the mouse cursor is over the TCP while slot 4 - 
+	while it's placed anywhere within the Arrange area which in this case becomes 
+	a single zone.
 
-		If you're going to use the script in the MIDI Editor as well, in which
-		case it doesn't have to be located in the MIDI Editor section of the 
-		Action list, make sure that the shortcut which the script is mapped to
-		in the Main section of the Action list isn't found in the MIDI Editor 
-		section of the Action list because the latter will take priority and 
-		instead of the script you'll be running another action.
+	Further instructions see in the USER SETTINGS.
+
+	If zoning doesn't work accurately on Mac, submit a bug report at the 
+	addresses listed in the Website tag above and this will be looked into.
+
+	Bind to a shortcut so that the mouse cursor isn't engaged in clicking
+	a toolbar button or a menu item.  
+
+	Unless it's an action which targets track and assigned to a slot hard 
+	linked to the TCP, it's not recommended running actions which target 
+	objects under the mouse cursor because by placing the mouse cursor within 
+	a particular zone you may inadvertently target the wrong object.
+
+	If you're going to use the script in the MIDI Editor as well, in which
+	case it doesn't have to be located in the MIDI Editor section of the 
+	Action list, make sure that the shortcut which the script is mapped to
+	in the Main section of the Action list isn't found in the MIDI Editor 
+	section of the Action list because the latter will take priority and 
+	instead of the script you'll be running another action.
 
 ]]
 
@@ -90,7 +90,8 @@ About: 	The script allows running up to 7 different actions/functions depending
 -- of the top subzones in this case is the screen top, lower limit of the
 -- lower subzones is the screen bottom; but it's safer to trigger them while
 -- the mouse cursor is inside the Arrange area;
--- see zone allocation maps at https://github.com/Buy-One/screenshots/blob/main/Multi-action%20based%20on%20mouse%20cursor%20position%20in%20Arrange.pdf
+-- see zone allocation maps at 
+-- https://github.com/Buy-One/screenshots/blob/main/Multi-action%20based%20on%20mouse%20cursor%20position%20in%20Arrange.pdf
 -- or in schematic form at the bottom of this script;
 -- due to their hard linkage to the TCP, slot 1 cannot be made to work
 -- within the Arrange view when the TCP is displayed on the left while
@@ -137,7 +138,8 @@ About: 	The script allows running up to 7 different actions/functions depending
 -- Arrange area will be divided into into left and right subzones;
 -- when all slots are enabled there're 6 subzones in the Arrange view
 -- (the 7th is linked to the TCP);
--- see zone allocation maps at https://github.com/Buy-One/screenshots/blob/main/Multi-action%20based%20on%20mouse%20cursor%20position%20in%20Arrange.pdf
+-- see zone allocation maps at 
+-- https://github.com/Buy-One/screenshots/blob/main/Multi-action%20based%20on%20mouse%20cursor%20position%20in%20Arrange.pdf
 -- or in schematic form at the bottom of this script;
 -- if neither SWS/S&M or js_ReaScriptAPI extension is installed
 -- such division will only work when the program window is fully open,
