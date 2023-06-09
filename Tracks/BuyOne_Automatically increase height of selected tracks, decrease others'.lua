@@ -91,11 +91,9 @@ end
 function Get_Track_Minimum_Height() -- may be different from 24 px in certain themes
 local tr = r.GetTrack(0,0)
 local H_orig = r.GetMediaTrackInfo_Value(tr, 'I_TCPH')
-Msg(H_orig)
 r.SetMediaTrackInfo_Value(tr, 'I_HEIGHTOVERRIDE', 1) -- decrease height
 r.TrackList_AdjustWindows(true) -- isMinor is true // updates TCP only https://forum.cockos.com/showthread.php?t=208275
 local H_min = r.GetMediaTrackInfo_Value(tr, 'I_TCPH') -- store
-Msg(H_min)
 r.SetMediaTrackInfo_Value(tr, 'I_HEIGHTOVERRIDE', H_orig) -- restore
 r.TrackList_AdjustWindows(true)
 return H_min
@@ -221,7 +219,6 @@ r.TrackList_AdjustWindows(true) -- isMinor is true // updates TCP only https://f
 	r.TrackList_AdjustWindows(true) -- isMinor is true // updates TCP only https://forum.cockos.com/showthread.php?t=208275
 	end
 
---[=-[
 local Y = r.GetMediaTrackInfo_Value(uppermost_tr, 'I_TCPY')
 	if Y ~= Y_init then
 r.PreventUIRefresh(1)
