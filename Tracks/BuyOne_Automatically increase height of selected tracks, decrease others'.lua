@@ -221,7 +221,7 @@ r.TrackList_AdjustWindows(true) -- isMinor is true // updates TCP only https://f
 
 local Y = r.GetMediaTrackInfo_Value(uppermost_tr, 'I_TCPY')
 	if Y ~= Y_init then
-r.PreventUIRefresh(1)
+	r.PreventUIRefresh(1)
 	local dir = Y > Y_init and 1 or Y < Y_init and -1 -- 1 = 8, -1 = -8 px; 1 down so that tracklist moves up and vice versa
 		if dir then
 			repeat -- restore sel tracks scroll position // not ideal due to the minimum scroll unit being 8 px which makes the scroll diviation from the target value accrue and gradually nudge the scroll bar
@@ -232,7 +232,7 @@ r.PreventUIRefresh(1)
 				else break end -- in case the scroll cannot go any further because after contraction of tracks the tracklist becomes shorter and the track cannot reach the original value, especially it it's close to the bottom, otherwise the loop will become endless and freeze REAPER
 			until dir > 0 and Y <= Y_init or dir < 0 and Y >= Y_init
 		end
-r.PreventUIRefresh(-1)
+	r.PreventUIRefresh(-1)
 	end
 
 end
