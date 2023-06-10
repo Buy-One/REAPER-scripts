@@ -2,8 +2,9 @@
 ReaScript name: Automatically increase height of selected tracks, decrease others'
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 2.0
-Changelog: #Complete code overhaul. Glitches and limitations stemming from previous design have been fixed.
+Version: 2.1
+Changelog: v2.1 #Added IGNORE_OTHER_PROJECTS setting
+	   v2.0 #Complete code overhaul. Glitches and limitations stemming from previous design have been fixed
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script works similalrly to the combination of preference  
@@ -34,7 +35,7 @@ About:	The script works similalrly to the combination of preference
 -- Enable this setting by inserting any alphanumeric
 -- character between the quotation marks so the script can be used
 -- then configure the settings below
-ENABLE_SCRIPT = ""
+ENABLE_SCRIPT = "1"
 
 -- Insert values for Max and Min track heights between the quotes;
 -- if empty, invalid or 0, default to 100
@@ -56,6 +57,22 @@ MIN_HEIGHT = ""
 -- are uncollapsed
 INCLUDE_FOLDER_CHILDREN = ""
 
+
+-- If enabled by inserting any alphanumeric character 
+-- between the quotes, the script will only affect tracks 
+-- in a project under which it was originally launched 
+-- if several project tabs are open;
+-- if original project tab has been closed the script will
+-- automatically be re-linked to whatever project whose tab 
+-- is currently open;
+-- to re-link the script to another project when several
+-- projects are open in tabs, open another tab and toggle
+-- Master track visibility via the main 'View' menu;
+-- if the script is assigned to a readily available toolbar button
+-- then it can be re-linked by simply stopping it and re-launching
+-- under another tab
+IGNORE_OTHER_PROJECTS = ""
+
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
 -----------------------------------------------------------------------------
@@ -67,6 +84,7 @@ function Msg(param, cap) -- caption second or none
 local cap = cap and type(cap) == 'string' and #cap > 0 and cap..' = ' or ''
 reaper.ShowConsoleMsg(cap..tostring(param)..'\n')
 end
+
 
 function Script_Not_Enabled(ENABLE_SCRIPT)
 	if #ENABLE_SCRIPT:gsub(' ','') == 0 then
@@ -100,14 +118,9 @@ return H_min
 end
 
 
-function Re_Set_Toggle_State(sect_ID, cmd_ID, toggle_state, INCLUDE_FOLDER_CHILDREN) -- in deferred scripts can be used to set the toggle state on start and then with r.atexit and At_Exit_Wrapper() to reset it on script termination
+function Re_Set_Toggle_State(sect_ID, cmd_ID, toggle_state) -- in deferred scripts can be used to set the toggle state on start and then with r.atexit and At_Exit_Wrapper() to reset it on script termination
 r.SetToggleCommandState(sect_ID, cmd_ID, toggle_state)
 r.RefreshToolbar(cmd_ID)
-	if INCLUDE_FOLDER_CHILDREN then -- store on script launch to be used in custom Lua code found at the bottom of this file to prevent selecting folder children with 'leaving other tracks selected' scripts when this setting is enabled because it causes flickering
-	r.SetExtState('EXPAND SELECTED TRACKS', 'INCLUDE_FOLDER_CHILDREN', INCLUDE_FOLDER_CHILDREN, false) -- persist false
-	else -- delete on exit so the scripts can be used independently of this script without being hindered by its setting
-	r.DeleteExtState('EXPAND SELECTED TRACKS', 'INCLUDE_FOLDER_CHILDREN', true) -- persist true, only deletes the key, the section will remain intact and it's required because it also contains 'DATA' key
-	end
 end
 
 
@@ -238,6 +251,18 @@ local Y = r.GetMediaTrackInfo_Value(uppermost_tr, 'I_TCPY')
 end
 
 
+function Link_To_New_Project()
+-- if orig proj tab has been closed
+local i = 0
+	repeat
+	local p = r.EnumProjects(i)
+		if p == proj then return end -- original project is still open
+	i = i+1
+	until not p
+return r.EnumProjects(-1) -- original project wasn't found, switch to currently open
+end
+
+
 MAX_HEIGHT = tonumber(MAX_HEIGHT) and math.floor(MAX_HEIGHT+0) > 0 and math.floor(MAX_HEIGHT+0) or 100
 MIN_HEIGHT = tonumber(MIN_HEIGHT) and math.floor(MIN_HEIGHT+0) > 0 and math.floor(MIN_HEIGHT+0)
 local stored_min_height, last_theme, incl_fold_children = r.GetExtState('EXPAND SELECTED TRACKS', 'DATA'):match('(.-);(.+)')
@@ -251,24 +276,42 @@ MIN_HEIGHT = (not MIN_HEIGHT or MIN_HEIGHT < theme_min_tr_height) and theme_min_
 	Error_Tooltip('\n\n maximum height is smaller than \n\n    or equal to minimum height \n\n')
 	return r.defer(function() do return end end) end
 
+INCLUDE_FOLDER_CHILDREN = #INCLUDE_FOLDER_CHILDREN:gsub(' ','') > 0
+IGNORE_OTHER_PROJECTS = #IGNORE_OTHER_PROJECTS:gsub(' ','') > 0
+
 local _, scr_name, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
-Re_Set_Toggle_State(sect_ID, cmd_ID, 1, INCLUDE_FOLDER_CHILDREN)
+Re_Set_Toggle_State(sect_ID, cmd_ID, 1)
 
-INCLUDE_FOLDER_CHILDREN = #INCLUDE_FOLDER_CHILDREN:gsub(' ','') > 0 -- is stored and cleared as ext state with Re_Set_Toggle_State() function concurrently with toggle state setting to be accessible to the auxiliary scripts 'Go to next/previous track leaving other tracks selected' found at the bottom of this file
-
+proj = r.EnumProjects(-1) -- -1 current, project the script was launched under
+local new_tab, master_vis = proj
 
 function MAIN()
 
 --r.PreventUIRefresh(1) -- prevents monitoring track height change when actions are applied since prevents actual height change
 
-	if r.CountSelectedTracks(0) > 0  and ( not t or t and Selection_Changed(t) )
-	then
-	t = Get_Sel_Tracks()
-	Manage_Track_Heights(MIN_HEIGHT, MAX_HEIGHT, theme_min_tr_height)
+-- re-ordering proj tabs doesn't affect linkage
+proj = IGNORE_OTHER_PROJECTS and r.EnumProjects(-1) ~= proj and Link_To_New_Project() or proj -- switch to currently open proj if the orig one wasn't found
+
+	if IGNORE_OTHER_PROJECTS then
+		if r.EnumProjects(-1) ~= new_tab then -- another project tab, store its current Master track visibility
+		master_vis = r.GetMasterTrackVisibility()&1 -- store current Master track visibility under new tab
+		new_tab = r.EnumProjects(-1) -- update to make this condition false in subsequent cycles
+		elseif master_vis and master_vis ~= r.GetMasterTrackVisibility()&1 then -- re-link to another project if its Master track visibility has been toggled
+		proj, master_vis = r.EnumProjects(-1), nil -- update project, reset Master track visibility status
+		end
 	end
 
-	if r.CountTracks(0) ~= tr_cnt_init then t = nil -- prevents error in Selection_Changed(t) after deletion of selected tracks because they cannot be found in the table // validating track pointer inside the function doesn't work because it doesn't condition table update like t being nil does
-	tr_cnt_init = r.CountTracks(0)
+	if IGNORE_OTHER_PROJECTS and r.EnumProjects(-1) == proj or not IGNORE_OTHER_PROJECTS then
+	
+		if r.CountSelectedTracks(0) > 0  and ( not t or t and Selection_Changed(t) ) then
+		t = Get_Sel_Tracks()
+		Manage_Track_Heights(MIN_HEIGHT, MAX_HEIGHT, theme_min_tr_height)
+		end
+
+		if r.CountTracks(0) ~= tr_cnt_init then t = nil -- prevents error in Selection_Changed(t) after deletion of selected tracks because they cannot be found in the table // validating track pointer inside the function doesn't work because it doesn't condition table update like t being nil does
+		tr_cnt_init = r.CountTracks(0)
+		end
+		
 	end
 
 r.defer(MAIN)
