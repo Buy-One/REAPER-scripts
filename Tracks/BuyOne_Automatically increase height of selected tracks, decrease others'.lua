@@ -35,7 +35,7 @@ About:	The script works similalrly to the combination of preference
 -- Enable this setting by inserting any alphanumeric
 -- character between the quotation marks so the script can be used
 -- then configure the settings below
-ENABLE_SCRIPT = "1"
+ENABLE_SCRIPT = ""
 
 -- Insert values for Max and Min track heights between the quotes;
 -- if empty, invalid or 0, default to 100
