@@ -7,6 +7,7 @@ Changelog: v2.1 #Added IGNORE_OTHER_PROJECTS setting
 	   v2.0 #Complete code overhaul. Glitches and limitations stemming from previous design have been fixed
 Licence: WTFPL
 REAPER: at least v5.962
+Screenshots: https://github.com/Buy-One/screenshots/blob/main/Automatically%20increase%20height%20of%20selected%20tracks%2C%20decrease%20others'.gif
 About:	The script works similalrly to the combination of preference  
         'Always show full control panel on armed track' and option 
 	'Automatic record-arm when track selected' for any track in that 
