@@ -12,8 +12,9 @@ About:	The script works similalrly to the combination of preference
         'Always show full control panel on armed track' and option 
 	'Automatic record-arm when track selected' for any track in that 
 	it expands selected track TCP up to the size specified 
-	in the USER SETTINGS and contracts all de-selected TCPs down to the size 
-	specified in the USER SETTINGS. 
+        in the USER SETTINGS and contracts all de-selected TCPs down to the size 
+	specified in the USER SETTINGS. A similar stock feature is MCP double-click 
+	which makes the TCP of selected track expand and the rest contract.
 
 	After launch the script runs in the background.  
 	To stop it start it again and interact with the 'ReaScript task control' dialogue.
