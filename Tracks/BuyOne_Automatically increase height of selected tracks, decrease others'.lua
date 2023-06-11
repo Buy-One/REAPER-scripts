@@ -14,7 +14,7 @@ About:	The script works similalrly to the combination of preference
 	it expands selected track TCP up to the size specified 
         in the USER SETTINGS and contracts all de-selected TCPs down to the size 
 	specified in the USER SETTINGS. A similar stock feature is MCP double-click 
-	which makes the TCP of selected track expand and the rest contract.
+	which makes the TCP of selected track expand and those of the rest contract.
 
 	After launch the script runs in the background.  
 	To stop it start it again and interact with the 'ReaScript task control' dialogue.
