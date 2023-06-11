@@ -27,12 +27,16 @@ About: 	The script allows running up to 7 different actions/functions depending
 	addresses listed in the Website tag above and this will be looked into.
 
 	Bind to a shortcut so that the mouse cursor isn't engaged in clicking
-	a toolbar button or a menu item.  
+	a toolbar button or a menu item, or to a mouse modifier in the Track context 
+	to be able to execute the script by clicking within the empty space 
+	of the Arrange canvas.
 
 	Unless it's an action which targets track and assigned to a slot hard 
 	linked to the TCP, it's not recommended running actions which target 
 	objects under the mouse cursor because by placing the mouse cursor within 
-	a particular zone you may inadvertently target the wrong object.
+	a particular zone you may inadvertently target the wrong object or not
+	be able to target it at all if the script is bound to a mouse modifier
+	in the Track context.
 
 	If you're going to use the script in the MIDI Editor as well, in which
 	case it doesn't have to be located in the MIDI Editor section of the 
