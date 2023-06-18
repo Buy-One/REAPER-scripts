@@ -82,7 +82,6 @@ local function Get_TAG_Val() -- fetch from the main script
 
 local info = debug.getinfo(1,'S')
 local fx_lock_script_path = info.source:match[[^@?(.*[\/])[^\/]-$]]
---Msg(fx_lock_script_path)
 local f = io.open(fx_lock_script_path..'BuyOne_Lock FX and FX chains (guide inside).lua', 'r')
 	if f then
 	content = f:read('*a')
@@ -377,7 +376,6 @@ local mon_fx = retval == 0 and r.TrackFX_GetRecChainVisible(r.GetMasterTrack(0))
 	local tagged = DETECT_TAG(TAG)
 	undo_inset1 = not tagged and 'Append tag to' or 'Remove tag from'
 	undo_inset2 = ' FX names in selected objects'
-	Msg(tagged)
 	APPND_OR_REMOVE_IN_SEL_OBJ(TAG, tagged)
 	end
 
