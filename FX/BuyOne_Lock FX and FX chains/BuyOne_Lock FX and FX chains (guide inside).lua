@@ -42,8 +42,9 @@ their position unless the number of FX upstream of the tagged FX is reduced in w
 position is updated and they remain locked at their new position. When all FX in the chain are tagged,
 new FX can only be inserted at the bottom of the chain.
 
-While FX are locked in the track FX chain they can still be reordered in the Mixer FX insert slots if
-the FX chain is hidden.
+While FX are locked in the track FX chain they can still be reordered by dragging the Mixer or TCP FX 
+insert slots if the FX chain is hidden. But once the FX chain is opened the order dictated by the script 
+will be restored.
 
 To add the lock tag to the Video processor name, insert it in the very first line of its preset code
 (the first commented out line), e.g. //X De-interlace track/item
