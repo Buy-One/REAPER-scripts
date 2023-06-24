@@ -9,83 +9,83 @@ REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
 About: 	▒ THE CONCEPT
 
-    		The script only works when exactly one toolbar is open in 
-    		the relevant context (besides main toolbars), that is either 
-    		in Arrange or in the MIDI Editor contexts, thus at any given 
-    		moment it only tolerates the total of two open toolbars.   
-    		If several toolbars per context were allowed, then when cycling 
-    		would reach another toolbar already open, the latter would be 
-    		auto-closed and the focused toolbar content would be switched 
-    		to it, which is messy.  
-    		The script is designed to allow freeing up some screen real estate 
-    		by always having only one toolbar open per context so using it 
-    		with multiple toolbars also defeats its purpose.
-    		
-    		To be able to use the script in the MIDI Editor context it must 
-    		be imported into the MIDI Editor section of the Action list as well.  
-    		To be able to switch to a MIDI toolbar the MIDI Editor must be 
-    		active, that is have keyboard focus for which it's enough to click 
-    		anywhere within it.
-    		
-    		▒ SETTING THE FOCUS
-    		
-    		If the extensions are installed a toolbar appropriate for the context 
-    		is brought into focus automatically, so no additional moves are 
-    		required. Otherwise the script targets the last focused toolbar 
-    		regardless of whether it is visibly focused currently (whether its 
-    		title bar is colorized) and whether any other window (other than 
-    		a toolbar) is focused (its title bar is colorized).   
-    		To bring a floating toolbar into focus its body or the title bar must 
-    		be clicked, this also applies to a toolbar docked in a floating docker.   
-    		To bring into focus a toolbar docked in a docker attached to the main 
-    		window its body must be clicked (it doesn't have a title bar), clicking 
-    		a docked toolbar tab doesn't change focus.
-    		
-    		▒ WAYS TO RUN THE SCRIPT
-    		
-    		If you prefer to run the script with a shortcut there're two options 
-    		which are dictated by the fact that keyboard input is blocked when 
-    		a toolbar is visibly in focus, that is when its title bar is colorized 
-    		(REAPER limitation https://forum.cockos.com/showthread.php?t=279932).  
-    		The position of the mouse cursor is immaterial.   
-    		
-    		1) On the one hand you can make the scope of the shortcut in the Main 
-    		section of the Action list global which allows running the script in 
-    		Arrange context regardless of a toolbar being in focus. However in this 
-    		case the shortcut the script is bound to in the MIDI Editor section of 
-    		the Action list must be different otherwise the global shortcut will 
-    		have priority and you won't be able to run the script from the MIDI 
-    		Editor context (global scope isn't supported for MIDI Editor section 
-    		shortcuts).  
-    		2) On the other hand the script can be bound to identical non-global 
-    		shortcuts in both contexts but then to be able to run the script the 
-    		toolbar will have to be explcitly not in focus. The focus must be set 
-    		manually to either the main window or the MIDI Editor window by clicking 
-    		them, depending on the context you wish to manipulate the toolbar in.
-    		This limitation does't apply to toolbars docked in the floating docker 
-    		in Arrange context because visual focus of the docker window doesn't 
-    		inhibit the functionality. Neither does the aforementioned limitation 
-    		apply to the mousewheel but there's another detailed in the description 
-    		of the MOUSEWHEEL setting in the USER SETTINGS.
-    		
-    		The script cannot be run from a toolbar button in the main toolbar 
-    		in either context, becuse main toolbar can be switched as well if 
-    		comes into focus which happens exactly at the moment of a button click 
-    		and the script has a safeguard against switching the main toolbar 
-    		to another one because this is likely not what you'd want happening.   
-    		Running the script with a button on all other toolbars though possible 
-    		doesn't make much sense because this way you might as well run native 
-    		'switch to toolbar' actions, although admittedly to be able to switch 
-    		back and forth two buttons will be needed which takes additional space.		
-    		
-    		▒ LAST ACTIVE TOOLBAR STORAGE
-    		
-    		The script stores the last open toolbar for each context and opens it 
-    		for such context if a toolbar appropriate for it is not already open. 
-    		If no toolbar has been stored yet for a context, toolbar 1 will be opened. 
-    		To store these data with the project file so that they're available in 
-    		the next session make sure to save the project at least before closing it.
-		
+	The script only works when exactly one toolbar is open in 
+	the relevant context (besides main toolbars), that is either 
+	in Arrange or in the MIDI Editor contexts, thus at any given 
+	moment it only tolerates the total of two open toolbars.   
+	If several toolbars per context were allowed, then when cycling 
+	would reach another toolbar already open, the latter would be 
+	auto-closed and the focused toolbar content would be switched 
+	to it, which is messy.  
+	The script is designed to allow freeing up some screen real estate 
+	by always having only one toolbar open per context so using it 
+	with multiple toolbars also defeats its purpose.
+	
+	To be able to use the script in the MIDI Editor context it must 
+	be imported into the MIDI Editor section of the Action list as well.  
+	To be able to switch to a MIDI toolbar the MIDI Editor must be 
+	active, that is have keyboard focus for which it's enough to click 
+	anywhere within it.
+	
+	▒ SETTING THE FOCUS
+	
+	If the extensions are installed a toolbar appropriate for the context 
+	is brought into focus automatically, so no additional moves are 
+	required. Otherwise the script targets the last focused toolbar 
+	regardless of whether it is visibly focused currently (whether its 
+	title bar is colorized) and whether any other window (other than 
+	a toolbar) is focused (its title bar is colorized).   
+	To bring a floating toolbar into focus its body or the title bar must 
+	be clicked, this also applies to a toolbar docked in a floating docker.   
+	To bring into focus a toolbar docked in a docker attached to the main 
+	window its body must be clicked (it doesn't have a title bar), clicking 
+	a docked toolbar tab doesn't change focus.
+	
+	▒ WAYS TO RUN THE SCRIPT
+	
+	If you prefer to run the script with a shortcut there're two options 
+	which are dictated by the fact that keyboard input is blocked when 
+	a toolbar is visibly in focus, that is when its title bar is colorized 
+	(REAPER limitation https://forum.cockos.com/showthread.php?t=279932).  
+	The position of the mouse cursor is immaterial.   
+	
+	1) On the one hand you can make the scope of the shortcut in the Main 
+	section of the Action list global which allows running the script in 
+	Arrange context regardless of a toolbar being in focus. However in this 
+	case the shortcut the script is bound to in the MIDI Editor section of 
+	the Action list must be different otherwise the global shortcut will 
+	have priority and you won't be able to run the script from the MIDI 
+	Editor context (global scope isn't supported for MIDI Editor section 
+	shortcuts).  
+	2) On the other hand the script can be bound to identical non-global 
+	shortcuts in both contexts but then to be able to run the script the 
+	toolbar will have to be explcitly not in focus. The focus must be set 
+	manually to either the main window or the MIDI Editor window by clicking 
+	them, depending on the context you wish to manipulate the toolbar in.
+	This limitation does't apply to toolbars docked in the floating docker 
+	in Arrange context because visual focus of the docker window doesn't 
+	inhibit the functionality. Neither does the aforementioned limitation 
+	apply to the mousewheel but there's another detailed in the description 
+	of the MOUSEWHEEL setting in the USER SETTINGS.
+	
+	The script cannot be run from a toolbar button in the main toolbar 
+	in either context, becuse main toolbar can be switched as well if 
+	comes into focus which happens exactly at the moment of a button click 
+	and the script has a safeguard against switching the main toolbar 
+	to another one because this is likely not what you'd want happening.   
+	Running the script with a button on all other toolbars though possible 
+	doesn't make much sense because this way you might as well run native 
+	'switch to toolbar' actions, although admittedly to be able to switch 
+	back and forth two buttons will be needed which takes additional space.		
+	
+	▒ LAST ACTIVE TOOLBAR STORAGE
+	
+	The script stores the last open toolbar for each context and opens it 
+	for such context if a toolbar appropriate for it is not already open. 
+	If no toolbar has been stored yet for a context, toolbar 1 will be opened. 
+	To store these data with the project file so that they're available in 
+	the next session make sure to save the project at least before closing it.
+	
 ]]
 
 -----------------------------------------------------------------------------
@@ -499,13 +499,8 @@ MOUSEWHEEL = #MOUSEWHEEL:gsub(' ','') > 0
 MOUSEWHEEL_REVERSE = #MOUSEWHEEL_REVERSE:gsub(' ','') > 0
 MOUSEWHEEL_SENSITIVITY = MOUSEWHEEL_SENSITIVITY:gsub(' ','')
 MOUSEWHEEL_SENSITIVITY = tonumber(MOUSEWHEEL_SENSITIVITY) and tonumber(MOUSEWHEEL_SENSITIVITY) > 1 and math.floor(math.abs(tonumber(MOUSEWHEEL_SENSITIVITY))) or 1
+MOUSEWHEEL_SENSITIVITY = not MOUSEWHEEL and val == 63 and nil or MOUSEWHEEL_SENSITIVITY -- if mousewheel isn't enabled but mousewheel sensitivity is, disable it, otherwise if it's greater than 4 the script executed with a shortcut won't be triggered at the first run because the expected value will be at least 5x15 = 75 while val returned by get_action_context() will only produce 63 per execution, it will only be triggered on the next run since 63x2 = 126 > 75
 DIRECTION = #DIRECTION:gsub(' ','') > 0
-
-	if MOUSEWHEEL and MOUSEWHEEL_SENSITIVITY > 4 and val == 63 then -- placed here because these settings affect the switch routine, there's no point in displaying the message earlier as the script might get aborted before reaching the switch routine // val stems from get_action_context(); val is ±15 when mousewheel is used and 63 in all other cases, when mousewheel is enabled and its sensitivity setting is 5 the expected sum to trigger action is 15x5 = 75, therefore if the script is not run with the mousewheel the action won't be triggered due to 63 being less than 75, but it will on the next run since 63x2 = 126 > 75, if the sensitivity is 4, that is 15x4 = 60, this will be enough to trigger action since the first run produces 63
-	local function s(n) return (' '):rep(n) end
-	Error_Tooltip('\n\n'..s(4)..'since the script is executed \n\n\t'..s(6)..'with a shortcut \n\n while the mousewheel is enabled \n\n\t'..s(4)..'and its sensitivity \n\n\t'..s(5)..'is greater than 4, \n\n  it won\'t work at the first run \n\n',1,1) -- caps, spaced true
-	end
-
 
 	if MOUSEWHEEL and Process_Mousewheel_Sensitivity(val, cmdID_orig, MOUSEWHEEL_SENSITIVITY)
 	or not MOUSEWHEEL then
