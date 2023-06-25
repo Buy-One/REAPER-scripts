@@ -135,7 +135,9 @@ MOUSEWHEEL_REVERSE = ""
 
 -- Between the quotes insert number of nudges to effect
 -- switch to next/previous toolbar;
--- normally a single scroll consists of 5-6 nudges
+-- the higher the number the lower the sensitivity;
+-- normally a single scroll consists of 5-6 nudges;
+-- when empty the sensitivity is at the maximum, i.e. 1
 MOUSEWHEEL_SENSITIVITY = ""
 
 -----------------------------------------------------------------------------
@@ -499,7 +501,7 @@ MOUSEWHEEL = #MOUSEWHEEL:gsub(' ','') > 0
 MOUSEWHEEL_REVERSE = #MOUSEWHEEL_REVERSE:gsub(' ','') > 0
 MOUSEWHEEL_SENSITIVITY = MOUSEWHEEL_SENSITIVITY:gsub(' ','')
 MOUSEWHEEL_SENSITIVITY = tonumber(MOUSEWHEEL_SENSITIVITY) and tonumber(MOUSEWHEEL_SENSITIVITY) > 1 and math.floor(math.abs(tonumber(MOUSEWHEEL_SENSITIVITY))) or 1
-MOUSEWHEEL_SENSITIVITY = not MOUSEWHEEL and val == 63 and nil or MOUSEWHEEL_SENSITIVITY -- if mousewheel isn't enabled but mousewheel sensitivity is, disable it, otherwise if it's greater than 4 the script executed with a shortcut won't be triggered at the first run because the expected value will be at least 5x15 = 75 while val returned by get_action_context() will only produce 63 per execution, it will only be triggered on the next run since 63x2 = 126 > 75
+MOUSEWHEEL_SENSITIVITY = MOUSEWHEEL and val == 63 and 1 or MOUSEWHEEL_SENSITIVITY -- if mousewheel and mousewheel sensitivity are enabled but the script is run via a shortcut (val returned by get_action_context() is 63), disable the mousewheel sensitivity otherwise if it's greater than 4 the script won't be triggered at the first run because the expected value will be at least 5x15 = 75 (val returned by get_action_context() is ±15) while val will only produce 63 per execution, it will only be triggered on the next run since 63x2 = 126 > 75
 DIRECTION = #DIRECTION:gsub(' ','') > 0
 
 	if MOUSEWHEEL and Process_Mousewheel_Sensitivity(val, cmdID_orig, MOUSEWHEEL_SENSITIVITY)
