@@ -21,11 +21,15 @@ About: 	▒ THE CONCEPT
 	by always having only one toolbar open per context so using it 
 	with multiple toolbars also defeats its purpose.
 	
-	To be able to use the script in the MIDI Editor context it must 
-	be imported into the MIDI Editor section of the Action list as well.  
-	To be able to switch to a MIDI toolbar the MIDI Editor must be 
-	active, that is have keyboard focus for which it's enough to click 
-	anywhere within it.
+	To be able to use the script in the MIDI Editor context it must
+	be imported into the MIDI Editor section of the Action list as well.
+	To be able to switch to a MIDI toolbar and switch between MIDI 
+	toolbars the MIDI Editor must be active, that is have keyboard focus 
+	for which it's enough to click anywhere within it. When the MIDI 
+	Editor is first open it becomes active automatically. Once the MIDI 
+	Editor is closed Arrange context automatically becomes active. 
+	While the MIDI Editor is open contexts can be switched by clicking
+	within the Arrange or the MIDI Editor.
 	
 	▒ SETTING THE FOCUS
 	
@@ -42,41 +46,48 @@ About: 	▒ THE CONCEPT
 	a docked toolbar tab doesn't change focus.
 	
 	▒ WAYS TO RUN THE SCRIPT
-	
-	If you prefer to run the script with a shortcut there're two options 
-	which are dictated by the fact that keyboard input is blocked when 
-	a toolbar is visibly in focus, that is when its title bar is colorized 
-	(REAPER limitation https://forum.cockos.com/showthread.php?t=279932).  
-	The position of the mouse cursor is immaterial.   
-	
-	1) On the one hand you can make the scope of the shortcut in the Main 
-	section of the Action list global which allows running the script in 
-	Arrange context regardless of a toolbar being in focus. However in this 
-	case the shortcut the script is bound to in the MIDI Editor section of 
-	the Action list must be different otherwise the global shortcut will 
-	have priority and you won't be able to run the script from the MIDI 
-	Editor context (global scope isn't supported for MIDI Editor section 
+
+	If you prefer to run the script with a shortcut there're two options
+	which are dictated by the fact that keyboard input is blocked when
+	a toolbar is visibly in focus, that is when its title bar is colorized
+	(REAPER limitation https://forum.cockos.com/showthread.php?t=279932).
+	The position of the mouse cursor is immaterial.
+
+	1) On the one hand you can make the scope of the shortcut in the Main
+	section of the Action list global which allows running the script in
+	Arrange context regardless of a toolbar being in focus. However in this
+	case the shortcut the script is bound to in the MIDI Editor section of
+	the Action list must be different otherwise the global shortcut will
+	have priority and you won't be able to run the script from the MIDI
+	Editor context (global scope isn't supported for MIDI Editor section
 	shortcuts).  
-	2) On the other hand the script can be bound to identical non-global 
-	shortcuts in both contexts but then to be able to run the script the 
-	toolbar will have to be explcitly not in focus. The focus must be set 
-	manually to either the main window or the MIDI Editor window by clicking 
-	them, depending on the context you wish to manipulate the toolbar in.
-	This limitation does't apply to toolbars docked in the floating docker 
-	in Arrange context because visual focus of the docker window doesn't 
-	inhibit the functionality. Neither does the aforementioned limitation 
-	apply to the mousewheel but there's another detailed in the description 
-	of the MOUSEWHEEL setting in the USER SETTINGS.
+	When extensions are installed the toolbar is never left in focus 
+	therefore using a shortcut with global scope is pointless.   
+	2) On the other hand the script can be bound to identical non-global
+	shortcuts in both contexts but then to be able to run the script the
+	toolbar will have to be explcitly not in focus.    
+	In both abovelisted scenarios when the MIDI Editor is open the focus 
+	must be set manually to either the Arrange or the MIDI Editor window 
+	by clicking them, depending on the context you wish to manipulate the 
+	toolbar in. When the MIDI Editor is closed the script defaults to the 
+	Arrange context.  
 	
-	The script cannot be run from a toolbar button in the main toolbar 
-	in either context, becuse main toolbar can be switched as well if 
-	comes into focus which happens exactly at the moment of a button click 
-	and the script has a safeguard against switching the main toolbar 
-	to another one because this is likely not what you'd want happening.   
-	Running the script with a button on all other toolbars though possible 
-	doesn't make much sense because this way you might as well run native 
-	'switch to toolbar' actions, although admittedly to be able to switch 
-	back and forth two buttons will be needed which takes additional space.		
+	The limitation stemming from a toolbar being in focus doesn't apply to 
+	toolbars docked in the floating docker in Arrange context because visual 
+	focus of the docker window doesn't inhibit the functionality. Neither 
+	does the aforementioned limitation apply to the mousewheel but there's 
+	another detailed in the description of the MOUSEWHEEL setting in the 
+	USER SETTINGS.
+
+	The script cannot be run from a toolbar button in the main toolbar
+	in either context, becuse main toolbar can be switched as well if
+	comes into focus which happens exactly at the moment of a button click
+	and the script has a safeguard against switching the main toolbar
+	to another one because this is likely not what you'd want happening.
+	Running the script with a button on all other toolbars though possible
+	doesn't make much sense because this way you might as well run native
+	'switch to toolbar' actions, although admittedly to be able to switch
+	back and forth two buttons will be needed which takes additional space.	
 	
 	▒ LAST ACTIVE TOOLBAR STORAGE
 	
@@ -85,7 +96,7 @@ About: 	▒ THE CONCEPT
 	If no toolbar has been stored yet for a context, toolbar 1 will be opened. 
 	To store these data with the project file so that they're available in 
 	the next session make sure to save the project at least before closing it.
-	
+		
 ]]
 
 -----------------------------------------------------------------------------
@@ -207,7 +218,7 @@ end
 
 function Find_Window_SWS(wnd_name, want_main_children)
 -- finds main window children, their siblings, their grandchildren and their siblings, including docked ones, floating windows and probably their children as well
--- want_main_children is boolean to search main window children and their children regardless of the dock being open, the dock condition in the routine is only useful fot validating visibility of windows which can be docked
+-- want_main_children is boolean to search for internal or non-dockable main window children and for their children regardless of the dock being open, the dock condition in the routine is only useful fot validating visibility of windows which can be docked
 
 -- 1. search floating toolbars with BR_Win32_FindWindowEx(), including docked
 -- https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowtexta#return-value
@@ -306,6 +317,9 @@ function Find_x_Focus_Toolbar(tb_No, midi)
 -- https://forum.cockos.com/showthread.php?t=280103
 local tb_No = tb_No and math.floor(tb_No) -- truncating decimal 0 otherwise after concatenation it's prone to giving false results
 local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Find')
+local t_open = midi and {41687, 41688, 41689, 41690, 41944, 41945, 41946, 41947} -- Toolbar: Open/close MIDI toolbar N
+or {41679, 41680, 41681, 41682, 41683, 41684, 41685, 41686, 41936, 41937, 41938,
+41939, 41940, 41941, 41942, 41943} -- Toolbar: Open/close toolbar N
 
 	if sws or js then -- if no extensions, will return what was fed in
 	local menus = r.GetResourcePath()..r.GetResourcePath():match('[\\/]')..'reaper-menu.ini'
@@ -336,9 +350,6 @@ local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Fin
 			for i = 1, len do -- construct table dynamically
 			t[i] = title..i
 			end
-		local t_open = midi and {41687, 41688, 41689, 41690, 41944, 41945, 41946, 41947} -- Toolbar: Open/close MIDI toolbar N
-		or {41679, 41680, 41681, 41682, 41683, 41684, 41685, 41686, 41936, 41937, 41938,
-		41939, 41940, 41941, 41942, 41943} -- Toolbar: Open/close toolbar N
 			if reaper_menu then
 			local patt = midi and '%[.+MIDI toolbar %d+%]' or '%[Floating toolbar %d+%]'
 				for line in io.lines(menus) do -- collect names of all toolbars in the relevant context
@@ -356,13 +367,14 @@ local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Fin
 			tb = js and JS_Window_IsVisible(tb) or sws and tb -- windows are found irrespective of their visibility, hence the validation, if only SWS ext is available the visibility is evaluated inside Find_Window_SWS()
 				if tb then tb_No = k break end -- exist as soon as inactive docked toolbar appropriate for the context is found
 			end
-			if tb_No then -- may be nil if toolbar is closed
-			local commID = t_open[tb_No]
-			local activate = r.GetToggleCommandStateEx(0, commID) == 0 and r.Main_OnCommand(commID, 0) -- activate inactive toolbar, makes the tab of a docked toolbar active
-			end
-
 		end
-
+		
+		if tb_No then -- may be nil if toolbar is closed
+		local commID = t_open[tb_No]
+		local activate = r.GetToggleCommandStateEx(0, commID) == 0 and r.Main_OnCommand(commID, 0) -- activate inactive toolbar, makes the tab of a docked toolbar active
+		end
+		
+		
 	local set_focus = js and r.JS_Window_SetFocus(tb) or sws and r.BR_Win32_SetFocus(tb)
 	-- https://forum.cockos.com/showthread.php?t=221096
 	-- https://forum.cockos.com/showthread.php?t=212174&page=5
@@ -401,6 +413,17 @@ return val == 0
 end
 
 
+
+function Close_Toolbars(midi, t_open, t_open_midi)
+local t_outgo_ctx = midi and t_open or not midi and t_open_midi
+	for k, ID in ipairs(t_outgo_ctx) do -- close all toolbars from the outgoing context
+		if r.GetToggleCommandStateEx(0,ID) == 1 then
+		r.Main_OnCommand(ID, 0)
+		end
+	end
+end
+
+
 function ACT(comm_ID, midi) -- midi is boolean
 local comm_ID = comm_ID and r.NamedCommandLookup(comm_ID)
 local act = comm_ID and comm_ID ~= 0 and (midi and r.MIDIEditor_LastFocused_OnCommand(comm_ID, false) -- islistviewcommand false
@@ -420,7 +443,14 @@ local is_new_value,filename,sectionID,cmdID_orig,mode,resolution,val = r.get_act
 local midi = sectionID == 32060
 local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Find')
 local ext = js or sws
-local tb_No, tb_No_midi = Get_Open_Toolbars()
+local tb_No, tb_No_midi = Get_Open_Toolbars() -- returns 0 if there're several open toolbars for the same context // when more than one toolbar is open for a particular context but only one is active (in the docker or floating) the rest are ignored, since only the first active toolbar is being detected, the inactive ones are only searched no active was found and extensions are installed 
+
+
+	if ONE_TOOLBAR_PER_PROJECT then
+	local tb_idx = midi and tb_No_midi or not midi and tb_No -- select toolbar number relevant for the incoming context
+	local t = midi and t_open_midi or not midi and t_open -- same to be able to evaluate incoming context toolbar state
+	SWITCHED = tb_idx and tb_idx > 0 and r.GetToggleCommandStateEx(0, t[tb_idx]) == 0 or not tb_idx -- will be used in toolbars closing routine to abort if the incoming context toolbar was inactive since there's no point in proceeding otherwise the toolbar just activated by switching from another toolbar will be switched again to the next/previous in the main routine which is counter-intuitive
+	end
 
 local ABORT = not midi and not tb_No or midi and not tb_No_midi
 
@@ -433,10 +463,10 @@ local ABORT = not midi and not tb_No or midi and not tb_No_midi
 		else -- search for toolbars from both contexts
 		tb_No, tb_No_midi = tb_No ~= 0 and Find_x_Focus_Toolbar(tb_No) or tb_No, tb_No_midi ~= 0 and Find_x_Focus_Toolbar(tb_No_midi, true) or tb_No_midi -- WHEN ONE_TOOLBAR_PER_PROJECT SETT IS ENABLED BOTH TOOLBAR NUMBERS MUST BE RETURNED REGARDLESS OF THE INCOMING CONTEXT SO THAT THE ONE FROM THE OUTGOING CONTEXT CAN STILL BE DETECTED AND CLOSED
 
-			if ext and not midi then -- re-set focus to the Arrange if the context isn't midi because after running Find_x_Focus_Toolbar() above it's always ends up being set to 'midiview' due to midi argument being true in its 2nd instance, which is necessary to be able to search for an open MIDI toolbars so they can be closed if actual midi context is false
-			local wnd = js and r.JS_Window_Find('trackview', true) or sws and Find_Window_SWS('trackview', true) -- want_main_children true
+		-- re-store focus of the current context after running Find_x_Focus_Toolbar() above because it may be switched inside it
+			local wnd = midi and 'midiview' or 'trackview'
+			local wnd = js and r.JS_Window_Find(wnd, true) or sws and Find_Window_SWS(wnd, true) -- want_main_children true to target 'trackview'
 			local focus = js and r.JS_Window_SetFocus(wnd) or sws and r.BR_Win32_SetFocus(wnd)
-			end
 
 		end
 	end
@@ -450,22 +480,38 @@ local cmdID = r.ReverseNamedCommandLookup(cmdID_orig):sub(-40) -- using last 40 
 		local t = midi and t_open or not midi and t_open_midi -- reverse so that toolbar from another context is closed
 		local tb_idx = midi and tb_No or not midi and tb_No_midi -- same
 		local commID = tb_idx and t[tb_idx]
-			if commID then
-				if r.GetToggleCommandStateEx(0, commID) == 1 then
+			if commID then			
+			local open = r.GetToggleCommandStateEx(0, commID) == 1
+				if open then
 				ACT(commID)
+				else -- if the outgoing context toolbar is docked and inactive, activate and close 
+				ACT(commID) ACT(commID)
 				end
 			end
 		local tb_idx = midi and tb_No_midi or not midi and tb_No -- direct relationship, to be able to set focus to the remaining toolbar
-			if ext then Find_x_Focus_Toolbar(tb_idx, midi) end -- only runs if extensions are installed
-	-- switch to a toolbar of the incoming context
-		elseif midi and not tb_No_midi and tb_No or not midi and not tb_No and tb_No_midi then -- after context change only toolbar from the outgoing context is open, switch it to one appropriate for the context
+		Close_Toolbars(midi, t_open, t_open_midi) -- close any other open toolbars from the outgoing context, won't affect docked and inactive ones since their visibility cannot be ascertained because in this case the associated open/close action toggle state is Off // must be inside each block because if placed at the top may close a single open toolbars from the outgoing context and there'll be nothing to switch
+			if ext and tb_idx > 0 then Find_x_Focus_Toolbar(tb_idx, midi) end -- re-focus toolbar and context after deletion above, only runs if extensions are installed
+	-- switch to a toolbar of the incoming context or open one
+		elseif midi and not tb_No_midi and tb_No or not midi and not tb_No and tb_No_midi then -- after context change only toolbar(s) from the outgoing context is open, switch it to one appropriate for the context or open it
 		SWITCHED = true
+		
+		-- When several outgoing context toolbars are open (toolbar number is 0), first close all, then open the incoming context toolbar, this is safer, otherwise the main toolbar main end up being switched because no other toolbar will have focus
+		-- When only one outgoing context toolbar is open, switch it to the incoming context toolbar
+		-- When there's a mix of open toolbars from different contexts, those from the outgoing context are closed, and either one from the incoming context is switched or the error mesaage is thrown if more than one are open
+		
+			if midi and tb_No == 0 or not midi and tb_No_midi == 0 then -- when there're several open from the outgoing context
+			Close_Toolbars(midi, t_open, t_open_midi) -- close any open toolbars from the outgoing context, won't affect docked and inactive ones since their visibility cannot be ascertained because in this case the associated open/close action toggle state is Off // must be inside each block because if placed at the top may close a single open toolbars from the outgoing context and there'll be nothing to switch
+			end			
 		local key = midi and 'MIDI_ED_CTX_LAST_TOOLBAR' or 'ARRANGE_CTX_LAST_TOOLBAR'
 		local ret, tb_idx = r.GetProjExtState(0, cmdID, key)
-		local tb_idx = ret == 1 and tb_idx+0 or 1 -- if not stored, open toolbar 1
-		local t = midi and t_switch_midi or not midi and t_switch_reg
+		local tb_idx = ret == 1 and math.floor(tb_idx+0)
+		local tb_idx = tb_idx and tb_idx > 0 and tb_idx or 1 -- if not stored or 0 value was stored accidentally, open toolbar 1
+		local t = midi and (tb_No > 0 and t_switch_midi or t_open_midi) or not midi and (tb_No_midi > 0 and t_switch_reg or t_open)
 		ACT(t[tb_idx])
-			if ext then Find_x_Focus_Toolbar(tb_idx, midi) end -- only runs if extensions are installed
+			if midi and tb_No > 0 or not midi and tb_No_midi > 0 then -- when there's one open from the outgoing context
+			Close_Toolbars(midi, t_open, t_open_midi)
+			end
+			if ext and tb_idx > 0 then Find_x_Focus_Toolbar(tb_idx, midi) end -- re-focus context, only runs if extensions are installed
 		r.SetProjExtState(0, cmdID, key, tb_idx) -- store the incoming context toolbar
 		local tb_No, tb_No_midi = Get_Open_Toolbars() -- evaluate the switch
 		local err = not midi and tb_No ~= tb_idx or midi and tb_No_midi ~= tb_idx -- the number of toolbar just switched to isn't what it's supposed to be
@@ -475,7 +521,7 @@ local cmdID = r.ReverseNamedCommandLookup(cmdID_orig):sub(-40) -- using last 40 
 	-- store outgoing context toolbar
 	local tb_idx = midi and tb_No or not midi and tb_No_midi
 	local key = midi and 'ARRANGE_CTX_LAST_TOOLBAR' or 'MIDI_ED_CTX_LAST_TOOLBAR' -- reverse, because storing outgoing context toolbar
-	local store = tb_idx and r.SetProjExtState(0, cmdID, key, tb_idx) -- store the one which was closed or switched, if any
+	local store = tb_idx and tb_idx ~= 0 and r.SetProjExtState(0, cmdID, key, tb_idx) -- store the one which was closed or switched, if any, toolbar idx is 0 when more than one toolbar is open for the same context
 		if SWITCHED then return r.defer(no_undo()) end -- abort since there's no point in proceeding otherwise the toolbar just switched to will be switched again to the next/previous in the main routine which is counter-intuitive
 	end
 
@@ -503,6 +549,7 @@ MOUSEWHEEL_SENSITIVITY = MOUSEWHEEL_SENSITIVITY:gsub(' ','')
 MOUSEWHEEL_SENSITIVITY = tonumber(MOUSEWHEEL_SENSITIVITY) and tonumber(MOUSEWHEEL_SENSITIVITY) > 1 and math.floor(math.abs(tonumber(MOUSEWHEEL_SENSITIVITY))) or 1
 MOUSEWHEEL_SENSITIVITY = MOUSEWHEEL and val == 63 and 1 or MOUSEWHEEL_SENSITIVITY -- if mousewheel and mousewheel sensitivity are enabled but the script is run via a shortcut (val returned by get_action_context() is 63), disable the mousewheel sensitivity otherwise if it's greater than 4 the script won't be triggered at the first run because the expected value will be at least 5x15 = 75 (val returned by get_action_context() is ±15) while val will only produce 63 per execution, it will only be triggered on the next run since 63x2 = 126 > 75
 DIRECTION = #DIRECTION:gsub(' ','') > 0
+
 
 	if MOUSEWHEEL and Process_Mousewheel_Sensitivity(val, cmdID_orig, MOUSEWHEEL_SENSITIVITY)
 	or not MOUSEWHEEL then
@@ -549,6 +596,4 @@ DIRECTION = #DIRECTION:gsub(' ','') > 0
 	local store = idx and r.SetProjExtState(0, cmdID, key, idx) -- store to be able to re-open next time if needed
 
 	return r.defer(no_undo()) end
-
-
 
