@@ -1,49 +1,70 @@
 --[[
-ReaScript Name: Link two FX parameters via parameter modulation
+ReaScript Name: BuyOne_Link two FX parameters via parameter modulation (guide inside).lua
 Author: BuyOne
-Version: 1.0
-Changelog: Initial release
+Version: 1.1
+Changelog:	#Fixed error when parameter names contain percentage symbol
+		#Updated About text
 Author URL: https://forum.cockos.com/member.php?u=134058
 Licence: WTFPL
 REAPER: at least v5.962
-About:  	The script automates the task of linking two FX parameters
-		via parameter modulation properties.
-		
-		HOW TO USE
-		
-		1. Click/touch control of FX parameter which should be the Master.  
-		2. Run the script once.  
-		The parameter data will be stored to the clipboard,
-		the script toggle state will be set to ON.  
-		If the script is linked to a toolar button the button 
-		will light up, if it's linked to a menu item, the latter
-		will be checkmarked.  
-		In the main menu at the position of Undo History, the last one
-		after Help, the name of the touched parameter will be displayed
-		for reference. Still it may prove not really informative because 
-		in VST plugins these names of parameters may differ from their 
-		names displayed in the plugin UI.  
-		3. Click/touch control of another FX parameter which should be
-		the Slave, the one to be controlled by the Master parameter.  
-		4. Run the script again.  
-		At this point the link will have been set up and the script will be reset.
-		
-		In case you forgot what has been linked to what, you can look up this 
-		info in the name of the script Undo point in the Undo History. But the
-		reservation about the parameter naming made above still applies.
-		
-		If Parameter modulation settings window of the Slave parameter is open 
-		while the link is being created its UI won't be updated. In this case 
-		to see changes, close the window and re-open it.
-		
-		To reset the script after step 2 without creating a linkage even if you're
-		already at step 3, close the focused FX chain, perform step 4 and click 'YES'
-		in the prompt which will pop up.  
-		There're a few other options which you may encounter using the script but 
-		those are less accessible.
-
-		You may also be interested in the script   
-		BuyOne_List all linked FX parameters in the project.lua
+About:  The script automates the task of linking two FX parameters
+	via parameter modulation properties.
+	
+	HOW TO USE
+	
+	1. Click/touch control of FX parameter which should be the Master.  
+	2. Run the script once.  
+	The parameter data will be stored to the clipboard,
+	the script toggle state will be set to ON.  
+	If the script is linked to a toolar button the button 
+	will light up, if it's linked to a menu item, the latter
+	will be checkmarked.  
+	In the main menu at the position of Undo History, the last one
+	after Help, the name of the touched parameter will be displayed
+	for reference. Still it may prove not really informative because 
+	in VST plugins these names of parameters may differ from their 
+	names displayed in the plugin UI.  
+	3. Click/touch control of another FX parameter which should be
+	the Slave, the one to be controlled by the Master parameter.  
+	4. Run the script again.  
+	At this point the link will have been set up and the script will be reset.
+	
+	In case you forgot what has been linked to what, you can look up this 
+	info in the name of the script Undo point in the Undo History. But the
+	reservation about the parameter naming made above still applies.
+	
+	If Parameter modulation settings window of the Slave parameter is open 
+	while the link is being created its UI won't be updated. In this case 
+	to see changes, close the window and re-open it.
+	
+	To reset the script after step 2 without creating a linkage even if you're
+	already at step 3, close the focused FX chain, perform step 4 and click 'YES'
+	in the prompt which will pop up.  
+	There're a few other options which you may encounter using the script but 
+	those are less accessible.
+	
+	To re-apply the current linkage in case there's a need to change the 
+	Master parameter base value, follow the steps above and interact with 
+	the prompt.  
+	
+	To link a Slave parameter to another Master parameter follow the steps 
+	above and interact with the prompt.  
+	
+	TO UNLINK PARAMETERS
+	
+	1. Open the FX chain window if it's not already open.  
+	2. Click the Slave parameter control.  
+	3. Run the script.  
+	4. In the prompt which will pop up informing that the parameter is already 
+	linked, click 'No'.  
+	5. Run the script again and click 'No' in the prompt which will pop up.
+	
+			
+	Be aware that take FX parameter modulation link only works when 
+	the transport is running.
+	
+	You may also be interested in the script   
+	BuyOne_List all linked FX parameters in the project.lua
 ]]
 
 
@@ -128,7 +149,7 @@ function Err_mess(slave) -- if chunk size limit is exceeded and SWS extension is
 end
 
 
-function SetObjChunk(retval, obj, obj_chunk) -- retval stems from r.GetFocusedFX(), value 0 is only considered at the pasting stage because in the copying stage it's error caught before the function
+function SetObjChunk(retval, obj, obj_chunk) -- retval stems from r.GetFocusedFX(), value 0 is only considered at the pasting stage because in the copying stage its error is caught before the function
 		if not (obj and obj_chunk) then return end
 	return retval == 1 and r.SetTrackStateChunk(obj, obj_chunk, false) or r.SetItemStateChunk(obj, obj_chunk, false)
 end
@@ -196,8 +217,11 @@ local chunk, retval, obj, take, fx_GUID, fx_num, parm_num, src_fx_num, src_parm_
 		local PLINK = PROGRAMENV and PROGRAMENV:match('PLINK.-(%d+:%-?%d+ %-?%d+).->')
 		local PROGRAMENV_new = PLINK and PROGRAMENV:gsub(Esc(PLINK), src_fx_num..':'..fx_num_diff..' '..src_parm_num) or
 		PROGRAMENV and PROGRAMENV:gsub('>', 'PLINK 1 '..src_fx_num..':'..fx_num_diff..' '..src_parm_num..' 0\n>') or '<PROGRAMENV '..parm_num..' 0\nPARAMBASE 0\nLFO 0\nLFOWT 1 1\nAUDIOCTL 0\nAUDIOCTLWT 1 1\nPLINK 1 '..src_fx_num..':'..fx_num_diff..' '..src_parm_num..' 0\n>'
+		PROGRAMENV_new = PROGRAMENV_new:match('%%') and PROGRAMENV_new:gsub('%%', '%%%%') or PROGRAMENV_new -- escape before using with gsub
 		local sub_chunk = PARMENV and PARMENV..'\n'..PROGRAMENV_new or fx_GUID..'\n'..PROGRAMENV_new -- attach param mod section to env section or to the FX GUID
+		sub_chunk = sub_chunk:match('%%') and sub_chunk:gsub('%%', '%%%%') or sub_chunk -- escape before using with gsub
 		local chunk_new = PROGRAMENV and chunk:gsub(Esc(PROGRAMENV), PROGRAMENV_new) or PARMENV and chunk:gsub(Esc(PARMENV), sub_chunk) or chunk:gsub(Esc(fx_GUID), sub_chunk) -- either update <PROGRAMENV section if present or update having attached to the envelope if present or having attached to the FX GUID
+		chunk_new = chunk_new:gsub('%%%%', '%%') -- restore any escaped %
 		SetObjChunk(retval, obj, chunk_new)
 		end
 
