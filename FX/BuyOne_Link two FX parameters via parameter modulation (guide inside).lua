@@ -4,7 +4,7 @@ Author: BuyOne
 Version: 1.1
 Changelog:	#Fixed error when parameter names contain percentage symbol
 		#Updated About text
-Author URL: https://forum.cockos.com/member.php?u=134058
+Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v5.962
 About:  The script automates the task of linking two FX parameters
