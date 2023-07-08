@@ -7,67 +7,72 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script is designed to be a one stop shop for object coloration
-    		with the different random colors in REAPER. It colors objects randomly 
-    		according to 3 criteria: being encolsed within razor edit area, 
-    		within time selection and being selected.  
-    		The objects are project markers and regions, take markers, items/takes
-    		and tracks.  
-    		The criteria are evaluated in the following order:   
-    		razor edit areas+time selection, razor edit areas, time selection, 
-    		item selection, track selection.  
-    		When one criterion is not met, the next one is evaluated.  
-    		
-    		Razor edit areas are relevant for project markers and regions and take
-    		markers. To color these enclose them within razor edit areas. The 
-    		multiplicity of razor edit ares allows coloration of non-contiguous 
-    		objects. For region color to be affected by the script its start or 
-    		end ust be enclosed within a razor edit area or coincide with either 
-    		of its edges. The same applies to markers with the exception of the 
-    		end which they don't have. In multi-take items all take markers in all 
-    		takes are affected as long as they fall within razor edit area bounds.
-    		
-    		For project markers and regions and take markers time selection is also 
-    		relevant, however time selection only allows coloring non-contiguos
-    		objects. Like in the case of razor edit areas objects must be either
-    		encolsed within time selection or conicide with either of its edges.
-    		To affect take markers the item must be selected. In multi-take items 
-    		only markers in the active take are affected.
-    		
-    		Item selection only relevant for items and track selection is only 
-    		relevant for tracks. By default if item consists of multiple takes
-    		the color is applied to the active take. This can be changed in the
-    		USER SETTINGS.   
-    		This particular script has another criterion for items which is razor
-    		edit area + time selection which instructs the script to apply different
-    		random colors to all item takes. If there's only one take in an item 
-    		the random color will be applied to the take and not the item. When this
-    		criterion is met ALWAYS_COLOR_ITEM setting in the USER SETTINGS has no
-    		effect. To activate this criterion first create time selection which 
-    		includes at least 1 target item (it seems impossible to keep razor edit 
-    		areas and create time selection, hence it must come first), then create 
-    		razor edit areas over all items to be affected by the script. Neither 
-    		the time selection nor a razor edit area has to cover the entire item.
-    	
-    		
-    		Select target objects using the means described above and run the script.
-    		
-    		When selected items are being colored they will appear blinking once.
-    		That's done on purpose to reveal the new color, because depending on
-    		the theme selection color may mask the actual item/take color, so without
-    		temporarily clearing the selection automatically, in order to assess the
-    		coloration result the selection would have to be cleared manually and then
-    		re-stored if the result wasn't satistactory.
-    		
-    		
-    		If you happen to forget what criteria are applied to which object 
-    		type, run the script with a shortcut having placed the mouse cursor 
-    		within 100 px of the left edge of the screen (not REAPER window) to 
-    		display a hint. The hint can only be displayed before the color picker 
-    		has been loaded.
-    		
-    		Check out also:  
-    		BuyOne_Apply color to objects (guide inside).lua  
-    		BuyOne_Apply same random color to objects (guide inside).lua
+	with the different random colors in REAPER. It colors objects randomly 
+	according to 3 criteria: being encolsed within razor edit area, 
+	within time selection and being selected.  
+	The objects are project markers and regions, take markers, items/takes
+	and tracks.  
+	The criteria are evaluated in the following order:  
+	razor edit areas+time selection, razor edit areas, time selection, 
+	item selection, track selection. When one criterion is not met, the 
+	next one is evaluated.  
+	Thus first, objects within razor areas + time selection are targeted, 
+	absent time selection objects within razor edit areas are targeted, 
+	absent razor edit areas objects within time selection are targeted, 
+	absent time selection selected items are targeted and absent selected 
+	items selected tracks are targeted.
+	
+	Razor edit areas are relevant for project markers and regions and take
+	markers. To color these enclose them within razor edit areas. The 
+	multiplicity of razor edit ares allows coloration of non-contiguous 
+	objects. For region color to be affected by the script its start or 
+	end ust be enclosed within a razor edit area or coincide with either 
+	of its edges. The same applies to markers with the exception of the 
+	end which they don't have. In multi-take items all take markers in all 
+	takes are affected as long as they fall within razor edit area bounds.
+	
+	For project markers and regions and take markers time selection is also 
+	relevant, however time selection only allows coloring non-contiguos
+	objects. Like in the case of razor edit areas objects must be either
+	encolsed within time selection or conicide with either of its edges.
+	To affect take markers the item must be selected. In multi-take items 
+	only markers in the active take are affected.
+	
+	Item selection only relevant for items and track selection is only 
+	relevant for tracks. By default if item consists of multiple takes
+	the color is applied to the active take. This can be changed in the
+	USER SETTINGS.   
+	This particular script has another criterion for items which is razor
+	edit area + time selection which instructs the script to apply different
+	random colors to all item takes. If there's only one take in an item 
+	the random color will be applied to the take and not the item. When this
+	criterion is met ALWAYS_COLOR_ITEM setting in the USER SETTINGS has no
+	effect. To activate this criterion first create time selection which 
+	includes at least 1 target item (it seems impossible to keep razor edit 
+	areas and create time selection, hence it must come first), then create 
+	razor edit areas over all items to be affected by the script. Neither 
+	the time selection nor a razor edit area has to cover the entire item.
+
+	
+	Select target objects using the means described above and run the script.
+	
+	When selected items are being colored they will appear blinking once.
+	That's done on purpose to reveal the new color, because depending on
+	the theme selection color may mask the actual item/take color, so without
+	temporarily clearing the selection automatically, in order to assess the
+	coloration result the selection would have to be cleared manually and then
+	re-stored if the result wasn't satistactory.
+	
+	
+	If you happen to forget what criteria are applied to which object 
+	type, run the script with a shortcut having placed the mouse cursor 
+	within 100 px of the left edge of the screen (not REAPER window) to 
+	display a hint. The hint can only be displayed before the color picker 
+	has been loaded.
+	
+	Check out also:  
+	BuyOne_Apply color to objects (guide inside).lua  
+	BuyOne_Apply same random color to objects (guide inside).lua
 		
 ]]
 
@@ -106,24 +111,6 @@ function Msg(param, cap) -- caption second or none
 local cap = cap and type(cap) == 'string' and #cap > 0 and cap..' = ' or ''
 reaper.ShowConsoleMsg(cap..tostring(param)..'\n')
 end
-
-REF = [[
-script name  H E L P:
- 
-1. Project markers/regions
-A) Non-contiguous — razor edit areas
-B) Contiguous — razor edit areas or time selection
-
-2. Take markers
-A) In all item takes — razor edit areas
-B) In the active take — time selection and item selection
-
-3. Items (item selection)
-A) Active take only — default
-B) All takes same color — ALWAYS_COLOR_ITEM setting is enabled
-
-4. Tracks (track selection)
-]] -- 'script name' will be dynamically replaced with the actual script name; the line under the title line must contain at least 1 space so the separator isn't added and there's an empty line instead in the hint
 
 
 function no_undo()
@@ -485,6 +472,25 @@ return #mess1 > 0 and #mess2 > 0 and mess1..'\n\n'..mess2 --or #mess1 > 0 and me
 end
 
 
+REF = [[
+script name  H E L P:
+ 
+1. Project markers/regions
+A) Non-contiguous — razor edit areas
+B) Contiguous — razor edit areas or time selection
+
+2. Take markers
+A) In all item takes — razor edit areas
+B) In the active take — time selection and item selection
+
+3. Items (item selection)
+A) Active take only — default
+B) All takes same color — ALWAYS_COLOR_ITEM setting is enabled
+
+4. Tracks (track selection)
+]] -- 'script name' will be dynamically replaced with the actual script name; the line under the title line must contain at least 1 space so the separator isn't added and there's an empty line instead in the hint
+
+
 local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol,val = r.get_action_context()
 scr_name = scr_name:match('.+[\\/].-_(.+objects).+%.lua')
 ALWAYS_COLOR_ITEM = #ALWAYS_COLOR_ITEM:gsub(' ','') > 0
@@ -500,8 +506,15 @@ ALWAYS_COLOR_ITEM = always_color_item == '1' or ALWAYS_COLOR_ITEM
 
 r.Undo_BeginBlock()
 
-::RETRY::
-local mask = 0x1000000 -- 0x1000000 is 16777216 (16777215 in zero based count) -- it's not a mask but let it be
+::RETRY:: -- must come after Undo_BeginBlock()
+
+	if not randomize_same and not randomize_diff and reload then -- only relevant for script 'Apply color to objects' which features RE_OPEN_COLOR_PICKER setting (Stage 2)
+	retval, color = r.GR_SelectColor()
+		if retval == 0 then return r.defer(no_undo) end -- user canceled the dialogue
+	r.Undo_BeginBlock()
+	end
+
+local mask = 0x1000000 -- 0x1000000 is 16777216 (16777215 in zero based count) -- it's not a mask but so be it
 local raz_edit_t = Collect_Razor_Edit_Areas() --do return end
 --Msg(raz_edit_t)
 local st, fin = r.GetSet_LoopTimeRange(false, false, 0, 0, false) -- isSet, isLoop, allowautoseek false
@@ -510,7 +523,7 @@ local sel_itms = r.CountSelectedMediaItems(0)
 local sel_tracks = r.CountSelectedTracks(0)
 local undo_var = randomize_same and 'Apply same random color to' or randomize_diff and 'Apply different random colors to' or 'Color'
 
-	if randomize_diff and raz_edit_t and time_sel then
+	if randomize_diff and raz_edit_t and time_sel then -- only applies to randomize diff type script
 	local itm_within_time_sel = Color_Sel_Items(raz_edit_t, time_sel, nil, randomize_diff, rand, mask) -- color nil, evaluation stage
 	local mess = not itm_within_time_sel and 'no item within time selection' or itm_within_time_sel == -1 and 'the item within time selection\n\nis not within razor edit area'
 		if mess then
@@ -545,7 +558,7 @@ local undo_var = randomize_same and 'Apply same random color to' or randomize_di
 	local rand = Generate_Radom_Color_Val() -- must be generated separatedly since if randomize_diff true the function isn't fast enough inside the loops in Color_MrkrsRgns() and Color_TakeMrkrs() which leads to the same result as randomize_same
 		if randomize_same then -- to all selected markers the same random color is applied
 		color = math.random(0, rand) -- gives greater randomization
-		elseif not randomize_diff and not retval then -- during the second run from the beginning retval will be true so the color picker won't load again
+		elseif not randomize_diff and not retval and not retval1 and not retval2 and not reload then -- during the initial run retval will be false; during second run from the beginning to check if selection changed retval intialized below will be true so that the color picker doesn't load again unless there's an error due to selection change in which case retval will be again set to false so that the color picker can be reloaded; other retvals ensure that the color can be applied to markers/regions after selection change
 		retval, color = r.GR_SelectColor()
 			if retval == 0 then return r.defer(no_undo) end -- user canceled the dialogue
 		goto RETRY -- run from the beginning to check if the selection changed while the color picker is open
@@ -576,7 +589,7 @@ local undo_var = randomize_same and 'Apply same random color to' or randomize_di
 	local rand = Generate_Radom_Color_Val() -- must be generated separatedly since if randomize_diff true the function isn't fast enough inside the loops in Color_MrkrsRgns() and Color_TakeMrkrs() which leads to the same result as randomize_same
 		if randomize_same then -- to all selected markers the same random color is applied
 		color = math.random(0, rand) -- gives greater randomization
-		elseif not randomize_diff and not retval then -- during the second run from the beginning retval will be true so the color picker won't load again
+		elseif not randomize_diff and not retval and not retval1 and not retval2 and not reload then -- during the initial run retval will be false; during second run from the beginning to check if selection changed retval intialized below will be true so that the color picker doesn't load again unless there's an error due to selection change in which case retval will be again set to false so that the color picker can be reloaded; other retvals ensure that the color can be applied to markers/regions after selection change
 		retval, color = r.GR_SelectColor()
 			if retval == 0 then return r.defer(no_undo) end -- user canceled the dialogue
 		goto RETRY -- run from the beginning to check if the selection changed while the color picker is open
@@ -587,13 +600,14 @@ local undo_var = randomize_same and 'Apply same random color to' or randomize_di
 	undo = undo_var..' project markers/regions and/or take markers in time selection'
 
 	-- COLOR ITEMS
-	elseif sel_itms > 0 or retval1 then -- retval1 will be true in RETRY routine
+	elseif sel_itms > 0 then
 	local rand = Generate_Radom_Color_Val() -- must be generated separatedly since if randomize_diff true the function isn't fast enough inside the loops in Color_Sel_Items() which leads to the same result as randomize_same
 		if randomize_same then -- to all selected items the same random color is applied
 		color = math.random(0, rand) -- gives greater randomization
-		elseif not randomize_diff then
+		elseif not randomize_diff and not retval1 and not retval and not retval2 and not reload then -- during the initial run retval1 will be false; during second run from the beginning to check if selection changed retval1 intialized below will be true so that the color picker doesn't load again, which will also be the case if there's an error due to selection change in which case retval will be set to true in the error routine below; other retvals ensure that the color can be applied to items after selection change		
 		retval1, color = r.GR_SelectColor()
-			if retval == 0 then return r.defer(no_undo) end -- user canceled the dialogue
+			if retval1 == 0 then return r.defer(no_undo) end -- user canceled the dialogue
+		goto RETRY
 		end
 		if r.CountSelectedMediaItems(0) > 0 then -- must be retrieved with the function in case RETRY routine was executed because in this case sel_itms > 0 cond will still be false
 		color = not randomize_diff and color|mask or true -- or mask|color
@@ -602,13 +616,14 @@ local undo_var = randomize_same and 'Apply same random color to' or randomize_di
 		end
 
 	-- COLOR TRACKS
-	elseif sel_tracks > 0 or retval2 then -- retval2 will be true in RETRY routine
+	elseif sel_tracks > 0 then
 	local rand = Generate_Radom_Color_Val() -- must be generated separatedly since if randomize_diff true the function isn't fast enough inside the loops in Color_Sel_Tracks() which leads to the same result as randomize_same
 		if randomize_same then -- to all selected tracks the same random color is applied
 		color = math.random(0, rand) -- gives greater randomization
-		elseif not randomize_diff then
+		elseif not randomize_diff and not retval2 and not retval and not retval1 and not reload then -- during the initial run retval2 will be false; during second run from the beginning to check if selection changed retval2 intialized below will be true so that the color picker doesn't load again, which will also be the case if there's an error due to selection change in which case retval will be set to true in the error routine below; other retvals ensure that the color can be applied to tracks after selection change		
 		retval2, color = r.GR_SelectColor()
-			if retval == 0 then return r.defer(no_undo) end -- user canceled the dialogue
+			if retval2 == 0 then return r.defer(no_undo) end -- user canceled the dialogue
+		goto RETRY
 		end
 		if r.CountSelectedTracks(0) > 0 then -- must be retrieved with the function in case RETRY routine was executed because in this case sel_tracks > 0 cond will still be false
 		color = not randomize_diff and color|mask or true -- or mask|color
@@ -617,7 +632,6 @@ local undo_var = randomize_same and 'Apply same random color to' or randomize_di
 		end
 
 	end
-
 
 	-- items and tracks error routine
 	if not undo and r.CountSelectedMediaItems(0) + r.CountSelectedTracks(0) == 0 then -- must be retrieved with the functions in case RETRY routine was executed because in this case sel_itms and sel_tracks vars won't reflect the new selection state
@@ -629,14 +643,23 @@ local undo_var = randomize_same and 'Apply same random color to' or randomize_di
 		local resp = r.MB(mess:upper(), 'ERROR', 5)
 			if resp == 2 then return r.defer(no_undo)
 			else
-		--	retval = nil -- reset to trigger reloading of the color picker above
+			retval, color = r.GR_SelectColor()
+				if retval == 0 then return r.defer(no_undo) end -- user canceled the dialogue
 			goto RETRY -- run from the beginning to check if the selection changed while the color picker is open
 			end
 		end
 	end
 
-r.Undo_EndBlock(undo,-1)
+	if undo then -- can be nil if criterion changed while color picker was open and then canceled because separate color picker is loaded for every criterion and when canceled undo point description won't be initialized // only relevant for script without randomization
+	local R,G,B = table.unpack(not randomize_diff and {r.ColorFromNative(color)} or {}) -- capitalized R because r is already taken by reaper.
+	local rgb = not randomize_diff and ' ['..R..', '..G..', '..B..']'
+	r.Undo_EndBlock(undo..(rgb and rgb or ''),-1)
+	end
 
+	if not randomize_same and not randomize_diff and RE_OPEN_COLOR_PICKER then -- only relevant for script 'Apply color to objects' which features RE_OPEN_COLOR_PICKER setting (Stage 1)
+	reload, retval, retval1, retval2 = 1, 1, 1, 1
+	goto RETRY 
+	end
 
 
 
