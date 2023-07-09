@@ -642,15 +642,15 @@ local undo_var = randomize_same and 'Apply same random color to' or randomize_di
 	end
 
 	-- items and tracks error routine
-	if not undo and r.CountSelectedMediaItems(0) + r.CountSelectedTracks(0) == 0 then -- must be retrieved with the functions in case RETRY routine was executed because in this case sel_itms and sel_tracks vars won't reflect the new selection state
-	local mess = 'no selected items or tracks'
+	if not undo and if not undo and sel_itms + sel_tracks == 0 then
+	local mess = 'no selected objects'
 		if not retval1 and not retval2 then -- the color picker hasn't been opened yet
 		Error_Tooltip('\n\n '..mess..' \n\n', true, true) -- caps and spaced true
 		return r.defer(no_undo)
 		else -- the color picker is open and the selection has changed
 		local resp = r.MB(mess:upper(), 'ERROR', 5)
 			if resp == 2 then return r.defer(no_undo)
-			else
+			elseif not RE_OPEN_COLOR_PICKER then -- otherwise global color picker at the very beginning of the routine will be loaded
 			retval, color = r.GR_SelectColor()
 				if retval == 0 then return r.defer(no_undo) end -- user canceled the dialogue
 			goto RETRY -- run from the beginning to check if the selection changed while the color picker is open
@@ -665,9 +665,10 @@ local undo_var = randomize_same and 'Apply same random color to' or randomize_di
 	end
 
 	if not randomize_same and not randomize_diff and RE_OPEN_COLOR_PICKER then -- only relevant for script 'Apply color to objects' which features RE_OPEN_COLOR_PICKER setting (Stage 1)
-	reload, retval, retval1, retval2 = 1, 1, 1, 1
+	reload, retval, retval1, retval2, undo = 1, 1, 1, 1, nil -- undo must be reset so that 'no selected objects' error could be triggered above; retvals must be set to prevent loading separate color picker for individual criteria
 	goto RETRY 
 	end
+
 
 
 
