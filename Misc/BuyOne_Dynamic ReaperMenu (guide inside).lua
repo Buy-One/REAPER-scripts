@@ -5,7 +5,7 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
 Changelog: 	
-		v1.2 #Added buttons to cycle menu files in the current directory
+		v1.2 #Added buttons to cycle menu/toolbar files in the current directory
 		     #Moved utility buttons to the top of the menu
 		v1.1 #Added KEEP_MENU_OPEN setting
 		     #Simplified display of error messages which don't require user input
@@ -309,7 +309,7 @@ gfx.y = gfx.mouse_y
 
 local data = '#menu name: '..menu_name..'|#file name: '..file:match('[^\\/]-$') -- display menu and file names in the menu
 local load = sect_ID_t[sect_ID][2] ~= '' and file_exists and not empty and not invalid and '#' or '' -- only activate the option to load a file when no user defined file path, or when either such path or the file are invalid
-local input = gfx.showmenu(load..'♦  LOAD REAPER MENU FILE|♦  Cycle to next ▬>|♦  Cycle to previous <▬|'..data..'||'..table.concat(menu_t)) 
+local input = gfx.showmenu(load..'♦  LOAD REAPER MENU/TOOLBAR FILE|♦  Cycle to next menu/toolbar file ▬>|♦  Cycle to previous menu/toolbar file <▬|'..data..'||'..table.concat(menu_t))
 
 	if input > 5 and input <= #act_t then -- menu returns 0 upon closure so the relational operator is meant to prevent error at r.NamedCommandLookup(act_t[input-5]) function when the menu closes since there's no 0 key in the table // 5 to account for first 5 utility menu items
 		if r.NamedCommandLookup(act_t[input-5]) == 0 then -- -5 to offset first 5 utility menu items, here and elsewhere
