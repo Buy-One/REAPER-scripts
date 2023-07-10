@@ -3,11 +3,15 @@ ReaScript name: BuyOne_Dynamic ReaperMenu (guide inside).lua
 Provides: [main=main,midi_editor] .
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: 	#Added KEEP_MENU_OPEN setting
-		#Simplified display of error messages which don't require user input
-		#Did minor code optimizations
+Version: 1.2
+Changelog: 	
+		v1.2 #Added buttons to cycle menu files in the current directory
+		     #Moved utility buttons to the top of the menu
+		v1.1 #Added KEEP_MENU_OPEN setting
+		     #Simplified display of error messages which don't require user input
+		     #Did minor code optimizations
 About:
+
 	#### GUIDE
 	
 	- The script is designed to allow using REAPER menus independently of REAPER
@@ -130,6 +134,41 @@ until condition and r.time_precise()-time_init >= 0.7 or not condition
 end
 
 
+function Select_Next_Previous_File(file, nxt, prev)
+-- selecting in the same directory as the current one
+local path = file:match('.+[\\/]')
+-- store in a table
+local file_t = {}
+local i = 0
+	repeat
+	local file_n = r.EnumerateFiles(path, i)
+		if file_n and file_n:match('%.ReaperMenu') then
+		local file_tmp = io.open(path..file_n, 'r')
+		local menu_code = file_tmp:read('*a')
+		file_tmp:close()
+			if #menu_code > 0 and menu_code:match('item_%d*=') then -- only collect valid menu files
+			file_t[#file_t+1] = path..file_n
+			end
+		end
+	i = i+1
+	until not file_n
+-- select next/prev
+local found
+	for k, f in ipairs(file_t) do
+		if f == file then found = 1 end
+		if found and nxt then
+		file = k+1 <= #file_t and file_t[k+1] or file_t[1]
+		break
+		elseif found and prev then
+		file = k-1 >= 1 and file_t[k-1] or file_t[#file_t]
+		break
+		end			
+	end
+
+return file
+end
+
+
 local _,scr_name, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
 local scr_name = scr_name:match('([^\\/]+)%.%w+')
 
@@ -162,7 +201,7 @@ local err = file ~= '' and not file_exists and 'wasn\'t found' or empty or inval
 	if err then resp = r.MB('The user defined ReaperMenu file '..err..'.\n\n\t    "YES" — to load new file\n\n    "NO" — to switch to the last used file (if any)','PROMPT',3)
 		if resp == 7 then file = '' -- to trigger GetExtState() below
 		elseif resp == 6 then resp = 1 -- to trigger file load dialogue below
-		else r.defer(function() end) return end
+		else return r.defer(function() do return end end) end
 	end
 
 	-- load file from the saved path
@@ -170,31 +209,46 @@ local err = file ~= '' and not file_exists and 'wasn\'t found' or empty or inval
 
 local err = file == '' and 'saved ReaperMenu path' or not r.file_exists(file) and 'used ReaperMenu file'
 	if err and resp ~= 1 then resp = r.MB('The last '..err..' wasn\'t found.\n\n         Click "OK" to load a new menu file.','ERROR',1) -- ~=1 cond stems from user defined file prompt dialogue above
-		if resp == 2 then r.defer(function() end) return end
+		if resp == 2 then return r.defer(function() do return end end) end
 	end
 
 	::RETRY::
+	
 	if file == '' or not file:match('%.ReaperMenu') or resp == 1 or LOAD_NEW then -- =1 cond stems from user defined file prompt dialogue above, LOAD_NEW stems from the last menu item below
 
-	local path = reaper.GetResourcePath()
-	local sep = r.GetOS():match('Win') and '\\' or '/'
+		if tonumber(LOAD_NEW) then -- cycle to next/previous
+	
+		local f = Select_Next_Previous_File(file, LOAD_NEW == 2, LOAD_NEW == 3) -- 2 - next, 3 - prev
+		
+		local err = not f and 'No files in the directory.' or f == file and 'There\'s only one file in the directory.'
+			
+			if err then r.MB(err, 'ERROR', 0) end
+			
+		file = f or file -- either new or the same
 
-	retval, file = r.GetUserFileNameForRead(path..sep..'MenuSets'..sep, 'Select and load ReaperMenu file', '.ReaperMenu')
-		if not retval then r.defer(function() end) return end
-		if not file:match('%.ReaperMenu$') then resp = r.MB('        The selected file desn\'t\n\nappear to be a ReaperMenu file.\n\n            Click "OK" to retry.','ERROR',1)
-			if resp == 1 then goto RETRY
-			else r.defer(function() end) return end
+		else -- load via dialogue
+	
+		local path = reaper.GetResourcePath()
+		local sep = r.GetOS():match('Win') and '\\' or '/'
+
+		retval, file = r.GetUserFileNameForRead(path..sep..'MenuSets'..sep, 'Select and load ReaperMenu file', '.ReaperMenu')
+			if not retval then return r.defer(function() do return end end) end
+			if not file:match('%.ReaperMenu$') then resp = r.MB('        The selected file desn\'t\n\nappear to be a ReaperMenu file.\n\n            Click "OK" to retry.','ERROR',1)
+				if resp == 1 then goto RETRY
+				else return r.defer(function() do return end end) end
+			end
+
+		local file_tmp = io.open(file, 'r')
+		local menu_code = file_tmp:read('*a')
+		file_tmp:close()
+		local err = menu_code == '' and 'empty' or not menu_code:match('item_%d*=') and 'invalid'
+			if err then resp = r.MB('          ReaperMenu file is '..err..'.\n\n\tClick "OK" to retry.','ERROR',1)
+				if resp == 1 then goto RETRY
+				else return r.defer(function() do return end end) end
+			end
+
 		end
-
-	local file_tmp = io.open(file, 'r')
-	local menu_code = file_tmp:read('*a')
-	file_tmp:close()
-	local err = menu_code == '' and 'empty' or not menu_code:match('item_%d*=') and 'invalid'
-		if err then resp = r.MB('          ReaperMenu file is '..err..'.\n\n\tClick "OK" to retry.','ERROR',1)
-			if resp == 1 then goto RETRY
-			else r.defer(function() end) return end
-		end
-
+			
 	r.SetExtState(scr_name..'_'..sect_ID_t[sect_ID][1], 'menu_file_path', file, true) -- save selected file path
 
 	end
@@ -212,7 +266,7 @@ local close_submenu
 		if line:match('=') and line:match('[%s]') or line:match('[%-]') then -- the last 2 conditions target toolbars to avoid capturing icons and text formatting lines whose tags lack these characters
 		local action = line:match('=([^%s%-]+)')
 			if action then act_t[#act_t+1] = action
-			cap_t[#cap_t+1] = line:match('%s(.+)') end -- collect menu item names to display as undo cap
+			cap_t[#cap_t+1] = line:match('%s(.+)') end -- collect menu item names to display as undo cap // undo has been discontinued but cap_t is still useful in detecting menu items for chekmark update when KEEP_MENU_OPEN setting is enabled
 		local form, item = line:match('=(%-%d)'), line:match('%s(.+)$')
 		local menu_elem = form and (form == '-2' or form == '-4') and form_t[form]..item..'|' or form and form ~= '-3' and form_t[form] or item and item..'|'
 		menu_t[#menu_t+1] = menu_elem and menu_elem
@@ -255,18 +309,17 @@ gfx.y = gfx.mouse_y
 
 local data = '#menu name: '..menu_name..'|#file name: '..file:match('[^\\/]-$') -- display menu and file names in the menu
 local load = sect_ID_t[sect_ID][2] ~= '' and file_exists and not empty and not invalid and '#' or '' -- only activate the option to load a file when no user defined file path, or when either such path or the file are invalid
-local input = gfx.showmenu(table.concat(menu_t)..'|'..load..'♦  LOAD REAPER MENU FILE|'..data)
+local input = gfx.showmenu(load..'♦  LOAD REAPER MENU FILE|♦  Cycle to next ▬>|♦  Cycle to previous <▬|'..data..'||'..table.concat(menu_t)) 
 
-
-	if input > 0 and input <= #act_t then -- menu returns 0 upon closure so the relational operator is meant to prevent error at r.NamedCommandLookup(act_t[input]) function when the menu closes since there's no 0 key in the table
-		if r.NamedCommandLookup(act_t[input]) == 0 then
+	if input > 5 and input <= #act_t then -- menu returns 0 upon closure so the relational operator is meant to prevent error at r.NamedCommandLookup(act_t[input-5]) function when the menu closes since there's no 0 key in the table // 5 to account for first 5 utility menu items
+		if r.NamedCommandLookup(act_t[input-5]) == 0 then -- -5 to offset first 5 utility menu items, here and elsewhere
 		Error_Tooltip('\n\n The (custom) action / script \n\n\t    wasn\'t found.\n\n', true, true) -- caps, spaced true
 		return r.defer(function() do return end end) end
 		if sect_ID == 32060 or sect_ID == 32061 then -- MIDI Editor sections
 			if not MIDI then
-			r.Main_OnCommand(r.NamedCommandLookup(act_t[input]),0)
+			r.Main_OnCommand(r.NamedCommandLookup(act_t[input-5]),0)
 			else
-			r.MIDIEditor_OnCommand(r.MIDIEditor_GetActive(), r.NamedCommandLookup(act_t[input])) -- run action associated with pressed menu item
+			r.MIDIEditor_OnCommand(r.MIDIEditor_GetActive(), r.NamedCommandLookup(act_t[input-5])) -- run action associated with pressed menu item
 			end
 		elseif sect_ID == 0 or sect_ID == 100 then
 			if MIDI then
@@ -274,14 +327,18 @@ local input = gfx.showmenu(table.concat(menu_t)..'|'..load..'♦  LOAD REAPER ME
 				if not is_open then r.Main_OnCommand(40153, 0) -- Item: Open in built-in MIDI editor
 				end
 			local HWND = r.MIDIEditor_GetActive()
-			r.MIDIEditor_OnCommand(HWND, r.NamedCommandLookup(act_t[input]))
+			r.MIDIEditor_OnCommand(HWND, r.NamedCommandLookup(act_t[input-5]))
 				if not is_open then r.MIDIEditor_OnCommand(HWND, 2) -- File: Close window
 				end
-			else local ID = r.Main_OnCommand(r.NamedCommandLookup(act_t[input]),0)
+			else local ID = r.Main_OnCommand(r.NamedCommandLookup(act_t[input-5]),0)
 			end
 		end
 		if #KEEP_MENU_OPEN:gsub(' ', '') > 0 then goto KEEP_MENU_OPEN end
-	elseif input > #act_t then LOAD_NEW = true -- when the last menu item 'LOAD REAPER MENU FILE' is selected
+	elseif input >= 1 then -- when the first 3 menu items are selected
+		if input == 1 then LOAD_NEW = true -- 'LOAD REAPER MENU FILE'
+		elseif input > 1 and input < 4 then -- 2 & 3 menu items, cycle to next/previous
+		LOAD_NEW = input
+		end
 	goto RETRY
 	elseif input == 0 then return r.defer(function() do return end end) end -- prevent 'Script: Run' caption when menu closes without action
 
