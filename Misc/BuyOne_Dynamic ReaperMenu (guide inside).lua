@@ -231,7 +231,7 @@ err = (file == 'empty' or file == 'invalid') and '\tReaperMenu file is '..file o
 	
 		local f = Select_Next_Previous_File(file, LOAD_NEW == 2, LOAD_NEW == 3) -- 2 - next, 3 - prev
 		
-		local err = not f and 'No files in the directory.' or f == file and 'There\'s only one file in the directory.'
+		local err = not f and 'No files or no valid files in the directory.' or f == file and 'There\'s only one valid file in the directory.'
 			
 			if err then r.MB(err, 'ERROR', 0) end
 			
