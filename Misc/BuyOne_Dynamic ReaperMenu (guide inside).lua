@@ -7,6 +7,7 @@ Version: 1.2
 Changelog: 	
 		v1.2 #Added buttons to cycle menu/toolbar files in the current directory
 		     #Moved utility buttons to the top of the menu
+		     #Added more error proofing
 		v1.1 #Added KEEP_MENU_OPEN setting
 		     #Simplified display of error messages which don't require user input
 		     #Did minor code optimizations
@@ -152,6 +153,7 @@ local i = 0
 		end
 	i = i+1
 	until not file_n
+r.EnumerateFiles(r.GetResourcePath(),0) -- clear cache, works across different builds https://forum.cockos.com/showthread.php?t=203235
 -- select next/prev
 local found
 	for k, f in ipairs(file_t) do
@@ -205,10 +207,19 @@ local err = file ~= '' and not file_exists and 'wasn\'t found' or empty or inval
 	end
 
 	-- load file from the saved path
-	if file == '' then file = r.GetExtState(scr_name..'_'..sect_ID_t[sect_ID][1], 'menu_file_path') end -- load saved file path
+	if file == '' then -- load saved file path
+	file = r.GetExtState(scr_name..'_'..sect_ID_t[sect_ID][1], 'menu_file_path')
+	-- check if it's not become empty or invalid, an extremely edge case, almost improbable
+	local file_tmp = io.open(file, 'r')
+	local menu_code = file_tmp and file_tmp:read('*a')
+	local f_close = file_tmp and file_tmp:close()
+	file = menu_code and (menu_code == '' and 'empty' or not menu_code:match('item_%d*=') and 'invalid') or file
+	end 
 
 local err = file == '' and 'saved ReaperMenu path' or not r.file_exists(file) and 'used ReaperMenu file'
-	if err and resp ~= 1 then resp = r.MB('The last '..err..' wasn\'t found.\n\n         Click "OK" to load a new menu file.','ERROR',1) -- ~=1 cond stems from user defined file prompt dialogue above
+err = err and 'The last '..err..' wasn\'t found'
+err = (file == 'empty' or file == 'invalid') and '\tReaperMenu file is '..file or err
+	if err and resp ~= 1 then resp = r.MB(err..'.\n\n         Click "OK" to load a new menu file.','ERROR',1) -- ~=1 cond stems from user defined file prompt dialogue above
 		if resp == 2 then return r.defer(function() do return end end) end
 	end
 
@@ -309,17 +320,18 @@ gfx.y = gfx.mouse_y
 
 local data = '#menu name: '..menu_name..'|#file name: '..file:match('[^\\/]-$') -- display menu and file names in the menu
 local load = sect_ID_t[sect_ID][2] ~= '' and file_exists and not empty and not invalid and '#' or '' -- only activate the option to load a file when no user defined file path, or when either such path or the file are invalid
-local input = gfx.showmenu(load..'♦  LOAD REAPER MENU/TOOLBAR FILE|♦  Cycle to next menu/toolbar file ▬>|♦  Cycle to previous menu/toolbar file <▬|'..data..'||'..table.concat(menu_t))
+local input = gfx.showmenu(load..'♦  LOAD REAPER MENU/TOOLBAR FILE|♦  Cycle to next menu/toolbar file ▬>|♦  Cycle to previous menu/toolbar file <▬|'..data..'||'..table.concat(menu_t)) 
 
 	if input > 5 and input <= #act_t then -- menu returns 0 upon closure so the relational operator is meant to prevent error at r.NamedCommandLookup(act_t[input-5]) function when the menu closes since there's no 0 key in the table // 5 to account for first 5 utility menu items
-		if r.NamedCommandLookup(act_t[input-5]) == 0 then -- -5 to offset first 5 utility menu items, here and elsewhere
+	input = input-5 -- offset first 5 utility menu items
+		if r.NamedCommandLookup(act_t[input]) == 0 then
 		Error_Tooltip('\n\n The (custom) action / script \n\n\t    wasn\'t found.\n\n', true, true) -- caps, spaced true
 		return r.defer(function() do return end end) end
 		if sect_ID == 32060 or sect_ID == 32061 then -- MIDI Editor sections
 			if not MIDI then
-			r.Main_OnCommand(r.NamedCommandLookup(act_t[input-5]),0)
+			r.Main_OnCommand(r.NamedCommandLookup(act_t[input]),0)
 			else
-			r.MIDIEditor_OnCommand(r.MIDIEditor_GetActive(), r.NamedCommandLookup(act_t[input-5])) -- run action associated with pressed menu item
+			r.MIDIEditor_OnCommand(r.MIDIEditor_GetActive(), r.NamedCommandLookup(act_t[input])) -- run action associated with pressed menu item
 			end
 		elseif sect_ID == 0 or sect_ID == 100 then
 			if MIDI then
@@ -327,10 +339,10 @@ local input = gfx.showmenu(load..'♦  LOAD REAPER MENU/TOOLBAR FILE|♦  Cycle 
 				if not is_open then r.Main_OnCommand(40153, 0) -- Item: Open in built-in MIDI editor
 				end
 			local HWND = r.MIDIEditor_GetActive()
-			r.MIDIEditor_OnCommand(HWND, r.NamedCommandLookup(act_t[input-5]))
+			r.MIDIEditor_OnCommand(HWND, r.NamedCommandLookup(act_t[input]))
 				if not is_open then r.MIDIEditor_OnCommand(HWND, 2) -- File: Close window
 				end
-			else local ID = r.Main_OnCommand(r.NamedCommandLookup(act_t[input-5]),0)
+			else local ID = r.Main_OnCommand(r.NamedCommandLookup(act_t[input]),0)
 			end
 		end
 		if #KEEP_MENU_OPEN:gsub(' ', '') > 0 then goto KEEP_MENU_OPEN end
