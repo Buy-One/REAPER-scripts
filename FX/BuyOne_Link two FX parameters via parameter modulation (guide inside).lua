@@ -1,9 +1,10 @@
 --[[
 ReaScript Name: BuyOne_Link two FX parameters via parameter modulation (guide inside).lua
 Author: BuyOne
-Version: 1.1
-Changelog:	#Fixed error when parameter names contain percentage symbol
-		#Updated About text
+Version: 1.2
+Changelog:	v1.2 #Fixed linking to new Master parameter in 3d party plugins
+		v1.1 #Fixed error when parameter names contain percentage symbol
+		     #Updated About text
 Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v5.962
@@ -214,7 +215,7 @@ local chunk, retval, obj, take, fx_GUID, fx_num, parm_num, src_fx_num, src_parm_
 		-- Link the Slave parameter
 		if src_fx_num then -- slave stage // set new parameter link
 		local fx_num_diff = tonumber(src_fx_num) - fx_num
-		local PLINK = PROGRAMENV and PROGRAMENV:match('PLINK.-(%d+:%-?%d+ %-?%d+).->')
+		local PLINK = PROGRAMENV and PROGRAMENV:match('PLINK.-(%d+:%-?%d+ %-?%d+[:%p%w]*).->') -- [:%p%w]* to include additional data like internal index/name of the master plugin parameter whose index in the case of 3d party plugins will differ from the one assigned by REAPER and will have to be adjusted as well for the param modulation to work, but which in fact isn't necessary and whose deletion won't affect param modulation, so it's included only to be replaced with updated data where it's not accounted for and therefore doesn't impede functionality in case of misnumbering
 		local PROGRAMENV_new = PLINK and PROGRAMENV:gsub(Esc(PLINK), src_fx_num..':'..fx_num_diff..' '..src_parm_num) or
 		PROGRAMENV and PROGRAMENV:gsub('>', 'PLINK 1 '..src_fx_num..':'..fx_num_diff..' '..src_parm_num..' 0\n>') or '<PROGRAMENV '..parm_num..' 0\nPARAMBASE 0\nLFO 0\nLFOWT 1 1\nAUDIOCTL 0\nAUDIOCTLWT 1 1\nPLINK 1 '..src_fx_num..':'..fx_num_diff..' '..src_parm_num..' 0\n>'
 		PROGRAMENV_new = PROGRAMENV_new:match('%%') and PROGRAMENV_new:gsub('%%', '%%%%') or PROGRAMENV_new -- escape before using with gsub
