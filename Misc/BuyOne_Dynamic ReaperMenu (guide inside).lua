@@ -6,6 +6,7 @@ Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-
 Version: 1.2
 Changelog: 	
 		v1.2 #Added buttons to cycle menu/toolbar files in the current directory
+		     #Updated About text
 		     #Moved utility buttons to the top of the menu
 		     #Added more error proofing
 		v1.1 #Added KEEP_MENU_OPEN setting
@@ -83,6 +84,14 @@ About:
 	items.
 	
 	- Likewise Arrange menus can be run from inside the MIDI Editor.
+
+	- Two menu items 'Cycle to next/previous menu/toolbar file' at the top of the menu allow 
+	switching to other valid .ReaperMenu files located in the same directory as the last 
+	loaded file. If no .ReaperMenu file path is specified in the USER SETTINGS for a particular
+	context the last loaded file is stored and will be the first to load on the next script
+	run. If a path is specified for a particular context, nothing is stored for such context 
+	and while other files can still be accessed while the menu is still open, the menu file 
+	which will be loaded at each scrpt run is the file whose path specified in the USER SETTINGS.
 
 ]]
 ---------------------------------------------------------------------------------------
