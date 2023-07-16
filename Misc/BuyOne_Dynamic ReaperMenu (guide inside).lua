@@ -355,7 +355,7 @@ local input = gfx.showmenu(load..'♦  LOAD REAPER MENU/TOOLBAR FILE|♦  Cycle 
 			end
 		end
 		if #KEEP_MENU_OPEN:gsub(' ', '') > 0 then goto KEEP_MENU_OPEN end
-	elseif input >= 1 then -- when the first 3 menu items are selected
+	elseif input >= 1 then -- when utility menu items are clicked
 		if input == 1 then LOAD_NEW = true -- 'LOAD REAPER MENU FILE'
 		elseif input > 1 and input < 4 then -- 2 & 3 menu items, cycle to next/previous
 		LOAD_NEW = input
