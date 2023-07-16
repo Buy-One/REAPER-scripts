@@ -281,7 +281,7 @@ local close_submenu
 	for line in io.lines(file) do
 		if cntr == 1 then -- cntr prevents evaluation of lines other than the 1st
 		menu_name = line:match('%[(.+)%]')  -- to be added to the menu at the bottom
-		MIDI = menu_name:match('MIDI') -- the var is used to condition way of calling actions from the menu
+		MIDI = menu_name and menu_name:match('MIDI') -- the var is used to condition way of calling actions from the menu
 		end
 		if line:match('=') and line:match('[%s]') or line:match('[%-]') then -- the last 2 conditions target toolbars to avoid capturing icons and text formatting lines whose tags lack these characters
 		local action = line:match('=([^%s%-]+)')
