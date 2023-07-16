@@ -234,7 +234,7 @@ err = (file == 'empty' or file == 'invalid') and '\tReaperMenu file is '..file o
 
 	::RETRY::
 	
-	if file == '' or not file:match('%.ReaperMenu') or resp == 1 or LOAD_NEW then -- =1 cond stems from user defined file prompt dialogue above, LOAD_NEW stems from the first menu item below
+	if file == '' or not file:match('%.ReaperMenu') or resp == 1 or LOAD_NEW then -- =1 cond stems from user defined file prompt dialogue above, LOAD_NEW stems from the utility menu items below
 
 		if tonumber(LOAD_NEW) then -- cycle to next/previous
 	
