@@ -54,10 +54,12 @@ About:
 	- A menu item titled 'LOAD REAPER MENU FILE' will allow loading another file via
 	file browser. Two menu items 'Cycle to next/previous menu/toolbar file' at the top 
 	of the menu allow switching to other valid .ReaperMenu files located in the same 
-	directory as the last loaded file. Finally a submenu of valid .ReaperMenu files
-	located in the directory of the currently loaded menu file is available under the
-	menu item immediately preceding the first separator and indicating the file name
-	of the currently loaded menu.
+	directory as the last loaded file. These will be disabled when there're no valid
+	menu files in the directory besides the one currently loaded. Finally a submenu 
+	of valid .ReaperMenu files located in the directory of the currently loaded menu 
+	file is available under the menu item immediately preceding the first separator 
+	and indicating the file name of the currently loaded menu. If there're no valid 
+	files the submenu isn't available.
 	
 	- If no .ReaperMenu file path is specified in the USER SETTINGS for a particular 
 	context, the last loaded file is stored and will be the first to load on the next 
@@ -356,7 +358,8 @@ gfx.y = gfx.mouse_y
 _, file_t = Select_Next_Previous_File_Or_Get_File_Table(file) -- nxt, prev are nil to prevent unnecessary running irrelevant pieces of code
 local file_cnt = #file_t > 1 and #file_t or 0 -- store length to be used to offset main menu items count and extract correct index for loading another menu file from the submenu, only if there're more than 1 menu files in the directory
 local submenu = file_cnt > 0 and Concat_File_Submenu(file, file_t)
-local utility_menu = '♦  LOAD REAPER MENU/TOOLBAR FILE|♦  Cycle to next menu/toolbar file ▬>|♦  Cycle to previous menu/toolbar file <▬|◊ menu name: '..menu_name..'|'..(submenu and '>' or '')..(submenu and '♦' or '◊')..' file name: '..file:match('[^\\/]-$')..(submenu or '')..'||' -- display currently loaded menu and file names in the menu and a submenu if relevant
+local off = submenu and '♦' or '#' -- when there's no submenu because there're no other menu files in the directory, next/prev menu items will be disabled
+local utility_menu = '♦  LOAD REAPER MENU/TOOLBAR FILE|'..off..' Cycle to next menu/toolbar file ▬>|'..off..' Cycle to previous menu/toolbar file <▬|◊ menu name: '..menu_name..'|'..(submenu and '>' or '')..(submenu and '♦' or '◊')..' file name: '..file:match('[^\\/]-$')..(submenu or '')..'||' -- display currently loaded menu and file names in the menu and a submenu if relevant
 
 local input = gfx.showmenu(utility_menu..table.concat(menu_t))
 
