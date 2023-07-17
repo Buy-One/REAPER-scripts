@@ -3,8 +3,10 @@ ReaScript name: BuyOne_Dynamic ReaperMenu (guide inside).lua
 Provides: [main=main,midi_editor] .
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
+Version: 1.3
 Changelog: 	
+		v1.3 #Added submenu of menu/toolbar files located in the same directory
+		     as the currently loaded one for quick access
 		v1.2 #Added buttons to cycle menu/toolbar files in the current directory
 		     #Updated About text
 		     #Moved utility buttons to the top of the menu
@@ -31,22 +33,17 @@ About:
 	
 	- So when you need another menu/toolbar but have used up all menus/toolbars
 	available in REAPER natively, you can create a backup copy of one of the current
-	menus/toolbars, put together a new one in its place, export the newly created
-	menu/toolbar to a .ReaperMenu file, then restore the previous one and use such
+	menus/toolbars, put together a new one in its place, export the newly created 
+	menu/toolbar to a .ReaperMenu file, then restore the previous one and use such 
 	exported menu/toolbar via this script.
 	
 	- Toolbars loaded with this script are formatted as regular menus.
 	
 	- In the USER SETTINGS below the script provides options to specify the full
-	path to the .ReaperMenu file per supported section of the Action list.  
-	If such path isn't specified the script will offer loading a file and then will
-	store its full path so it can be loaded automatically on next runs until another
-	menu file is loaded.
-	
-	- A menu item titled 'LOAD REAPER MENU FILE' is found at the very bottom of any menu
-	loaded via the dialogue. So if your menu is long you may need to scroll all the way
-	down to access it. Scrolling can be done with the up/down arrow keys on the keyboard
-	while the mouse cursor is placed over the menu.
+	path to the .ReaperMenu file per supported section of the Action list.    
+	If such path isn't specified, at the first run the script will offer loading 
+	a file from a location on a hard drive, whose full path will then be stored so 
+	it can be loaded automatically on next runs until another menu file is loaded.
 	
 	- The default directory which the load dialogue is pointed to is \MenuSets in the
 	REAPER resource directory, the one to which REAPER offers to save its .ReaperMenu
@@ -54,15 +51,30 @@ About:
 	The file path specified in the USER SETTINGS may point to a .ReaperMenu file located
 	anywhere on the hard drive.
 	
+	- A menu item titled 'LOAD REAPER MENU FILE' will allow loading another file via
+	file browser. Two menu items 'Cycle to next/previous menu/toolbar file' at the top 
+	of the menu allow switching to other valid .ReaperMenu files located in the same 
+	directory as the last loaded file. Finally a submenu of valid .ReaperMenu files
+	located in the directory of the currently loaded menu file is available under the
+	menu item immediately preceding the first separator and indicating the file name
+	of the currently loaded menu.
+	
+	- If no .ReaperMenu file path is specified in the USER SETTINGS for a particular 
+	context, the last loaded file is stored and will be the first to load on the next 
+	script run. If a path is specified for a particular context, nothing is stored for 
+	such context and while other files can still be accessed while the menu is still 
+	open, the menu file which will be loaded at each scrpt run is the file whose path 
+	is specified in the USER SETTINGS.
+	
 	- When the full path to the .ReaperMenu file is specified in the USER SETTINGS below,
 	the load dialogue menu item is inactive because if you load another file, on the
 	next run the script will still default to the file located at the path specified in
 	the USER SETTINGS.
 	
 	- The same script can be added to and run from 3 sections of the Action list:
-	*Main*, *MIDI Editor* and *MIDI Event List Editor* and maintain different menus.  
+	*Main*, *MIDI Editor* and *MIDI Event List Editor* and maintain different menus.   
 	The sections *Main* and *Main (alt recording)* share the same content, therefore
-	the script added to the *Main* section in the *Main (alt recording)* section will have
+	the script added to the *Main* section in the *Main (alt recording)* section will have 
 	the same menu.  
 	If this script has been installed via ReaPack application it has been automaticaly 
 	added to both *Main* and *MIDI Event List Editor* sections of the Action list.   
@@ -84,14 +96,9 @@ About:
 	items.
 	
 	- Likewise Arrange menus can be run from inside the MIDI Editor.
-
-	- Two menu items 'Cycle to next/previous menu/toolbar file' at the top of the menu allow 
-	switching to other valid .ReaperMenu files located in the same directory as the last 
-	loaded file. If no .ReaperMenu file path is specified in the USER SETTINGS for a particular
-	context the last loaded file is stored and will be the first to load on the next script
-	run. If a path is specified for a particular context, nothing is stored for such context 
-	and while other files can still be accessed while the menu is still open, the menu file 
-	which will be loaded at each scrpt run is the file whose path specified in the USER SETTINGS.
+	
+	- If your menu is long, to be able to scroll it all the way down quickly use up/down 
+	arrow keys on the keyboard wile the mouse cursor is placed over the menu.
 
 ]]
 ---------------------------------------------------------------------------------------
@@ -144,7 +151,7 @@ until condition and r.time_precise()-time_init >= 0.7 or not condition
 end
 
 
-function Select_Next_Previous_File(file, nxt, prev)
+function Select_Next_Previous_File_Or_Get_File_Table(file, nxt, prev)
 -- selecting in the same directory as the current one
 local path = file:match('.+[\\/]')
 -- store in a table
@@ -164,20 +171,39 @@ local i = 0
 	until not file_n
 r.EnumerateFiles(r.GetResourcePath(),0) -- clear cache, works across different builds https://forum.cockos.com/showthread.php?t=203235
 -- select next/prev
-local found
-	for k, f in ipairs(file_t) do
-		if f == file then found = 1 end
-		if found and nxt then
-		file = k+1 <= #file_t and file_t[k+1] or file_t[1]
-		break
-		elseif found and prev then
-		file = k-1 >= 1 and file_t[k-1] or file_t[#file_t]
-		break
-		end			
+	if nxt or prev then
+	local found
+		for k, f in ipairs(file_t) do
+			if f == file then found = 1 end
+			if found and nxt then
+			file = k+1 <= #file_t and file_t[k+1] or file_t[1]
+			break
+			elseif found and prev then
+			file = k-1 >= 1 and file_t[k-1] or file_t[#file_t]
+			break
+			end			
+		end
 	end
 
-return file
+return file, #file_t > 0 and file_t
 end
+
+
+function Concat_File_Submenu(file, file_t) -- file_t stems from Select_Next_Previous_File_Or_Get_File_Table()
+	if file_t and #file_t > 0 then
+	local submenu_t = {} -- to avoid changing contents of the table being fed in because it will be needed to extract file paths
+		for k, f in ipairs(file_t) do
+		local form = '|'..(k == #file_t and '<' or '')
+			if f == file then
+			submenu_t[k] = form..'#[current]'
+			else
+			submenu_t[k] = form..f:match('([^\\/]+)%.ReaperMenu') -- closing submenu at the last item
+			end
+		end
+	return table.concat(submenu_t)
+	end
+end
+
 
 
 local _,scr_name, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
@@ -238,7 +264,7 @@ err = (file == 'empty' or file == 'invalid') and '\tReaperMenu file is '..file o
 
 		if tonumber(LOAD_NEW) then -- cycle to next/previous
 	
-		local f = Select_Next_Previous_File(file, LOAD_NEW == 2, LOAD_NEW == 3) -- 2 - next, 3 - prev
+		local f = Select_Next_Previous_File_Or_Get_File_Table(file, LOAD_NEW == 2, LOAD_NEW == 3) -- 2 - next, 3 - prev
 		
 		local err = not f and 'No files or no valid files in the directory.' or f == file and 'There\'s only one valid file in the directory.'
 			
@@ -327,12 +353,15 @@ gfx.x = gfx.mouse_x
 gfx.y = gfx.mouse_y
 
 
-local data = '#menu name: '..menu_name..'|#file name: '..file:match('[^\\/]-$') -- display menu and file names in the menu
-local load = sect_ID_t[sect_ID][2] ~= '' and file_exists and not empty and not invalid and '#' or '' -- only activate the option to load a file when no user defined file path, or when either such path or the file are invalid
-local input = gfx.showmenu(load..'♦  LOAD REAPER MENU/TOOLBAR FILE|♦  Cycle to next menu/toolbar file ▬>|♦  Cycle to previous menu/toolbar file <▬|'..data..'||'..table.concat(menu_t)) 
+_, file_t = Select_Next_Previous_File_Or_Get_File_Table(file) -- nxt, prev are nil to prevent unnecessary running irrelevant pieces of code
+local file_cnt = #file_t > 1 and #file_t or 0 -- store length to be used to offset main menu items count and extract correct index for loading another menu file from the submenu, only if there're more than 1 menu files in the directory
+local submenu = file_cnt > 0 and Concat_File_Submenu(file, file_t)
+local utility_menu = '♦  LOAD REAPER MENU/TOOLBAR FILE|♦  Cycle to next menu/toolbar file ▬>|♦  Cycle to previous menu/toolbar file <▬|◊ menu name: '..menu_name..'|'..(submenu and '>' or '')..(submenu and '♦' or '◊')..' file name: '..file:match('[^\\/]-$')..(submenu or '')..'||' -- display currently loaded menu and file names in the menu and a submenu if relevant
 
-	if input > 5 and input <= #act_t then -- menu returns 0 upon closure so the relational operator is meant to prevent error at r.NamedCommandLookup(act_t[input-5]) function when the menu closes since there's no 0 key in the table // 5 to account for first 5 utility menu items
-	input = input-5 -- offset first 5 utility menu items
+local input = gfx.showmenu(utility_menu..table.concat(menu_t))
+
+	if (submenu and input > file_cnt+4 or not submenu and input > 5) and input <= #act_t then -- menu returns 0 upon closure so the relational operator is meant to prevent error at r.NamedCommandLookup(act_t[input]) function when the menu closes since there's no 0 key in the table // accounting for first utility menu items, 4 since submenu button isn't counted
+	input = submenu and input-file_cnt-4 or input-5 -- offset first utility menu items accounting for menu files submenu if any, 4 since submenu button isn't counted
 		if r.NamedCommandLookup(act_t[input]) == 0 then
 		Error_Tooltip('\n\n The (custom) action / script \n\n\t    wasn\'t found.\n\n', true, true) -- caps, spaced true
 		return r.defer(function() do return end end) end
@@ -356,10 +385,14 @@ local input = gfx.showmenu(load..'♦  LOAD REAPER MENU/TOOLBAR FILE|♦  Cycle 
 		end
 		if #KEEP_MENU_OPEN:gsub(' ', '') > 0 then goto KEEP_MENU_OPEN end
 	elseif input >= 1 then -- when utility menu items are clicked
+	LOAD_NEW = nil -- if the next/previous switch is used without reset, selection of menu files from the submenu glitches
 		if input == 1 then LOAD_NEW = true -- 'LOAD REAPER MENU FILE'
 		elseif input > 1 and input < 4 then -- 2 & 3 menu items, cycle to next/previous
 		LOAD_NEW = input
-		end
+		elseif input > 4 and submenu then
+		file = file_t[input-4]
+		r.SetExtState(scr_name..'_'..sect_ID_t[sect_ID][1], 'menu_file_path', file, true) -- save selected file path // must be stored here because there's no option to store it after jumping to RETRY
+		end	
 	goto RETRY
 	elseif input == 0 then return r.defer(function() do return end end) end -- prevent 'Script: Run' caption when menu closes without action
 
