@@ -275,7 +275,9 @@ err = (file == 'empty' or file == 'invalid') and '\tReaperMenu file is '..file o
 		file = f or file -- either new or the same
 
 		else -- load via dialogue
-	
+
+		resp = nil -- reset to prevent re-triggering of the dialogue when the menu remains open after file has been loaded and utility menu item 4 (which doesn't have any action associated with it) is clicked
+		
 		local path = reaper.GetResourcePath()
 		local sep = r.GetOS():match('Win') and '\\' or '/'
 
