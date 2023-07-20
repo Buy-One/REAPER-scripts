@@ -1,9 +1,9 @@
 --[[
-ReaScript name: Insert take marker with current timestamp at edit;mouse cursor in selected items;takes
+ReaScript name: BuyOne_Insert project marker with current timestamp at edit;mouse cursor.lua
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.0
-Changelog: Initial release
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
+Version: 1.1
+Changelog: #Added setting to open 'Marker edit' dialogue along with marker insertion
 About:
 Licence: WTFPL
 REAPER: at least v5.962
@@ -23,9 +23,24 @@ REAPER: at least v5.962
 -- 8 = mm.dd.yy - H:mm:ss AM/PM
 -- 9 = current system locale
 
-local TIME_FORMAT = 1		-- number of timestamp format from the above list
-local HEX_COLOR = "#000"	-- in HEX format, 6 or 3 digits, defaults to black if format is incorrect
-local POS_POINTER = 1 		-- 1 - Edit cursor, any other number - Mouse cursor
+-- Number of timestamp format from the above list
+local TIME_FORMAT = 1
+
+-- Color code in HEX format, 6 or 3 digits preceded
+-- with the hash sign,
+-- defaults to black if the format is incorrect
+local HEX_COLOR = "#000"
+
+-- Set to 1 to have marker inserted at the Edit cursor, 
+-- any other number - at the Mouse cursor
+local POS_POINTER = 1
+
+-- To have the 'Edit marker' dialogue appear
+-- along with marker insertion set to 1, 
+-- any other number disables the setting;
+-- if the dialogue is canceled the marker will 
+-- still be inserted
+local MARKER_EDIT_DIALOGUE = 0
 
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
@@ -98,6 +113,8 @@ r.Undo_BeginBlock()
 		r.SetTakeMarker(take, -1, timestamp, mark_pos, r.ColorToNative(R,G,B)|0x1000000)
 		end
 	end
+
+local open_edit_dialogue = MARKER_EDIT_DIALOGUE == 1 and r.Main_OnCommand(40614, 0) -- Markers: Edit marker near cursor
 
 r.Undo_EndBlock('Insert take marker(s) time stamped to '..timestamp,-1)
 
