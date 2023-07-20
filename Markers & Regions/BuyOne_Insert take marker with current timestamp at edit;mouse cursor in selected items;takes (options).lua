@@ -106,3 +106,7 @@ local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_po
 r.PreventUIRefresh(-1)
 
 
+
+
+
+
