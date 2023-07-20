@@ -3,7 +3,7 @@ ReaScript name: BuyOne_Insert project marker with current timestamp at edit;mous
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
-Changelog: #Added setting to open 'Marker edit' dialogue along with marker insertion
+Changelog: #Added setting to open 'Edit marker' dialogue along with marker insertion
 About:
 Licence: WTFPL
 REAPER: at least v5.962
