@@ -1,9 +1,9 @@
 --[[
-ReaScript name: BuyOne_Insert project marker with current timestamp at edit;mouse cursor.lua
+ReaScript name: Insert take marker with current timestamp at edit;mouse cursor in selected items;takes
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #Added setting to open 'Marker edit' dialogue along with marker insertion
+Website: https://forum.cockos.com/member.php?u=134058
+Version: 1.0
+Changelog: Initial release
 About:
 Licence: WTFPL
 REAPER: at least v5.962
@@ -23,24 +23,9 @@ REAPER: at least v5.962
 -- 8 = mm.dd.yy - H:mm:ss AM/PM
 -- 9 = current system locale
 
--- Number of timestamp format from the above list
-local TIME_FORMAT = 1
-
--- Color code in HEX format, 6 or 3 digits preceded
--- with the hash sign,
--- defaults to black if the format is incorrect
-local HEX_COLOR = "#000"
-
--- Set to 1 to have marker inserted at the Edit cursor, 
--- any other number - at the Mouse cursor
-local POS_POINTER = 1
-
--- To have the 'Edit marker' dialogue appear
--- along with marker insertion set to 1, 
--- any other number disables the setting;
--- if the dialogue is canceled the marker will 
--- still be inserted
-local MARKER_EDIT_DIALOGUE = 0
+local TIME_FORMAT = 1		-- number of timestamp format from the above list
+local HEX_COLOR = "#000"	-- in HEX format, 6 or 3 digits, defaults to black if format is incorrect
+local POS_POINTER = 1 		-- 1 - Edit cursor, any other number - Mouse cursor
 
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
@@ -114,13 +99,10 @@ r.Undo_BeginBlock()
 		end
 	end
 
-local open_edit_dialogue = MARKER_EDIT_DIALOGUE == 1 and r.Main_OnCommand(40614, 0) -- Markers: Edit marker near cursor
-
 r.Undo_EndBlock('Insert take marker(s) time stamped to '..timestamp,-1)
 
 local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_pos, false, false) -- if mouse cursor is enabled as pointer
 
 r.PreventUIRefresh(-1)
-
 
 
