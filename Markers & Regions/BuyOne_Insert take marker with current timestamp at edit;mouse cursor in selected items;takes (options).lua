@@ -1,7 +1,6 @@
 --[[
 ReaScript name: BuyOne_Insert take marker with current timestamp at edit;mouse cursor in selected items;takes.lua
 Author: BuyOne
-Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
 Changelog: #Added setting to open 'Edit take marker' dialogue along with marker insertion
