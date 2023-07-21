@@ -92,11 +92,13 @@ local exists
 	until retval == 0
 
 	if exists then
+	local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_pos, false, false)
 		if MARKER_EDIT_DIALOGUE == 1 then
 		r.Main_OnCommand(40614, 0) -- Markers: Edit marker near cursor
 		else
 		Error_Tooltip('\n\n marker already exists \n\n', 1, 1) -- caps and spaced true
 		end
+	r.PreventUIRefresh(-1)
 	return r.defer(function() do return end end) end
 
 local daytime = tonumber(os.date('%H')) < 12 and ' AM' or ' PM' -- for 3,4,7,8 using 12 hour cycle
