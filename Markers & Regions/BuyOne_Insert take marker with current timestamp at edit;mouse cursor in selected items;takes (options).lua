@@ -35,11 +35,12 @@ local HEX_COLOR = "#000"
 
 -- Set to 1 to have marker inserted at the Edit cursor, 
 -- a marker will be added to all selected items under
--- the edit cursor, in multi-take items the marker will
--- be added to the active take;
+-- the edit cursor,
 -- any other number - at the Mouse cursor,
 -- the marker will only be added to the item 
 -- under the mouse;
+-- in multi-take items the marker will be added 
+-- to the active take;
 -- if the the target position is already occupied
 -- by another marker, no marker will be added
 local POS_POINTER = 1
