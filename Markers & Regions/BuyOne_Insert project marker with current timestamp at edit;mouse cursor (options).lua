@@ -4,6 +4,7 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
 Changelog: 	v1.2 #Added safeguard against inserting multiple markers at the same position
+		     #Updated annotations in the USER SETTINGS
 		v1.1 #Added setting to open 'Edit marker' dialogue along with marker insertion
 About:
 Licence: WTFPL
@@ -33,7 +34,9 @@ local TIME_FORMAT = 1
 local HEX_COLOR = "#000"
 
 -- Set to 1 to have marker inserted at the Edit cursor, 
--- any other number - at the Mouse cursor
+-- any other number - at the Mouse cursor;
+-- if the the target position is already occupied
+-- by another marker, no marker will be added
 local POS_POINTER = 1
 
 -- To have the 'Edit marker' dialogue appear
@@ -42,9 +45,11 @@ local POS_POINTER = 1
 -- when the dialogue appears the marker which
 -- has been inserted isn't visible;
 -- if the dialogue is canceled the marker will 
--- still be inserted
+-- still be inserted;
+-- if the the target position is already occupied
+-- by another marker, the dialogue will belong
+-- to the existing marker at the target position
 local MARKER_EDIT_DIALOGUE = 0
-
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
 -----------------------------------------------------------------------------
