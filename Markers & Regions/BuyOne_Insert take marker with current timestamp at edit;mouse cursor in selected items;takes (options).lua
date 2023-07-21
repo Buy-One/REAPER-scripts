@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Insert take marker with current timestamp at edit;mouse cursor in selected items;takes.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #Added setting to open 'Edit take marker' dialogue along with marker insertion
+Version: 1.2
+Changelog: 	v1.2 #Added safeguard against inserting multiple markers at the same position
+		     #Updated annotations in the USER SETTINGS
+		v1.1 #Added setting to open 'Edit take marker' dialogue along with marker insertion
 About:
 Licence: WTFPL
 REAPER: at least v5.962
@@ -32,14 +34,26 @@ local TIME_FORMAT = 1
 local HEX_COLOR = "#000"
 
 -- Set to 1 to have marker inserted at the Edit cursor, 
--- any other number - at the Mouse cursor
+-- a marker will be added to all selected items under
+-- the edit cursor, in multi-take items the marker will
+-- be added to the active take;
+-- any other number - at the Mouse cursor,
+-- the marker will only be added to the item 
+-- under the mouse;
+-- if the the target position is already occupied
+-- by another marker, no marker will be added
 local POS_POINTER = 1
 
--- To have the 'Edit take marker' dialogue appear
+-- To have the 'Edit marker' dialogue appear
 -- along with marker insertion set to 1, 
 -- any other number disables the setting;
+-- when the dialogue appears the marker which
+-- has been inserted isn't visible;
 -- if the dialogue is canceled the marker will 
--- still be inserted
+-- still be inserted;
+-- if the the target position is already occupied
+-- by another marker, the dialogue will belong
+-- to the existing marker at the target position
 local MARKER_EDIT_DIALOGUE = 0
 
 -----------------------------------------------------------------------------
@@ -52,6 +66,21 @@ end
 
 local r = reaper
 
+function Error_Tooltip(text, caps, spaced) -- caps and spaced are booleans
+local x, y = r.GetMousePosition()
+local text = caps and text:upper() or text
+local text = spaced and text:gsub('.','%0 ') or text
+r.TrackCtl_SetToolTip(text, x, y, true) -- topmost true
+-- r.TrackCtl_SetToolTip(text:upper(), x, y, true) -- topmost true
+-- r.TrackCtl_SetToolTip(text:upper():gsub('.','%0 '), x, y, true) -- spaced out // topmost true
+--[[
+-- a time loop can be added to run until certain condition obtains, e.g.
+local time_init = r.time_precise()
+repeat
+until condition and r.time_precise()-time_init >= 0.7 or not condition
+]]
+end
+
 local sel_item_cnt = r.CountSelectedMediaItems(0)
 
 	if sel_item_cnt == 0 then r.MB('No selected items/takes.','ERROR',0) r.defer(function() end) return end
@@ -61,6 +90,17 @@ local err2 = not POS_POINTER or type(POS_POINTER) ~= 'number' and 'Incorrect pos
 local err = err1 or err2
 
 	if err then r.MB(err,'USER SETTINGS error',0) r.defer(function() end) return end
+
+
+function Take_Marker_Exists(take, pos)
+local i = 0
+	repeat
+	local src_pos, name, color = r.GetTakeMarker(take, i)
+		if src_pos == pos then return true end
+	i = i+1
+	until src_pos == -1
+end
+
 
 local t = {
 '%d.%m.%Y - %H:%M:%S', -- 1
@@ -100,22 +140,47 @@ local HEX_COLOR = (not HEX_COLOR or type(HEX_COLOR) ~= 'string' or HEX_COLOR == 
 local HEX_COLOR = #HEX_COLOR == 4 and HEX_COLOR:gsub('%w','%0%0') or HEX_COLOR
 local R,G,B = hex2rgb(HEX_COLOR) -- R because r is already taken by reaper, the rest is for consistency
 
-r.Undo_BeginBlock()
+local x,y = r.GetMousePosition()
+local itm_under_mouse, take_under_mouse = r.GetItemFromPoint(x, y, false) -- allow_locked false
+local itms_under_cursor_cnt = 0
+local mrkr_pos_t = {}
 
 	for i = 0, sel_item_cnt-1 do
 	local item = r.GetSelectedMediaItem(0,i)
-	local take = r.GetActiveTake(item)
-		if take then
-		local item_pos = r.GetMediaItemInfo_Value(item, 'D_POSITION')
-		local offset = r.GetMediaItemTakeInfo_Value(take, 'D_STARTOFFS')
-		local playrate = r.GetMediaItemTakeInfo_Value(take, 'D_PLAYRATE')
-		local mark_pos = (cur_pos - item_pos + offset)*playrate
-		r.SetTakeMarker(take, -1, timestamp, mark_pos, r.ColorToNative(R,G,B)|0x1000000)
+		if POS_POINTER ~= 1 and item == itm_under_mouse or POS_POINTER == 1 then
+		local take = r.GetActiveTake(item)
+			if take then
+			local item_pos = r.GetMediaItemInfo_Value(item, 'D_POSITION')
+			local item_end = item_pos + r.GetMediaItemInfo_Value(item, 'D_LENGTH')
+			itms_under_cursor_cnt = item_pos <= cur_pos and item_end >= cur_pos and itms_under_cursor_cnt+1 or itms_under_cursor_cnt
+			local offset = r.GetMediaItemTakeInfo_Value(take, 'D_STARTOFFS')
+			local playrate = r.GetMediaItemTakeInfo_Value(take, 'D_PLAYRATE')
+			local mark_pos = (cur_pos - item_pos + offset)*playrate
+			local marker_exists = Take_Marker_Exists(take, mark_pos)
+				if not marker_exists then
+				mrkr_pos_t[#mrkr_pos_t+1] = {take=take, pos=mark_pos}			
+				end
+			end
 		end
 	end
 
-local commID = POS_POINTER == 1 and 42385 or 42388 -- 'Item: Add/edit take marker at play position or edit cursor' OR 'Item: Add/edit take marker at mouse position'
-local open_edit_dialogue = MARKER_EDIT_DIALOGUE == 1 and r.Main_OnCommand(commID, 0)
+	if #mrkr_pos_t == 0 then -- markers already exist at the target position(s)
+	local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_pos, false, false)
+		if (POS_POINTER ~= 1 or itms_under_cursor_cnt == 1) and MARKER_EDIT_DIALOGUE == 1 then -- when the target position is already take, only display marker edit dailogue if the target is item under mouse or if there's only one selected item under the edit cursor
+		r.Main_OnCommand(42385, 0) -- 'Item: Add/edit take marker at play position or edit cursor'
+		elseif MARKER_EDIT_DIALOGUE ~= 1 then
+		Error_Tooltip('\n\n markers already exists \n\n', 1, 1) -- caps and spaced true
+		end		
+	r.PreventUIRefresh(-1)
+	return r.defer(function() do return end end) end
+
+r.Undo_BeginBlock()
+
+	for _, data in ipairs(mrkr_pos_t) do
+	r.SetTakeMarker(data.take, -1, timestamp, data.pos, r.ColorToNative(R,G,B)|0x1000000)
+	end
+
+local open_edit_dialogue = MARKER_EDIT_DIALOGUE == 1 and r.Main_OnCommand(42385, 0) -- 'Item: Add/edit take marker at play position or edit cursor'
 
 r.Undo_EndBlock('Insert take marker(s) time stamped to '..timestamp,-1)
 
