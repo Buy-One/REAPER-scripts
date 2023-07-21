@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Insert project marker with current timestamp at edit;mouse cursor.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #Added setting to open 'Edit marker' dialogue along with marker insertion
+Version: 1.2
+Changelog: 	v1.2 #Added safeguard against inserting multiple markers at the same position
+		v1.1 #Added setting to open 'Edit marker' dialogue along with marker insertion
 About:
 Licence: WTFPL
 REAPER: at least v5.962
@@ -38,6 +39,8 @@ local POS_POINTER = 1
 -- To have the 'Edit marker' dialogue appear
 -- along with marker insertion set to 1, 
 -- any other number disables the setting;
+-- when the dialogue appears the marker which
+-- has been inserted isn't visible;
 -- if the dialogue is canceled the marker will 
 -- still be inserted
 local MARKER_EDIT_DIALOGUE = 0
@@ -79,6 +82,23 @@ r.PreventUIRefresh(1)
 local move_curs = POS_POINTER ~= 1 and r.Main_OnCommand(40514,0) -- View: Move edit cursor to mouse cursor (no snapping)
 local cur_pos = r.GetCursorPosition()
 
+-- prevent stacking markers on top of each other
+local i = 0
+local exists
+	repeat
+	local retval, isrgn, pos, rgnend, name, idx = r.EnumProjectMarkers(i)
+		if pos == cur_pos then exists = 1 break end
+	i = i+1
+	until retval == 0
+
+	if exists then
+		if MARKER_EDIT_DIALOGUE == 1 then
+		r.Main_OnCommand(40614, 0) -- Markers: Edit marker near cursor
+		else
+		Error_Tooltip('\n\n marker already exists \n\n', 1, 1) -- caps and spaced true
+		end
+	return r.defer(function() do return end end) end
+
 local daytime = tonumber(os.date('%H')) < 12 and ' AM' or ' PM' -- for 3,4,7,8 using 12 hour cycle
 local daytime = (TIME_FORMAT == 3 or TIME_FORMAT == 4 or TIME_FORMAT == 7 or TIME_FORMAT == 8) and daytime or ''
 local timestamp = os.date(t[TIME_FORMAT])..daytime
@@ -105,7 +125,7 @@ local open_edit_dialogue = MARKER_EDIT_DIALOGUE == 1 and r.Main_OnCommand(40614,
 
 r.Undo_EndBlock('Insert project marker time stamped to '..timestamp,-1)
 
-local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_pos, false, false) -- if mouse cursor is enabled as pointer
+local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_pos, false, false) -- if mouse cursor is enabled as pointer // must be restored after calling marker edit dialogue because that action relies on the edit cursor position, the downside is that when the dialogue is called the inserted marker isn't visible because the UI hasn't been updated, using two blocks of PreventUIRefresh() for setting and restoring the edit cursor position isn't preferable because the user will be able to see the edit cursor position change which isn't supposed to be noticeable; the native 'Markers: Insert and/or edit marker at current position' action also prevents added marker visibility until the edit dialogue is closed
 
 r.PreventUIRefresh(-1)
 
