@@ -50,6 +50,7 @@ local POS_POINTER = 1
 -- by another marker, the dialogue will belong
 -- to the existing marker at the target position
 local MARKER_EDIT_DIALOGUE = 0
+
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
 -----------------------------------------------------------------------------
@@ -59,6 +60,7 @@ reaper.ShowConsoleMsg(tostring(param)..'\n')
 end
 
 local r = reaper
+
 
 function Error_Tooltip(text, caps, spaced) -- caps and spaced are booleans
 local x, y = r.GetMousePosition()
@@ -80,7 +82,8 @@ local err1 = (not TIME_FORMAT or type(TIME_FORMAT) ~= 'number' or TIME_FORMAT < 
 local err2 = not POS_POINTER or type(POS_POINTER) ~= 'number' and 'Incorrect position pointer format.\n\n\tMust be a number.'
 local err = err1 or err2
 
-	if err then r.MB(err,'USER SETTINGS error',0) r.defer(function() end) return end
+	if err then r.MB(err,'USER SETTINGS error',0) return r.defer(function() do return end end) end
+
 
 local t = {
 '%d.%m.%Y - %H:%M:%S', -- 1
@@ -91,7 +94,7 @@ local t = {
 '%m.%d.%y - %H:%M:%S', -- 6
 '%m.%d.%Y - %I:%M:%S', -- 7
 '%m.%d.%y - %I:%M:%S', -- 8
-'%x - %X'	       -- 9
+'%x - %X'			   -- 9
 }
 
 os.setlocale('', 'time')
@@ -113,7 +116,7 @@ local exists
 	until retval == 0
 
 	if exists then
-	local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_pos, false, false)
+	local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_pos, false, false) -- moveview, seekplay false
 		if MARKER_EDIT_DIALOGUE == 1 then
 		r.Main_OnCommand(40614, 0) -- Markers: Edit marker near cursor
 		else
@@ -121,6 +124,7 @@ local exists
 		end
 	r.PreventUIRefresh(-1)
 	return r.defer(function() do return end end) end
+	
 
 local daytime = tonumber(os.date('%H')) < 12 and ' AM' or ' PM' -- for 3,4,7,8 using 12 hour cycle
 local daytime = (TIME_FORMAT == 3 or TIME_FORMAT == 4 or TIME_FORMAT == 7 or TIME_FORMAT == 8) and daytime or ''
@@ -146,11 +150,10 @@ r.AddProjectMarker2(0, false, cur_pos, 0, timestamp, -1, r.ColorToNative(R,G,B)|
 
 local open_edit_dialogue = MARKER_EDIT_DIALOGUE == 1 and r.Main_OnCommand(40614, 0) -- Markers: Edit marker near cursor
 
-r.Undo_EndBlock('Insert project marker time stamped to '..timestamp,-1)
-
-local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_pos, false, false) -- if mouse cursor is enabled as pointer // must be restored after calling marker edit dialogue because that action relies on the edit cursor position, the downside is that when the dialogue is called the inserted marker isn't visible because the UI hasn't been updated, using two blocks of PreventUIRefresh() for setting and restoring the edit cursor position isn't preferable because the user will be able to see the edit cursor position change which isn't supposed to be noticeable; the native 'Markers: Insert and/or edit marker at current position' action also prevents added marker visibility until the edit dialogue is closed
+local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_pos, false, false) -- moveview, seekplay false // if mouse cursor is enabled as pointer // must be restored after calling marker edit dialogue because that action relies on the edit cursor position, the downside is that when the dialogue is called the inserted marker isn't visible because the UI hasn't been updated, using two blocks of PreventUIRefresh() for setting and restoring the edit cursor position isn't preferable because the user will be able to see the edit cursor position change which isn't supposed to be noticeable; the native 'Markers: Insert and/or edit marker at current position' action also prevents added marker visibility until the edit dialogue is closed
 
 r.PreventUIRefresh(-1)
 
+r.Undo_EndBlock('Insert project marker time stamped to '..timestamp,-1)
 
 
