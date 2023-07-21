@@ -115,13 +115,13 @@ local exists
 	i = i+1
 	until retval == 0
 
-	if exists then
-	local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_pos, false, false) -- moveview, seekplay false
+	if exists then	
 		if MARKER_EDIT_DIALOGUE == 1 then
 		r.Main_OnCommand(40614, 0) -- Markers: Edit marker near cursor
 		else
 		Error_Tooltip('\n\n marker already exists \n\n', 1, 1) -- caps and spaced true
 		end
+	local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_pos, false, false) -- moveview, seekplay false
 	r.PreventUIRefresh(-1)
 	return r.defer(function() do return end end) end
 	
