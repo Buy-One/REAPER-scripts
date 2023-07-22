@@ -42,8 +42,6 @@ local POS_POINTER = 1
 -- To have the 'Edit marker' dialogue appear
 -- along with marker insertion set to 1, 
 -- any other number disables the setting;
--- when the dialogue appears the marker which
--- has been inserted isn't visible;
 -- if the dialogue is canceled the marker will 
 -- still be inserted;
 -- if the the target position is already occupied
