@@ -154,9 +154,9 @@ r.UpdateTimeline() -- to make the marker visible in case the edit dialogue will 
 
 	if MARKER_EDIT_DIALOGUE == 1 then -- done in a separate PreventUIRefresh() block to ensure inserted marker visibility; curiously the native 'Markers: Insert and/or edit marker at current position' action does prevent added marker visibility until the edit dialogue is closed
 	r.PreventUIRefresh(1)
-	r.SetEditCurPos(cur_pos, false, false) -- repeat moving the edit cursor to mouse cursor because the below action relies on the edit cursor position
+	r.SetEditCurPos(cur_pos, false, false) -- moveview, seekplay false // repeat moving the edit cursor to mouse cursor because the below action relies on the edit cursor position
 	r.Main_OnCommand(40614, 0) -- Markers: Edit marker near cursor
-	r.SetEditCurPos(store_curs_pos, false, false)
+	r.SetEditCurPos(store_curs_pos, false, false) -- moveview, seekplay false // restore
 	r.PreventUIRefresh(-1)
 	end
 
