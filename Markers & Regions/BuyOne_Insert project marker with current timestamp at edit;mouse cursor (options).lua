@@ -148,11 +148,19 @@ r.Undo_BeginBlock()
 
 r.AddProjectMarker2(0, false, cur_pos, 0, timestamp, -1, r.ColorToNative(R,G,B)|0x1000000)
 
-local open_edit_dialogue = MARKER_EDIT_DIALOGUE == 1 and r.Main_OnCommand(40614, 0) -- Markers: Edit marker near cursor
-
-local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_pos, false, false) -- moveview, seekplay false // if mouse cursor is enabled as pointer // must be restored after calling marker edit dialogue because that action relies on the edit cursor position, the downside is that when the dialogue is called the inserted marker isn't visible because the UI hasn't been updated, using two blocks of PreventUIRefresh() for setting and restoring the edit cursor position isn't preferable because the user will be able to see the edit cursor position change which isn't supposed to be noticeable; the native 'Markers: Insert and/or edit marker at current position' action also prevents added marker visibility until the edit dialogue is closed
+local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_pos, false, false) -- moveview, seekplay false // if mouse cursor is enabled as pointer
 
 r.PreventUIRefresh(-1)
+
+r.UpdateTimeline() -- to make the marker visible in case the edit dialogue will have to be called below
+
+	if MARKER_EDIT_DIALOGUE == 1 then -- done in a separate PreventUIRefresh() block to ensure inserted marker visibility; curiously the native 'Markers: Insert and/or edit marker at current position' action does prevent added marker visibility until the edit dialogue is closed
+	r.PreventUIRefresh(1)
+	r.SetEditCurPos(cur_pos, false, false) -- repeat moving the edit cursor to mouse cursor because the below action relies on the edit cursor position
+	r.Main_OnCommand(40614, 0) -- Markers: Edit marker near cursor
+	r.SetEditCurPos(store_curs_pos, false, false)
+	r.PreventUIRefresh(-1)
+	end
 
 r.Undo_EndBlock('Insert project marker time stamped to '..timestamp,-1)
 
