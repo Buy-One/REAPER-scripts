@@ -53,10 +53,10 @@ local POS_POINTER = 1
 -- MUST BE SELECTED, even though selection 
 -- isn't otherwise necessary when inserting 
 -- a marker at the mouse cursor;
--- when the dialogue appears the marker which
--- has been inserted isn't visible;
--- if the dialogue is canceled the marker will 
--- still be inserted;
+-- if a marker is set to be inserted at the edit 
+-- cursor and there're several selected items 
+-- under the edit cursor, the edit dialogue
+-- isn't called;
 -- if the the target position is already occupied
 -- by another marker, the dialogue will belong
 -- to the existing marker at the target position
@@ -116,7 +116,7 @@ end
 function Edit_Dialogue_Error(itm_under_mouse, mess_var) -- mess_var is boolean
 -- used when POS_POINTER ~= 1, i.e. for item under mouse
 local mess = '\n\n to have the edit dialogue \n\n     displayed, the item \n\n       must be selected \n\n '
-local mess = mess_var and '\n\n   marker already exists '..mess or mess
+local mess = mess_var and '\n\n   marker already exists. '..mess or mess
 	if itm_under_mouse and not r.IsMediaItemSelected(itm_under_mouse) then
 	Error_Tooltip(mess, 1, 1) -- caps and spaced true
 	end
@@ -180,7 +180,7 @@ local mrkr_pos_t = {}
 			take = (POS_POINTER ~= 1 and take_under_mouse or POS_POINTER == 1 and take)
 			local item_pos = r.GetMediaItemInfo_Value(item, 'D_POSITION')
 			local item_end = item_pos + r.GetMediaItemInfo_Value(item, 'D_LENGTH')
-			local item_under_edit_cursor = item_pos <= cur_pos and item_end >= cur_pos
+			local item_under_edit_cursor = item_pos <= cur_pos and item_end > cur_pos -- take marker isn't inserted at the very right edge of an item so >= is redundant and prevents triggering 'no item under mouse' message 
 			itms_under_edit_cursor_cnt = item_under_edit_cursor and itms_under_edit_cursor_cnt+1 or itms_under_edit_cursor_cnt
 			local offset = r.GetMediaItemTakeInfo_Value(take, 'D_STARTOFFS')
 			local playrate = r.GetMediaItemTakeInfo_Value(take, 'D_PLAYRATE')
@@ -214,17 +214,19 @@ r.Undo_BeginBlock()
 	r.SetTakeMarker(data.take, -1, timestamp, data.pos, r.ColorToNative(R,G,B)|0x1000000)
 	end
 	
-	if MARKER_EDIT_DIALOGUE == 1 then 
-	r.Main_OnCommand(42385, 0) -- 'Item: Add/edit take marker at play position or edit cursor' // only works if item is selected
-	Edit_Dialogue_Error(itm_under_mouse) -- mess_var is omitted, so nil, 'Edit take marker' dialogue action doesn't work if the item isn't selected, display message
-	end
+local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_pos, false, false) -- moveview, seekplay false
 	
-r.Undo_EndBlock('Insert take marker(s) time stamped to '..timestamp,-1)
-
-local restore_edit_curs_pos = POS_POINTER ~= 1 and r.SetEditCurPos(store_curs_pos, false, false) -- moveview, seekplay false //  if mouse cursor is enabled as pointer // must be restored after calling marker edit dialogue because that action relies on the edit cursor position, the downside is that when the dialogue is called the inserted marker isn't visible because the UI hasn't been updated, using two blocks of PreventUIRefresh() for setting and restoring the edit cursor position isn't preferable because the user will be able to see the edit cursor position change which isn't supposed to be noticeable
-
 r.PreventUIRefresh(-1)
 
+	if MARKER_EDIT_DIALOGUE == 1 and (POS_POINTER ~= 1 or itms_under_edit_cursor_cnt == 1) then -- only display marker edit dailogue if the target is item under mouse or if there's only one selected item under the edit cursor // done in a separate PreventUIRefresh() block to ensure inserted marker visibility
+	r.PreventUIRefresh(1)
+	r.SetEditCurPos(cur_pos, false, false) -- moveview, seekplay false // repeat moving the edit cursor to mouse cursor because the below action relies on the edit cursor position
+	r.Main_OnCommand(42385, 0) -- 'Item: Add/edit take marker at play position or edit cursor' // only works if item is selected
+	Edit_Dialogue_Error(itm_under_mouse) -- mess_var is omitted, so nil, 'Edit take marker' dialogue action doesn't work if the item isn't selected, display message
+	r.SetEditCurPos(store_curs_pos, false, false) -- moveview, seekplay false // restore
+	r.PreventUIRefresh(-1)
+	end
 
+r.Undo_EndBlock('Insert take marker(s) time stamped to '..timestamp,-1)
 
 
