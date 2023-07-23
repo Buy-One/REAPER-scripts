@@ -481,7 +481,7 @@ local arrange_h = not retval and r.GetExtState('ARRANGE HEIGHT','arrange_height'
 -- if the functions are placed in sequence like 'or A or B', the data is updated/evaluated in sequence
 -- on one script run one instance returns true, another is ignored, on the next run it's vice versa
 -- which makes the condition triggering arrange height value update below true 2 times in a row
--- unnecessarily causing the ugly temporary project tab routine to run twice
+-- unnecessarily causing arrange height measurement routine to run twice
 local dock_change = Detect_Docker_Pane_Change(wnd_ident_t, 0)
 local dock_change = Detect_Docker_Pane_Change(wnd_ident_t, 2) or dock_change
 
