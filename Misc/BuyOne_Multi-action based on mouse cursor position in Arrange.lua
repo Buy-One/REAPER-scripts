@@ -922,7 +922,7 @@ local undo_txt = undo_txt ~= '0' and undo_txt -- undo not disabled by the user
 return commID, func, undo_txt, err
 end
 
-function EXECUTE_GLOB_FUNC(slot_var, func, arg_t, undo_txt)
+function EXECUTE_FUNC(slot_var, func, arg_t, undo_txt)
 	if func then
 	local args = Select_Additional_Setting(slot_var, arg_t)
 	local u = undo_txt and undo_block()
@@ -945,7 +945,7 @@ end
 				if func then break end
 			i = i+1
 			until not name
-		EXECUTE_GLOB_FUNC(TCP_slot_var, func, arg_t, undo_txt)
+		EXECUTE_FUNC(TCP_slot_var, func, arg_t, undo_txt)
 		end
 	err = err or not commID and not func and 'invalid slot data'
 
@@ -959,7 +959,7 @@ end
 				if func then break end
 			i = i+1
 			until not name
-			EXECUTE_GLOB_FUNC('SLOT1', func, arg_t, undo_txt)
+			EXECUTE_FUNC('SLOT1', func, arg_t, undo_txt)
 		end
 	err = err or not commID and not func and 'invalid slot data'
 
@@ -973,7 +973,7 @@ end
 				if func then break end
 			i = i+1
 			until not name
-		EXECUTE_GLOB_FUNC('SLOT2', func, arg_t, undo_txt)
+		EXECUTE_FUNC('SLOT2', func, arg_t, undo_txt)
 		end
 	err = err or not commID and not func and 'invalid slot data'
 
@@ -987,7 +987,7 @@ end
 				if func then break end
 			i = i+1
 			until not name
-			EXECUTE_GLOB_FUNC('SLOT3', func, arg_t, undo_txt)
+			EXECUTE_FUNC('SLOT3', func, arg_t, undo_txt)
 		end
 	err = err or not commID and not func and 'invalid slot data'
 
@@ -1001,7 +1001,7 @@ end
 				if func then break end
 			i = i+1
 			until not name
-			EXECUTE_GLOB_FUNC('SLOT4', func, arg_t, undo_txt)
+			EXECUTE_FUNC('SLOT4', func, arg_t, undo_txt)
 		end
 	err = err or not commID and not func and 'invalid slot data'
 
@@ -1015,7 +1015,7 @@ end
 				if func then break end
 			i = i+1
 			until not name
-			EXECUTE_GLOB_FUNC('SLOT5', func, arg_t, undo_txt)
+			EXECUTE_FUNC('SLOT5', func, arg_t, undo_txt)
 		end
 	err = err or not commID and not func and 'invalid slot data'
 
@@ -1029,7 +1029,7 @@ end
 				if func then break end
 			i = i+1
 			until not name
-			EXECUTE_GLOB_FUNC('SLOT6', func, arg_t, undo_txt)
+			EXECUTE_FUNC('SLOT6', func, arg_t, undo_txt)
 		end
 	err = err or not commID and not func and 'invalid slot data'
 
@@ -1043,7 +1043,7 @@ end
 				if func then break end
 			i = i+1
 			until not name
-			EXECUTE_GLOB_FUNC('SLOT7', func, arg_t, undo_txt)
+			EXECUTE_FUNC('SLOT7', func, arg_t, undo_txt)
 		end
 	err = err or not commID and not func and 'invalid slot data'
 
