@@ -63,8 +63,9 @@ or not CC_Evts_Exist(take) and 'no active cc envelopes'
 
 
 function ACT(comm_ID, midi) -- midi is boolean
-local act = midi and r.MIDIEditor_LastFocused_OnCommand(r.NamedCommandLookup(comm_ID), false) -- islistviewcommand false
-or r.Main_OnCommand(r.NamedCommandLookup(comm_ID), 0)
+local comm_ID = comm_ID and r.NamedCommandLookup(comm_ID)
+local act = comm_ID and comm_ID ~= 0 and (midi and r.MIDIEditor_LastFocused_OnCommand(comm_ID, false) -- islistviewcommand false
+or not midi and r.Main_OnCommand(comm_ID, 0)) -- not midi cond is required because even if midi var is true the previous expression produces falsehood because the MIDIEditor_LastFocused_OnCommand() function doesn't return anything // only if valid command_ID
 end
 
 
