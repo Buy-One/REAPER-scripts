@@ -2,8 +2,12 @@
 ReaScript name: BuyOne_Multi-action based on mouse cursor position in Arrange.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Fixed validation of command IDs of scripts in the MIDI Editor section of the Action list
+	   #Fixed execution of MIDI Editor actions
+	   #Changed the logic of designating an action as the MIDI Editor action in the USER SETTINGS,
+	   updated the explanation accordingly
+	   #Introduced a message to indicate that no action is associated with the slot if it's set to '0'
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
@@ -170,9 +174,16 @@ SLOT1 = ""
 SLOT1_args = {}
 
 -- Enable by inserting any alphanumeric character
--- if the custom action/script whose command ID
--- specified in the SLOT1 setting is located
+-- if the native / SWS (cycle) action whose command ID
+-- is specified in the SLOT1 setting is located
 -- in the MIDI Editor section of the Action list
+-- because native actions can have identical command IDs
+-- in the Main and the MIDI Editor sections of the Action
+-- list and via API there's no way to determine theirs 
+-- and SWS actions association with a particular
+-- Action list section;
+-- will be ignored if SLOT1 setting contains a custom
+-- action / script command ID
 SLOT1_midi = ""
 
 -- The name of the action you want to be listed
@@ -852,8 +863,8 @@ function Validate_Type(slot_val) -- slot_val is the value assigned to SLOT varia
 local func = slot_val ~= '0' and _G[slot_val]
 local func = func and type(func) == 'function' and func -- ascertain that the function has been declared by the user in case it's global, existence of a local function will be ascertained outside // regarding 0 see comment above
 local commID = slot_val ~= '0' and tonumber(slot_val) -- native action // slot_val ~= '0' here is essentially redundant because this condition is used outside with 'not disabled' for the TCP and inside validate_preset() for zones
-local script = slot_val:match('_?RS') and (#slot_val == 43 or #slot_val == 42)
-local cust_act = slot_val:match('^_?[%l%d]+$') and (#slot_val == 33 or #slot_val == 32) -- not failproof against local function name whose length happens to be identical
+local script = slot_val:match('_?RS') and (#slot_val == 43 or #slot_val == 42 or #slot_val == 47 or #slot_val == 48) -- count with or without underscore, accounting for greater length in the MIDI Editor section due to 7d3c_ infix
+local cust_act = slot_val:match('^_?[%l%d]+$') and (#slot_val == 33 or #slot_val == 32) -- count with or without underscore, not failproof against local function name whose length happens to be identical
 local sws_act = slot_val:match('^_?[%u%p%d]+$')
 local sws_act = sws_act and r.NamedCommandLookup(sws_act) > 0 and sws_act -- needed to distingush SWS command ID from all caps global function name
 
@@ -893,7 +904,7 @@ local var_t = {header_h, wnd_h_offset, extra_zones, HORIZ_ZONES, TCP}
 function validate_slot_and_zone(slot, slot_coord_t, var_t)
 local header_h, wnd_h_offset, extra_zones, HORIZ_ZONES, TCP = table.unpack(var_t)
 	if validate_slot(slot, slot_coord_t) then
-	local subzone = slot_coord_t.top -- only subzones have this key in their cooedinates table
+	local subzone = slot_coord_t.top -- only subzones have this key in their coordinates table
 	local X_hit, Y_hit = Get_Mouse_TimeLine_Pos(slot_coord_t), header_h and Get_Mouse_Y_Axis_Pos(slot_coord_t, header_h, wnd_h_offset) -- header_h and wnd_h_offset are only valid when extra_zones or HORIZ_ZONES are true
 	return (not extra_zones or not subzone) and (not HORIZ_ZONES and X_hit or HORIZ_ZONES and not TCP and Y_hit) or extra_zones and X_hit and not TCP and Y_hit
 	end
@@ -904,15 +915,15 @@ function EXECUTE(slot_var, slot_val, name_t, midi_t)
 local commID, sect, func = Validate_Type(slot_val)
 local undo_txt = (Associate_ActNameSett_With_Slot(slot_var, name_t) or slot_val) -- only relevant for functions // if no custom undo point string is provided the function name will be used
 local undo_txt = undo_txt ~= '0' and undo_txt -- undo not disabled by the user
+local err
 	if commID then
 	local midi = Select_Additional_Setting(slot_var, midi_t)
 	local ME = MIDIEditor_GetActiveAndVisible()
-	commID = (not sect and (tonumber(commID) or commID:match('[%u%p%d]+')) or sect and (midi and ME and sect == '32060' or not midi and sect == '0')) and commID -- either native/SWS action or script/custom action
+	commID = (not sect and (tonumber(commID) or commID:match('[%u%p%d]+')) or sect and (sect == '32060' and ME or sect == '0')) and commID -- either native/SWS (cycle) action for which section cannot be retrieved and midi var is used instead or script/custom action
 		if commID then
-		ACT(commID, midi) -- midi is boolean
+		ACT(commID, midi or sect == '32060') -- midi is boolean
 		end
-	local mess = 'the script/custom action\n\n'
-	err = sect and (midi and sect ~= '32060' and mess..'\t     isn\'t MIDI' or midi and not ME and sect == '32060' and 'no active MIDI Editor' or not midi and sect ~= '0' and '    '..mess..'isn\'t found in the main section\n\n\t  of the action list') -- no error is raised if there's a mismatch between a native or an extension action section and the MainOn function which runs it or if such action IDs aren't found in the Action list
+	err = (sect and sect == '32060' or tonumber(commID) and midi) and not ME and ' no active midi editor ' or not commID and ' the script/custom action \n\n\t     isn\'t found \n\n\t  in the relevant\n\n section of the action list' -- no error is raised if there's a mismatch between a native or an extension action midi var validity and the MainOn function which runs it or if such action IDs do not exist
 	elseif func then -- global function
 	local args = Select_Additional_Setting(slot_var, arg_t)
 	local u = undo_txt and undo_block()
@@ -1049,7 +1060,9 @@ end
 
 	end
 
-	if err then Error_Tooltip('\n\n'..err..'\n\n', 1, 1) end -- caps and spaced are booleans
+err = err or not commID and not func and 'no action is associated \n\n        with the slot'
+	
+	if err then Error_Tooltip('\n\n '..err..' \n\n', 1, 1) return r.defer(no_undo) end -- caps and spaced are booleans
 
 
 
