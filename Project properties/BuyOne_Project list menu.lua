@@ -7,12 +7,12 @@ Changelog: Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	Provides an open project list in a menu form 
-    		allowing selecting them from this menu.
-    		
-    		Useful when many projects are open and their 
-    		exact names are not apparent in the project tab.
-    		
-    		Idea by akademie https://forum.cockos.com/showthread.php?t=280658
+	allowing selecting them from this menu.
+	
+	Useful when many projects are open and their 
+	exact names are not apparent in the project tab.
+	
+	Idea by akademie https://forum.cockos.com/showthread.php?t=280658
 
 ]]
 
