@@ -64,7 +64,7 @@ local i = 0
 	until not proj
 	
 	if #t == 1 then 
-	Error_Tooltip('\n\nonly one project is open\n\n', caps, spaced, x2) 
+	Error_Tooltip('\n\n only one project is open \n\n', 1, 1)  -- caps and spaced are true
 	return r.defer(no_undo) end
 
 	
