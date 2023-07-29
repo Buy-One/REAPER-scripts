@@ -28,6 +28,12 @@ About: 	Provides an open project list in a menu form
 	
 	insert into a .txt file, save, change the extension into .ReaperKeyMap, 
 	import, bind to a mousewheel.
+
+	To reverse scrolling direction swap the actions:
+	Action: Skip next action if CC parameter <0/mid
+	AND
+	Action: Skip next action if CC parameter >0/mid
+	inside the custom action
   
 ]]
 
