@@ -16,6 +16,18 @@ About: 	Provides an open project list in a menu form
 
 ]]
 
+-----------------------------------------------------------------------------
+------------------------------ USER SETTINGS --------------------------------
+-----------------------------------------------------------------------------
+
+-- Insert any alphanumeric character between the quotes
+-- to keep the menu open after clicking a menu item
+KEEP_OPEN = ""
+
+-----------------------------------------------------------------------------
+-------------------------- END OF USER SETTINGS -----------------------------
+-----------------------------------------------------------------------------
+
 
 local r = reaper
 
@@ -25,8 +37,6 @@ local text = caps and text:upper() or text
 local text = spaced and text:gsub('.','%0 ') or text
 local x2 = x2 and math.floor(x2) or 0
 r.TrackCtl_SetToolTip(text, x+x2, y, true) -- topmost true
--- r.TrackCtl_SetToolTip(text:upper(), x, y, true) -- topmost true
--- r.TrackCtl_SetToolTip(text:upper():gsub('.','%0 '), x, y, true) -- spaced out // topmost true
 --[[
 -- a time loop can be added to run until certain condition obtains, e.g.
 local time_init = r.time_precise()
@@ -56,14 +66,18 @@ local i = 0
 	if #t == 1 then 
 	Error_Tooltip('\n\nonly one project is open\n\n', caps, spaced, x2) 
 	return r.defer(no_undo) end
+
 	
+::KEEP_OPEN::
+
 local menu = ''
+local cond1, cond2, cond3 = #t < 10, #t < 100, #t >= 100
 	for k, data in ipairs(t) do
-	local check = data.proj == r.EnumProjects(-1) and '!' or ''
-	local pad = k < 10 and '  ' or k < 100 and ' ' or ''
+	local check = data.proj == r.EnumProjects(-1) and '!#' or ''
+	local pad = k < 10 and (cond1 and '' or cond2 and '  ' or cond3 and '   ') or k < 100 and cond3 and '  ' or ''
 	menu = menu..check..pad..k..'. '..data.name..'|'
 	end
-	
+
 
 gfx.init('', 0, 0)
 -- open menu at the mouse cursor
@@ -74,6 +88,7 @@ local output = gfx.showmenu(menu) -- menu string
 
 	if output > 0 then
 	r.SelectProjectInstance(t[output].proj)
+		if #KEEP_OPEN:gsub(' ','') > 0 then goto KEEP_OPEN end
 	end
 
 gfx.quit()
@@ -81,5 +96,4 @@ gfx.quit()
 do return r.defer(no_undo) end
 
 
-	
 	
