@@ -27,7 +27,7 @@ About: 	Provides an open project list in a menu form
 	ACT 1 0 "d0dee33a246178498417b4586cffa562" "Custom: Switch to next/previous project tab with mousewheel" 2013 40861 2014 40862	
 	
 	insert into a .txt file, save, change the extension into .ReaperKeyMap, 
-	import, bind to a mousewheel.
+	import, bind to mousewheel.
 
 	To reverse scrolling direction swap the actions:
 	Action: Skip next action if CC parameter <0/mid
