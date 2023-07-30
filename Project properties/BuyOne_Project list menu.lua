@@ -80,7 +80,7 @@ local i = 0
 	repeat
 	local proj, path = r.EnumProjects(i)
 		if proj then
-		t[#t+1] = {proj=proj, name=path:match('.+[\\/](.+)%.[RrPp]+') or 'Not saved'}
+		t[#t+1] = {proj=proj, name=path:match('.+[\\/](.+)%.[RrPp]+') or 'Unsaved'}
 		end
 	i = i+1
 	until not proj
