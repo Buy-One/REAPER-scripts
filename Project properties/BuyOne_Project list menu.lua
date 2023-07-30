@@ -7,7 +7,7 @@ Changelog: Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	Provides an open project list in a menu form 
-	allowing selecting them from this menu.
+	allowing navigating between them via the menu.
 	
 	Useful when many projects are open and their 
 	exact names are not apparent in the project tab.
