@@ -94,10 +94,10 @@ local i = 0
 
 local menu = ''
 local cond1, cond2, cond3 = #t < 10, #t < 100, #t >= 100
-	for k, data in ipairs(t) do
+	for idx, data in ipairs(t) do
 	local check = data.proj == r.EnumProjects(-1) and '!#' or ''
-	local pad = k < 10 and (cond1 and '' or cond2 and '  ' or cond3 and '   ') or k < 100 and cond3 and '  ' or ''
-	menu = menu..check..pad..k..'. '..data.name..'|'
+	local pad = idx < 10 and (cond1 and '' or cond2 and '  ' or cond3 and '   ') or idx < 100 and cond3 and '  ' or ''
+	menu = menu..check..pad..idx..'. '..data.name..'|'
 	end
 
 
