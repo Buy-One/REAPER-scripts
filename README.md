@@ -17,7 +17,10 @@ To download an individual script:
 
 
 Scripts from the **MIDI** folder go to the **MIDI Editor** section of the Action list  
+
+Updating scripts which include USER SETTINGS, in order to retain them, first overwrite the enrire USER SETTINGS section in the newer version of the script with the one from the old one and only then overwrite the actual file.
   
+
   
 </br>
 </br>
