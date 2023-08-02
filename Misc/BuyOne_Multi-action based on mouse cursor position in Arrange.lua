@@ -177,13 +177,12 @@ SLOT1_args = {}
 -- if the native / SWS (cycle) action whose command ID
 -- is specified in the SLOT1 setting is located
 -- in the MIDI Editor section of the Action list
--- because native actions can have identical command IDs
--- in the Main and the MIDI Editor sections of the Action
--- list and via API there's no way to determine theirs 
+-- because via API there's no way to determine theirs 
 -- and SWS actions association with a particular
 -- Action list section;
 -- will be ignored if SLOT1 setting contains a custom
--- action / script command ID
+-- action / script command ID because these allow
+-- to determine the section they reside in
 SLOT1_midi = ""
 
 -- The name of the action you want to be listed
