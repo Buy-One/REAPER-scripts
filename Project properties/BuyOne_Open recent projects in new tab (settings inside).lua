@@ -91,7 +91,7 @@ local i = 0
 	i = i+1
 	until not ret
 	if retval then -- the project is open in a tab
-		if tonumber(r.GetAppVersion():match('(.+)/')) >= 6.43 then -- if can be retrieved via API regardless of being saved to the project file // API for getting title was added in 6.43
+		if tonumber(r.GetAppVersion():match('(.+)/?')) >= 6.43 then -- if can be retrieved via API regardless of being saved to the project file // API for getting title was added in 6.43
 		retval, proj_title = r.GetSetProjectInfo_String(retval, 'PROJECT_TITLE', '', false) -- is_set false // retval is a proj pointer, not an index
 		else -- retrieve from file which in theory may be different from the latest title in case the project hasn't been saved
 		proj_title = get_from_file(projpath)
