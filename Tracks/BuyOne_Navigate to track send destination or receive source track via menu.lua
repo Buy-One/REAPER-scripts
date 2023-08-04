@@ -253,7 +253,7 @@ LIST_RECEIVES = #LIST_RECEIVES:gsub(' ','') > 0
 BOTH = not LIST_SENDS and not LIST_RECEIVES or LIST_SENDS and LIST_RECEIVES
 DISPLAY_OVER_SEND_LIST = #DISPLAY_OVER_SEND_LIST:gsub(' ','') > 0
 DISPLAY_OVER_IO_BUTTON = #DISPLAY_OVER_IO_BUTTON:gsub(' ','') > 0
-local supported_build = tonumber(r.GetAppVersion():match('(.+)/')) >= 6.37
+local supported_build = tonumber(r.GetAppVersion():match('(.+)/?')) >= 6.37
 
 local mixer_vis = r.GetToggleCommandStateEx(0,40078) == 1 -- View: Toggle mixer visible // when docked and the docker is closed the state is OFF so 'View: Show docker' toggle state doesn't need to be additionally evaluated
 local x, y = r.GetMousePosition()
