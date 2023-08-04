@@ -306,7 +306,7 @@ local TAKE_FX = TAKE_FX:gsub('[%s]','') ~= ''
 	local sel_trk_cnt = r.CountSelectedTracks2(0,true) -- incl. Master
 	local sel_itms_cnt = r.CountSelectedMediaItems(0)
 --	local fx_chain = retval > 0 or src_mon_fx_idx >= 0
-	local app_ver = tonumber(r.GetAppVersion():match('(.+)/')) > 6.11
+	local app_ver = tonumber(r.GetAppVersion():match('(.+)/?')) > 6.11
 	local fx_brws = app_ver and r.GetToggleCommandStateEx(0, 40271) -- View: Show FX browser window
 	or 0 -- disable FX browser routine in builds prior to 6.12c where the API doesn't support it
 
