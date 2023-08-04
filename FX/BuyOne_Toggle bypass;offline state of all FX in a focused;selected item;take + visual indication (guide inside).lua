@@ -196,7 +196,7 @@ end
 
 local x, y = r.GetMousePosition()
 
-	if tonumber(r.GetAppVersion():match('(.+)/')) < 6.09 then
+	if tonumber(r.GetAppVersion():match('(.+)/?')) < 6.09 then
 	r.TrackCtl_SetToolTip('\n     THE SCRIPT REQUIRES\n\n  REAPER v6.09 AND ABOVE  \n ', x, y+10, true) -- topmost true
 	return end -- 'ReaScript:Run' caption is displayed in the menu bar but no actual undo point is created because Undo_BeginBlock() isn't yet initialized, here and elsewhere
 
