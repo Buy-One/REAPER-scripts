@@ -568,7 +568,7 @@ local dock_change = Detect_Docker_Pane_Change(wnd_ident_t, 2) or dock_change
 	
 	-- get 'Maximum vertical zoom' set at Preferences -> Editing behavior, which affects max track height set with 'View: Toggle track zoom to maximum height', introduced in build 6.76
 	local cont
-		if tonumber(r.GetAppVersion():match('(.+)/')) >= 6.76 then
+		if tonumber(r.GetAppVersion():match('(.+)/?')) >= 6.76 then
 		local f = io.open(r.get_ini_file(),'r')
 		cont = f:read('*a')
 		f:close()
