@@ -340,7 +340,7 @@ end
 local retval, tr_num, tr, itm_num, item, take_num, take, fx_num, mon_fx, fx_name = GetFocusedFX()
 
 local fx_chain = retval > 0 or mon_fx
-local supported_build = tonumber(r.GetAppVersion():match('(.+)/')) > 6.11 -- inserting from FX browser is only supported since build 6.12c
+local supported_build = tonumber(r.GetAppVersion():match('(.+)/?')) > 6.11 -- inserting from FX browser is only supported since build 6.12c
 local fx_brows_open = get_tog_state(0, 40271) == 1 -- View: Show FX browser window
 
 -- Generate prompts
