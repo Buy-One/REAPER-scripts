@@ -7,32 +7,32 @@ Changelog: Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	Created in response to a feature request  
-		https://forum.cockos.com/showthread.php?t=247801
-		
-		To be used efficiently the script must be run at the moment 
-		of opening a project and at every project save.  
-		This ensures immediate accessibility and update of the 
-		relevant data.  
-		For that, create two custom actions, one for project loading
-		and another one for saving:
-		
-		*Project loading* (in the following order)
-		
-		File: Open project
-		BuyOne_Store last audio buffer size in project file and display warning if changed between sessions.lua
-		
-		*Project saving* (in the following order)
-		
-		BuyOne_Store last audio buffer size in project file and display warning if changed between sessions.lua
-		File: Save project
-		
-		
-		Unfortunately the project must be loaded via the file browser.  
-		Running the script along with opening a recent project from 
-		the list isn't possible.
-		
-		At the moment only Windows is supported. Can be upgraded at user
-		request and with their assistance.
+	https://forum.cockos.com/showthread.php?t=247801
+	
+	To be used efficiently the script must be run at the moment 
+	of opening a project and at every project save.  
+	This ensures immediate accessibility and update of the 
+	relevant data.  
+	For that, create two custom actions, one for project loading
+	and another one for saving:
+	
+	*Project loading* (in the following order)
+	
+	File: Open project
+	BuyOne_Store last audio buffer size in project file and display warning if changed between sessions.lua
+	
+	*Project saving* (in the following order)
+	
+	BuyOne_Store last audio buffer size in project file and display warning if changed between sessions.lua
+	File: Save project
+	
+	
+	Unfortunately the project must be loaded via the file browser.  
+	Running the script along with opening a recent project from 
+	the list isn't possible.
+	
+	At the moment only Windows is supported. Can be upgraded at user
+	request and with their assistance.
 	
 ]]
 
