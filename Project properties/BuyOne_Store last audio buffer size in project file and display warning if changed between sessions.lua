@@ -72,6 +72,25 @@ or (device_idx == 5 and 'Buffer' or 'Block')..' size: '..buff..' samples'
 return name..'\n\n'..data
 end
 
+function Error_Tooltip(text, caps, spaced, x2, y2) 
+-- the tooltip sticks under the mouse within Arrange 
+-- but quickly disappears over the TCP, to make it stick 
+-- just a tad longer there it must be directly under the mouse
+-- caps and spaced are booleans
+-- x2, y2 are integers to adjust tooltip position by
+local x, y = r.GetMousePosition()
+local text = caps and text:upper() or text
+local text = spaced and text:gsub('.','%0 ') or text
+local x2, y2 = x2 and math.floor(x2) or 0, y2 and math.floor(y2) or 0
+r.TrackCtl_SetToolTip(text, x+x2, y+y2, true) -- topmost true
+--[[
+-- a time loop can be added to run until certain condition obtains, e.g.
+local time_init = r.time_precise()
+repeat
+until condition and r.time_precise()-time_init >= 0.7 or not condition
+]]
+end
+
 function Bump_Proj_Change_Cnt() -- API functions seems to not update project change count, most of them anyway
 r.Main_OnCommand(41156,0) -- Options: Selecting one grouped item selects group
 r.Main_OnCommand(41156,0)
@@ -127,6 +146,9 @@ local data = device_idx..':'..table.concat(parm_t,':') -- format is 'device idx:
 	if ret == 0 -- never stored
 	or ret == 1 and not ignore and project_change_cnt > 2 -- project has been opened for some time and change count has increased and user didn't cancel the dialogue on start to prevent updating project extended state data already stored (ignore)
 	then -- store
+		if ret == 0 then
+		Error_Tooltip('\n\nfirst time storing buffer data.\n\n   be sure to save the project.\n\n', 1, 1) -- caps, spaced true
+		end
 	r.SetProjExtState(0, 'AUDIO BUFFER LAST PROPERTIES', 'data', data)
 	elseif ret == 1 and project_change_cnt <= 2 -- project has just been opened, if the recommended 'open project' custom action is used, immediately after project loading the change count will be 2
 	then
@@ -134,7 +156,7 @@ local data = device_idx..':'..table.concat(parm_t,':') -- format is 'device idx:
 	local dev_idx, buff, blocks, use_asio = stored_data:match('(%d+):(%d+):(%d+):(%d+)')
 	local differs = dev_idx ~= device_idx or dev_idx == device_idx and (buff ~= parm_t[1] or blocks ~= parm_t[2] or use_asio ~= parm_t[3])
 		if differs then
-		local stored = 'LAST USED: '..Display_Data(OS, device_name_t, dev_idx, buff, blocks, use_asio)
+		local stored = 'LAST SAVED: '..Display_Data(OS, device_name_t, dev_idx, buff, blocks, use_asio)
 		local current = 'CURRENT: '..Display_Data(OS, device_name_t, device_idx, parm_t[1], parm_t[2], parm_t[3])
 		local lb = '\n\n'
 		local asterisks = ('*'):rep(45)
