@@ -1,9 +1,9 @@
 --[[
 ReaScript name: Move edit cursor to snap offset cursor / fades / take|stretch markers / media cues / Razor Edit area edges (16 scripts)
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.0
-Changelog: Initial release
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
+Version: 1.1
+Changelog: #Made values in bitwise operation compatible with Lua 5.4
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M for media cue navigation scripts
@@ -357,7 +357,7 @@ function GetUndoSettings()
 local f = io.open(r.get_ini_file(),'r')
 local cont = f:read('*a')
 f:close()
-local undoflags = cont:match('undomask=(%d+)')
+local undoflags = cont:match('undomask=(%d+)')+0 -- +0 is accommodating for Lua 5.4 where implicit conversion of strings to integers doesn't work in bitwise operations
 local t = {
 1, -- item selection
 2, -- time selection
