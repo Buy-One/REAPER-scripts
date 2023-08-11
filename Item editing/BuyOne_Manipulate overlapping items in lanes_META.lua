@@ -1,9 +1,9 @@
 --[[
 ReaScript Name: Move, select, im- & explode, crop overlapping items in lanes (13 scripts) - only 6.53 and earlier
 Author: BuyOne
-Version: 1.0
-Changelog: Initial release
-Author URL: https://forum.cockos.com/member.php?u=134058
+Version: 1.1
+Changelog: 1.1 #Fixed REAPER version evaluation
+Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v5.962 and not later than 6.53
 Extensions: SWS/S&M, not mandatory but strongly recommended
@@ -204,7 +204,7 @@ function Are_Itms_Overlapping_Selected_Collapsed(t) -- t is an array storing sel
 -- true if overlapping and non-overlapping items are all selected
 -- true if selected item lanes are collapsed excluding non-overlapping items
 
-local is_build_6_54_onward = tonumber(r.GetAppVersion():match('(.+)/?')) >= 6.54
+local is_build_6_54_onward = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.54
 local lanes_collapsed_cnt = 0
 
 local get_item_props = r.GetMediaItemInfo_Value
@@ -385,7 +385,7 @@ end
 
 
 
-local build_6_53_and_earlier = tonumber(r.GetAppVersion():match('(.+)/?')) > 6.53 and ('the script is only compatible \n\n  with builds 6.53 and earlier.'):upper():gsub('.','%0 ')
+local build_6_53_and_earlier = tonumber(r.GetAppVersion():match('[%d%.]+')) > 6.53 and ('the script is only compatible \n\n  with builds 6.53 and earlier.'):upper():gsub('.','%0 ')
 local not_overlapping_in_lanes = r.GetToggleCommandStateEx(0, 40507) ~= 1 -- Options: Show overlapping media items in lanes (when room) / Offset overlapping items vertically
 and 'THE OPTION "Show overlapping media  \n\n        items in lanes"  IS NOT ENABLED.'
 local err_mess = build_6_53_and_earlier or not_overlapping_in_lanes
@@ -496,7 +496,7 @@ local st, fin, step = table.unpack(explode and same_track and {#sel_itms_t, 1, -
 	local overlap_cnt = 0
 	local sel_cnt = 0
 	local I_LASTY_cnt = 0
-	local is_build_6_54_onward = tonumber(r.GetAppVersion():match('(.+)/?')) >= 6.54
+	local is_build_6_54_onward = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.54
 	local is_oversized_itm_chunk
 
 		if not implode then -- for imploding the data of this entire block with error messages is useless
