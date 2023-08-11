@@ -1,9 +1,9 @@
 --[[
 ReaScript name: Navigate to track send destination or receive source track via menu
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.0
-Changelog: Initial release
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
+Version: 1.1
+Changelog: 1.1 #Fixed REAPER version evaluation
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	As far as going to send destination track is concerned 
@@ -253,7 +253,7 @@ LIST_RECEIVES = #LIST_RECEIVES:gsub(' ','') > 0
 BOTH = not LIST_SENDS and not LIST_RECEIVES or LIST_SENDS and LIST_RECEIVES
 DISPLAY_OVER_SEND_LIST = #DISPLAY_OVER_SEND_LIST:gsub(' ','') > 0
 DISPLAY_OVER_IO_BUTTON = #DISPLAY_OVER_IO_BUTTON:gsub(' ','') > 0
-local supported_build = tonumber(r.GetAppVersion():match('(.+)/?')) >= 6.37
+local supported_build = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.37
 
 local mixer_vis = r.GetToggleCommandStateEx(0,40078) == 1 -- View: Toggle mixer visible // when docked and the docker is closed the state is OFF so 'View: Show docker' toggle state doesn't need to be additionally evaluated
 local x, y = r.GetMousePosition()
