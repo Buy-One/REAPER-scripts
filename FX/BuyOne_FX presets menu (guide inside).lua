@@ -3,7 +3,7 @@ ReaScript name: FX presets menu
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
 Version: 1.9
-Changelog: v1.9 Fixed REAPER version evaluation
+Changelog: v1.9 #Fixed REAPER version evaluation
 	   v1.8 #Improved detection of the TCP under mouse when it's displayed on the right side of the Arrange
 	   view at certain horizontal scroll position 
 	   v1.7 #Fixed logic of TCP detection under mouse
