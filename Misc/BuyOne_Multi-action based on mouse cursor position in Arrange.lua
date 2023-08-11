@@ -518,7 +518,7 @@ local vals = (not retval or #vals == 0) and r.GetExtState('DOCK'..pos..' WINDOWS
 			cntr = cntr+1
 		--	add as string keys in ref_t for easier evaluation against reaper.ini data, won't interfere with the already present numeric keys
 			local a, b, c = table.unpack((cntr >= 1 and cntr <= 4 or cntr > 47) and {data} or cntr == 5 and {data:match('(%d)(%d)(%d)')} or {data:match('(%d)(%d)')}) -- first 4 vals and 48+ are singular, 5th (transport) is a triplet, the rest are dual - dock state:visibility
-			ref_t[ref_t[cntr]] = c and {a, b, c} or b and {a, b} or a -- a, b, c are dock, reserved, visible for transport; a, b are dock, visible; a - dock for keys 1-4, and visibility for key 48+ (SWS ext)
+			ref_t[ref_t[cntr]] = c and {a, b, c} or b and {a, b} or a -- a, b, c are dock, reserved, visible for transport; a, b are dock, visible; a - dock for keys 1-4
 			end
 		end
 	end
