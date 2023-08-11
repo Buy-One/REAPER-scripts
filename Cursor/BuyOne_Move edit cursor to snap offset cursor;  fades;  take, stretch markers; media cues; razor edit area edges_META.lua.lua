@@ -2,8 +2,9 @@
 ReaScript name: Move edit cursor to snap offset cursor / fades / take|stretch markers / media cues / Razor Edit area edges (16 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #Made values in bitwise operation compatible with Lua 5.4
+Version: 1.2
+Changelog: 1.2 #Fixed REAPER version evaluation
+	   1.1 #Made values in bitwise operation compatible with Lua 5.4
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M for media cue navigation scripts
@@ -285,7 +286,7 @@ end
 
 
 function REAPER_Ver_Check(build) -- build is REAPER build number, the function must be followed by 'do return end'
-	if tonumber(r.GetAppVersion():match('(.+)/?')) < build then -- or match('[%d%.]+')
+	if tonumber(r.GetAppVersion():match('[%d%.]+')) < build then -- or match('[%d%.]+')
 	local x,y = r.GetMousePosition()
 	local mess = '\n\n   THE SCRIPT REQUIRES\n\n  REAPER '..build..' AND ABOVE  \n\n '
 	local mess = mess:gsub('.','%0 ')
@@ -303,7 +304,7 @@ function Move_EditCur_To_RazEdAreaEdge(dir, items, envs, curs_undo)
 local right = dir:match('right')
 local left = dir:match('left')
 local edit_cur_pos = r.GetCursorPosition()
-local master_raz = tonumber(r.GetAppVersion():match('(.+)/?')) >= 6.72 -- Razor Edit for Master track was added in 6.72
+local master_raz = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.72 -- Razor Edit for Master track was added in 6.72
 local sel_tr_cnt = not master_raz and r.CountSelectedTracks(0)
 local GetTr = sel_tr_cnt > 0 and r.GetSelectedTrack or r.GetTrack
 local tr_cnt = sel_tr_cnt > 0 and sel_tr_cnt or GetTr and r.CountTracks(0) or 0
