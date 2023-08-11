@@ -2,8 +2,8 @@
 ReaScript name: Generate .reabank file from FX preset list
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.0
-Changelog: Initial release
+Version: 1.1
+Changelog: 1.1 Fixed REAPER version evaluation
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script allows creating .reabank files for individual plugins
@@ -340,7 +340,7 @@ end
 local retval, tr_num, tr, itm_num, item, take_num, take, fx_num, mon_fx, fx_name = GetFocusedFX()
 
 local fx_chain = retval > 0 or mon_fx
-local supported_build = tonumber(r.GetAppVersion():match('(.+)/?')) > 6.11 -- inserting from FX browser is only supported since build 6.12c
+local supported_build = tonumber(r.GetAppVersion():match('[%d%.]+')) > 6.11 -- inserting from FX browser is only supported since build 6.12c
 local fx_brows_open = get_tog_state(0, 40271) == 1 -- View: Show FX browser window
 
 -- Generate prompts
