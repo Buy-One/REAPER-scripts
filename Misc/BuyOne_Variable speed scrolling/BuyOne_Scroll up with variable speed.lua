@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Scroll up with variable speed.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
+Version: 1.4
 Changelog: 
+	1.4 #Fixed REAPER version evaluation
 	v1.3 #Removed limitation on using Ctrl+Shift modifier when extensions aren't installed
 	v1.2 #Improved logic of updating Arrange window height data absent the extensions
 	v1.1 #Added condition to prevent scrolling when the track list is hidden
@@ -439,7 +440,7 @@ local dock_change = Detect_Docker_Pane_Change(wnd_ident_t, 2) or dock_change
 	
 	-- get 'Maximum vertical zoom' set at Preferences -> Editing behavior, which affects max track height set with 'View: Toggle track zoom to maximum height', introduced in build 6.76
 	local cont
-		if tonumber(r.GetAppVersion():match('(.+)/?')) >= 6.76 then
+		if tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.76 then
 		local f = io.open(r.get_ini_file(),'r')
 		cont = f:read('*a')
 		f:close()
