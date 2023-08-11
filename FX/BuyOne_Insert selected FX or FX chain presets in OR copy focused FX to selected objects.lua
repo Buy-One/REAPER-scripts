@@ -1,15 +1,27 @@
 --[[
-ReaScript Name: Insert selected FX or FX chain preset in OR copy focused FX to selected objects
+ReaScript Name: BuyOne_Insert selected FX or FX chain preset in OR copy focused FX to selected objects.lua
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.5
-Licence: WTFPL
-REAPER: v6.12c+ recommended
-Changelog:	#Fixed a bug of copying take FX to the same FX chain
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
+Version: 1.6
+Changelog:  1.6 #Fixed REAPER version evaluation
+	    1.5 #Fixed a bug of copying take FX to the same FX chain
 		#Added support for copying FX envelopes along with FX
 		#Implemented a workround to the API bug which causes an FX chain window to close when 
 		'Only allow one FX chain window at a time' setting is enabled in Preferences
 		#Added support for accessing FX from a menu
+	    1.4 #Fixed temporary track being left behind after aborting the script
+		#Fixed a bug of copying FX to the same FX chain
+	    1.3 #Following ReaPack issue report 776:
+		#Added version compatibility check
+		#Updated version compatibility tag
+	    1.2 #Minor error proofing
+		#Updated title to reflect capabilities
+		#Updated guide to reflect capabilities
+		#Updated undo caption to reflect name
+	    1.1 #Proper takes support
+		#Slightly updated guide
+Licence: WTFPL
+REAPER: v6.12c+ recommended
 About:		——  To insert FX or FX chain preset in multiple objects (tracks and/or items) at once open the FX 
 		Browser, select FX or FX chain preset, as many as needed, select the destination objects and run 
 		the script. <<<< This feature exists natively since build 6.12c, in this respect the script is
@@ -50,7 +62,6 @@ About:		——  To insert FX or FX chain preset in multiple objects (tracks and/
 		—— TRACK_INPUT_MON_FX option affects both Input and Monitor FX chains.
 
 ]]
-
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
 -----------------------------------------------------------------------------
@@ -306,7 +317,7 @@ local TAKE_FX = TAKE_FX:gsub('[%s]','') ~= ''
 	local sel_trk_cnt = r.CountSelectedTracks2(0,true) -- incl. Master
 	local sel_itms_cnt = r.CountSelectedMediaItems(0)
 --	local fx_chain = retval > 0 or src_mon_fx_idx >= 0
-	local app_ver = tonumber(r.GetAppVersion():match('(.+)/?')) > 6.11
+	local app_ver = tonumber(r.GetAppVersion():match('[%d%.]+')) > 6.11
 	local fx_brws = app_ver and r.GetToggleCommandStateEx(0, 40271) -- View: Show FX browser window
 	or 0 -- disable FX browser routine in builds prior to 6.12c where the API doesn't support it
 
