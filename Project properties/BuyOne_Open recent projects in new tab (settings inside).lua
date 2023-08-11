@@ -1,10 +1,11 @@
 --[[
-ReaScript name: Open recent projects in new tab
+ReaScript name: BuyOne_Open recent projects in new tab.lua
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.2
-Changelog: #Added support for display of project title instead 
-	   of project path or file name, if set in Project settings -> Notes
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
+Version: 1.3
+Changelog: 1.3 #Fixed REAPER version evaluation
+	   1.2 #Added support for display of project title instead 
+	  of project path or file name, if set in Project settings -> Notes
 Licence: WTFPL
 REAPER: at least v5.962
 About: 
@@ -91,7 +92,7 @@ local i = 0
 	i = i+1
 	until not ret
 	if retval then -- the project is open in a tab
-		if tonumber(r.GetAppVersion():match('(.+)/?')) >= 6.43 then -- if can be retrieved via API regardless of being saved to the project file // API for getting title was added in 6.43
+		if tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.43 then -- if can be retrieved via API regardless of being saved to the project file // API for getting title was added in 6.43
 		retval, proj_title = r.GetSetProjectInfo_String(retval, 'PROJECT_TITLE', '', false) -- is_set false // retval is a proj pointer, not an index
 		else -- retrieve from file which in theory may be different from the latest title in case the project hasn't been saved
 		proj_title = get_from_file(projpath)
