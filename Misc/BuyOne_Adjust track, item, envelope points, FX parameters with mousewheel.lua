@@ -554,7 +554,7 @@ return #setting:gsub(' ','') > 0 and tonumber(setting) or 1
 end
 
 
-local build = r.GetAppVersion():match('[%d%.]+') -- or ('(.+)/?')
+local build = r.GetAppVersion():match('[%d%.]+')
 	if tonumber(build) < 6.36 then
 	r.MB('     The script is only compatible\n\nwith REAPER builds 6.36 onwards','ERROR', 0)
 	return r.defer(function() do return end end)
