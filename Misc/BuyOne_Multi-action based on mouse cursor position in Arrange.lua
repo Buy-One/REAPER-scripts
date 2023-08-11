@@ -396,7 +396,8 @@ itemprops = {'%[itemprops%]', 'dock', 41589, 'wnd_vis'}, -- Item properties: Tog
 -- if it's being docked via context menu the dockermode it's already assigned to is re-pointed to the new location
 -- could be applicable to any window
 -- midiedit key dockermode data only changes for the last active MIDI Editor even if there're several in the project
--- MIDI editor dock state like any MIDI editior toggle action can only be retrieved when MIDI editor is active
+-- MIDI editor dock state (Options: Toggle window docking) like any MIDI editior toggle action
+-- can only be retrieved when MIDI editor is active
 -- if there're more than one MIDI editor window open each one will have to be activated in turn and its dock state checked
 -- which is impossible; decided to use it anyway so any change in MIDI Editor window regardless of its dock position
 -- will trigger update just in case;
