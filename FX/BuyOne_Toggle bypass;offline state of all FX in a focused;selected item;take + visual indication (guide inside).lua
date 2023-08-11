@@ -1,9 +1,10 @@
 --[[
-ReaScript name: Toggle bypass;offline state of all FX in a focused;selected item;take + visual indication
+ReaScript name: BuyOne_Toggle bypass;offline state of all FX in a focused;selected item;take + visual indication.lua
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.0
-Changelog: Initial release
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
+Version: 1.1
+Changelog: 1.1 #Fixed REAPER version evaluation
+Licence: WTFPL
 Provides: [main] .
 About:
 
@@ -196,7 +197,7 @@ end
 
 local x, y = r.GetMousePosition()
 
-	if tonumber(r.GetAppVersion():match('(.+)/?')) < 6.09 then
+	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.09 then
 	r.TrackCtl_SetToolTip('\n     THE SCRIPT REQUIRES\n\n  REAPER v6.09 AND ABOVE  \n ', x, y+10, true) -- topmost true
 	return end -- 'ReaScript:Run' caption is displayed in the menu bar but no actual undo point is created because Undo_BeginBlock() isn't yet initialized, here and elsewhere
 
