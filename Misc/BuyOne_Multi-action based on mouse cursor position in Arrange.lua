@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Multi-action based on mouse cursor position in Arrange.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #Fixed validation of command IDs of scripts in the MIDI Editor section of the Action list
+Version: 1.2
+Changelog: 1.2 Fixed REAPER version evaluation
+	   1.1 #Fixed validation of command IDs of scripts in the MIDI Editor section of the Action list
 	   #Fixed execution of MIDI Editor actions
 	   #Changed the logic of designating an action as the MIDI Editor action in the USER SETTINGS,
 	   updated the explanation accordingly
@@ -656,7 +657,7 @@ local dock_change = Detect_Docker_Pane_Change(wnd_ident_t, 2) or dock_change
 
 	-- get 'Maximum vertical zoom' set at Preferences -> Editing behavior, which affects max track height set with 'View: Toggle track zoom to maximum height', introduced in build 6.76
 	local cont
-		if tonumber(r.GetAppVersion():match('(.+)/?')) >= 6.76 then
+		if tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.76 then
 		local f = io.open(r.get_ini_file(),'r')
 		cont = f:read('*a')
 		f:close()
