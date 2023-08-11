@@ -2,8 +2,9 @@
 ReaScript name: FX presets menu
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.8
-Changelog: v1.8 #Improved detection of the TCP under mouse when it's displayed on the right side of the Arrange
+Version: 1.9
+Changelog: v1.9 Fixed REAPER version evaluation
+	   v1.8 #Improved detection of the TCP under mouse when it's displayed on the right side of the Arrange
 	   view at certain horizontal scroll position 
 	   v1.7 #Fixed logic of TCP detection under mouse
 	   v1.6 #Added support for TCP on the right side of the Arrange
@@ -403,7 +404,7 @@ local obj, obj_type
 	obj, obj_type = table.unpack(retval == 2 and tr > 0 and {r.GetTrackMediaItem(r.GetTrack(0,tr-1), item), 1} or retval == 1 and tr > 0 and {r.GetTrack(0,tr-1), 0} or {r.GetMasterTrack(0), 0})
 	else -- not FX chain
 	local x, y = r.GetMousePosition()
-		if tonumber(r.GetAppVersion():match('(.+)/?')) >= 6.37 then -- SUPPORTS MCP
+		if tonumber(r.GetAppVersion():match('[%d%.]')) >= 6.37 then -- SUPPORTS MCP
 		local retval, info_str = r.GetThingFromPoint(x, y)
 		obj, obj_type = table.unpack(info_str == 'arrange' and {({r.GetItemFromPoint(x, y, true)})[1], 1} -- allow locked is true
 		or info_str:match('[mt]cp') and {r.GetTrackFromPoint(x, y), 0} or {nil})
