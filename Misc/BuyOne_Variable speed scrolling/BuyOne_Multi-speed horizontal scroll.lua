@@ -683,7 +683,7 @@ local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Fin
 MW_REVERSE = #MW_REVERSE:gsub(' ','') > 0
 HORIZ_ZONES = #HORIZ_ZONES:gsub(' ','') > 0
 
-	if HORIZ_ZONES then
+	if not sws and not js and HORIZ_ZONES then
 	Error_Tooltip('\n\nwithout extensions horizontal \n\n\tzones aren\'t supported \n\n', 1, 1) -- caps, spaced true
 	return r.defer(no_undo) end
 
