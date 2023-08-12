@@ -626,6 +626,13 @@ end
 -- when bottom docker is open the action 'View: Toggle track zoom to maximum height' used to get Arrange height in such cases
 -- only allows track to be zoomed in vertically up to the bottom docker edge so full Arrange height value will be unavalable
 -- which effectively makes all calculations useless
+-- in theory for more than 4 slots, to get Arrange height one would have to close all windows docked at the bottom docker
+-- in order to avoid closing the docker itself because top docker relevant for calculation will be closed as well
+-- in case some windows are docked in it, then get max track size, then re-open the closed windows docked at the bottom docker
+-- and to calculate Arrange size between the bottom docker and the Ruler for horizontal zones 
+-- before all that one would have to get max track size while the bottom docker is open
+-- which is super unreliable because docked MIDI Editor, FX chain and script GFX windows cannot be closed and restored
+-- with the native API
 function Get_Arrange_and_Header_Heights()
 -- if no SWS or js_ReaScriptAPI exstension only works if the program window is fully open, change in program window size isn't detected
 -- relies of Error_Tooltip() function
