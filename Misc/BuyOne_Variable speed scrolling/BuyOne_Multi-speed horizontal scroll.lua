@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Multi-speed horizontal scroll.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
-Changelog: v1.3 #Fixed REAPER version evaluation
+Version: 1.4
+Changelog: v1.4 #Set up limitation to script functionality in cases where extensions aren't installed
+		#Updated About and USER SETTINGS text accordingly
+	   v1.3 #Fixed REAPER version evaluation
 	   v1.2 #Updated info text in the USER SETTINGS 
 	   v1.1 #Corrected typo in the end of project tooltip
 Licence: WTFPL
@@ -32,7 +34,12 @@ About: Alternative to the native 'View: Scroll horizontally (MIDI CC relative/mo
        Bind to mousewheel (optionally with modifiers).  
 
        With vertical mousewheel the default direction is up - right, down - left,
-       to reverse the direction enable MW_REVERSE setting in the USER SETTINGS
+       to reverse the direction enable MW_REVERSE setting in the USER SETTINGS.
+
+       CAVEAT
+	
+       If neither SWS/S&M or js_ReaScriptAPI extension is installed the script
+       doesn't support HORIZ_ZONES setting.
 
 ]]
 
@@ -116,14 +123,11 @@ MW_REVERSE = ""
 -- with the top being the Ruler bottom edge and the bottom being
 -- the top edge of the horizontal scrollbar or of the bottom docker
 -- if one is open;
--- if neither SWS/S&M or js_ReaScriptAPI extension is installed
--- such division will only work when the program window is fully open,
--- may not work consistently and for a second will slightly affect UX
--- when the script retrieves new data if the program window
--- configuration changes;
 -- if this setting doesn't work accurately on Mac, submit a bug report 
 -- at the addresses listed in the Website tag above and this will be 
--- looked into.
+-- looked into;
+-- isn't supported if neither SWS/S&M or js_ReaScriptAPI extension 
+-- is installed
 HORIZ_ZONES = ""
 
 --/////////////// SCROLL SPEED PRESETS //////////////////
@@ -526,6 +530,11 @@ local wnd_t, found = {}
 end
 
 
+-- THE PART OF THE FUNCTION MEANT FOR CASES WHEN EXTENSIONS AREN'T INSTALLED IS NOT USED BECAUSE AN ERROR MESSAGE PREVENTS
+-- THE SCRIPT FROM REACHING ITS STAGE WHEN HORIZ_ZONES SETTING IS ENABLED
+-- when bottom docker is open the action 'View: Toggle track zoom to maximum height' used to get Arrange height in such cases
+-- only allows track to be zoomed in vertically up to the bottom docker edge so full Arrange height value will be unavalable
+-- which effectively makes all calculations useless
 function Get_Arrange_and_Header_Heights()
 -- if no SWS or js_ReaScriptAPI exstension only works if the program window is fully open, change in program window size isn't detected
 -- relies of Error_Tooltip() function
@@ -673,6 +682,10 @@ local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Fin
 
 MW_REVERSE = #MW_REVERSE:gsub(' ','') > 0
 HORIZ_ZONES = #HORIZ_ZONES:gsub(' ','') > 0
+
+	if HORIZ_ZONES then
+	Error_Tooltip('\n\nwithout extensions horizontal \n\n\tzones aren\'t supported \n\n', 1, 1) -- caps, spaced true
+	return r.defer(no_undo) end
 
 BY_BEATS_1, PAGING_SCROLL_1, FULL_SCROLL_1 = validate_settings(BY_BEATS_1, PAGING_SCROLL_1, FULL_SCROLL_1)
 BY_BEATS_2, PAGING_SCROLL_2, FULL_SCROLL_2 = validate_settings(BY_BEATS_2, PAGING_SCROLL_2, FULL_SCROLL_2)
