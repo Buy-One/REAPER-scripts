@@ -2,44 +2,51 @@
 ReaScript name: BuyOne_Multi-speed vertical scroll.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.5
-Changelog: v1.5 #Fixed REAPER version evaluation
+Version: 1.6
+Changelog: v1.6 #Set up limitation to script functionality in cases where extensions aren't installed
+		#Updated About and USER SETTINGS text accordingly
+	   v1.5 #Fixed REAPER version evaluation
 	   v1.4 #Updated info text in the USER SETTINGS
 	   v1.3 #Updated info text in the USER SETTINGS
 	   v1.2 #Fixed scroll when the mouse is over the TCP displayed on the right side of the Arrange
-	   	view at certain horizontal scroll position
+		view at certain horizontal scroll position
 	   v1.1 #Removed limitation on using Ctrl+Shift modifier when extensions aren't installed
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
-About: Alternative to the native 'View: Scroll vertically (MIDI CC relative/mousewheel)' 
-       which doesn't allow variable scroll step size and scrolls exactly
-       by tracks although not very precise when tracks have different heights,
-       and certainly doesn't support multi-speed functionality.
+About: 	Alternative to the native 'View: Scroll vertically (MIDI CC relative/mousewheel)' 
+       	which doesn't allow variable scroll step size and scrolls exactly
+       	by tracks although not very precise when tracks have different heights,
+   	and certainly doesn't support multi-speed functionality.
 
-       The script offers 4 scroll speed presets. The active scroll preset is
-       determined by the position of the mouse cursor within the Arrange view, 
-       which is divided into as many zones as there're enabled presets minus 1, 
-       since the 1st enabled preset, whatever it is, is always hard linked 
-       to the TCP and will only be activated when the mouse cursor hovers over 
-       the track list.  
-       For example if presets 1, 3 and 4 are enabled, the 1st preset will 
-       work over the TCP, the 3d will work within the 1st half of the Arrange 
-       view and the 4th - within the 2nd half of the Arrange view; when presets
-       3 and 4 are enabled, preset 3 will be activated when the mouse cursor
-       is over the TCP while preset 4 - while it's placed anywhere within 
-       the Arrange view which in this case becomes a single zone. 
-
-       If zoning doesn't work accurately on Mac, submit a bug report at the 
-       addresses listed in the Website tag above and this will be looked into.
-	   
-       Bind to mousewheel (optionally with modifiers).  
-
-       With vertical mousewheel the default direction is up - up, down - down,
-       to reverse the direction enable MW_REVERSE setting in the USER SETTINGS.
-
-       If the script doesn't work accurately on Mac, submit a bug report at the 
-       addresses listed in the Website tag above and this will be looked into.
+	The script offers 4 scroll speed presets. The active scroll preset is
+	determined by the position of the mouse cursor within the Arrange view, 
+	which is divided into as many zones as there're enabled presets minus 1, 
+	since the 1st enabled preset, whatever it is, is always hard linked 
+	to the TCP and will only be activated when the mouse cursor hovers over 
+	the track list.  
+	For example if presets 1, 3 and 4 are enabled, the 1st preset will 
+	work over the TCP, the 3d will work within the 1st half of the Arrange 
+	view and the 4th - within the 2nd half of the Arrange view; when presets
+	3 and 4 are enabled, preset 3 will be activated when the mouse cursor
+	is over the TCP while preset 4 - while it's placed anywhere within 
+	the Arrange view which in this case becomes a single zone. 
+	
+	If zoning doesn't work accurately on Mac, submit a bug report at the 
+	addresses listed in the Website tag above and this will be looked into.
+	
+	Bind to mousewheel (optionally with modifiers).  
+	
+	With vertical mousewheel the default direction is up - up, down - down,
+	to reverse the direction enable MW_REVERSE setting in the USER SETTINGS.
+	
+	If the script doesn't work accurately on Mac, submit a bug report at the 
+	addresses listed in the Website tag above and this will be looked into.
+	
+	CAVEAT
+	
+	If neither SWS/S&M or js_ReaScriptAPI extension is installed the script
+	doesn't support HORIZ_ZONES setting.
 
 ]]
 
@@ -96,6 +103,7 @@ MW_REVERSE = ""
 -- position, enable all presets and configure them identically
 
 
+
 -- By default the Arrange is divided into zones along the X axis, i.e ||||;
 -- enable this setting by placing any alphanumeric character between
 -- the quotes to make the division into zones occur along the Y axis,
@@ -103,22 +111,25 @@ MW_REVERSE = ""
 -- linked to the TCP as described above, other enabled presets are
 -- activated by positioning the mouse cursor at a certain height within
 -- the Arrange view;
+-- positioning the mouse cursor outside of the program window on the left 
+-- or the right side will still trigger the scroll speed preset linked 
+-- to the TCP;
 -- the zones follow each other from top to bottom in the same order
 -- as the scroll speed presets in these USER SETTINGS
 -- regardless of the Arrange side which TCP is located on,
 -- with the top being the Ruler bottom edge and the bottom being
 -- the top edge of the horizontal scrollbar or of the bottom docker
 -- if one is open;
--- if neither SWS/S&M or js_ReaScriptAPI extension is installed
--- such division will only work when the program window is fully open,
--- may not work consistently and for a second will slightly affect UX
--- when the script retrieves new data if the program window
--- configuration changes;
+-- if this setting doesn't work accurately on Mac, submit a bug report 
+-- at the addresses listed in the Website tag above and this will be 
+-- looked into;
+-- isn't supported if neither SWS/S&M or js_ReaScriptAPI extension 
+-- is installed
 HORIZ_ZONES = ""
 
 --/////////////// SCROLL SPEED PRESETS //////////////////
 
--- To enable any of the scroll speed presets below insert
+-- To enable any of the scroll speed presets below insert 
 -- a numeric character between the quotes of a SPEED_No setting
 
 -- Insert integer (whole number) between the quotes;
@@ -153,11 +164,11 @@ BY_TRACKS_1 = ""
 -- if neither SWS/S&M or js_ReaScriptAPI extension is installed
 -- will only work when the program window is fully open,
 -- may not work consistently and for a second will slightly affect UX
--- when the script retrieves new data if the program window
+-- when the script retrieves new data if the program window 
 -- configuration changes
 PAGING_SCROLL_1 = ""
 
--- Enable to be able to scroll all the way up and down
+-- Enable to be able to scroll all the way up and down 
 -- with a single mouswheel nudge;
 -- if enabled by placing any alphanumeric character
 -- between the quotes, disables all preceeding settings
@@ -165,7 +176,7 @@ FULL_SCROLL_1 = ""
 
 --------------------------------------------------
 
--- Explanation for the following settings is the same
+-- Explanation for the following settings is the same 
 -- as above mutatis mutandis
 
 SPEED_2 = ""
@@ -310,7 +321,8 @@ itemprops = {'%[itemprops%]', 'dock', 41589, 'wnd_vis'}, -- Item properties: Tog
 -- if it's being docked via context menu the dockermode it's already assigned to is re-pointed to the new location
 -- could be applicable to any window
 -- midiedit key dockermode data only changes for the last active MIDI Editor even if there're several in the project
--- MIDI editor dock state like any MIDI editior toggle action can only be retrieved when MIDI editor is active
+-- MIDI editor dock state (Options: Toggle window docking) like any MIDI editior toggle action
+-- can only be retrieved when MIDI editor is active
 -- if there're more than one MIDI editor window open each one will have to be activated in turn and its dock state checked
 -- which is impossible; decided to use it anyway so any change in MIDI Editor window regardless of its dock position
 -- will trigger update just in case;
@@ -530,6 +542,11 @@ local wnd_t, found = {}
 end
 
 
+-- THE PART OF THE FUNCTION MEANT FOR CASES WHEN EXTENSIONS AREN'T INSTALLED IS NOT USED BECAUSE AN ERROR MESSAGE PREVENTS
+-- THE SCRIPT FROM REACHING ITS STAGE WHEN HORIZ_ZONES SETTING IS ENABLED
+-- when bottom docker is open the action 'View: Toggle track zoom to maximum height' used to get Arrange height in such cases
+-- only allows track to be zoomed in vertically up to the bottom docker edge so full Arrange height value will be unavalable
+-- which effectively makes all calculations useless
 function Get_Arrange_and_Header_Heights()
 -- if no SWS or js_ReaScriptAPI exstension only works if the program window is fully open, change in program window size isn't detected
 -- relies of Error_Tooltip() function
@@ -652,7 +669,7 @@ function Calc_and_Store_Diviation(val, diviation, ext_state_sect, ext_state_key)
 -- to account for scroll drifting due to division by 8 and rounding
 local int, fract = math.modf(val)
 local SPEED = math.floor(val+diviation+0.5) -- round since pixel value cannot be fractional
-local fract = SPEED <= int and fract or SPEED > int and fract*-1 -- if SPEED ends up greater after rounding the fractional part will have to be subtracted in the next run during rounding to maintain balance, otherwise - added
+local fract = SPEED <= int and fract or SPEED > int and fract*-1 -- if SPEED ends up being greater after rounding the fractional part will have to be subtracted in the next run during rounding to maintain balance, otherwise - added
 r.SetExtState(ext_state_sect, ext_state_key, fract, false) -- persist false // store diviation to adjust the value by in the next run; the scroll still drifts but much more slowly
 return SPEED
 end
@@ -668,7 +685,7 @@ local start_time, end_time = r.GetSet_ArrangeView2(0, false, 0, 0, start_time, e
 r.PreventUIRefresh(1)
 local edge = right_tcp and start_time-5 or end_time+5
 r.SetEditCurPos(edge, false, false) -- moveview, seekplay false // to secure against a vanishing probablility of overlap between edit and mouse cursor positions in which case edit cursor won't move just like it won't if mouse cursor is over the TCP // +/-5 sec to move edit cursor beyond right/left edge of the Arrange view to be completely sure that it's far away from the mouse cursor // if start_time is 0 and there's negative project start offset the edit cursor is still moved to the very start, that is past 0, the function ignores negative start offset therefore is fully compatible with GetSet_ArrangeView2()
-r.Main_OnCommand(40514,0) -- View: Move edit cursor to mouse cursor (no snapping) // more sensitive than with snapping
+r.Main_OnCommand(40514,0) -- View: Move edit cursor to mouse cursor (no snapping) // more sensitive than with snapping // works along the entire screen Y axis outside of the TCP regardless of whether the program window is under the mouse
 local new_cur_pos = r.GetCursorPosition()
 local target
 	if not zones_t then
@@ -709,6 +726,10 @@ local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Fin
 
 MW_REVERSE = #MW_REVERSE:gsub(' ','') > 0
 HORIZ_ZONES = #HORIZ_ZONES:gsub(' ','') > 0
+
+	if not sws and not js and HORIZ_ZONES then
+	Error_Tooltip('\n\nwithout extensions horizontal \n\n\tzones aren\'t supported \n\n', 1, 1) -- caps, spaced true
+	return r.defer(no_undo) end
 	
 SPEED_1, SPEED_2, SPEED_3, SPEED_4 = validate_SPEED(SPEED_1, SPEED_2, SPEED_3, SPEED_4)
 
@@ -816,7 +837,7 @@ end
 	SPEED = ZONE_SCROLL(SPEED_4, FULL_SCROLL_4, PAGING_SCROLL_4, BY_TRACKS_4, cmdID, val)
 	end
 
-	if SPEED then -- can be nil if only one preset is enabled (which is limited to the TCP) and the mouse cursor is outside of the TCP // alternatively SPEED = not SPEED and 0 could be used instead of the 'if' block
+	if SPEED then -- can be nil if only one preset is enabled (which is limited to the TCP) and the mouse cursor is outside of the TCP or if zone of a preset is disabled // alternatively SPEED = not SPEED and 0 could be used instead of the 'if' block
 	local dir = Mouse_Wheel_Direction(val, MW_REVERSE)
 	r.CSurf_OnScroll(0, SPEED*dir)
 	end
