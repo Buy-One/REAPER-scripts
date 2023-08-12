@@ -684,7 +684,7 @@ MW_REVERSE = #MW_REVERSE:gsub(' ','') > 0
 HORIZ_ZONES = #HORIZ_ZONES:gsub(' ','') > 0
 
 	if not sws and not js and HORIZ_ZONES then
-	Error_Tooltip('\n\nwithout extensions horizontal \n\n\tzones aren\'t supported \n\n', 1, 1) -- caps, spaced true
+	Error_Tooltip('\n\n without extensions horizontal \n\n\tzones aren\'t supported \n\n', 1, 1) -- caps, spaced true
 	return r.defer(no_undo) end
 
 BY_BEATS_1, PAGING_SCROLL_1, FULL_SCROLL_1 = validate_settings(BY_BEATS_1, PAGING_SCROLL_1, FULL_SCROLL_1)
