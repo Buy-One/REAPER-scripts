@@ -2,13 +2,15 @@
 ReaScript name: BuyOne_Multi-action based on mouse cursor position in Arrange.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: 1.2 Fixed REAPER version evaluation
+Version: 1.3
+Changelog: 1.3 #Set up limitation to script functionality in cases where extensions aren't installed
+	       #Updated About and USER SETTINGS text accordingly
+	   1.2 #Fixed REAPER version evaluation
 	   1.1 #Fixed validation of command IDs of scripts in the MIDI Editor section of the Action list
-	   #Fixed execution of MIDI Editor actions
-	   #Changed the logic of designating an action as the MIDI Editor action in the USER SETTINGS,
-	   updated the explanation accordingly
-	   #Introduced a message to indicate that no action is associated with the slot if it's set to '0'
+	   	#Fixed execution of MIDI Editor actions
+	   	#Changed the logic of designating an action as the MIDI Editor action in the USER SETTINGS,
+	   	updated the explanation accordingly
+	   	#Introduced a message to indicate that no action is associated with the slot if it's set to '0'
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
@@ -49,6 +51,12 @@ About: 	The script allows running up to 7 different actions/functions depending
 	in the Main section of the Action list isn't found in the MIDI Editor 
 	section of the Action list because the latter will take priority and 
 	instead of the script you'll be running another action.
+
+	CAVEAT
+	
+	If neither SWS/S&M or js_ReaScriptAPI extension is installed the script
+	only supports 4 enabled SLOT settings, that is 4 actions, and doesn't 
+	support HORIZ_ZONES setting.
 
 ]]
 
@@ -149,12 +157,7 @@ About: 	The script allows running up to 7 different actions/functions depending
 -- (the 7th is linked to the TCP);
 -- see zone allocation maps at 
 -- https://github.com/Buy-One/screenshots/blob/main/Multi-action%20based%20on%20mouse%20cursor%20position%20in%20Arrange.pdf
--- or in schematic form at the bottom of this script;
--- if neither SWS/S&M or js_ReaScriptAPI extension is installed
--- such division will only work when the program window is fully open,
--- may not work consistently and for a second will slightly affect UX
--- when the script retrieves new data if the program window
--- configuration changes;
+-- or in schematic form at the bottom of this script
 HORIZ_ZONES = ""
 
 ----------/////////////// SLOTS //////////////////
@@ -618,6 +621,11 @@ local wnd_t, found = {}
 end
 
 
+-- THE PART OF THE FUNCTION MEANT FOR CASES WHEN EXTENSIONS AREN'T INSTALLED IS NOT USED BECAUSE AN ERROR MESSAGE PREVENTS
+-- THE SCRIPT FROM REACHING ITS STAGE WHEN HORIZ_ZONES SETTING OR OVER 4 SLOT SSETTINGS ARE ENABLED
+-- when bottom docker is open the action 'View: Toggle track zoom to maximum height' used to get Arrange height in such cases
+-- only allows track to be zoomed in vertically up to the bottom docker edge so full Arrange height value will be unavalable
+-- which effectively makes all calculations useless
 function Get_Arrange_and_Header_Heights()
 -- if no SWS or js_ReaScriptAPI exstension only works if the program window is fully open, change in program window size isn't detected
 -- relies of Error_Tooltip() function
@@ -792,6 +800,11 @@ local zones = {}
 		end
 	end
 
+local err = (not sws and not js) and (#zones+1 > 4 and '   without extensions only 4 \n\n enabled slots are supported' -- +1 is accounting for the TCP zone
+or HORIZ_ZONES and ' without extensions horizontal \n\n\tzones aren\'t supported')
+
+	if err then Error_Tooltip('\n\n'..err..' \n\n', 1, 1) -- caps, spaced true
+	return r.defer(no_undo) end
 
 local extra_zones = #zones > 3 -- extra zones within the Arrange view, of which max number of regular zones is 3
 local start_time, end_time = r.GetSet_ArrangeView2(0, false, 0, 0, start_time, end_time) -- isSet false, screen_x_start & screen_x_end both 0 = GET // https://forum.cockos.com/showthread.php?t=227524#2 the function has 6 arguments; screen_x_start and screen_x_end (3d and 4th args) are not return values, they are for specifying where start_time and stop_time should be on the screen when non-zero when isSet is true // THE TIME INCLUDES VERTICAL SCROLLBAR 17 px wide which will have to be subtracted to get the exact right edge of the time line
