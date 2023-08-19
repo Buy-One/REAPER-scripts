@@ -1,5 +1,5 @@
 --[[
-ReaScript name: BuyOne_shift RS5k instrument note map on selected track by white keys.lua
+ReaScript name: BuyOne_Shift RS5k instrument note map on selected track by white keys.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
