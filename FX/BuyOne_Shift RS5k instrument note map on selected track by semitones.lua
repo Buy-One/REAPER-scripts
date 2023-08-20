@@ -8,26 +8,26 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M recommented, not mandatory
 About:  If the track contains named notes the names will be shifted as well 
-    		along the Piano roll keyboard. This is the feature for which SWS/S&M 
-    		extension is recommended.  
-    		So if it happens to faulter, first try installing the extension
-    		and if this fails to fix it contact the developer.
+	along the Piano roll keyboard. This is the feature for which SWS/S&M 
+	extension is recommended.  
+	So if it happens to faulter, first try installing the extension
+	and if this fails to fix it contact the developer.
 
-		The script is able to restore the original note map but only after
-		it's been run at least once. The original map is the one it detects
-		at the first run. After that if the RS5k instrument track is saved 
-		with the project or as a track template the original map data
-		will be retained in it and available for recall at a later time.
-    		
-    		!!! WARNING !!!
-    		
-    		Due to oddities of REAPER undo system 
-    		https://forum.cockos.com/showthread.php?t=281778
-    		the script needs to create two undo points, one for RS5k instrument 
-    		changes and another one for change in note names association with 
-    		Paino roll keys, provided the track of the RS5k instrument contains 
-    		named notes displayed in the MIDI editor. If it doesn't, a single 
-    		undo point is created.
+	The script is able to restore the original note map but only after
+	it's been run at least once. The original map is the one it detects
+	at the first run. After that if the RS5k instrument track is saved 
+	with the project or as a track template the original map data
+	will be retained in it and available for recall at a later time.
+	
+	!!! WARNING !!!
+	
+	Due to oddities of REAPER undo system 
+	https://forum.cockos.com/showthread.php?t=281778
+	the script needs to create two undo points, one for RS5k instrument 
+	changes and another one for change in note names association with 
+	Paino roll keys, provided the track of the RS5k instrument contains 
+	named notes displayed in the MIDI editor. If it doesn't, a single 
+	undo point is created.
 
 ]]
 
