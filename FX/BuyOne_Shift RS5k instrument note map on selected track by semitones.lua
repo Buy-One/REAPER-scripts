@@ -12,6 +12,12 @@ About:  If the track contains named notes the names will be shifted as well
     		extension is recommended.  
     		So if it happens to faulter, first try installing the extension
     		and if this fails to fix it contact the developer.
+
+		The script is able to restore the original note map but only after
+		it's been run at least once. The original map is the one it detects
+		at the first run. After that if the RS5k instrument track is saved 
+		with the project or as a track template the original map data
+		will be retained in it and available for recall at a later time.
     		
     		!!! WARNING !!!
     		
