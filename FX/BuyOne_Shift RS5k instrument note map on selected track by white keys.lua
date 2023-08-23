@@ -20,7 +20,7 @@ About:  The script only affects RS5k instances with drum note mapping,
 	If the track contains named notes the names will be shifted as well 
 	along the Piano roll keyboard. This is the feature for which SWS/S&M 
 	extension is recommended.  
-	So if it happens to faulter, first try installing the extension
+	So if it happens to falter, first try installing the extension
 	and if this fails to fix it contact the developer.
 
 	The script is able to restore the original note map but only after
