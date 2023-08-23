@@ -388,7 +388,10 @@ PRESET_NUMBER = PRESET_NUMBER and (PRESET_NUMBER > 16 and 16 or PRESET_NUMBER ==
 
 local stored = Stored_Presets()
 
-gfx.init('Fade presets', 0, 0)
+-- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
+-- https://forum.cockos.com/showthread.php?t=280658#25
+-- https://forum.cockos.com/showthread.php?t=280658&page=2#44
+	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82 then gfx.init('Fade presets', 0, 0) end
 -- open menu at the mouse cursor
 gfx.x = gfx.mouse_x
 gfx.y = gfx.mouse_y
