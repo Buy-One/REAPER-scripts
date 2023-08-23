@@ -145,7 +145,10 @@ local menu_t = {}
 local menu_t = #menu_t == 0 and recent_proj_t or menu_t -- if PROJECT_NAMES_ONLY is not ON, display full paths in the menu
 
 
-gfx.init('', 1, 1)
+-- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
+-- https://forum.cockos.com/showthread.php?t=280658#25
+-- https://forum.cockos.com/showthread.php?t=280658&page=2#44
+	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82 then gfx.init('', 0, 0) end
 
 gfx.x = gfx.mouse_x
 gfx.y = gfx.mouse_y
