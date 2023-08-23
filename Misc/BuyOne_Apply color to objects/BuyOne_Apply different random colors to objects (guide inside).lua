@@ -200,7 +200,10 @@ local x, y = r.GetMousePosition()
 		menu = menu..(always_color_item == '1' and '[✔]' or '[   ]')..' Toggle ALWAYS_COLOR_ITEM setting| ' -- adding chekmark if the setting is enabled
 		end
 	-- open menu at the upper left corner, lower left on Mac
-	gfx.init('', 0, 0)
+	-- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
+	-- https://forum.cockos.com/showthread.php?t=280658#25
+	-- https://forum.cockos.com/showthread.php?t=280658&page=2#44
+		if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82 then gfx.init('', 0, 0) end
 	gfx.x = gfx.mouse_x
 	gfx.y = gfx.mouse_y
 	local input = gfx.showmenu(menu) -- menu string
