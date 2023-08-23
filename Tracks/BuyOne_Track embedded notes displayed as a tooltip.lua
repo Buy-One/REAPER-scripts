@@ -595,7 +595,10 @@ local err = not tr and 'no track under mouse or selected' or notes_tr and 'notes
 				until r.time_precise() - time > 1
 			else
 			local notes = Convert_Text_To_Menu(notes)
-			gfx.init('',0,0)
+			-- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
+			-- https://forum.cockos.com/showthread.php?t=280658#25
+			-- https://forum.cockos.com/showthread.php?t=280658&page=2#44
+				if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82 then gfx.init('', 0, 0) end
 			gfx.x, gfx.y = gfx.mouse_x, gfx.mouse_y
 			gfx.showmenu(notes)
 			gfx.quit()
