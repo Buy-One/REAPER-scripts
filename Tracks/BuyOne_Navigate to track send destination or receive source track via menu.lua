@@ -285,7 +285,10 @@ local menu = (snd_menu_t and table.concat(snd_menu_t) or '')..sep..(rcv_menu_t a
 
 	if #menu > 0 then
 	local tr_idx = math.floor(r.GetMediaTrackInfo_Value(tr, 'IP_TRACKNUMBER')) -- to truncate decimal 0 // OR (r.GetMediaTrackInfo_Value(tr, 'IP_TRACKNUMBER')..''):match('(.+)%.')
-	gfx.init('',0,0)
+	-- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
+	-- https://forum.cockos.com/showthread.php?t=280658#25
+	-- https://forum.cockos.com/showthread.php?t=280658&page=2#44
+		if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82 then gfx.init('', 0, 0) end
 	gfx.x, gfx.y = gfx.mouse_x, gfx.mouse_y
 	local idx = gfx.showmenu('#Track # '..tr_idx..'||'..menu)
 		if idx > 2 then -- 2 to account for 'Track #' menu title and a submenu title which don't have corresponding fields in snd_t and rcv_t tables, otherwise click on these menu entrues may produce an error
