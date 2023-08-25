@@ -146,26 +146,32 @@ or r.CountSelectedTracks(0) > 1 and 'the script only supports \n\n     one selec
 local tr_fx_cnt = r.TrackFX_GetCount(tr)
 local parm_names = {[2]='Gain for minimum velocity', [19]='Probability of hitting', [28]='Legacy voice re-use mode'} --  as of build 6.81
 local instances_cnt = 0
+local supported = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.37 -- since this build FX_GetNamedConfigParm() can retrieve the original FX name, which obviates using chunk or parameter names to ascertain a particular fx
 
 local rs5k = {}
 	for fx_idx = 0, tr_fx_cnt-1 do
 	local found = true
-	local parm_cnt = r.TrackFX_GetNumParams(tr, fx_idx)
-		if parm_cnt == 33 then -- RS5k parm count == 33 as of build 6.81
-		-- NOT failproof because if at least 1 parameter has an alias, its name won't match
-		-- currently the original name can only be verified via chunk
-		-- feature request for doing this with FX_GetNamedConfigParm():
-		-- https://forum.cockos.com/showthread.php?t=282037
-			for parm_idx, name in pairs(parm_names)     do
-			local retval, parm_name = r.TrackFX_GetParamName(tr, fx_idx, parm_idx, '')
-				if parm_name ~= name then found = false break end
+		if supported then 
+		local _, orig_name = r.TrackFX_GetNamedConfigParm(tr, fx_idx, 'fx_name') -- parmname could be 'original_name'
+			if not orig_name:match('ReaSamplOmatic5000') then found = false end
+		else
+		local parm_cnt = r.TrackFX_GetNumParams(tr, fx_idx)
+			if parm_cnt == 33 then -- RS5k parm count == 33 as of build 6.81
+			-- NOT failproof because if at least 1 parameter has an alias, its name won't match
+			-- currently the original name can only be verified via chunk
+			-- feature request for doing this with FX_GetNamedConfigParm():
+			-- https://forum.cockos.com/showthread.php?t=282037
+				for parm_idx, name in pairs(parm_names) do
+				local retval, parm_name = r.TrackFX_GetParamName(tr, fx_idx, parm_idx, '')
+					if parm_name ~= name then found = false break end
+				end
 			end
-			if found then
-			instances_cnt = instances_cnt+1
-			local note_st, minval, maxval = r.TrackFX_GetParam(tr, fx_idx, 3) -- Note range start, parm index 3 as of build 6.81
-			local note_end, minval, maxval = r.TrackFX_GetParam(tr, fx_idx, 4) -- Note range end, parm index 4 as of build 6.81
-			rs5k[#rs5k+1] = {idx=fx_idx, start=note_st, fin=note_end}
-			end
+		end			
+		if found then
+		instances_cnt = instances_cnt+1
+		local note_st, minval, maxval = r.TrackFX_GetParam(tr, fx_idx, 3) -- Note range start, parm index 3 as of build 6.81
+		local note_end, minval, maxval = r.TrackFX_GetParam(tr, fx_idx, 4) -- Note range end, parm index 4 as of build 6.81
+		rs5k[#rs5k+1] = {idx=fx_idx, start=note_st, fin=note_end}
 		end
 	end
 
