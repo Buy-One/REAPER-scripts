@@ -154,7 +154,7 @@ local rs5k = {}
 		if parm_cnt == 33 then -- RS5k parm count == 33 as of build 6.81
 		-- NOT failproof because if at least 1 parameter has an alias, its name won't match
 		-- currently the original name can only be verified via chunk
-		-- feature request for doing this with FX_GetConfigParameter():
+		-- feature request for doing this with FX_GetNamedConfigParm():
 		-- https://forum.cockos.com/showthread.php?t=282037
 			for parm_idx, name in pairs(parm_names)     do
 			local retval, parm_name = r.TrackFX_GetParamName(tr, fx_idx, parm_idx, '')
