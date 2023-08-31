@@ -1098,54 +1098,68 @@ zone allocation depending on enabled slots
 
 the following options all include the TCP zone
 
-2 slots │     │
+2 slots │ 2 │
 
-3 slots │  │  │
+3 slots │2│3│
 
-4 slots │ │ │ │
+4 slots │2│3│4│
 
-5 slots │_│ │ │
+         2
+5 slots │_│4│5│
         │ │ │ │
-
-6 slots │_│_│ │
+         3
+	
+         2 4	
+6 slots │_│_│6│
         │ │ │ │
+         3 5
 
+         2 4 6
 7 slots │_│_│_│
         │ │ │ │
-
+         3 5 7
+		
 HORIZ_ZONES is enabled
 
 1 slot - TCP zone only
 
 the following options all include the TCP zone
 
-2 slots —————
-
+2 slots 
         —————
-
-3 slots	—————
-		—————
+          2
+        ¯¯¯¯¯
+3 slots	
         —————
-
-4 slots	—————
-		—————
+          2
+        ¯¯¯¯¯
+          3
+        ¯¯¯¯¯
+4 slots	
         —————
-        —————
-
-5 slots _____
-        __│__
+          2
+        ¯¯¯¯¯
+          3
+        ¯¯¯¯¯
+          4
+        ¯¯¯¯¯
+5 slots
         _____
+      2 __│__ 3
+          4
+        ¯¯¯¯¯
+          5
+        ¯¯¯¯¯
+6 slots
         _____
-
-6 slots _____
-        __│__
-        __│__
+      2 __│__ 3
+      4 __│__ 5
+          6
+        ¯¯¯¯¯
+7 slots
         _____
-
-7 slots _____
-        __│__
-        __│__
-        __│__
+      2 __│__ 3
+      4 __│__ 5
+      6 __│__ 7
 ]]
-
 
