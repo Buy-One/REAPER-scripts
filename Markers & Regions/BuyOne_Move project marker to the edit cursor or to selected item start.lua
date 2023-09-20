@@ -40,15 +40,18 @@ About: 	REAPER only offers actions to move markers 1 - 10 to the edit cursor.
 	-- C or c for the edit cursor, I or i for first selected item 
 	TARGET = ""
 	
-	local pos = TARGET:match('[Cc]+') and reaper.GetCursorPosition()	
-	or TARGET:match('[Ii]+') and reaper.GetMediaItemInfo_Value(reaper.GetSelectedMediaItem(0,0), 'D_POSITION')
+	local cursor = TARGET:match('[Cc]+')
+	local item = TARGET:match('[Ii]+')
+	
+	local pos = cursor and reaper.GetCursorPosition()	
+	or item and reaper.GetMediaItemInfo_Value(reaper.GetSelectedMediaItem(0,0), 'D_POSITION')
 	
 		if pos then
 		reaper.Undo_BeginBlock()
 
 		reaper.SetProjectMarker(MARKER_NUMBER, false, pos, 0, '') -- isrgn false, rgnend 0
 
-		reaper.Undo_EndBlock('Move marker '..MARKER_NUMBER..' to the edit cursor', -1)
+		reaper.Undo_EndBlock('Move marker '..MARKER_NUMBER..' to '..(cursor and 'the edit cursor' or item and 'selected item start'), -1)
 		end
 	
 	------------------------------- END --------------------------------
