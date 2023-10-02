@@ -263,7 +263,7 @@ local ret, chunk = GetObjChunk(tr)
 
 -- Due to REAPER bug https://forum.cockos.com/showthread.php?t=281778
 -- undo point for all RS5k instances is only created with open FX chain window
-local chain_vis = r.TrackFX_GetChainVisible(tr) >= 0
+local chain_vis = r.TrackFX_GetChainVisible(tr) ~= -1
 local last_sel_fx_floats = r.TrackFX_GetFloatingWindow(tr, last_sel_idx) -- if last selected fx window floats while the fx chain is closed, after toggling open-close the fx chain below the floating window will be closed because the function will use its index to keep it selected in the chain, so find if it floats to re-float it after toggling the fx chain open-close
 local open = not chain_vis and r.TrackFX_SetOpen(tr, last_sel_idx or rs5k[1].idx, not chain_vis) -- open if closed, open arg is not chain_vis; fx index alternative in case last_sel_idx is invalid because the chunk size exceeds 4096 kb and the SWS extension isn't installed to help retrieve it
 
