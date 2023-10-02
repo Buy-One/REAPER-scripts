@@ -309,7 +309,7 @@ local re_float = not chain_vis and last_sel_fx_floats and r.TrackFX_Show(tr, las
 local undo = shift_by_val ~= 0 and 'Shift RS5k instrument note map by '..shift_by_val..' white keys' or 'Restore original RS5K instrument map'
 
 	if not chain_vis then -- only create two undo points if FX chain is closed
-	r.Undo_EndBlock('1. '..undo, 2) -- even with open FX chain for changes in RS5k an undo point is only created with flag 2 (UNDO_STATE_FX)
+	r.Undo_EndBlock('1. '..undo, 2) -- even with open FX chain for changes in RS5k an undo point is only created with flag 2 (UNDO_STATE_FX) // THIS SEEMS TO BE WRONG, -1 works as well, leaving as is just in case
 	end
 r.PreventUIRefresh(-1)
 
