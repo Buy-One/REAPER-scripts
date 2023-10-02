@@ -33,11 +33,11 @@ About:  The script only affects RS5k instances with drum note mapping,
 	
 	Due to oddities of REAPER undo system 
 	https://forum.cockos.com/showthread.php?t=281778
-	the script needs to create two undo points, one for RS5k instrument 
-	changes and another one for change in note names association with 
-	Paino roll keys, provided the track of the RS5k instrument contains 
-	named notes displayed in the MIDI editor. If it doesn't, a single 
-	undo point is created.
+	if the track FX chain is closed the script needs to create two undo points, 
+	one for RS5k instrument changes and another one for change in note names 
+	association with Paino roll keys. That's provided the track of the RS5k 
+	instrument does contain named notes displayed in the MIDI editor. If it 
+	doesn't, a single undo point is created even if the track FX chain is closed.
 
 ]]
 
@@ -298,15 +298,19 @@ local ret, chunk = GetObjChunk(tr)
 -- Due to REAPER bug https://forum.cockos.com/showthread.php?t=281778
 -- undo point for all RS5k instances is only created with open FX chain window
 local chain_vis = r.TrackFX_GetChainVisible(tr) >= 0
+local last_sel_fx_floats = r.TrackFX_GetFloatingWindow(tr, last_sel_idx) -- if last selected fx window floats while the fx chain is closed, after toggling open-close the fx chain below the floating window will be closed because the function will use its index to keep it selected in the chain, so find if it floats to re-float it after toggling the fx chain open-close
 local open = not chain_vis and r.TrackFX_SetOpen(tr, last_sel_idx or rs5k[1].idx, not chain_vis) -- open if closed, open arg is not chain_vis; fx index alternative in case last_sel_idx is invalid because the chunk size exceeds 4096 kb and the SWS extension isn't installed to help retrieve it
 
 Shift_Map(tr, rs5k, ignore_bypassed)
 
 local clse = not chain_vis and r.TrackFX_SetOpen(tr, last_sel_idx or rs5k[1].idx, chain_vis) -- close fx chain if was closed originally, open arg is chain_vis; fx index alternative in case last_sel_idx is invalid because the chunk size exceeds 4096 kb and the SWS extension isn't installed to help retrieve it
+local re_float = not chain_vis and last_sel_fx_floats and r.TrackFX_Show(tr, last_sel_idx, 3) -- 3 show in a floating window
 
 local undo = shift_by_val ~= 0 and 'Shift RS5k instrument note map by '..shift_by_val..' white keys' or 'Restore original RS5K instrument map'
 
-r.Undo_EndBlock('1. '..undo, 2) -- even with open FX chain for changes in RS5k an undo point is only created with flag 2 (UNDO_STATE_FX)
+	if not chain_vis then -- only create two undo points if FX chain is closed
+	r.Undo_EndBlock('1. '..undo, 2) -- even with open FX chain for changes in RS5k an undo point is only created with flag 2 (UNDO_STATE_FX)
+	end
 r.PreventUIRefresh(-1)
 
 local ret, chunk = GetObjChunk(tr) -- retrieve the chunk again with the new data after note map shift with Shift_Map() above to apply note names shift to it below
@@ -316,7 +320,9 @@ local ret, chunk = GetObjChunk(tr) -- retrieve the chunk again with the new data
 	local new_map = new_map:gsub('%%','%%%%') -- escape just in case otherwise gsub below won't work
 	local new_chunk = chunk:gsub(old_map, new_map)
 	SetObjChunk(tr, new_chunk)
-	r.Undo_OnStateChangeEx('2. Shift RS5K instrument note names', -1, -1) -- whichStates arg (the 2nd) can be 1 and -1
+		if not chain_vis then -- only create two undo points if FX chain is closed
+		r.Undo_OnStateChangeEx('2. Shift RS5K instrument note names', -1, -1) -- whichStates arg (the 2nd) can be 1 and -1
+		end
 	local ME = r.MIDIEditor_GetActive()
 		if ME then -- when 'View: Hide unused and unnamed note rows' toggle state is On, shifting note names reveals unamed notes and conceals named ones, so restore visibility of only named notes by running the action even though its toggle state is already On, not clear if it was designed this way or a happenstance; the toggle state of this action and 3 other's, 'View: Hide unused note rows', 'View: Show all notes' and 'View: Show custom note row view' are mutually exclusive
 		local take_tr = r.GetMediaItemTake_Track(r.MIDIEditor_GetTake(ME))
@@ -325,6 +331,10 @@ local ret, chunk = GetObjChunk(tr) -- retrieve the chunk again with the new data
 			r.MIDIEditor_LastFocused_OnCommand(40454, false) -- islistviewcommand false
 			end
 		end
+	end
+	
+	if chain_vis then -- create single undo point if FX chain is open
+	r.Undo_EndBlock(undo, -1)
 	end
 
 end
