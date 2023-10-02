@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Shift RS5k instrument note map on selected track by semitones.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: Initial release
+Version: 1.1
+Changelog: v1.1 #Fixed resetting FX selection to the 1st FX if the script is run with the FX chain closed
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M recommented, not mandatory
@@ -256,26 +256,28 @@ function MAIN(tr, rs5k, shift_by_val, ignore_bypassed)
 r.PreventUIRefresh(1)
 r.Undo_BeginBlock()
 
+local ret, chunk = GetObjChunk(tr)
+	if ret then
+	old_map, new_map, last_sel_idx = Shift_Note_Names(chunk, rs5k) -- must be run here to extract last_sel_idx in order to open fx chain below at the last selected fx for consistency and better UX
+	end
+
 -- Due to REAPER bug https://forum.cockos.com/showthread.php?t=281778
 -- undo point for all RS5k instances is only created with open FX chain window
 local chain_vis = r.TrackFX_GetChainVisible(tr) >= 0
-local open = not chain_vis and r.TrackFX_SetOpen(tr, last_sel_idx or rs5k[1].idx, not chain_vis) -- open if closed, open arg is not chain_vis
+local open = not chain_vis and r.TrackFX_SetOpen(tr, last_sel_idx or rs5k[1].idx, not chain_vis) -- open if closed, open arg is not chain_vis; fx index alternative in case last_sel_idx is invalid because the chunk size exceeds 4096 kb and the SWS extension isn't installed to help retrieve it
 
 Shift_Map(tr, rs5k, ignore_bypassed)
 
-local clse = not chain_vis and r.TrackFX_SetOpen(tr, last_sel_idx or rs5k[1].idx, chain_vis) -- close fx chain if was closed originally, open arg is chain_vis
+local clse = not chain_vis and r.TrackFX_SetOpen(tr, last_sel_idx or rs5k[1].idx, chain_vis) -- close fx chain if was closed originally, open arg is chain_vis; fx index alternative in case last_sel_idx is invalid because the chunk size exceeds 4096 kb and the SWS extension isn't installed to help retrieve it
 
 local undo = shift_by_val ~= 0 and 'Shift RS5k instrument note map by '..shift_by_val..' semitones' or 'Restore original RS5K instrument map'
 
 r.Undo_EndBlock('1. '..undo, 2) -- even with open FX chain for changes in RS5k an undo point is only created with flag 2 (UNDO_STATE_FX)
 r.PreventUIRefresh(-1)
 
-local ret, chunk = GetObjChunk(tr)
-	if ret then
-	old_map, new_map, last_sel_idx = Shift_Note_Names(chunk, rs5k) -- must be run here to extract last_sel_idx in order to open fx chain below at the last selected fx for consistency and better UX
-	end
+local ret, chunk = GetObjChunk(tr) -- retrieve the chunk again with the new data after note map shift with Shift_Map() above to apply note names shift to it below
 
-	if #old_map > 0 then -- if one was found in the track chunk
+	if ret and #old_map > 0 then -- if track chunk was retrieved and note map was found in it
 	local old_map = Esc(old_map)
 	local new_map = new_map:gsub('%%','%%%%') -- escape just in case otherwise gsub below won't work
 	local new_chunk = chunk:gsub(old_map, new_map)
@@ -292,6 +294,7 @@ local ret, chunk = GetObjChunk(tr)
 	end
 
 end
+
 
 
 
