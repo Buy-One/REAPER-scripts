@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Shift RS5k instrument note map on selected track by semitones.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: v1.1 #Fixed resetting FX selection to the 1st FX if the script is run with the FX chain closed
+Version: 1.2
+Changelog: v1.2 Fixed undo point creation when RS5k UI is open
+	   v1.1 Fixed resetting FX selection to the 1st FX if the script is run with the FX chain closed
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M recommented, not mandatory
@@ -300,7 +301,7 @@ local ret, chunk = GetObjChunk(tr) -- retrieve the chunk again with the new data
 	end
 	
 	if chain_vis then -- create single undo point if FX chain is open
-	r.Undo_EndBlock(undo, -1)
+	r.Undo_EndBlock(undo, 2) -- even with open FX chain for changes in RS5k an undo point is only created with flag 2 (UNDO_STATE_FX), with flag -1 it's only created once
 	end
 
 end
