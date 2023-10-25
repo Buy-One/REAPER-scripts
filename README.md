@@ -19,7 +19,8 @@ To download an individual script:
 Scripts from the **MIDI** folder go to the **MIDI Editor** section of the Action list  
 
 Updating scripts which include USER SETTINGS, in order to retain them, first overwrite the entire USER SETTINGS section in the newer version of the script with the one from the old one and only then overwrite the actual file.
-  
+
+**Since this repo isn't compatible with ReaPack, if you have a Gihub account you can subscribe to watch list of the repo under the *Watch* button to be able to receive updates of any changes to the scripts. To only be updated of new scripts and newer versions, under *Custom* submenu of the Watch menu enable only options *Pull requests* and *Releases* options.** 
 
   
 </br>
