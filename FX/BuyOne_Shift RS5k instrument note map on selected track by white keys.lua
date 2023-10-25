@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Shift RS5k instrument note map on selected track by white keys.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: v1.2 Fixed undo point creation when RS5k UI is open
+Version: 1.3
+Changelog: v1.3 Undo point creation mechanism has been updated to work properly in builds newer than 7.001
+	   v1.2 Fixed undo point creation when RS5k UI is open
 	   v1.1 Fixed resetting FX selection to the 1st FX if the script is run with the FX chain closed
 Licence: WTFPL
 REAPER: at least v5.962
@@ -32,7 +33,7 @@ About:  The script only affects RS5k instances with drum note mapping,
 	
 	!!! WARNING !!!
 	
-	Due to oddities of REAPER undo system 
+	Due to undo system bug in REAPER builds older than 7.01 
 	https://forum.cockos.com/showthread.php?t=281778
 	if the track FX chain is closed the script needs to create two undo points, 
 	one for RS5k instrument changes and another one for change in note names 
@@ -286,6 +287,22 @@ return old_note_map, new_note_map, last_sel_idx
 end
 
 
+function Force_RS5k_Undo_With_Closed_Chain(tr, rs5k, last_sel_idx, chain_vis, last_sel_fx_floats, pass2)
+-- pass2 is boolean to trigger FX windows state restoration
+	
+	if not pass2 then -- open and return values
+	local chain_vis = r.TrackFX_GetChainVisible(tr) ~= -1
+	local last_sel_fx_floats = r.TrackFX_GetFloatingWindow(tr, last_sel_idx) -- if last selected fx window floats while the fx chain is closed, after toggling open-close the fx chain below the floating window will be closed because the function will use its index to keep it selected in the chain, so find if it floats to re-float it after toggling the fx chain open-close
+	local open = not chain_vis and r.TrackFX_SetOpen(tr, last_sel_idx or rs5k[1].idx, not chain_vis) -- open if closed, open arg is not chain_vis; fx index alternative in case last_sel_idx is invalid because the chunk size exceeds 4096 kb and the SWS extension isn't installed to help retrieve it
+	return chain_vis, last_sel_fx_floats
+	else -- restore FX windows state changed in pass 1 above
+	local clse = not chain_vis and r.TrackFX_SetOpen(tr, last_sel_idx or rs5k[1].idx, chain_vis) -- close fx chain if was closed originally, open arg is chain_vis; fx index alternative in case last_sel_idx is invalid because the chunk size exceeds 4096 kb and the SWS extension isn't installed to help retrieve it
+	local re_float = not chain_vis and last_sel_fx_floats and r.TrackFX_Show(tr, last_sel_idx, 3) -- 3 show in a floating window
+	end
+
+end
+
+
 function MAIN(tr, rs5k, shift_by_val, ignore_bypassed)
 
 r.PreventUIRefresh(1)
@@ -295,23 +312,27 @@ local ret, chunk = GetObjChunk(tr)
 	if ret then
 	old_map, new_map, last_sel_idx = Shift_Note_Names(chunk, rs5k) -- must be run here to extract last_sel_idx in order to open fx chain below at the last selected fx for consistency and better UX
 	end
-
--- Due to REAPER bug https://forum.cockos.com/showthread.php?t=281778
+	
+-- Due to REAPER bug https://forum.cockos.com/showthread.php?t=281778 in builds older than 7.01
 -- undo point for all RS5k instances is only created with open FX chain window
-local chain_vis = r.TrackFX_GetChainVisible(tr) ~= -1
-local last_sel_fx_floats = r.TrackFX_GetFloatingWindow(tr, last_sel_idx) -- if last selected fx window floats while the fx chain is closed, after toggling open-close the fx chain below the floating window will be closed because the function will use its index to keep it selected in the chain, so find if it floats to re-float it after toggling the fx chain open-close
-local open = not chain_vis and r.TrackFX_SetOpen(tr, last_sel_idx or rs5k[1].idx, not chain_vis) -- open if closed, open arg is not chain_vis; fx index alternative in case last_sel_idx is invalid because the chunk size exceeds 4096 kb and the SWS extension isn't installed to help retrieve it
-
-Shift_Map(tr, rs5k, ignore_bypassed)
-
-local clse = not chain_vis and r.TrackFX_SetOpen(tr, last_sel_idx or rs5k[1].idx, chain_vis) -- close fx chain if was closed originally, open arg is chain_vis; fx index alternative in case last_sel_idx is invalid because the chunk size exceeds 4096 kb and the SWS extension isn't installed to help retrieve it
-local re_float = not chain_vis and last_sel_fx_floats and r.TrackFX_Show(tr, last_sel_idx, 3) -- 3 show in a floating window
+local old_build = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.01 -- where bug is present so two undo points must be used
+local undo_flag = old_build and 2 or -1 -- in buggy builds even with open FX chain for changes in RS5k an undo point is only created with flag 2 (UNDO_STATE_FX), with flag -1 it's only created once
 
 local undo = shift_by_val ~= 0 and 'Shift RS5k instrument note map by '..shift_by_val..' white keys' or 'Restore original RS5K instrument map'
 
-	if not chain_vis then -- only create two undo points if FX chain is closed
-	r.Undo_EndBlock('1. '..undo, 2) -- even with open FX chain for changes in RS5k an undo point is only created with flag 2 (UNDO_STATE_FX), with flag -1 it's only created once
+local chain_vis, last_sel_fx_floats
+
+	if old_build then -- open closed FX chain and then restore FX windows state and create 1st undo point
+	chain_vis, last_sel_fx_floats = Force_RS5k_Undo_With_Closed_Chain(tr, rs5k, last_sel_idx, chain_vis, last_sel_fx_floats, pass2) -- pass2 false
+	Shift_Map(tr, rs5k, ignore_bypassed)
+	Force_RS5k_Undo_With_Closed_Chain(tr, rs5k, last_sel_idx, chain_vis, last_sel_fx_floats, true) -- pass2 true
+		if not chain_vis then -- only create two undo points if FX chain is closed, this is the 1st one
+		r.Undo_EndBlock('1. '..undo, undo_flag)
+		end
+	else
+	Shift_Map(tr, rs5k, ignore_bypassed)
 	end
+
 r.PreventUIRefresh(-1)
 
 local ret, chunk = GetObjChunk(tr) -- retrieve the chunk again with the new data after note map shift with Shift_Map() above to apply note names shift to it below
@@ -321,7 +342,7 @@ local ret, chunk = GetObjChunk(tr) -- retrieve the chunk again with the new data
 	local new_map = new_map:gsub('%%','%%%%') -- escape just in case otherwise gsub below won't work
 	local new_chunk = chunk:gsub(old_map, new_map)
 	SetObjChunk(tr, new_chunk)
-		if not chain_vis then -- only create two undo points if FX chain is closed
+		if old_build and not chain_vis then -- only create two undo points if FX chain is closed in builds older than 7.01
 		r.Undo_OnStateChangeEx('2. Shift RS5K instrument note names', -1, -1) -- whichStates arg (the 2nd) can be 1 and -1
 		end
 	local ME = r.MIDIEditor_GetActive()
@@ -334,8 +355,8 @@ local ret, chunk = GetObjChunk(tr) -- retrieve the chunk again with the new data
 		end
 	end
 	
-	if chain_vis then -- create single undo point if FX chain is open
-	r.Undo_EndBlock(undo, 2) -- even with open FX chain for changes in RS5k an undo point is only created with flag 2 (UNDO_STATE_FX), with flag -1 it's only created once
+	if old_build and chain_vis or not old_build then -- create single undo point if FX chain is open in buggy builds and in builds 7.01 onwards
+	r.Undo_EndBlock(undo, undo_flag)
 	end
 
 end
