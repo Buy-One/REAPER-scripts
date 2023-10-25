@@ -617,38 +617,38 @@ local ret, preset_dump = table.unpack(fx_name and {r.GetProjExtState(0,fx_name,1
 		elseif output == 4 then
 		err = Delete_Preset(preset_t, fx_name, stored_plugin_names_t, scr_name)
 		elseif output == 5 then
-		Delete_All_For_Current_Plugin(preset_t, fx_name, stored_plugin_names_t, scr_name)
-		keep_open = nil -- will prevent reload after deletion
+		err = Delete_All_For_Current_Plugin(preset_t, fx_name, stored_plugin_names_t, scr_name)
 		elseif output == 6 then
 		Dump_To_Project_File(fx_name, scr_name, preset_t)
 		elseif output == 7 then
 		err = Force_Load_From_Proj_Dump(scr_name, stored_plugin_names_t, fx_name)
 		elseif output == 8 then
 		Delete_Proj_Dump(scr_name, fx_name)
-		err = #preset_t == 0 -- prevets menu re-loading if no presets and not project dump
+		err = #preset_t == 0 -- prevents menu re-loading if no presets and not project dump
 		elseif output == 9 then
 		keep_open = Toggle_Keep_Menu_Open(scr_name, keep_open) -- will prevent reload after toggling to Off
 		elseif output > 10 then -- accounting for plugin name menu item
-		output = output-10 -- offset to be able to access table fields
-		local parm_list = preset_t[output]:match('::(.+)') -- excluding preset name
+		output = output-10 -- offset to be able to access table fields 
+		local parm_list = preset_t[output]:match('::(.+)') -- excluding preset name	
 		Re_Store_Plugin_Settings(tr, take, fx_num, parm_list) -- Apply
 		end
-
+		
 		if output > 0 and keep_open and not err then goto RELOAD end -- only reload when error isn't generayed otherwise it's not visible because the menu window overrides the tooltip
 	else
-
+	
 	local output = Reload_Menu_at_Same_Pos(menu)
 		if output == 1 then
-		local err = Delete_All(preset_t, stored_plugin_names_t, scr_name)
-			if keep_open and not err then goto RELOAD end
+		err = Delete_All(preset_t, stored_plugin_names_t, scr_name)
 		elseif output == 2 then
 		Dump_To_Project_File(fx_name, scr_name, preset_t, stored_plugin_names_t)
 		elseif output == 3 then
-		local err = Force_Load_From_Proj_Dump(scr_name, stored_plugin_names_t, fx_name)
-			if keep_open and not err then goto RELOAD end
+		err = Force_Load_From_Proj_Dump(scr_name, stored_plugin_names_t, fx_name)
 		elseif output == 4 then
-		Delete_Proj_Dump(scr_name, fx_name)
+		err = Delete_Proj_Dump(scr_name, fx_name)
 		end
+		
+		if (output == 1 or output > 2) and keep_open and not err then goto RELOAD end
+		
 	end
 
 do return r.defer(no_undo) end
