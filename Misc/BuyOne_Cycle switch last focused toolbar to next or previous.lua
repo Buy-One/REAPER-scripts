@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Cycle switch last focused toolbar to next or previous.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: Initial release
+Version: 1.1
+Changelog: #Fixed possible error when toolbar window isn't found
+	   #Made compatible with the increased number of toolbars in REAPER 7
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
@@ -187,10 +188,32 @@ until condition and r.time_precise()-time_init >= 0.7 or not condition
 end
 
 
-function Get_Open_Toolbars(tb_No, tb_No_midi) -- tb_No and tb_No_midi args are only used on the focus evaluation stage
-local t = {41679, 41680, 41681, 41682, 41683, 41684, 41685, 41686,
-41936, 41937, 41938, 41939, 41940, 41941, 41942, 41943} -- Toolbar: Open/close toolbar N
-local t_midi = {41687, 41688, 41689, 41690, 41944, 41945, 41946, 41947} -- Toolbar: Open/close MIDI toolbar N
+function collect_numbers(first, last)
+-- first and last must be sequential numbers
+local t = {}
+	for i = first, last do
+	t[#t+1] = i
+	end
+return t
+end
+
+
+function merge_2_arrays_at_index(t1,t2,index) 
+-- the result is updated t1
+-- index applies to t1
+-- ommitted or excessive index defaults to last+1
+local index = (not index or index > #t1) and #t1+1 or index
+local offset = 1-index
+	for i = index, #t2+index-1 do
+	table.insert(t1, i, t2[i+offset])
+	end
+end
+
+
+
+function Get_Open_Toolbars(t, t_midi, tb_No, tb_No_midi) 
+-- tb_No and tb_No_midi args are only used on the focus evaluation stage
+
 	local function GET(t, tb_No)
 	local count_open, idx = 0
 		for k, ID in ipairs(t) do
@@ -317,9 +340,25 @@ function Find_x_Focus_Toolbar(tb_No, midi)
 -- https://forum.cockos.com/showthread.php?t=280103
 local tb_No = tb_No and math.floor(tb_No) -- truncating decimal 0 otherwise after concatenation it's prone to giving false results
 local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Find')
-local t_open = midi and {41687, 41688, 41689, 41690, 41944, 41945, 41946, 41947} -- Toolbar: Open/close MIDI toolbar N
-or {41679, 41680, 41681, 41682, 41683, 41684, 41685, 41686, 41936, 41937, 41938,
+local t = {41679, 41680, 41681, 41682, 41683, 41684, 41685, 41686, 41936, 41937, 41938,
 41939, 41940, 41941, 41942, 41943} -- Toolbar: Open/close toolbar N
+local t_midi = {41687, 41688, 41689, 41690, 41944, 41945, 41946, 41947} -- Toolbar: Open/close MIDI toolbar N
+local t_open = midi and t_midi or t
+
+local v7 = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 7
+
+	if v7 then -- REAPER 7 support
+		-- 42713 - 42728 -- Open/close toolbars 17 - 32 in REAPER 7
+		if midi then
+		-- 42745 - 42752 -- Open/close MIDI toolbars 9 - 16 in REAPER 7	
+		local t_midi7 = collect_numbers(42745, 42752)
+		merge_2_arrays_at_index(t_open, t_midi7)
+		else
+		local t7 = collect_numbers(42713, 42728) 
+		merge_2_arrays_at_index(t_open, t7)
+		end
+	end
+
 
 	if sws or js then -- if no extensions, will return what was fed in
 	local menus = r.GetResourcePath()..r.GetResourcePath():match('[\\/]')..'reaper-menu.ini'
@@ -364,7 +403,7 @@ or {41679, 41680, 41681, 41682, 41683, 41684, 41685, 41686, 41936, 41937, 41938,
 			end
 			for k, name in ipairs(t) do
 			tb = js and r.JS_Window_Find(name, true) or sws and Find_Window_SWS(name) -- sws native function doesn't find children windows, such as docked ones, hence the custom one
-			tb = js and JS_Window_IsVisible(tb) or sws and tb -- windows are found irrespective of their visibility, hence the validation, if only SWS ext is available the visibility is evaluated inside Find_Window_SWS()
+			tb = tb and (js and JS_Window_IsVisible(tb) or sws and tb) -- in REAPER 6 windows are found irrespective of their visibility, hence the validation, if only SWS ext is available the visibility is evaluated inside Find_Window_SWS(); in REAPER 7 they seem to be only found if visible
 				if tb then tb_No = k break end -- exist as soon as inactive docked toolbar appropriate for the context is found
 			end
 		end
@@ -375,10 +414,12 @@ or {41679, 41680, 41681, 41682, 41683, 41684, 41685, 41686, 41936, 41937, 41938,
 		end
 		
 		
-	local set_focus = js and r.JS_Window_SetFocus(tb) or sws and r.BR_Win32_SetFocus(tb)
-	-- https://forum.cockos.com/showthread.php?t=221096
-	-- https://forum.cockos.com/showthread.php?t=212174&page=5
-	local activate = js and r.JS_WindowMessage_Send(tb, 'WM_MOUSEACTIVATE', 0, 0, 0, 0) or sws and r.BR_Win32_SendMessage(tb, 0x0021, 0, 0) -- in the js function instead of 'WM_MOUSEACTIVATE' its numeric value '0x0021' string can be used; activates toolbar in a floating and attached docker as well; thanks to Edgemeal for showing that coordinates aren't necessary if the window is focused https://forum.cockos.com/showthread.php?t=212174&page=5#161, also FeedTheCat https://forum.cockos.com/showthread.php?t=259184#8 the parameter is taken from https://github.com/justinfrankel/WDL/blob/6a7ba42ab175a859c565c4f68b890048d53b94c7/WDL/swell/swell-types.h#L959, not sure about other arguments, but works with all being 0
+		if tb then
+			local set_focus = js and r.JS_Window_SetFocus(tb) or sws and r.BR_Win32_SetFocus(tb)
+			-- https://forum.cockos.com/showthread.php?t=221096
+			-- https://forum.cockos.com/showthread.php?t=212174&page=5
+			local activate = js and r.JS_WindowMessage_Send(tb, 'WM_MOUSEACTIVATE', 0, 0, 0, 0) or sws and r.BR_Win32_SendMessage(tb, 0x0021, 0, 0) -- in the js function instead of 'WM_MOUSEACTIVATE' its numeric value '0x0021' string can be used; activates toolbar in a floating and attached docker as well; thanks to Edgemeal for showing that coordinates aren't necessary if the window is focused https://forum.cockos.com/showthread.php?t=212174&page=5#161, also FeedTheCat https://forum.cockos.com/showthread.php?t=259184#8 the parameter is taken from https://github.com/justinfrankel/WDL/blob/6a7ba42ab175a859c565c4f68b890048d53b94c7/WDL/swell/swell-types.h#L959, not sure about other arguments, but works with all being 0
+		end
 
 	-- switch focus to relevant main window elements to move it from the found toolbar to which it was set above because when a toolbar is focused running the script with a shortcut won't work unless it's global, and global scope is only available for shortcuts in the Main section of the Action list
 		if not midi then -- not midi when the script is run from the Main section of the Action list, that is sectionID returned by get_action_context() is not 32060
@@ -388,7 +429,9 @@ or {41679, 41680, 41681, 41682, 41683, 41684, 41685, 41686, 41936, 41937, 41938,
 		else -- no additional conditions are required because if midi is true, the script is run from inside an open MIDI Editor window
 	--	r.JS_Window_SetFocus(r.MIDIEditor_GetActive()) -- DOESN'T MAKE MIDI EDITOR DOCKED IN A DOCKER ATTACHED TO THE MAIN WINDOW FOCUSED, BUT DOES WORK FOR FLOATING MIDI EDITOR DOCKED OR NOT
 		local ME_wnd = js and r.JS_Window_Find('midiview', true) or sws and Find_Window_SWS('midiview')
-		local focus = js and r.JS_Window_SetFocus(ME_wnd) or sws and r.BR_Win32_SetFocus(ME_wnd) -- 'midiview' window parent title is 'Edit MIDI' after toggling the MIDI Editor (docked or not) but focusing this parent doesn't work; alternative to 'midiview' is 'midipianoview', when either is focused without toggling the MIDI Editor, the parent is the window titled 'MIDI take: <MIDI take name>'
+			if ME_wnd then
+			local focus = js and r.JS_Window_SetFocus(ME_wnd) or sws and r.BR_Win32_SetFocus(ME_wnd) -- 'midiview' window parent title is 'Edit MIDI' after toggling the MIDI Editor (docked or not) but focusing this parent doesn't work; alternative to 'midiview' is 'midipianoview', when either is focused without toggling the MIDI Editor, the parent is the window titled 'MIDI take: <MIDI take name>'
+			end		
 	--	r.Main_OnCommand(40716,0) r.Main_OnCommand(40716,0) -- View: Toggle show MIDI editor windows // DOES MAKE MIDI EDITOR DOCKED IN A DOCKER ATTACHED TO THE MAIN WINDOW FOCUSED, and works generally in other window states, BUT FLICKERING LOOKS UGLY
 		end
 
@@ -439,11 +482,30 @@ local t_switch_midi = {41659, 41660, 41661, 41662, 41956, 41957, 41958, 41959} -
 local t_open = {41679, 41680, 41681, 41682, 41683, 41684, 41685, 41686,
 41936, 41937, 41938, 41939, 41940, 41941, 41942, 41943} -- Toolbar: Open/close toolbar N
 local t_open_midi = {41687, 41688, 41689, 41690, 41944, 41945, 41946, 41947} -- Toolbar: Open/close MIDI toolbar N
+
+	if tonumber(r.GetAppVersion():match('[%d%.]+')) >= 7 then -- REAPER 7 support
+	
+	-- 42713 - 42728 -- Open/close toolbars 17 - 32 in REAPER 7
+	local t7 = collect_numbers(42713, 42728)
+	-- 42729 - 42744 -- Toolbars: Switch to toolbar 17 - 32 in REAPER 7
+	local t7_switch = collect_numbers(42729, 42744)
+	-- 42745 - 42752 -- Open/close MIDI toolbars 9 - 16 in REAPER 7	
+	local t_midi7 = collect_numbers(42745, 42752)
+	-- 42753 - 42760 -- Toolbars: Switch to MIDI toolbar 9 - 16 in REAPER 7
+	local t_midi7_switch = collect_numbers(42753, 42760)
+	
+	merge_2_arrays_at_index(t_open, t7)
+	merge_2_arrays_at_index(t_switch_reg, t7_switch)
+	merge_2_arrays_at_index(t_open_midi, t_midi7)
+	merge_2_arrays_at_index(t_switch_midi, t_midi7_switch)	
+	
+	end
+
 local is_new_value,filename,sectionID,cmdID_orig,mode,resolution,val = r.get_action_context() -- if mouse scrolling up val = 15 - righwards, if down then val = -15 - leftwards // the function must be outside as it cannot work properly inside more than 1 user function, in which case val will be 0
 local midi = sectionID == 32060
 local sws, js = r.APIExists('BR_Win32_FindWindowEx'), r.APIExists('JS_Window_Find')
 local ext = js or sws
-local tb_No, tb_No_midi = Get_Open_Toolbars() -- returns 0 if there're several open toolbars for the same context // when more than one toolbar is open for a particular context but only one is active (in the docker or floating) the rest are ignored, since only the first active toolbar is being detected, the inactive ones are only searched no active was found and extensions are installed 
+local tb_No, tb_No_midi = Get_Open_Toolbars(t_open, t_open_midi) -- returns 0 if there're several open toolbars for the same context // when more than one toolbar is open for a particular context but only one is active (in the docker or floating) the rest are ignored, since only the first active toolbar is being detected, the inactive ones are only searched no active was found and extensions are installed 
 
 
 	if ONE_TOOLBAR_PER_PROJECT then
@@ -513,7 +575,7 @@ local cmdID = r.ReverseNamedCommandLookup(cmdID_orig):sub(-40) -- using last 40 
 			end
 			if ext and tb_idx > 0 then Find_x_Focus_Toolbar(tb_idx, midi) end -- re-focus context, only runs if extensions are installed
 		r.SetProjExtState(0, cmdID, key, tb_idx) -- store the incoming context toolbar
-		local tb_No, tb_No_midi = Get_Open_Toolbars() -- evaluate the switch
+		local tb_No, tb_No_midi = Get_Open_Toolbars(t_open, t_open_midi) -- evaluate the switch
 		local err = not midi and tb_No ~= tb_idx or midi and tb_No_midi ~= tb_idx -- the number of toolbar just switched to isn't what it's supposed to be
 			if err then Error_Tooltip('\n\n no focused toolbar \n\n',1,1) -- caps, spaced true
 			return r.defer(no_undo()) end
@@ -577,7 +639,7 @@ DIRECTION = #DIRECTION:gsub(' ','') > 0
 			Error_Tooltip('\n\n wrong focus - main toolbar \n\n',1,1) -- caps, spaced true
 			return r.defer(no_undo()) end
 
-		local retval, retval_midi = Get_Open_Toolbars(tb_No, tb_No_midi)
+		local retval, retval_midi = Get_Open_Toolbars(t_open, t_open_midi, tb_No, tb_No_midi)
 
 		local err = ' no focused toolbar '
 			if retval == 0 and tb_No_midi and not retval_midi
@@ -596,4 +658,12 @@ DIRECTION = #DIRECTION:gsub(' ','') > 0
 	local store = idx and r.SetProjExtState(0, cmdID, key, idx) -- store to be able to re-open next time if needed
 
 	return r.defer(no_undo()) end
+
+
+
+
+
+
+
+
 
