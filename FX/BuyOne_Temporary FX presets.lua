@@ -7,68 +7,68 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962 but 6.31 is recommended for best performance
 About:  The script allows storing presets temporarily for the purpose 
-    		of sound pallette exploration. Temporary presets are kept in the
-    		memory as long as REAPER runs unless they're explicitly deleted
-    		from the memory by the user.
-    
-    		The number of plugins for which temporary presets can been stored
-    		and the number of presets per plugin are limited to 100 just out
-    		of consideration of practicality.
-    		
-    		Although 100 temporary presets can be stored for 1 of 100 plugins,
-    		temporary preset menu for each plugin is separate from the rest,
-    		meaning only presets of one specific plugin (the focused one) 
-    		are listed in the menu at a time.
-    		
-    		To be able to utilize the script the plugin must be placed into
-    		focus, i.e. its UI must be open with its window in focus.
-    		
-    		The menu will appear after the first temporary preset for a particular
-    		plugin has been stored or, if there're no presets in the memory, 
-    		as long as project dump data are available (see below).
-    		
-    		To view the list of all plugins for which temporary presets have
-    		been stored so far, run the script while all FX windows are closed 
-    		so that none is in focus.   
-    		To view the the list of plugins without closing FX windows, open
-    		a new project tab and run the script under it.
-    		
-    		The script can also be used to copy and paste settings between 
-    		plugin instances without saving them first as regular plugin
-    		presets.
-    		
-    		The script allows dumping temporary presets of a single plugin or 
-    		of all for which temporary presets have been stored, to the project 
-    		file, in case they're not saved as regular plugin presets and need 
-    		to be acessible in the next session. At some point after such dump 
-    		is made the project file must be saved so the data are embedded in it.
-    		On the next REAPER session these data are automatically loaded from
-    		such project file once on the first script run.
-    		
-    		The script also allows force loading presets per plugin or per all 
-    		plugins for which temporary presets have been stored in the session, 
-    		from project file dump, in which case all presets currently stored
-    		in the memory get overwritten per plugin or per all plugins respectively.
-    		
-    		Conversely, by using 'Delete all from project dump' option temporary 
-    		preset data can be cleared from the project file after they've been 
-    		dumped into it, per single plugin or per all plugins for which 
-    		temporary presets have been stored. To finalize the clean-up the 
-    		project file must be saved.
-    		
-    		CAVEATS
-    		
-    		The script only works well with plugins all controls of which are exposed
-    		to REAPER, i.e. automatable, which isn't always the case.
-    		It's sure to work well with REAPER stock plugins and with JSFX plugins.
-    		
-    		In REAPER builds older than 6.31 plugin names displayed in the FX browser
-    		cannot be retrieved via API, therefore if name of the focused plugin instance 
-    		differs from the plugin name in the FX browser, the name displayed in 
-    		the FX chain will feature in the menu and in the stored data which isn't 
-    		optimal in case its presets are to be applied to other instances named 
-    		differently in the FX chain.
-		
+	of sound pallette exploration. Temporary presets are kept in the
+	memory as long as REAPER runs unless they're explicitly deleted
+	from the memory by the user.
+
+	The number of plugins for which temporary presets can been stored
+	and the number of presets per plugin are limited to 100 just out
+	of consideration of practicality.
+	
+	Although 100 temporary presets can be stored for 1 of 100 plugins,
+	temporary preset menu for each plugin is separate from the rest,
+	meaning only presets of one specific plugin (the focused one) 
+	are listed in the menu at a time.
+	
+	To be able to utilize the script the plugin must be placed into
+	focus, i.e. its UI must be open with its window in focus.
+	
+	The menu will appear after the first temporary preset for a particular
+	plugin has been stored or, if there're no presets in the memory, 
+	as long as project dump data are available (see below).
+	
+	To view the list of all plugins for which temporary presets have
+	been stored so far, run the script while all FX windows are closed 
+	so that none is in focus.   
+	To view the the list of plugins without closing FX windows, open
+	a new project tab and run the script under it.
+	
+	The script can also be used to copy and paste settings between 
+	plugin instances without saving them first as regular plugin
+	presets.
+	
+	The script allows dumping temporary presets of a single plugin or 
+	of all for which temporary presets have been stored, to the project 
+	file, in case they're not saved as regular plugin presets and need 
+	to be acessible in the next session. At some point after such dump 
+	is made the project file must be saved so the data are embedded in it.
+	On the next REAPER session these data are automatically loaded from
+	such project file once on the first script run.
+	
+	The script also allows force loading presets per plugin or per all 
+	plugins for which temporary presets have been stored in the session, 
+	from project file dump, in which case all presets currently stored
+	in the memory get overwritten per plugin or per all plugins respectively.
+	
+	Conversely, by using 'Delete all from project dump' option temporary 
+	preset data can be cleared from the project file after they've been 
+	dumped into it, per single plugin or per all plugins for which 
+	temporary presets have been stored. To finalize the clean-up the 
+	project file must be saved.
+	
+	CAVEATS
+	
+	The script only works well with plugins all controls of which are exposed
+	to REAPER, i.e. automatable, which isn't always the case.
+	It's sure to work well with REAPER stock plugins and with JSFX plugins.
+	
+	In REAPER builds older than 6.31 plugin names displayed in the FX browser
+	cannot be retrieved via API, therefore if name of the focused plugin instance 
+	differs from the plugin name in the FX browser, the name displayed in 
+	the FX chain will feature in the menu and in the stored data which isn't 
+	optimal in case its presets are to be applied to other instances named 
+	differently in the FX chain.
+	
 ]]
 
 
@@ -599,7 +599,7 @@ local ret, preset_dump = table.unpack(fx_name and {r.GetProjExtState(0,fx_name,1
 	local greyout1 = #preset_menu == 0 and '#' or '' -- to grayout irrelevant menu items when only proj dump is available
 	local greyout2 = #preset_dump == 0 and '#' or '' -- to grayout irrelevant menu items when proj dump is unavailable
 	preset_menu = fx_name..':|'..preset_menu --(#preset_menu > 0 and fx_name..':|' or '')..preset_menu
-	menu = 'Save preset|Quick save preset|'..greyout1..'Rename preset|'..greyout1..'Delete preset|>Other options|'..greyout1..'Delete all for current FX|'..greyout1..'Dump all to project file|'..greyout2..'Force load all from project dump|'..greyout2..'Delete all from project dump|<Keep menu open '..checkbox..'|'..(#preset_menu > 0 and '||' or '')..preset_menu
+	menu = 'Store preset|Quick store preset|'..greyout1..'Rename preset|'..greyout1..'Delete preset|>Other options|'..greyout1..'Delete all for current FX|'..greyout1..'Dump all to project file|'..greyout2..'Force load all from project dump|'..greyout2..'Delete all from project dump|<Keep menu open '..checkbox..'|'..(#preset_menu > 0 and '||' or '')..preset_menu
 	else
 	local greyout1 = #stored_plugin_names_t == 0 and '#' or '' -- to grayout irrelevant menu items when only proj dump is available
 	local greyout2 = #plugin_names_lst_dump == 0 and '#' or ''  -- to grayout irrelevant menu items when proj dump is unavailable
