@@ -10,7 +10,7 @@ About: 	The script first looks for a take under the mouse cursor,
 	if not found, looks for the active take of the first 
 	selected item.
 	
-	If the envelope isn't visible (in which case it's always delected) 
+	If the envelope isn't visible (in which case it's always deselected) 
 	or bypassed, it's toggled visible or unbypassed and then selected.  
 	If it's bypassed while being already selected, it's unbypassed.
 ]]
