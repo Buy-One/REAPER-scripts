@@ -1,5 +1,5 @@
 --[[
-ReaScript name: BuyOne_Select take Volume envelope.lua
+ReaScript name: BuyOne_Select take Mute envelope.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
@@ -7,12 +7,12 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script first looks for a take under the mouse cursor,
-    		if not found, looks for the active take of the first 
-    		selected item.
-    		
-    		If the envelope isn't visible (in which case it's always delected) 
-    		or bypassed, it's toggled visible or unbypassed and then selected.  
-    		If it's bypassed while being already selected, it's unbypassed.
+	if not found, looks for the active take of the first 
+	selected item.
+	
+	If the envelope isn't visible (in which case it's always delected) 
+	or bypassed, it's toggled visible or unbypassed and then selected.  
+	If it's bypassed while being already selected, it's unbypassed.
 ]]
 
 -----------------------------------------------------------------------------
@@ -117,7 +117,7 @@ end
 
 
 ALLOW_LOCKED = #ALLOW_LOCKED:gsub(' ','') > 0
-local env_type = 'Volume' -- Mute, Pan, Pitch, Volume
+local env_type = 'Mute' -- Mute, Pan, Pitch, Volume
 
 local x,y = r.GetMousePosition()
 local item, take = r.GetItemFromPoint(x, y, ALLOW_LOCKED)
