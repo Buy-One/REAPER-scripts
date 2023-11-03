@@ -117,7 +117,7 @@ end
 
 
 ALLOW_LOCKED = #ALLOW_LOCKED:gsub(' ','') > 0
-local env_type = 'Mute' -- Mute, Pan, Pitch, Volume
+local env_type = 'Pan' -- Mute, Pan, Pitch, Volume
 
 local x,y = r.GetMousePosition()
 local item, take = r.GetItemFromPoint(x, y, ALLOW_LOCKED)
