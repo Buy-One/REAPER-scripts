@@ -7,12 +7,12 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script first looks for a take under the mouse cursor,
-    		if not found, looks for the active take of the first 
-    		selected item.
-    		
-    		If the envelope isn't visible (in which case it's always delected) 
-    		or bypassed, it's toggled visible or unbypassed and then selected.  
-    		If it's bypassed while being already selected, it's unbypassed.
+	if not found, looks for the active take of the first 
+	selected item.
+	
+	If the envelope isn't visible (in which case it's always delected) 
+	or bypassed, it's toggled visible or unbypassed and then selected.  
+	If it's bypassed while being already selected, it's unbypassed.
 ]]
 
 -----------------------------------------------------------------------------
@@ -143,15 +143,5 @@ local take = take or item and r.GetActiveTake(item)
 		end
 	r.Undo_EndBlock('Select take '..env_type..' envelope', -1)
 	end
-
-
-
-
-
-
-
-
-
-
 
 
