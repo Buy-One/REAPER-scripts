@@ -120,12 +120,15 @@ ALLOW_LOCKED = #ALLOW_LOCKED:gsub(' ','') > 0
 local env_type = 'Mute' -- Mute, Pan, Pitch, Volume
 
 local x,y = r.GetMousePosition()
-local item, take = r.GetItemFromPoint(x, y, ALLOW_LOCKED)
+local item, take = r.GetItemFromPoint(x, y, true) -- allow_locked true, will be taken care of below
 local item = item or r.GetSelectedMediaItem(0,0)
 local take = take or item and r.GetActiveTake(item)
 
 	if not take then
 	Error_Tooltip('\n\n\tno selected items \n\n or under the mouse cursor\n\n', 1, 1) -- caps, spaced are true
+	return r.defer(no_undo)
+	elseif take and r.GetMediaItemInfo_Value(item, 'C_LOCK') & 1 == 1 and not ALLOW_LOCKED then
+	Error_Tooltip('\n\n locked items are disallowed \n\n', 1, 1) -- caps, spaced are true
 	return r.defer(no_undo)
 	elseif take then -- under mouse
 	env_type = env_type:gsub(' ','') -- remove spaces if any
