@@ -8,27 +8,27 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M not mandatory but recommended
 About: 	The script first looks for a take under the mouse cursor,
-		if not found, looks for selected items and in them only targets
-		selected FX in the FX chain of the active take.
-		
-		After the selected FX has reached the bottom of the chain it will 
-		not move in cycle back to its top.
-		
-		!!!! IMPORTANT !!!!
-		
-		If you choose to run the script with a shortcut, the shortcut scope
-		must be global (select appropriate option from the 'Scope' menu in 
-		the 'Keyboard/MIDI/OSC input' dialogue in the Action list). This will
-		ensure script operability when take under mouse cursor is targeted 
-		while its FX chain window is in focus.
-		
-		The script doesn't support FX containers.
-		
-		Also be aware that until fixed, after changing FX order by dragging
-		the FX which is visually selected is not the one which is recognized 
-		by REAPER as selected. In order to get the selection data updated 
-		toggle FX selection, i.e. select another FX and re-select the previous.
-		Bug report https://forum.cockos.com/showthread.php?t=284621
+	if not found, looks for selected items and in them only targets
+	selected FX in the FX chain of the active take.
+	
+	After the selected FX has reached the bottom of the chain it will 
+	not move in cycle back to its top.
+	
+	!!!! IMPORTANT !!!!
+	
+	If you choose to run the script with a shortcut, the shortcut scope
+	must be global (select appropriate option from the 'Scope' menu in 
+	the 'Keyboard/MIDI/OSC input' dialogue in the Action list). This will
+	ensure script operability when take under mouse cursor is targeted 
+	while its FX chain window is in focus.
+	
+	The script doesn't support FX containers.
+	
+	Also be aware that until fixed, after changing FX order by dragging
+	the FX which is visually selected is not the one which is recognized 
+	by REAPER as selected. In order to get the selection data updated 
+	toggle FX selection, i.e. select another FX and re-select the previous.
+	Bug report https://forum.cockos.com/showthread.php?t=284621
 ]]
 
 -----------------------------------------------------------------------------
