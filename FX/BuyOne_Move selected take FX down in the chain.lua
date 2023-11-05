@@ -22,7 +22,7 @@ About: 	The script first looks for a take under the mouse cursor,
 	ensure script operability when take under mouse cursor is targeted 
 	while its FX chain window is in focus.
 	
-	The script doesn't support FX in FX containers and nested containers
+	The script doesn't support FX inside FX containers and nested containers
 	(relevant since REAPER 7).
 	
 	Also be aware that until fixed, after changing FX order by dragging
