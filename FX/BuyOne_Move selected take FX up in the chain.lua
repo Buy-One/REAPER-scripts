@@ -116,6 +116,8 @@ end
 
 
 function Items_Locked()
+-- thanks to Mespotine https://mespotin.uber.space/Ultraschall/Reaper_Config_Variables.html
+-- https://github.com/mespotine/ultraschall-and-reaper-docs/blob/master/Docs/Reaper-ConfigVariables-Documentation.txt
 	if not r.APIExists('SNM_GetIntConfigVar') then return end -- no SWS extension	
 local bitfield = r.SNM_GetIntConfigVar('projsellock', -1)
 return bitfield > 16384 and bitfield&2==2 -- global lock is enabled and items full flag is checked
