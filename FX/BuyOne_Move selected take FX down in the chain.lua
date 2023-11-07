@@ -4,7 +4,7 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
 Changelog: #Added global item lock check if SWS/S&M extension is installed
-	   #Fixed error message condition
+	   #Fixed error message conditions
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M not mandatory but recommended
