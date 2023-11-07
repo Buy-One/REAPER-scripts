@@ -2,9 +2,10 @@
 ReaScript name: BuyOne_Select take Mute envelope.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #Added global item and take envelope lock check if SWS/S&M extension is installed
-	   #Updated error message
+Version: 1.2
+Changelog: v1.2 #Fixed absence of 'then' operator (blush)
+	   v1.1 #Added global item and take envelope lock check if SWS/S&M extension is installed
+	   	#Updated error message	 
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script first looks for a take under the mouse cursor,
@@ -140,7 +141,7 @@ local take = take or item and r.GetActiveTake(item)
 	if not take then
 	Error_Tooltip('\n\n\tno selected items \n\n or under the mouse cursor\n\n', 1, 1) -- caps, spaced are true
 	return r.defer(no_undo)
-	elseif take 	
+	elseif take then
 	local items_lock, take_envs_lock = Items_OR_Take_Envs_Locked()
 	local itm_lock = r.GetMediaItemInfo_Value(item, 'C_LOCK') & 1 == 1
 	local err1 = (items_lock or itm_lock) and 'locked items' or ''
