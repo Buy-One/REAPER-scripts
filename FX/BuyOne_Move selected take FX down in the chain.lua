@@ -114,6 +114,13 @@ return tr and r.SetTrackStateChunk(obj, obj_chunk, false) or item and r.SetItemS
 end
 
 
+function Items_Locked()
+	if not r.APIExists('SNM_GetIntConfigVar') then return end -- no SWS extension	
+local bitfield = r.SNM_GetIntConfigVar('projsellock', -1)
+return bitfield > 16384 and bitfield&2==2 -- global lock is enabled and items full flag is checked
+end
+
+
 function Get_FX_Selected_In_FX_Chain(chunk)
 	for line in chunk:gmatch('[^\n\r]+') do
 		if line:match('LASTSEL') then return line:match('%d+') end
@@ -194,14 +201,15 @@ local fx_cnt = take and r.TakeFX_GetCount(take)
 		local item = item_at_mouse or r.GetSelectedMediaItem(0,i) -- accounting for a single item under mouse
 		local take = take_at_mouse or r.GetActiveTake(item) -- accounting for a single take under mouse
 		empty_chain_cnt = r.TakeFX_GetCount(take) < 2 and empty_chain_cnt+1 or empty_chain_cnt
-		locked_cnt = not ALLOW_LOCKED and r.GetMediaItemInfo_Value(item, 'C_LOCK') & 1 == 1 and locked_cnt+1 or locked_cnt
+		locked_cnt = not ALLOW_LOCKED and ( r.GetMediaItemInfo_Value(item, 'C_LOCK') & 1 == 1 or Items_Locked() )
+		and locked_cnt+1 or locked_cnt
 		end
-		if empty_chain_cnt + locked_cnt == sel_itm_cnt then
+		if empty_chain_cnt + locked_cnt == sel_itm_cnt or 1 then -- accounting for a single item under cursor or single item matching both conditions
 		local err1 = empty_chain_cnt > 0 and 'no or only 1 fx in the chain(s)' or ''
 		local err2 = locked_cnt > 0 and ' locked items are disallowed' or ''
 		local space = #err1 > 0 and #err2 > 0 and (' '):rep(1) or ''
 		local lb = #err1 > 0 and #err2 > 0 and '\n\n' or ''
-			if err1 or err2 then
+			if #err1 > 0 or #err2 > 0 then
 			Error_Tooltip('\n\n '..err1..lb..space..err2..' \n\n', 1, 1, 10, 10) -- caps, spaced are true, x2, y2 are 10 px //  x2, y2 so that the tooltip position is outside of the mouse cursor, otherwise the tooltip hijacks the context and on the next run without changing the cursor position item under cursor won't be found and an irrelevant message will be displayed
 			return r.defer(no_undo)
 			end
@@ -211,7 +219,7 @@ local fx_cnt = take and r.TakeFX_GetCount(take)
 		local item = item_at_mouse or r.GetSelectedMediaItem(0,i) -- accounting for a single item under mouse
 		local take = take_at_mouse or r.GetActiveTake(item) -- accounting for a single take under mouse
 		local fx_exist = r.TakeFX_GetCount(take) > 1
-		local locked = not ALLOW_LOCKED and r.GetMediaItemInfo_Value(item, 'C_LOCK') & 1 == 1
+		local locked = not ALLOW_LOCKED and ( r.GetMediaItemInfo_Value(item, 'C_LOCK') & 1 == 1 or Items_Locked() )
 			if fx_exist and not locked then -- ignoring takes with empty chains, 1 FX and locked unless allowed
 			local err = MOVE(item, take, dir, sel_itm_cnt, take_at_mouse, ALLOW_LOCKED)
 		-- ensure that with multiple targeted takes the error message is only displayed
