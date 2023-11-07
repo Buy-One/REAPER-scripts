@@ -204,7 +204,8 @@ local fx_cnt = take and r.TakeFX_GetCount(take)
 		locked_cnt = not ALLOW_LOCKED and ( r.GetMediaItemInfo_Value(item, 'C_LOCK') & 1 == 1 or Items_Locked() )
 		and locked_cnt+1 or locked_cnt
 		end
-		if empty_chain_cnt + locked_cnt == sel_itm_cnt or 1 then -- accounting for cases when a single item matches both conditions
+	
+		if empty_chain_cnt + locked_cnt > 0 then
 		local err1 = empty_chain_cnt > 0 and 'no or only 1 fx in the chain(s)' or ''
 		local err2 = locked_cnt > 0 and ' locked items are disallowed' or ''
 		local space = #err1 > 0 and #err2 > 0 and (' '):rep(1) or ''
