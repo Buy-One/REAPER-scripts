@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Select take Pitch envelope.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Added global item and take envelope lock check if SWS/S&M extension is installed
+	   #Updated error message
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script first looks for a take under the mouse cursor,
@@ -89,6 +90,18 @@ function ReStoreSelectedItems(t, keep_last_selected)
 r.UpdateArrange()
 end
 
+
+function Items_OR_Take_Envs_Locked()
+-- thanks to Mespotine https://mespotin.uber.space/Ultraschall/Reaper_Config_Variables.html
+-- https://github.com/mespotine/ultraschall-and-reaper-docs/blob/master/Docs/Reaper-ConfigVariables-Documentation.txt
+	if not r.APIExists('SNM_GetIntConfigVar') then return end -- no SWS extension	
+local bitfield = r.SNM_GetIntConfigVar('projsellock', -1)
+local enabled = bitfield > 16384 -- OR 2^14, global lock is enabled
+return enabled and bitfield&2==2, -- items full flag is checked
+enabled and bitfield&2048==2048 -- take envelopes is checked
+end
+
+
 function Select_Take_Envelope(item, take, env_type)
 local env = r.GetTakeEnvelopeByName(take, env_type)
 --local env = env and r.CountEnvelopePoints(env) > 0 and env
@@ -127,10 +140,19 @@ local take = take or item and r.GetActiveTake(item)
 	if not take then
 	Error_Tooltip('\n\n\tno selected items \n\n or under the mouse cursor\n\n', 1, 1) -- caps, spaced are true
 	return r.defer(no_undo)
-	elseif take and r.GetMediaItemInfo_Value(item, 'C_LOCK') & 1 == 1 and not ALLOW_LOCKED then
-	Error_Tooltip('\n\n locked items are disallowed \n\n', 1, 1) -- caps, spaced are true
-	return r.defer(no_undo)
-	elseif take then -- under mouse
+	elseif take 	
+	local items_lock, take_envs_lock = Items_OR_Take_Envs_Locked()
+	local itm_lock = r.GetMediaItemInfo_Value(item, 'C_LOCK') & 1 == 1
+	local err1 = (items_lock or itm_lock) and 'locked items' or ''
+	local err2 = take_envs_lock and 'locked take envelopes' or ''
+		if not ALLOW_LOCKED and (#err1 > 0 or #err2 > 0) then
+		local both = #err1 > 0 and #err2 > 0
+		local lb = both and '\n\n and ' or ''
+		local space = both and '\t'..(' '):rep(4) or #err1 > 0 and '  ' or ''
+		local tab = both and '\t ' or #err2 > 0 and (' '):rep(5) or ''		
+		Error_Tooltip('\n\n '..space..err1..lb..err2..' \n\n'..tab..' are disallowed \n\n', 1, 1) -- caps, spaced are true
+		return r.defer(no_undo)
+		end
 	env_type = env_type:gsub(' ','') -- remove spaces if any
 	local not_selected = not r.IsMediaItemSelected(item)
 	r.Undo_BeginBlock()
