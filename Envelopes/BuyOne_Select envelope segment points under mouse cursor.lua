@@ -8,80 +8,80 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M recommended
 About:	When executed the script selects active envelope segment points.
-		Segment is a line or curve between two closest points.
-		
-		The script supports both track and take envelopes, and automation
-		item envelopes.
-		
-		This is an alternative to selecting segment points within time
-		selection with the action 'Envelope: Select points in time selection'
-		
-		There're two ways to run the script.
-		
-		1. Via a shortcut.  
-		
-		A) If the SWS/S&M extension isn't installed the target envelope must 
-		already be selected and the mouse cursor can be placed anywhere on 
-		the Y axis which intersects the target segment.  
-		
-		B) If the SWS/S&M extension IS installed the envelope doesn't have to
-		be initially selected but the mouse cursor must point at the envelope. 
-		Once the envelope has been selected the mouse cursor position can be
-		as described in the previous paragraph as long as its position doesn't
-		result in change of context from for example track envelope to take
-		envelope and vice versa. But if you wish you can change the context
-		by simply pointing the mouse cursor at another envelope.
-		
-		If the intersection of the Y axis and the envelope segment falls on 
-		(when the SWS extension isn't installed) or if the mouse points at 
-		(when the SWS extension IS installed) an envelope point the segment 
-		which is to the right of such point will be targeted, meaning this 
-		envelope point and the next will be selected rather than this point 
-		and the previous.
-		
-		2. Via a mouse modifier of the Envelope segment or Envelope lane 
-		double click context.  
-		In this case to execute the script double click the envelope segment
-		or envelope lane respectively while holding down the relevant mouse 
-		modifier.  
-		
-		It's advised not to map the script under these contexts to combinations 
-		which include Ctrl or Shift modifiers because these by default are taken 
-		by Insert point or draw envelope actions under Envelope lane left drag 
-		context and will intercept the double click adding new points.
-		
-		When segment points get selected all other envelope points get de-selected
-		unless segment isn't found in which case point selection doesn't change.
-		
-		After selecting segment points their values can be adjusted simultaneously
-		with the actions 'Item edit: Move items/envelope points up/down one track/a bit'
-		
-		The script can be used inside a following custom action mapped to the mousewheel
-		to simultaneously select segment points and move them up/down:
-		
-		Custom: Select segment points and move up/down (map to mousewheel)
-			Script: BuyOne_Select envelope segment points under mouse cursor.lua
-			Action: Skip next action if CC parameter <0/mid
-			Item edit: Move items/envelope points up one track/a bit
-			Action: Skip next action if CC parameter >0/mid
-			Item edit: Move items/envelope points down one track/a bit
-		  
-		Be aware however that if no point is selected the action 
-		'Item edit: Move items/envelope points up/down one track/a bit'
-		moves all envelopes points, and so will affect the envelope even when 
-		the script displays 'No segment found' error message.
-		
-		Or the following custom actions with the script can be mapped to double click 
-		with different mouse modifiers to simultaneously select segment points and
-		move the up or down:
-		
-		Custom: Select segment points and move up
-			Script: BuyOne_Select envelope segment points under mouse cursor.lua			
-			Item edit: Move items/envelope points up one track/a bit
-		
-		Custom: Select segment points and move down
-			Script: BuyOne_Select envelope segment points under mouse cursor.lua		
-			Item edit: Move items/envelope points down one track/a bit
+	Segment is a line or curve between two closest points.
+	
+	The script supports both track and take envelopes, and automation
+	item envelopes.
+	
+	This is an alternative to selecting segment points within time
+	selection with the action 'Envelope: Select points in time selection'
+	
+	There're two ways to run the script.
+	
+	1. Via a shortcut.  
+	
+	A) If the SWS/S&M extension isn't installed the target envelope must 
+	already be selected and the mouse cursor can be placed anywhere on 
+	the Y axis which intersects the target segment.  
+	
+	B) If the SWS/S&M extension IS installed the envelope doesn't have to
+	be initially selected but the mouse cursor must point at the envelope. 
+	Once the envelope has been selected the mouse cursor position can be
+	as described in the previous paragraph as long as its position doesn't
+	result in change of context from for example track envelope to take
+	envelope and vice versa. But if you wish you can change the context
+	by simply pointing the mouse cursor at another envelope.
+	
+	If the intersection of the Y axis and the envelope segment falls on 
+	(when the SWS extension isn't installed) or if the mouse points at 
+	(when the SWS extension IS installed) an envelope point the segment 
+	which is to the right of such point will be targeted, meaning this 
+	envelope point and the next will be selected rather than this point 
+	and the previous.
+	
+	2. Via a mouse modifier of the Envelope segment or Envelope lane 
+	double click context.  
+	In this case to execute the script double click the envelope segment
+	or envelope lane respectively while holding down the relevant mouse 
+	modifier.  
+	
+	It's advised not to map the script under these contexts to combinations 
+	which include Ctrl or Shift modifiers because these by default are taken 
+	by Insert point or draw envelope actions under Envelope lane left drag 
+	context and will intercept the double click adding new points.
+	
+	When segment points get selected all other envelope points get de-selected
+	unless segment isn't found in which case point selection doesn't change.
+	
+	After selecting segment points their values can be adjusted simultaneously
+	with the actions 'Item edit: Move items/envelope points up/down one track/a bit'
+	
+	The script can be used inside a following custom action mapped to the mousewheel
+	to simultaneously select segment points and move them up/down:
+	
+	Custom: Select segment points and move up/down (map to mousewheel)
+		Script: BuyOne_Select envelope segment points under mouse cursor.lua
+		Action: Skip next action if CC parameter <0/mid
+		Item edit: Move items/envelope points up one track/a bit
+		Action: Skip next action if CC parameter >0/mid
+		Item edit: Move items/envelope points down one track/a bit
+	  
+	Be aware however that if no point is selected the action 
+	'Item edit: Move items/envelope points up/down one track/a bit'
+	moves all envelopes points, and so will affect the envelope even when 
+	the script displays 'No segment found' error message.
+	
+	Or the following custom actions with the script can be mapped to double click 
+	with different mouse modifiers to simultaneously select segment points and
+	move the up or down:
+	
+	Custom: Select segment points and move up
+		Script: BuyOne_Select envelope segment points under mouse cursor.lua			
+		Item edit: Move items/envelope points up one track/a bit
+	
+	Custom: Select segment points and move down
+		Script: BuyOne_Select envelope segment points under mouse cursor.lua		
+		Item edit: Move items/envelope points down one track/a bit
 		
 ]]
 -----------------------------------------------------------------------------
