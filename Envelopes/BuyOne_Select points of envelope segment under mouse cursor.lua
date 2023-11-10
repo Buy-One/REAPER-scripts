@@ -1,5 +1,5 @@
 --[[
-ReaScript name: BuyOne_Select envelope segment points under mouse cursor.lua
+ReaScript name: BuyOne_Select points of envelope segment under mouse cursor.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
