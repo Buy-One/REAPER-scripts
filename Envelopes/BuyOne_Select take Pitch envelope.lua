@@ -60,6 +60,7 @@ local time_init = r.time_precise()
 repeat
 until condition and r.time_precise()-time_init >= 0.7 or not condition
 ]]
+r.UpdateTimeline() -- might be needed because tooltip can sometimes affect graphics
 end
 
 function ReStoreSelectedItems(t, keep_last_selected)
