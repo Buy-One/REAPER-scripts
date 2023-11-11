@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Select points of envelope segment under mouse cursor.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog:	#Ensured that automation item points are also deselected along with envelope points outside of a segment
+		#Ensured that envelope points overlapped by automation item are ignored
+		#Added new setting to allow selecting segment points in take envelopes if item is locked
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M recommended
@@ -53,6 +55,9 @@ About:	When executed the script selects active envelope segment points.
 	When segment points get selected all other envelope points get de-selected
 	unless segment isn't found in which case point selection doesn't change.
 	
+	If envelope segment start or end points are overlapped by an automation item
+	such segment is invalid and its points cannot be selected.
+	
 	After selecting segment points their values can be adjusted simultaneously
 	with the actions 'Item edit: Move items/envelope points up/down one track/a bit'
 	
@@ -84,6 +89,7 @@ About:	When executed the script selects active envelope segment points.
 		Item edit: Move items/envelope points down one track/a bit
 		
 ]]
+
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
 -----------------------------------------------------------------------------
@@ -94,6 +100,20 @@ About:	When executed the script selects active envelope segment points.
 -- If enabled the script will create undo point
 -- at each selection of segment points
 ENABLE_UNDO = ""
+
+-- If enabled instructs the script to select envelope and/or segment 
+-- points in locked items;
+-- the setting is mainly relevant when running the script 
+-- with a shortcut rather than a mouse modifier because a shortcut
+-- allows selecting (when the SWS extension is installed) or otherwise
+-- keeping an envelope selected in a locked item, while a mouse click 
+-- immediately deselects it without the ability to re-select 
+-- as long as the item is locked, which also blocks all mouse modifiers
+-- in envelope contexts,
+-- and as such the setting is very niche;
+-- however it has no effect if global take envelope or item (full) lock 
+-- is enabled, because in this case the lock state cannot be overridden
+ALLOW_IN_LOCKED_ITEMS = ""
 
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
@@ -107,9 +127,11 @@ local cap = cap and type(cap) == 'string' and #cap > 0 and cap..' = ' or ''
 reaper.ShowConsoleMsg(cap..tostring(param)..'\n')
 end
 
+
 function no_undo()
 do return end
 end
+
 
 function Error_Tooltip(text, caps, spaced, x2, y2, want_color, want_blink)
 -- the tooltip sticks under the mouse within Arrange
@@ -154,10 +176,18 @@ local time_init = r.time_precise()
 repeat
 until condition and r.time_precise()-time_init >= 0.7 or not condition
 ]]
+r.UpdateTimeline() -- might be needed because tooltip can sometimes affect graphics
 end
 
 
-function Item_Time_2_Proj_Time(item_time, item, take)
+function Is_Item_Under_Mouse_Locked()
+local x, y = r.GetMousePosition()
+local item = r.GetItemFromPoint(x,y, true) -- allow_locked true
+return item and r.GetMediaItemInfo_Value(item, 'C_LOCK') & 1 == 1
+end
+
+
+function Item_Time_2_Proj_Time(item_time, item, take) -- used inside Find_Segment_Points()
 -- such as take envelope points, take/stretch markers and transient guides time, item_time is their position within take media source returned by the corresponding functions
 -- e.g. take envelope points, take/stretch markers and transient guides time to edit/play cursor, proj markers/regions time
 
@@ -175,11 +205,97 @@ return proj_time >= item_pos and proj_time <= item_end and proj_time -- ignoring
 end
 
 
-function Deselect_Points_In_Env_All_AIs(env, AI_idx)
--- accounting for points in all loop iterations, visible or not
-	for i = 0, r.CountEnvelopePointsEx(env, AI_idx|0x10000000)-1 do
-	r.SetEnvelopePointEx(env, AI_idx, i, timeIn, valueIn, shapeIn, tensionIn, false, noSortIn) -- selectedIn false, deselect
+function Get_Props_Of_AI_Intersecting_Cur_Pos(env, cur_pos)
+-- AI start is considered intersecting cursor while its end isn't
+	for i = 0, r.CountAutomationItems(env)-1 do
+	local pos = r.GetSetAutomationItemInfo(env, i, 'D_POSITION', -1, false) -- value -1, is_set false
+	local fin = pos + r.GetSetAutomationItemInfo(env, i, 'D_LENGTH', -1, false) -- value -1, is_set false
+		if pos <= cur_pos and fin > cur_pos then -- only AI start is considered belonging to AI so that a segment could be selected rightwards
+		return i, pos, fin
+		end
 	end
+
+end
+
+
+function Get_Props_Of_AI_Overlapping_Env_Pt(env, pt_pos)
+	for i = 0, r.CountAutomationItems(env)-1 do
+	local pos = r.GetSetAutomationItemInfo(env, i, 'D_POSITION', -1, false) -- value -1, is_set false
+	local fin = pos + r.GetSetAutomationItemInfo(env, i, 'D_LENGTH', -1, false) -- value -1, is_set false
+		if pos <= pt_pos and fin >= pt_pos then
+		return i, pos, fin
+		end
+	end
+end
+
+
+function Find_Segment_Points(env, cur_pos, AI_idx, item, take)
+
+local pt_cnt = not AI_idx and r.CountEnvelopePoints(env) -- ignoring automation items
+or r.CountEnvelopePointsEx(env, AI_idx) -- only respecting visible points
+local st_pt_idx, end_pt_idx
+
+	if not AI_idx then -- main envelope
+		for i = 0, pt_cnt-1 do -- look for segment points
+		local retval, pos_end, val, shape, tens, sel = r.GetEnvelopePointEx(env, -1, i) -- autoitem_idx -1, ignore // OR r.GetEnvelopePoint()
+		pos_end = take and Item_Time_2_Proj_Time(pos_end, item, take) or pos_end
+			if pos_end and not end_pt_idx and pos_end >= cur_pos then -- pos_end can be nil if take env and the item is trimmed, because only pos of points within view is returned by Item_Time_2_Proj_Time() function
+			end_pt_idx, st_pt_idx = i, i-1
+				-- for track env only return points which aren't overlapped by an automation item
+				if not take and st_pt_idx > -1 then -- more than 1 point in the track env
+			-------------------------------------------------------
+				--[[ THIS ROUTINE ALLOWS SELECTING MAIN ENV SEGMGENT POINTS EVEN IF ONE OF THEM IS OVERLAPPED BY AN AI
+				local AI_idx, AI_st, AI_end = Get_Props_Of_AI_Intersecting_Cur_Pos(env, cur_pos)
+					if AI_idx then -- overlapping AI found
+					local retval, pos_start, val, shape, tens, sel = r.GetEnvelopePointEx(env, -1, st_pt_idx) -- autoitem_idx -1, ignore // OR r.GetEnvelopePoint()
+						if pos_start >= AI_st or pos_end <= AI_end then
+						end_pt_idx, st_pt_idx = nil -- reset as if the points weren't found
+						end
+					end
+				]]
+				-- THIS ROUTINE ENSURES THAT SEGMENT WHOSE POINTS ARE OVELAPPED BY AN AUTOMATION ITEM IS IGNORED
+				local overlap = Get_Props_Of_AI_Overlapping_Env_Pt(env, pos_end)
+				local retval, pos_start, val, shape, tens, sel = r.GetEnvelopePointEx(env, -1, st_pt_idx) -- autoitem_idx -1, ignore // OR r.GetEnvelopePoint()
+				local overlap = overlap or Get_Props_Of_AI_Overlapping_Env_Pt(env, pos_start)
+					if overlap then
+					end_pt_idx, st_pt_idx = nil -- reset as if the points weren't found
+					end
+				end
+			------------------------------------------------------
+			break end
+		end
+	else -- AI envelopes
+		for i = 0, pt_cnt-1 do -- look for segment points
+		local retval, pos, val, shape, tens, sel = r.GetEnvelopePointEx(env, AI_idx, i)
+			if not end_pt_idx and pos >= cur_pos then
+			end_pt_idx, st_pt_idx = i, i-1
+			break end
+		end
+	end
+
+return st_pt_idx, end_pt_idx
+
+end
+
+
+function Deselect_All_Env_Points(env)
+
+	local function Deselect_Points_In_Env_All_AIs(env, AI_idx)
+	-- accounting for points in all loop iterations, visible or not
+		for i = 0, r.CountEnvelopePointsEx(env, AI_idx|0x10000000)-1 do
+		r.SetEnvelopePointEx(env, AI_idx, i, timeIn, valueIn, shapeIn, tensionIn, false, noSortIn) -- selectedIn false, deselect
+		end
+	end
+
+	-- in the envelope
+	for i = 0, r.CountEnvelopePoints(env)-1 do -- in the envelope, ignoring automation items
+	r.SetEnvelopePointEx(env, -1, i, timeIn, valueIn, shapeIn, tensionIn, false, noSortIn) -- autoitem_idx -1, ignore, selectedIn false, deselect
+	end
+	-- in the automation items
+	for AI_idx = 0, r.CountAutomationItems(env)-1 do -- accounting for all points in all loop iterations, visible or not
+	Deselect_Points_In_Env_All_AIs(env, AI_idx)
+	end
+
 end
 
 
@@ -189,21 +305,36 @@ local act = comm_ID and comm_ID ~= 0 and (midi and r.MIDIEditor_LastFocused_OnCo
 or not midi and r.Main_OnCommand(comm_ID, 0)) -- not midi cond is required because even if midi var is true the previous expression produces falsehood because the MIDIEditor_LastFocused_OnCommand() function doesn't return anything // only if valid command_ID
 end
 
-	if r.APIExists('BR_GetMouseCursorContext') then
+
+ALLOW_IN_LOCKED_ITEMS = #ALLOW_IN_LOCKED_ITEMS:gsub(' ','') > 0
+local sws = r.APIExists('BR_GetMouseCursorContext')
+local env_init = r.GetSelectedEnvelope(0)
+local item_locked = Is_Item_Under_Mouse_Locked()
+
+	if sws then
 	local wnd_name, segm_name, details = r.BR_GetMouseCursorContext()
-		if segm_name == 'envelope' or details == 'env_segment' then -- select envelope under mouse // 1st cond refers to track env, the 2nd - to take env
+		if segm_name == 'envelope' or (details == 'env_segment' or details == 'env_point' or details == 'item')
+		then -- select envelope under mouse // 1st cond refers to track env, the 2nd - to take env
 		local env, isTakeEnv = reaper.BR_GetMouseCursorContext_Envelope()
-		r.SetCursorContext(2, env)
+			if item_locked and ALLOW_IN_LOCKED_ITEMS or not item_locked then
+			r.SetCursorContext(2, env)
+			end
 		end
 	end
-	if r.GetCursorContext() ~= 2 then
-	Error_Tooltip('\n\n         no envelope\n\n under the mouse cursor \n\n', 1, 1) -- caps, spaced are true
+
+local env = r.GetSelectedEnvelope(0)
+
+	if r.GetCursorContext() ~= 2 or -- if the cursor context above wasn't set due to item being locked this cond is only true if the SWS ext is installed and env context wasn't already active
+	item_locked and not ALLOW_IN_LOCKED_ITEMS and env_init == env then 
+	local err = item_locked and not ALLOW_IN_LOCKED_ITEMS 
+	and 'envelopes in locked items \n\n\t are disallowed'
+	or ' no (selected) envelope\n\n under the mouse cursor'
+	Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced are true	
 	return r.defer(no_undo)
 	end
 
 
 ENABLE_UNDO = #ENABLE_UNDO:gsub(' ','') > 0
-local env = r.GetSelectedEnvelope(0)
 local take, fx_idx, parm_idx = table.unpack(env and {r.Envelope_GetParentTake(env)} or {})
 local item = take and r.GetMediaItemTake_Item(take)
 
@@ -216,57 +347,33 @@ local item = take and r.GetMediaItemTake_Item(take)
 	r.SetEditCurPos(cur_pos, false, false) -- moveview, seekplay false // restore orig edit curs pos
 	r.PreventUIRefresh(-1)
 
-	local st_pt_idx, end_pt_idx, AI_idx
+	local st_pt_idx, end_pt_idx = Find_Segment_Points(env, mouse_pos, AI_idx, item, take)
 
-	local pt_cnt = r.CountEnvelopePoints(env) -- ignoring automation items
-	
-		for i = 0, pt_cnt-1 do -- look for segment points
-		local retval, pos, val, shape, tens, sel = r.GetEnvelopePointEx(env, -1, i) -- autoitem_idx -1, ignore
-		pos = take and Item_Time_2_Proj_Time(pos, item, take) or pos
-			if pos and not end_pt_idx and pos >= mouse_pos then -- only stored once to allow the loop to finish so that all points are deselected to prevent them from being affected by movement of the selected ones // pos can be nil if take env and the item is trimmed, because only pos of points within view is returned by Item_Time_2_Proj_Time() function
-			end_pt_idx, st_pt_idx = i, i-1
-			end
-		end
-		
 		if end_pt_idx and st_pt_idx > -1 then -- a safeguard against envelopes with 1 point only
-	
+
 			if ENABLE_UNDO then r.Undo_BeginBlock() end
+
+			Deselect_All_Env_Points(env)
 			
-			-- deselect all other points
-			for i = 0, pt_cnt-1 do
-			r.SetEnvelopePointEx(env, -1, i, timeIn, valueIn, shapeIn, tensionIn, false, noSortIn) -- autoitem_idx -1, ignore, selectedIn false, deselect
-			end		
 			-- select found points
 			for i = st_pt_idx, end_pt_idx do
 			r.SetEnvelopePointEx(env, -1, i, timeIn, valueIn, shapeIn, tensionIn, true, noSortIn) -- autoitem_idx -1, ignore, selectedIn true, select
 			end
+
 		elseif not take then -- look for automation items under the mouse if track env
-		local AI_cnt = r.CountAutomationItems(env)
-			for i = 0, AI_cnt-1 do
-			local pos = r.GetSetAutomationItemInfo(env, i, 'D_POSITION', -1, false) -- value -1, is_set false
-			local fin = pos + r.GetSetAutomationItemInfo(env, i, 'D_LENGTH', -1, false) -- value -1, is_set false
-				if pos <= mouse_pos and fin > mouse_pos then -- only AI start is considered belonging to AI so that a segment could be selected rightwards
-				AI_idx = i break
-				end
-			end
+
+		local AI_idx = Get_Props_Of_AI_Intersecting_Cur_Pos(env, mouse_pos)
+
 			if AI_idx then
 
-			pt_cnt = r.CountEnvelopePointsEx(env, AI_idx) -- only respecting visible points
-			
-				for i = 0, pt_cnt-1 do -- look for segment points
-				local retval, pos, val, shape, tens, sel = r.GetEnvelopePointEx(env, AI_idx, i)
-					if not end_pt_idx and pos >= mouse_pos then -- only stored once to allow the loop to finish so that all points are deselected
-					end_pt_idx, st_pt_idx = i, i-1
-					end
-				end
+			st_pt_idx, end_pt_idx = Find_Segment_Points(env, mouse_pos, AI_idx) -- item & take args aren't used here and AI playrate is irrelevant because the returned point pos is always based on the project time line
+
 				if end_pt_idx and st_pt_idx > -1 then -- a safeguard against envelopes with 1 point only
-				
+
 					if ENABLE_UNDO then r.Undo_BeginBlock() end
-				
-					-- Deselect points in all AIs belonging to the envelope to prevent them from being affected by movement of the selected ones				
-					for AI_idx = 0, AI_cnt-1 do -- accounting for all points in all loop iterations, visible or not
-					Deselect_Points_In_Env_All_AIs(env, AI_idx)
-					end					
+
+					Deselect_All_Env_Points(env)
+					
 					-- select found points
 					for i = st_pt_idx, end_pt_idx do
 					r.SetEnvelopePointEx(env, AI_idx, i, timeIn, valueIn, shapeIn, tensionIn, true, noSortIn) -- selectedIn true, select
