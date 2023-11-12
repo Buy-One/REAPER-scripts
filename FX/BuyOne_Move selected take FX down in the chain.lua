@@ -2,9 +2,10 @@
 ReaScript name: BuyOne_Move selected take FX down in the chain.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #Added global item lock check if SWS/S&M extension is installed
-	   #Fixed error message conditions
+Version: 1.2
+Changelog: v1.2 #Fixed navigation issue with up/down arrow keys in FX chain after moving FX
+	   v1.1 #Added global item lock check if SWS/S&M extension is installed
+		#Fixed error message conditions
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M not mandatory but recommended
@@ -133,52 +134,77 @@ end
 
 function MOVE(item, take, dir, sel_itm_cnt, take_at_mouse, ALLOW_LOCKED)
 
-local ret, chunk = GetObjChunk(item)
+local fx_chain_open = r.TakeFX_GetChainVisible(take) ~= -1 -- -1 chain hidden, -2 chain visible but no effect selected
 
-	if (sel_itm_cnt == 1 or take_at_mouse) and ret == 'err_mess' then -- only if exactly 1 take is targeted
-	local err = 'the data could not be processed \n\n due to absence of the sws extension'
-	Error_Tooltip('\n\n '..err..' \n\n', 1, 1, 10, 10) -- caps, spaced are true, x2, y2 are 10 px //  x2, y2 so that the tooltip position is outside of the mouse cursor, otherwise the tooltip hijacks the context and on the next run without changing the cursor position item under cursor won't be found and an irrelevant message will be displayed
-	return err
+local ret, chunk
 
-	elseif ret then
+	if not fx_chain_open then -- if fx chain is open selected fx index is returned by TakeFX_GetChainVisible(), otherwise it must be retrieved from the chunk
 
-		if r.GetMediaItemInfo_Value(item, 'C_LOCK') & 1 == 1 and not ALLOW_LOCKED then
-		return end
+	ret, chunk = GetObjChunk(item)
 
-	local fx_cnt = r.TakeFX_GetCount(take)
-		if fx_cnt == 0 then return end
+		if (sel_itm_cnt == 1 or take_at_mouse) and ret == 'err_mess' then -- only if exactly 1 take is targeted
+		local err = 'the data could not be processed \n\n due to absence of the sws extension'
+		Error_Tooltip('\n\n '..err..' \n\n', 1, 1, 10, 10) -- caps, spaced are true, x2, y2 are 10 px //  x2, y2 so that the tooltip position is outside of the mouse cursor, otherwise the tooltip hijacks the context and on the next run without changing the cursor position item under cursor won't be found and an irrelevant message will be displayed
+		return err
+		end
+		
+	end
 
-	local up, down = dir == 'up', dir == 'down'
+	if r.GetMediaItemInfo_Value(item, 'C_LOCK') & 1 == 1 and not ALLOW_LOCKED then
+	return end
 
-	local fx_idx = Get_FX_Selected_In_FX_Chain(chunk)
+local fx_cnt = r.TakeFX_GetCount(take)
+	if fx_cnt == 0 then return end
 
-	local err = 'the selected fx is already \n\nat the position'
-	local err = fx_idx == '0' and up and err:gsub('at the', (' '):rep(6)..'%0 top')
-	or fx_idx+1 == fx_cnt and down and err:gsub('at the', '   %0 bottom')
+local up, down = dir == 'up', dir == 'down'
 
-		if (sel_itm_cnt == 1 or take_at_mouse) and err then -- only if exactly 1 take is targeted
-		Error_Tooltip('\n\n '..err..'\n\n', 1, 1, 10, 10) -- caps, spaced are true, x2, y2 are 10 px
-		return end
+local fx_idx = fx_chain_open and r.TakeFX_GetChainVisible(take)..'' or Get_FX_Selected_In_FX_Chain(chunk) -- converting fx chain fx idx to string to conform to the evaluated data type
 
-		-- if more than 1 take is targeted only move if the FX hasn't already reached the top
-		-- or the bottom of the chain
-		-- if exactly 1 take this will be prevented by the error message above
-		if up and fx_idx+0 ~= 0 or down and fx_idx+0 ~= fx_cnt-1 then
+local err = 'the selected fx is already \n\nat the position'
+local err = fx_idx == '0' and up and err:gsub('at the', (' '):rep(6)..'%0 top')
+or fx_idx+1 == fx_cnt and down and err:gsub('at the', '   %0 bottom')
 
-		local fx_idx_new = up and fx_idx-1 or down and fx_idx+1
-		r.TakeFX_CopyToTake(take, fx_idx+0, take, fx_idx_new, true) -- is_move true
+	if (sel_itm_cnt == 1 or take_at_mouse) and err then -- only if exactly 1 take is targeted
+	Error_Tooltip('\n\n '..err..'\n\n', 1, 1, 10, 10) -- caps, spaced are true, x2, y2 are 10 px
+	return end
 
+	-- if more than 1 take is targeted only move if the FX hasn't already reached the top
+	-- or the bottom of the chain
+	-- if exactly 1 take this will be prevented by the error message above
+	if up and fx_idx+0 ~= 0 or down and fx_idx+0 ~= fx_cnt-1 then
+
+	local fx_idx_new = up and fx_idx-1 or down and fx_idx+1
+	
+	r.TakeFX_CopyToTake(take, fx_idx+0, take, fx_idx_new, true) -- is_move true
+
+		-- update selected FX index in the chunk because when FX chain is closed, after moving it's not updated
+		-- and the selected state is assumed by the FX which replaces the one which has been moved thus remaning
+		-- the same so the selected FX gets stuck without ability to move further alternating between initial  
+		-- position and next position
+		-- when FX chain is open selected FX index must ve retrieved with TakeFX_GetChainVisible() as is done here
+		-- and in the chunk it gets updated automatically OTHERWISE its manual update inside the chunk causes 
+		-- glitch of selected FX focus loss breaking sequential navigation between FX with up/down arrow keys 
+		-- for examle down arrow key moves selection to the topmost FX rather than to the next in the chain
+		-- and to combat that the FX chain window must be toggled closed and back open
+		if not fx_chain_open then
 		local ret, chunk = GetObjChunk(item) -- get chunk after reordering
 		local chunk_new = chunk:gsub('LASTSEL '..fx_idx, 'LASTSEL '..fx_idx_new)
 		SetObjChunk(item, chunk_new)
-
-		else
-		
-		return err
-		
+		--[[
+		-- this is an alternative to updating selected FX index inside the chunk above
+		-- but is a poor solution because if another window is in focus it loses it because
+		-- the focus is switched to the momentarily opened FX chain window
+		r.TakeFX_Show(take, fx_idx_new, 1) -- showFlag 1 - show chain
+		r.TakeFX_Show(take, fx_idx_new, 0) -- showFlag 0 - hide chain
+		]]
 		end
+		
+	else
 
+	return err
+	
 	end
+	
 
 end
 
