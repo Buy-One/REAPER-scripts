@@ -205,7 +205,6 @@ or fx_idx+1 == fx_cnt and down and err:gsub('at the', '   %0 bottom')
 	
 	end
 	
-
 end
 
 
