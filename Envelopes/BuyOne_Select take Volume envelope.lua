@@ -2,10 +2,11 @@
 ReaScript name: BuyOne_Select take Volume envelope.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: v1.2 #Fixed absence of 'then' operator (blush)
+Version: 1.3
+Changelog: v1.3 #Check for global item and take envelope lock has been made independent of the SWS/S&M extension
+	   v1.2 #Fixed absence of 'then' operator (blush)
 	   v1.1 #Added global item and take envelope lock check if SWS/S&M extension is installed
-	   	#Updated error message	  
+		#Updated error message  
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script first looks for a take under the mouse cursor,
@@ -94,13 +95,8 @@ end
 
 
 function Items_OR_Take_Envs_Locked()
--- thanks to Mespotine https://mespotin.uber.space/Ultraschall/Reaper_Config_Variables.html
--- https://github.com/mespotine/ultraschall-and-reaper-docs/blob/master/Docs/Reaper-ConfigVariables-Documentation.txt
-	if not r.APIExists('SNM_GetIntConfigVar') then return end -- no SWS extension	
-local bitfield = r.SNM_GetIntConfigVar('projsellock', -1)
-local enabled = bitfield > 16384 -- OR 2^14, global lock is enabled
-return enabled and bitfield&2==2, -- items full flag is checked
-enabled and bitfield&2048==2048 -- take envelopes is checked
+return r.GetToggleCommandStateEx(0,40576) == 1, -- Locking: Toggle full item locking mode
+r.GetToggleCommandStateEx(0,41851) == 1 -- Locking: Toggle take envelope locking mode
 end
 
 
