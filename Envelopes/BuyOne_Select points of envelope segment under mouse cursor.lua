@@ -82,6 +82,7 @@ About:	When executed the script selects active envelope segment points.
 	
 	After selecting segment points their values can be adjusted simultaneously
 	with the actions 'Item edit: Move items/envelope points up/down one track/a bit'
+	or 'Envelopes: Move selected points up/down a little bit'.
 	
 	The script can be used inside a following custom action mapped to the mousewheel
 	to simultaneously select segment points and move them up/down:
