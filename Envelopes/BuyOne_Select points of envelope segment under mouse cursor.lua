@@ -316,12 +316,12 @@ local st_pt_idx, end_pt_idx
 		end
 		for i = 0, pt_cnt-1 do -- look for segment points
 		local retval, end_pos, val, shape, tens, sel = r.GetEnvelopePointEx(env, AI_idx|0x10000000, i) -- respecting points in full loop iteration incl. hidden
-		end_pos = end_pos+loop_len*loop_iter
+		end_pos = end_pos+loop_len*loop_iter -- offset by the number of loop iterations before the cursor retrieved above
 			if not end_pt_idx and end_pos > cur_pos and end_pos <= fin then -- making sure that the end_pos is within view
 			end_pt_idx, st_pt_idx = i, i-1
 				if st_pt_idx > -1 then -- make sure that start point is within view
 				local retval, st_pos, val, shape, tens, sel = r.GetEnvelopePointEx(env, AI_idx|0x10000000, st_pt_idx) -- respecting points in full loop iteration incl. hidden
-				st_pos = st_pos+loop_len*loop_iter
+				st_pos = st_pos+loop_len*loop_iter -- offset by the number of loop iterations before the cursor retrieved above
 					if st_pos < st then
 					end_pt_idx, st_pt_idx = nil -- reset as if the points weren't found 
 					end
