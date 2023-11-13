@@ -2,9 +2,11 @@
 ReaScript name: BuyOne_Move selected take FX down in the chain.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: v1.2 #Fixed navigation issue with up/down arrow keys in FX chain after moving FX
-	   v1.1 #Added global item lock check if SWS/S&M extension is installed
+Version: 1.3
+Changelog: v1.3 #Made global item lock check independent of the SWS/S&M extension
+		#Updated 'About' text with custom action example
+	   v1.2 #Fixed navigation issue with up/down arrow keys in FX chain after moving FX
+	   v1.1 #Added global item lock check if the SWS/S&M extension is installed
 		#Fixed error message conditions
 Licence: WTFPL
 REAPER: at least v5.962
@@ -23,7 +25,25 @@ About: 	The script first looks for a take under the mouse cursor,
 	the 'Keyboard/MIDI/OSC input' dialogue in the Action list). This will
 	ensure script operability when take under mouse cursor is targeted 
 	while its FX chain window is in focus.
+
+	The script along with 'BuyOne_Move selected take FX up in the chain.lua'
+	can be combined with native and SWS extension actions within a custom 
+	action mapped to the mousewheel to be able to move selected FX up/down 
+	with the mousewheel. The custom action sequence should look as follows:
 	
+	Custom: Move selected take FX up or down in the chain
+		Action: Skip next action if CC parameter <0/mid
+		BuyOne_Move selected take FX up in the chain.lua
+		Action: Skip next action if CC parameter >0/mid
+		BuyOne_Move selected take FX down in the chain.lua
+		SWS/BR: Focus arrange
+		
+	Since REAPER doesn't register mousewheel when FX chain window is in focus,
+	if take FX chain is open, click anywehere to put it out of focus to be able
+	to apply the action the first time, then the action 'SWS/BR: Focus arrange' 
+	will make sure that the FX chain stays out of focus as long as the custom 
+	action is executed.
+
 	The script doesn't support FX inside FX containers and nested containers
 	(relevant since REAPER 7).
 	
@@ -117,11 +137,9 @@ end
 
 
 function Items_Locked()
--- thanks to Mespotine https://mespotin.uber.space/Ultraschall/Reaper_Config_Variables.html
--- https://github.com/mespotine/ultraschall-and-reaper-docs/blob/master/Docs/Reaper-ConfigVariables-Documentation.txt
-	if not r.APIExists('SNM_GetIntConfigVar') then return end -- no SWS extension	
-local bitfield = r.SNM_GetIntConfigVar('projsellock', -1)
-return bitfield > 16384 and bitfield&2==2 -- global lock is enabled and items full flag is checked
+-- if 'Options: Toggle locking' toggle state is Off 
+-- 'Locking: Toggle full item locking mode' state will also be Off
+return r.GetToggleCommandStateEx(0, 40576) == 1 -- Locking: Toggle full item locking mode
 end
 
 
