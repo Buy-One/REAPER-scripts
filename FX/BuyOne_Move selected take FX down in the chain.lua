@@ -50,7 +50,9 @@ About: 	The script first looks for a take under the mouse cursor,
 	the FX chain stays out of focus as long as the custom action is executed.
 	'SWS/BR: Focus arrange' isn't necessary if the mousewheel preference is 
 	'Window under cursor' but its presence doesn't affect the performance other
-	than keeping the FX chain window out of focus.
+	than keeping the FX chain window out of focus.  
+	It will still work if the preference 'Ignore mousewheel on all faders' is 
+	disabled.
 
 	The script doesn't support FX inside FX containers and nested containers
 	(relevant since REAPER 7).
