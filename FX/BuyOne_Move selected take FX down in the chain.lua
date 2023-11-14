@@ -38,11 +38,19 @@ About: 	The script first looks for a take under the mouse cursor,
 		BuyOne_Move selected take FX down in the chain.lua
 		SWS/BR: Focus arrange
 		
-	Since REAPER doesn't register mousewheel when FX chain window is in focus,
-	if take FX chain is open, click anywehere to put it out of focus to be able
-	to apply the action the first time, then the action 'SWS/BR: Focus arrange' 
-	will make sure that the FX chain stays out of focus as long as the custom 
-	action is executed.
+	Since in focused FX chain window or FX window under mouse cursor 
+	(depending on the preference at 
+	Editing Behavior -> Mouse -> Mousewheel targets) REAPER only supports 
+	mousewheel for FX controls, to be able to run the custom action with 
+	the mousewheel when the take FX chain is open, either place cursor outside 
+	of the FX chain window (if the mousewheel target preference is 
+	'Window under cursor') 	OR (if the the mousewheel target preference is 
+	'Window with focus') click anywehere to put the FX chain window out of focus 
+	and on subsequent runs the action 'SWS/BR: Focus arrange' will make sure that 
+	the FX chain stays out of focus as long as the custom action is executed.
+	'SWS/BR: Focus arrange' isn't necessary if the mousewheel preference is 
+	'Window under cursor' but its presence doesn't affect the performance other
+	than keeping the FX chain window out of focus.
 
 	The script doesn't support FX inside FX containers and nested containers
 	(relevant since REAPER 7).
