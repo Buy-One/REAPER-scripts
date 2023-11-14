@@ -42,15 +42,17 @@ About: 	The script first looks for a take under the mouse cursor,
 	(depending on the preference at 
 	Editing Behavior -> Mouse -> Mousewheel targets) REAPER only supports 
 	mousewheel for FX controls, to be able to run the custom action with 
-	the mousewheel when the take FX chain is open, either place cursor outside 
-	of the FX chain window (if the mousewheel target preference is 
-	'Window under cursor') 	OR (if the the mousewheel target preference is 
-	'Window with focus') click anywehere to put the FX chain window out of focus 
-	and on subsequent runs the action 'SWS/BR: Focus arrange' will make sure that 
-	the FX chain stays out of focus as long as the custom action is executed.
-	'SWS/BR: Focus arrange' isn't necessary if the mousewheel preference is 
-	'Window under cursor' but its presence doesn't affect the performance other
-	than keeping the FX chain window out of focus.  
+	the mousewheel when the take FX chain is open, either place the mouse 
+	cursor outside of the FX chain window (if the mousewheel target preference 
+	is 'Window under cursor') being careful not to point at another item/take 
+	with FX because the script focus will switch to it, OR (if the the mousewheel 
+	target preference is 'Window with focus') click anywehere to put the FX 
+	chain window out of focus and on subsequent runs the action 
+	'SWS/BR: Focus arrange' will make sure that the FX chain stays out of 
+	focus as long as the custom action is executed.  
+	The action 'SWS/BR: Focus arrange' isn't necessary if the mousewheel 
+	preference is 'Window under cursor' but its presence doesn't affect the 
+	performance other than keeping the FX chain window out of focus.  
 	It will still work if the preference 'Ignore mousewheel on all faders' is 
 	disabled.
 
