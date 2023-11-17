@@ -104,10 +104,12 @@ local tr_cnt = r.CountSelectedTracks2(0, true) > 0 and r.CountSelectedTracks2(0,
 
 	elseif itm_cnt + tr_cnt > 0 then
 
-	state1, state2, state3 = state1 or '', state2 or '', state3 or ''
+	state1, state2, state3, state4 = state1 or '', state2 or '', state3 or '', state4 or ''
 	local menu = 'Set preferences by clicking them:||'..state1..'Trim prefix, e.g. VST(i): etc.|'
-	..state2..'Trim developer name (file path in JSFX)|'..state3..'Only leave JSFX file name||R U N| ||'
-	..'Affects FX in selected objects.|If none is selected, then in all objects.'
+	..state2..'Trim developer name (file path in JSFX)|'..state3..'Only leave JSFX file name|'
+	..state4..'Include insert / Monitor FX||R U N| ||'
+	..'Affects FX in selected objects.|If none is selected, then in all objects.|'
+	..'Option "Include insert / Monitor FX"|can only be enabled if at least one|other option is enabled.'
 
 	local index = Reload_Menu_at_Same_Pos(menu, 1) -- 1 - open at the same pos 
 
@@ -115,8 +117,9 @@ local tr_cnt = r.CountSelectedTracks2(0, true) > 0 and r.CountSelectedTracks2(0,
 		elseif index == 2 then state1 = #state1 == 0 and '!' or '' -- toggle
 		elseif index == 3 then state2 = #state2 == 0 and '!' or ''
 		elseif index == 4 then state3 = #state3 == 0 and '!' or ''
+		elseif index == 5 and #(state1..state2..state3) > 0 then state4 = #state4 == 0 and '!' or ''
 		end
-		if index ~= 5 then goto RELOAD end -- not RUN and not 0
+		if index ~= 6 then goto RELOAD end -- not RUN and not 0
 
 		if #(state1..state2..state3) == 0 then
 		Error_Tooltip('\n\n no option has been enabled \n\n', 1, 1) -- caps, spaced true
@@ -125,6 +128,7 @@ local tr_cnt = r.CountSelectedTracks2(0, true) > 0 and r.CountSelectedTracks2(0,
 	TRIM_PREFIX = #state1 > 0
 	TRIM_DEV_NAME = #state2 > 0
 	ONLY_LEAVE_JSFX_FILENAME = #state3 > 0
+	INCL_INSERT_MON_FX = #state4 > 0
 
 	r.Undo_BeginBlock()
 
@@ -132,7 +136,9 @@ local tr_cnt = r.CountSelectedTracks2(0, true) > 0 and r.CountSelectedTracks2(0,
 		local tr = r.GetSelectedTrack(0,i,true) or r.GetTrack(0,i) or r.GetMasterTrack(0)
 			if tr then
 			Simplify_FX_Name(tr, take, recFX, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- take, recFX false
-			Simplify_FX_Name(tr, take, true, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX true
+				if INCL_INSERT_MON_FX then
+				Simplify_FX_Name(tr, take, INCL_INSERT_MON_FX, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX true
+				end
 			end
 		end
 
