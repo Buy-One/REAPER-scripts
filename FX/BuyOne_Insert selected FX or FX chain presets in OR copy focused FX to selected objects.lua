@@ -2,24 +2,27 @@
 ReaScript Name: BuyOne_Insert selected FX or FX chain preset in OR copy focused FX to selected objects.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.6
-Changelog:  1.6 #Fixed REAPER version evaluation
-	    1.5 #Fixed a bug of copying take FX to the same FX chain
-		#Added support for copying FX envelopes along with FX
-		#Implemented a workround to the API bug which causes an FX chain window to close when 
-		'Only allow one FX chain window at a time' setting is enabled in Preferences
-		#Added support for accessing FX from a menu
-	    1.4 #Fixed temporary track being left behind after aborting the script
-		#Fixed a bug of copying FX to the same FX chain
-	    1.3 #Following ReaPack issue report 776:
-		#Added version compatibility check
-		#Updated version compatibility tag
-	    1.2 #Minor error proofing
-		#Updated title to reflect capabilities
-		#Updated guide to reflect capabilities
-		#Updated undo caption to reflect name
-	    1.1 #Proper takes support
-		#Slightly updated guide
+Version: 1.7
+Changelog:	1.7 #Fixed priority logic between FX menu and focused FX chain
+		    #Added error message when the FX menu cannot be opened due to absence of FX
+		    #Added settings to simplify FX names inserted from the FX browser
+		1.6 #Fixed REAPER version evaluation
+		1.5 #Fixed a bug of copying take FX to the same FX chain
+		    #Added support for copying FX envelopes along with FX
+		    #Implemented a workround to the API bug which causes an FX chain window to close when 
+		    'Only allow one FX chain window at a time' setting is enabled in Preferences
+		    #Added support for accessing FX from a menu
+		1.4 #Fixed temporary track being left behind after aborting the script
+		    #Fixed a bug of copying FX to the same FX chain
+		1.3 #Following ReaPack issue report 776:
+		    #Added version compatibility check
+		    #Updated version compatibility tag
+		1.2 #Minor error proofing
+		    #Updated title to reflect capabilities
+		    #Updated guide to reflect capabilities
+		    #Updated undo caption to reflect name
+		1.1 #Proper takes support
+		    #Slightly updated guide
 Licence: WTFPL
 REAPER: v6.12c+ recommended
 About:		——  To insert FX or FX chain preset in multiple objects (tracks and/or items) at once open the FX 
@@ -35,7 +38,8 @@ About:		——  To insert FX or FX chain preset in multiple objects (tracks and/
 		cursor and click the menu item holding the name of the FX which needs to be copied.   
 		FX menu takes precedence over the open FX chain.  
 		In the track FX menu if both main and input FX chains are populated their FX are separated 
-		by a divider.
+		by a divider.  
+		The menu will also open if the mouse cursor points at an FX chain window.
 
 		—— If a destination item contains more than one take the FX is copied to its active take FX chain.
 		Take FX of multi-take items can be copied to the active take of the same item.
@@ -60,8 +64,12 @@ About:		——  To insert FX or FX chain preset in multiple objects (tracks and/
 		SETTINGS that FX cannot be inserted in or copied to any track.
 
 		—— TRACK_INPUT_MON_FX option affects both Input and Monitor FX chains.
+		
+		—— Other settings in the USER SETTINGS section allow simplifying FX names in the FX chain when
+		inserted from the FX browser.
 
 ]]
+
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
 -----------------------------------------------------------------------------
@@ -71,9 +79,27 @@ About:		——  To insert FX or FX chain preset in multiple objects (tracks and/
 -- Conversely, to enable one place any alphanumeric character between those.
 -- Try to not leave empty spaces.
 
+-- Disable to prevent FX from being inserted in / copied to
+-- the relevant object in case it's selected
 TRACK_MAIN_FX = "1"
 TRACK_INPUT_MON_FX = "1"
 TAKE_FX = "1"
+
+-----------------------------------------------------------------------------
+-- The following settings are supported statring from REAPER build 6.37
+-- and only apply to inserting FX from the FX browser
+
+-- Enable to trim plugin type prefix in the FX name
+-- inside the FX chain, i.e. VST(i):, CLAP:, AU(i):, LV(i): etc.
+TRIM_PREFIX = ""
+
+-- Enable to trim plugin developer name in the FX name
+-- inside the FX chain;
+-- for JSFX plugins file path will be trimmed
+TRIM_DEV_NAME = ""
+
+-- Enable to only leave JSFX file name in the FX chain
+ONLY_LEAVE_JSFX_FILENAME = ""
 
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
@@ -93,6 +119,31 @@ local f = io.open(r.get_ini_file(),'r')
 local cont = f:read('a*')
 f:close()
 return cont:match(key..'=(%d+)')
+end
+-- same as the native
+-- retval, buf = reaper.get_config_var_string()
+
+
+function Error_Tooltip(text, caps, spaced, x2, y2)
+-- the tooltip sticks under the mouse within Arrange
+-- but quickly disappears over the TCP, to make it stick
+-- just a tad longer there it must be directly under the mouse
+-- caps and spaced are booleans
+-- x2, y2 are integers to adjust tooltip position by
+local x, y = r.GetMousePosition()
+local text = caps and text:upper() or text
+local text = spaced and text:gsub('.','%0 ') or text
+local x2, y2 = x2 and math.floor(x2) or 0, y2 and math.floor(y2) or 0
+r.TrackCtl_SetToolTip(text, x+x2, y+y2, true) -- topmost true
+-- r.TrackCtl_SetToolTip(text:upper(), x, y, true) -- topmost true
+-- r.TrackCtl_SetToolTip(text:upper():gsub('.','%0 '), x, y, true) -- spaced out // topmost true
+--[[
+-- a time loop can be added to run until certain condition obtains, e.g.
+local time_init = r.time_precise()
+repeat
+until condition and r.time_precise()-time_init >= 0.7 or not condition
+]]
+r.UpdateTimeline() -- might be needed because tooltip can sometimes affect graphics
 end
 
 
@@ -133,9 +184,9 @@ local obj = take or tr
 		end
 		if #menu > 0 then
 		local x, y = r.GetMousePosition()
-		-- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
-		-- https://forum.cockos.com/showthread.php?t=280658#25
-		-- https://forum.cockos.com/showthread.php?t=280658&page=2#44
+	-- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
+	-- https://forum.cockos.com/showthread.php?t=280658#25
+	-- https://forum.cockos.com/showthread.php?t=280658&page=2#44
 			if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82 then gfx.init('', 0, 0) end
 		gfx.x, gfx.y = x, y
 		local output = gfx.showmenu(menu)
@@ -306,9 +357,37 @@ r.PreventUIRefresh(-1)
 end
 
 
-local TRACK_MAIN_FX = TRACK_MAIN_FX:gsub('[%s]','') ~= ''
-local TRACK_INPUT_MON_FX = TRACK_INPUT_MON_FX:gsub('[%s]','') ~= ''
-local TAKE_FX = TAKE_FX:gsub('[%s]','') ~= ''
+function Simplify_FX_Name(tr, take, fx_idx, fx_brws_cnt, recFX, prefix, dev_name, jsfx_filename)
+
+	if tr or take then
+
+	local GetFXName, FXCount, SetConfigParm = table.unpack(take and {r.TakeFX_GetFXName, r.TakeFX_GetCount, r.TakeFX_SetNamedConfigParm}
+	or {r.TrackFX_GetFXName, r.TrackFX_GetCount, r.TrackFX_SetNamedConfigParm})
+	FXCount = recFX and r.TrackFX_GetRecCount or FXCount
+	local obj = take or tr
+	local fx_cnt = FXCount(obj)
+
+	-- define range of the newly inserted fx
+	local start = fx_idx <= -1000 and 0 or fx_cnt-fx_brws_cnt -- fx were inserted either at the start or at the end of the chain
+	local count = fx_idx <= -1000 and fx_brws_cnt or fx_cnt -- same
+
+		for i = start, count-1 do
+		local _, fx_name = GetFXName(obj, i, '')
+		local simple_name = prefix and fx_name:match('.-: (.+)') or fx_name
+		simple_name = dev_name and simple_name:match('(.+) [%(%[]+') or simple_name
+		simple_name = jsfx_filename and simple_name:match('.+/(.+)%]') or simple_name
+			if simple_name ~= fx_name then
+			SetConfigParm(obj, recFX and i+0x1000000 or i, 'renamed_name', simple_name)
+			end
+		end
+	end
+
+end
+
+
+TRACK_MAIN_FX = TRACK_MAIN_FX:gsub('[%s]','') ~= ''
+TRACK_INPUT_MON_FX = TRACK_INPUT_MON_FX:gsub('[%s]','') ~= ''
+TAKE_FX = TAKE_FX:gsub('[%s]','') ~= ''
 
 
 	local retval, src_trk_num, src_item_num, src_fx_num_focus = r.GetFocusedFX() -- if take fx, item number is index of the item within the track (not within the project) while track number is the track this item belongs to, if not take fx src_item_num is -1, if retval is 0 the rest return values are 0 as well
@@ -325,14 +404,21 @@ local TAKE_FX = TAKE_FX:gsub('[%s]','') ~= ''
 	or 0 -- disable FX browser routine in builds prior to 6.12c where the API doesn't support it
 
 	local x, y = r.GetMousePosition()
-	local src_trk = r.GetTrackFromPoint(x,y) or (retval == 1 or src_mon_fx_idx >= 0) and src_trk_focus
+	local src_trk = r.GetTrackFromPoint(x,y)
 	local src_item, src_take = r.GetItemFromPoint(x, y, true) -- allow_locked true
-	local src_item, src_take = table.unpack(not src_take and {src_item_focus, src_take_focus} or {src_item, src_take})
-	local same_take = src_take and src_take == r.GetActiveTake(src_item) -- evaluation if focused fx chain belongs to the active take to avoid copying to the source, but allow copying to other takes, for error message below
-
-	local obj_under_mouse = r.GetTrackFromPoint(x,y) or r.GetItemFromPoint(x, y, true) -- allow_locked true
-	local src_fx_num = obj_under_mouse and FX_menu(src_trk, src_take) or (retval > 0 or src_mon_fx_idx >= 0) and src_fx_num_focus
-		if not src_fx_num then return r.defer(function() do return end end) end -- this will be true if the menu was closed without selection
+	local same_take = src_take and src_take == r.GetActiveTake(src_item) -- evaluation if focused fx belongs to the active take to avoid copying to the source, but allow copying to other takes, for error message below
+	local obj_under_mouse = src_trk or src_take --r.GetTrackFromPoint(x,y) or r.GetItemFromPoint(x, y, true) -- allow_locked true
+	local src_fx_num = obj_under_mouse and FX_menu(src_trk, src_take)
+		if obj_under_mouse and not src_fx_num then -- this will be true if the menu was closed without selection
+		local fx_cnt = src_take and r.TakeFX_GetCount(src_take)
+		or r.TrackFX_GetCount(src_trk) + r.TrackFX_GetRecCount(src_trk)
+			if fx_cnt == 0 then r.MB('No FX in the object under the mouse cursor.','ERROR',0) end
+		return r.defer(function() do return end end)
+		elseif not obj_under_mouse then
+		src_trk = (retval == 1 or src_mon_fx_idx >= 0) and src_trk_focus
+		src_item, src_take = src_item_focus, src_take_focus
+		src_fx_num = (retval > 0 or src_mon_fx_idx > -1) and src_fx_num_focus
+		end
 	local fx_chain = src_fx_num
 
 	-- Generate error messages
@@ -368,7 +454,8 @@ local TAKE_FX = TAKE_FX:gsub('[%s]','') ~= ''
 			r.MB('No FX have been selected in the FX browser.', 'ERROR', 0) r.defer(function() do return end end) return
 			else
 			fx_list = ''
-				for i = 0, r.TrackFX_GetCount(temp_track)-1 do
+			fx_brws_cnt = r.TrackFX_GetCount(temp_track)
+				for i = 0, fx_brws_cnt-1 do
 				fx_list = fx_list..'\n'..select(2,r.TrackFX_GetFXName(temp_track, i, ''))
 				end
 			end
@@ -391,24 +478,53 @@ local TAKE_FX = TAKE_FX:gsub('[%s]','') ~= ''
 		if resp == 2 then return r.defer(function() do return end end) end
 	local incl_envs = resp == 6
 
+TRIM_PREFIX = #TRIM_PREFIX:gsub(' ','') > 0
+TRIM_DEV_NAME = #TRIM_DEV_NAME:gsub(' ','') > 0
+ONLY_LEAVE_JSFX_FILENAME = #ONLY_LEAVE_JSFX_FILENAME:gsub(' ','') > 0
 
 r.Undo_BeginBlock()
 
 		if fx_brws == 1 then
-			if resp == 2 then return r.defer(function() do return end end) end
-			if sel_trk_cnt > 0 then
+
+		local app_ver = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.37 -- setting fx instance name is supported since 6.37
+		local err = '     this reaper build doesn\'t \n\n  support fx name simplification. \n\n build 6.37 and later is required'
+
+			if sel_trk_cnt > 0 and (TRACK_MAIN_FX or TRACK_INPUT_MON_FX) then
 				for i = 0, sel_trk_cnt-1 do
 				local tr = r.GetSelectedTrack(0,i) or r.GetMasterTrack(0)
-				local insert = TRACK_MAIN_FX and r.TrackFX_AddByName(tr, 'FXADD:', false, pos)
-				local insert = TRACK_INPUT_MON_FX and r.TrackFX_AddByName(tr, 'FXADD:', true, pos)
+				local insert = TRACK_MAIN_FX and r.TrackFX_AddByName(tr, 'FXADD:', false, pos) -- recFX false
+				local insert = TRACK_INPUT_MON_FX and r.TrackFX_AddByName(tr, 'FXADD:', true, pos) -- recFX true
+				end
+				-- simplify names
+				if app_ver and (TRIM_PREFIX or TRIM_DEV_NAME or ONLY_LEAVE_JSFX_FILENAME) then
+					for i = 0, sel_trk_cnt-1 do
+					local tr = r.GetSelectedTrack(0,i) or r.GetMasterTrack(0)
+					local simplify = TRACK_MAIN_FX and Simplify_FX_Name(tr, nil, pos, fx_brws_cnt, recFX, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- take arg is nil, recFX nil
+					local simplify = TRACK_INPUT_MON_FX and Simplify_FX_Name(tr, nil, pos, fx_brws_cnt, true, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- take arg is nil, recFX true
+					end
+				elseif not app_ver and (TRIM_PREFIX or TRIM_DEV_NAME or ONLY_LEAVE_JSFX_FILENAME)
+				and (sel_itms_cnt == 0 or TAKE_FX) then -- only display if take fx condition will be false to prevent duplication
+				Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced true
 				end
 			end
-			if sel_itms_cnt > 0 then
+
+			if sel_itms_cnt > 0 and TAKE_FX then
 				for i = 0, sel_itms_cnt-1 do
 				local take = r.GetActiveTake(r.GetSelectedMediaItem(0,i))
-				local insert = TAKE_FX and r.TakeFX_AddByName(take, 'FXADD:', pos)
+				local insert = r.TakeFX_AddByName(take, 'FXADD:', pos)
+				end
+				-- simplify names
+				if app_ver and (TRIM_PREFIX or TRIM_DEV_NAME or ONLY_LEAVE_JSFX_FILENAME) then
+					for i = 0, sel_itms_cnt-1 do
+					local take = r.GetActiveTake(r.GetSelectedMediaItem(0,i))
+					local simplify = Simplify_FX_Name(nil, take, pos, fx_brws_cnt, recFX, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- track, recFX arg are nil
+					end
+				elseif not app_ver and (TRIM_PREFIX or TRIM_DEV_NAME or ONLY_LEAVE_JSFX_FILENAME)
+				and (sel_trk_cnt == 0 or TRACK_MAIN_FX or TRACK_INPUT_MON_FX) then -- only display if track fx condition was false to prevent duplication
+				Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced true
 				end
 			end
+
 		elseif fx_chain then
 
 		-- GET SELECTION AND FLOATING STATE
@@ -416,7 +532,7 @@ r.Undo_BeginBlock()
 		-- https://forum.cockos.com/showthread.php?t=277429 bug report
 		-- Thanks to mespotine for figuring out config variables
 		-- https://github.com/mespotine/ultraschall-and-reaper-docs/blob/master/Docs/Reaper-ConfigVariables-Documentation.txt
-		local one_chain = (src_take_focus and src_take_focus == src_take or src_trk_focus and src_trk_focus == src_trk) and Check_reaper_ini('fxfloat_focus')&2 == 2 -- 'Only allow one FX chain window at a time' is enabled in Preferences -> Plug-ins // only relevant when inserting from an open FX chain or when the FX menu stems from the same object as the focused FX chain 
+		local one_chain = (src_take_focus and src_take_focus == src_take or src_trk_focus and src_trk_focus == src_trk) and Check_reaper_ini('fxfloat_focus')&2 == 2 -- 'Only allow one FX chain window at a time' is enabled in Preferences -> Plug-ins // only relevant when inserting from an open FX chain or when the FX menu stems from the same object as the focused FX chain
 		local is_foc_float = one_chain and (src_take and r.TakeFX_GetFloatingWindow(src_take, src_fx_num) or src_trk and r.TrackFX_GetFloatingWindow(src_trk, src_fx_num)) -- if focused FX is open in a floating window
 
 			if incl_envs then
