@@ -2,8 +2,9 @@
 ReaScript Name: BuyOne_Simplify FX names.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: v1.1 #Changed the logic so that the script only targets selected objects, non-selected are ignored
+		#Added a feature of user preferences storage between script runs
 Licence: WTFPL
 REAPER: v6.37+
 About: Trims FX names in FX chains according to user preferences
@@ -65,7 +66,6 @@ return gfx.showmenu(menu) -- menu string
 end
 
 
-
 function Simplify_FX_Name(tr, take, recFX, prefix, dev_name, jsfx_filename)
 
 	if tr or take then
@@ -91,15 +91,21 @@ end
 	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.37 then
 	Error_Tooltip('\n\n   the script is only compatible \n\n with reaper builds 6.37 and later\n\n ', 1, 1)	-- caps, spaced true
 	return r.defer(no_undo) end
+	
+local is_new_value, fullpath, sectionID, cmdID, mode, resolution, val = r.get_action_context()
+local cmdID = r.ReverseNamedCommandLookup(cmdID) -- convert to named
+local state = r.GetExtState(cmdID,'USER_PREFS')
+local state1, state2, state2, state4 = state:match('(.-);(.-);(.-);(.*)')
+
 
 ::RELOAD::
 
-local itm_cnt = r.CountSelectedMediaItems(0) > 0 and r.CountSelectedMediaItems(0) or r.CountMediaItems(0)
-local tr_cnt = r.CountSelectedTracks2(0, true) > 0 and r.CountSelectedTracks2(0, true) or r.CountTracks(0) -- wantmaster true
+local itm_cnt = r.CountSelectedMediaItems(0)
+local tr_cnt = r.CountSelectedTracks2(0, true) -- wantmaster true
 
 	if itm_cnt + tr_cnt == 0 then
 
-	Error_Tooltip('n\n no objects in the project \n\n', 1, 1) -- caps, spaced true
+	Error_Tooltip('\n\n no selected objects \n\n', 1, 1) -- caps, spaced true
 	return r.defer(no_undo)
 
 	elseif itm_cnt + tr_cnt > 0 then
@@ -108,8 +114,9 @@ local tr_cnt = r.CountSelectedTracks2(0, true) > 0 and r.CountSelectedTracks2(0,
 	local menu = 'Set preferences by clicking them:||'..state1..'Trim prefix, e.g. VST(i): etc.|'
 	..state2..'Trim developer name (file path in JSFX)|'..state3..'Only leave JSFX file name|'
 	..state4..'Include insert / Monitor FX||R U N| ||'
-	..'Affects FX in selected objects.|If none is selected, then in all objects.|'
-	..'Option "Include insert / Monitor FX"|can only be enabled if at least one|other option is enabled.'
+	..'Affects FX in selected objects.|'
+	..'Option "Include insert / Monitor FX"|can only be enabled if at least one|other option is enabled.|'
+	..'User preferences are only stored|during the session.'
 
 	local index = Reload_Menu_at_Same_Pos(menu, 1) -- 1 - open at the same pos 
 
@@ -117,14 +124,19 @@ local tr_cnt = r.CountSelectedTracks2(0, true) > 0 and r.CountSelectedTracks2(0,
 		elseif index == 2 then state1 = #state1 == 0 and '!' or '' -- toggle
 		elseif index == 3 then state2 = #state2 == 0 and '!' or ''
 		elseif index == 4 then state3 = #state3 == 0 and '!' or ''
-		elseif index == 5 and #(state1..state2..state3) > 0 then state4 = #state4 == 0 and '!' or ''
+		elseif index == 5 then
+		state4 = #(state1..state2..state3) > 0 and #state4 == 0 and '!' or '' -- allows disabling when all other prefs are unchecked
 		end
 		if index ~= 6 then goto RELOAD end -- not RUN and not 0
 
-		if #(state1..state2..state3) == 0 then
+		if #(state1..state2..state3) == 0 then -- state4 isn't evaluated because by itself it's irrelevant
 		Error_Tooltip('\n\n no option has been enabled \n\n', 1, 1) -- caps, spaced true
 		return r.defer(no_undo) end
 
+	-- store until the next script run, only if the script was run, if aborted nothing will be stored
+	-- since it will exit above
+	r.SetExtState(cmdID, 'USER_PREFS', state1..';'..state2..';'..state3..';'..state4, false) -- pesrist false
+	
 	TRIM_PREFIX = #state1 > 0
 	TRIM_DEV_NAME = #state2 > 0
 	ONLY_LEAVE_JSFX_FILENAME = #state3 > 0
