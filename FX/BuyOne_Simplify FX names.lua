@@ -144,8 +144,8 @@ local tr_cnt = r.CountSelectedTracks2(0, true) -- wantmaster true
 
 	r.Undo_BeginBlock()
 
-		for i = -1, tr_cnt-1 do -- -1 to accont for the Master when no track is selected
-		local tr = r.GetSelectedTrack(0,i,true) or r.GetTrack(0,i) or r.GetMasterTrack(0)
+		for i = -1, tr_cnt-1 do -- -1 to account for the Master when no track is selected // a holdover from the version in which non-selected objects could be targeted
+		local tr = r.GetSelectedTrack(0,i,true) or r.GetTrack(0,i) or r.GetMasterTrack(0) -- same
 			if tr then
 			Simplify_FX_Name(tr, take, recFX, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- take, recFX false
 				if INCL_INSERT_MON_FX then
@@ -155,7 +155,7 @@ local tr_cnt = r.CountSelectedTracks2(0, true) -- wantmaster true
 		end
 
 		for i = 0, itm_cnt-1 do
-		local item = r.GetSelectedMediaItem(0,i) or r.GetMediaItem(0,i)
+		local item = r.GetSelectedMediaItem(0,i) or r.GetMediaItem(0,i) -- a holdover from the version in which non-selected objects could be targeted
 		local take = r.GetActiveTake(item)
 		Simplify_FX_Name(tr, take, recFX, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- tr, recFX false
 		end
