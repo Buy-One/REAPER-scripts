@@ -8,6 +8,7 @@ Changelog: v1.1 #Changed the logic so that the script only targets selected obje
 Licence: WTFPL
 REAPER: v6.37+
 About: Trims FX names in FX chains according to user preferences
+       FX containers aren't supported.
 ]]
 
 function Msg(param, cap) -- caption second or none
