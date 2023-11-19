@@ -1,14 +1,29 @@
 --[[
-ReaScript name: FX presets menu
+ReaScript name: BuyOne_FX presets menu (guide inside).lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.9
-Changelog: v1.9 #Fixed REAPER version evaluation
+Version: 2.0
+Changelog: v2.0 #Added a setting to keep the menu open after clicking a menu item
+		#Added an error message when there's no object under the mouse cursor
+		#Increased the size of error tooltips so they're more noticeable 
+	   v1.9 Fixed REAPER version evaluation
 	   v1.8 #Improved detection of the TCP under mouse when it's displayed on the right side of the Arrange
-	   view at certain horizontal scroll position 
+		view at certain horizontal scroll position 
 	   v1.7 #Fixed logic of TCP detection under mouse
 	   v1.6 #Added support for TCP on the right side of the Arrange
 	   v1.5 #Fixed error on loading preset menu of plugins with embedded presets and no external preset file
+	   v1.4 #Fixed Arrange view movement when object under mouse is being detected while the edit cursor is out of sight
+	   v1.3 #Fixed losing item focus and unnecessary horizontal scroll for REAPER builds prior to 6.37
+		#Fixed transport stop when getting TCP under mouse cursor for REAPER builds prior to 6.37
+		#Added MCP support for REAPER builds 6.37 onward
+		#Minor code optimizations
+		#Updated the Guide
+	   v1.2.1 #Minor fix of relational operator
+	   v1.2 #Preset menu of FX in a focused take FX chain is now displayed reragdless of the take being active
+	 	#Added new option to lock FX chain focus
+		#Updated the Guide
+	   v1.1 #Added support for displaying FX presets menu when FX chain is focused
+		#Updated the Guide
 Provides: [main] .
 Licence: WTFPL
 REAPER: at least v5.962
@@ -81,6 +96,12 @@ local SEL_OBJ_IN_CURR_CONTEXT = ""
 
 -- If FX chain window is open and was last focused
 local LOCK_FX_CHAIN_FOCUS = ""
+
+-- Enable to keep the menu open after a menu item
+-- has been clicked, which is convenient if you need
+-- to try and audition different presets in turn;
+-- to close the menu click away or hit Escape key
+local KEEP_MENU_OPEN = ""
 
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
@@ -421,7 +442,7 @@ local obj, obj_type
 			if not obj then -- before build 6.37, EDIT CURSOR ACTIONS MAKE RUNNING TRANSPORT STOP !!!!!
 			local curs_pos = r.GetCursorPosition() -- store current edit curs pos
 			local start_time, end_time = r.GetSet_ArrangeView2(0, false, 0, 0) -- isSet false, screen_x_start, screen_x_end are 0 to get full arrange view coordinates // get time of the current Arrange scroll position to use to move the edit cursor away from the mouse cursor // https://forum.cockos.com/showthread.php?t=227524#2 the function has 6 arguments; screen_x_start and screen_x_end (3d and 4th args) are not return values, they are for specifying where start_time and stop_time should be on the screen when non-zero when isSet is true
-			local right_tcp = r.GetToggleCommandStateEx(0,42373) == 1 -- View: Show TCP on right side of arrange
+			local right_tcp = r.GetToggleCommandStateEx(0,42373) ==  1 -- View: Show TCP on right side of arrange
 			local edge = right_tcp and start_time-5 or end_time+5
 			r.SetEditCurPos(edge, false, false) -- moveview, seekplay false // to secure against a vanishing probablility of overlap between edit and mouse cursor positions in which case edit cursor won't move just like it won't if mouse cursor is over the TCP // +/-5 sec to move edit cursor beyond right/left edge of the Arrange view to be completely sure that it's far away from the mouse cursor // if start_time is 0 and there's negative project start offset the edit cursor is still moved to the very start, that is past 0
 			r.Main_OnCommand(40514,0) -- View: Move edit cursor to mouse cursor (no snapping) // more sensitive than with snapping
@@ -519,19 +540,23 @@ local LOCK_FX_CHAIN_FOCUS = LOCK_FX_CHAIN_FOCUS:gsub(' ','') ~= ''
 	local space = [[               ]]
 		if cur_ctx == 0 then -- track
 		local trk_cnt = r.CountSelectedTracks2(0, true) -- incl. Master
-		mess = trk_cnt == 0 and '\n  NO SELECTED TRACKS  \n'..space or trk_cnt > 1 and '\n   MULTIPLE TRACK SELECTION  \n'..space
+		mess = trk_cnt == 0 and '\n\n  NO SELECTED TRACKS  \n\n'..space or trk_cnt > 1 and '\n\n   MULTIPLE TRACK SELECTION  \n\n'..space
 		obj, obj_type = r.GetSelectedTrack2(0,0, true), 0 -- incl. Master
 		elseif cur_ctx == 1 then -- item
 		local itm_cnt = r.CountSelectedMediaItems(0)
-		mess = itm_cnt == 0 and '\n  NO SELECTED ITEMS  \n'..space or itm_cnt > 1 and '\n   MULTIPLE ITEM SELECTION  \n'..space
+		mess = itm_cnt == 0 and '\n\n  NO SELECTED ITEMS  \n\n'..space or itm_cnt > 1 and '\n\n   MULTIPLE ITEM SELECTION  \n\n'..space
 		obj, obj_type = r.GetSelectedMediaItem(0,0), 1
 		end
 	end
 
 	if mess then
 	local x, y = r.GetMousePosition(); r.TrackCtl_SetToolTip(mess:gsub('.', '%0 '), x, y-20, 1)
-	return r.defer(function() do return end end) end -- prevent undo point creation
-
+	return r.defer(function() do return end end) -- prevent undo point creation // might be redundant in this script
+	elseif not obj then
+	local x, y = r.GetMousePosition(); 
+	r.TrackCtl_SetToolTip((' \n\nNO OBJECT UNDER THE MOUSE CURSOR\n\n '):gsub('.', '%0 '), x, y-20, 1)
+	return r.defer(function() do return end end) -- prevent undo point creation // might be redundant in this script
+	end
 	
 	if obj then -- prevent error when no item and when no track (empty area at bottom of the TCP, in MCP or the ruler or focused window) and prevent undo point creation
 
@@ -547,7 +572,7 @@ local LOCK_FX_CHAIN_FOCUS = LOCK_FX_CHAIN_FOCUS:gsub(' ','') ~= ''
 		if obj_type == 0 then rec_fx_cnt = r.TrackFX_GetRecCount(obj) end -- count input fx
 		local space = [[               ]]
 		if rec_fx_cnt then
-			if fx_cnt + rec_fx_cnt == 0 then mess = '\n  NO FX IN THE TRACK FX CHAINS  \n'..space
+			if fx_cnt + rec_fx_cnt == 0 then mess = '\n\n  NO FX IN THE TRACK FX CHAINS  \n\n'..space
 			else
 				if fx_cnt > 0 then -- find out if plugins contain any presets
 				main_fx_pres = 0
@@ -565,7 +590,7 @@ local LOCK_FX_CHAIN_FOCUS = LOCK_FX_CHAIN_FOCUS:gsub(' ','') ~= ''
 				end
 			end
 		else take_fx_cnt = r.TakeFX_GetCount(take)
-			if take_fx_cnt == 0 then mess = '\n  NO FX IN THE TAKE FX CHAIN  \n'..space
+			if take_fx_cnt == 0 then mess = '\n\n  NO FX IN THE TAKE FX CHAIN  \n\n'..space
 			elseif take_fx_cnt > 0 then -- find out if plugins contain any ptresets
 			take_fx_pres = 0
 				for i = 0, take_fx_cnt-1 do
@@ -576,7 +601,7 @@ local LOCK_FX_CHAIN_FOCUS = LOCK_FX_CHAIN_FOCUS:gsub(' ','') ~= ''
 		end
 
 		if not mess then -- additional conditions
-		mess = ((fx_cnt > 0 and rec_fx_cnt and rec_fx_cnt > 0 and main_fx_pres + rec_fx_pres ==  0) or (fx_cnt > 0 and main_fx_pres == 0) or (rec_fx_cnt and rec_fx_cnt > 0 and rec_fx_pres == 0) or (take_fx_cnt and take_fx_cnt > 0 and take_fx_pres == 0)) and '\n  EITHER NO PRESETS OR NO PRESETS  \n\tACCESSIBLE TO THE SCRIPT\n'..space or nil
+		mess = ((fx_cnt > 0 and rec_fx_cnt and rec_fx_cnt > 0 and main_fx_pres + rec_fx_pres ==  0) or (fx_cnt > 0 and main_fx_pres == 0) or (rec_fx_cnt and rec_fx_cnt > 0 and rec_fx_pres == 0) or (take_fx_cnt and take_fx_cnt > 0 and take_fx_pres == 0)) and '\n\n  EITHER NO PRESETS OR NO PRESETS  \n\tACCESSIBLE TO THE SCRIPT\n\n'..space or nil
 		end
 
 		if mess then
@@ -605,13 +630,26 @@ local LOCK_FX_CHAIN_FOCUS = LOCK_FX_CHAIN_FOCUS:gsub(' ','') ~= ''
 		end
 
 
+	KEEP_MENU_OPEN = #KEEP_MENU_OPEN:gsub(' ','') > 0
+			
+	::KEEP_MENU_OPEN::
+			
 	-- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
 	-- https://forum.cockos.com/showthread.php?t=280658#25
 	-- https://forum.cockos.com/showthread.php?t=280658&page=2#44
-		if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82 then gfx.init('FX Menu', 0, 0) end
+	-- BUT LACK OF gfx WINDOW DOESN'T ALLOW RE-OPENING THE MENU AT THE SAME POSITION via ::KEEP_MENU_OPEN::
+	-- therefore enabled when KEEP_MENU_OPEN is valid
+	local old = tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82
+	local init = (old or not old and KEEP_MENU_OPEN) and gfx.init('Dynamic ReaperMenu', 0, 0)
 	-- open menu at the mouse cursor
-	gfx.x = gfx.mouse_x
-	gfx.y = gfx.mouse_y
+		if KEEP_MENU_OPEN and not coord_t then
+		coord_t = {x = gfx.mouse_x, y = gfx.mouse_y}
+		elseif not KEEP_MENU_OPEN then
+		coord_t = nil
+		end
+	-- open menu at the mouse cursor
+	gfx.x = coord_t and coord_t.x or gfx.mouse_x
+	gfx.y = coord_t and coord_t.y or gfx.mouse_y
 
 	local input = gfx.showmenu(table.concat(menu_t))
 
@@ -623,6 +661,7 @@ local LOCK_FX_CHAIN_FOCUS = LOCK_FX_CHAIN_FOCUS:gsub(' ','') ~= ''
 	
 
 -- Undo is unnesessary as it's created automatically on preset change
+
 
 
 
