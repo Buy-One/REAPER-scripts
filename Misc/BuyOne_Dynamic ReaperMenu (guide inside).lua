@@ -356,9 +356,10 @@ local close_submenu
 -- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
 -- https://forum.cockos.com/showthread.php?t=280658#25
 -- https://forum.cockos.com/showthread.php?t=280658&page=2#44
--- BUT LACK OF gfx WINDOW DOESN'T ALLOW RE-OPENING THE MENU AT THE SAME POSITION via ::KEEP_MENU_OPEN::, hence commented out
---	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82 then gfx.init('Dynamic ReaperMenu', 0, 0) end
-gfx.init('Dynamic ReaperMenu', 0, 0)
+-- BUT LACK OF gfx WINDOW DOESN'T ALLOW RE-OPENING THE MENU AT THE SAME POSITION via ::KEEP_MENU_OPEN::
+-- therefore enabled when KEEP_MENU_OPEN is valid
+local old = tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82
+local init = (old or not old and KEEP_MENU_OPEN) and gfx.init('Dynamic ReaperMenu', 0, 0)
 -- open menu at the mouse cursor
 	if KEEP_MENU_OPEN and not coord_t then
 	coord_t = {x = gfx.mouse_x, y = gfx.mouse_y}
