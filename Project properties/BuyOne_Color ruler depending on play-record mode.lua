@@ -7,8 +7,10 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is supposed to run in the background monitoring
-    		play/record mode and coloring the ruler to indicate currently
-    		active mode according to the USER SETTINGS below.
+    	play/record mode and coloring the ruler to indicate currently
+    	active mode according to the USER SETTINGS below.  
+	When the transport is stopped the ruler colors get reverted 
+	to the theme's default.
 ]]
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
