@@ -3,8 +3,10 @@ ReaScript name: BuyOne_Dynamic ReaperMenu (guide inside).lua
 Provides: [main=main,midi_editor] .
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
+Version: 1.4
 Changelog: 	
+		v1.4 #Made sure that the menu re-opens at the same spot when KEEP_MENU_OPEN
+		     setting is enabled in REAPER 7 and later
 		v1.3 #Added submenu of menu/toolbar files located in the same directory
 		     as the currently loaded one for quick access
 		v1.2 #Added buttons to cycle menu/toolbar files in the current directory
@@ -354,10 +356,17 @@ local close_submenu
 -- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
 -- https://forum.cockos.com/showthread.php?t=280658#25
 -- https://forum.cockos.com/showthread.php?t=280658&page=2#44
-	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82 then gfx.init('Dynamic ReaperMenu', 0, 0) end
+-- BUT LACK OF gfx WINDOW DOESN'T ALLOW RE-OPENING THE MENU AT THE SAME POSITION via ::KEEP_MENU_OPEN::, hence commented out
+--	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82 then gfx.init('Dynamic ReaperMenu', 0, 0) end
+gfx.init('Dynamic ReaperMenu', 0, 0)
 -- open menu at the mouse cursor
-gfx.x = gfx.mouse_x
-gfx.y = gfx.mouse_y
+	if KEEP_MENU_OPEN and not coord_t then
+	coord_t = {x = gfx.mouse_x, y = gfx.mouse_y}
+	elseif not KEEP_MENU_OPEN then
+	coord_t = nil
+	end
+gfx.x = coord_t and coord_t.x or gfx.mouse_x
+gfx.y = coord_t and coord_t.y or gfx.mouse_y
 
 
 _, file_t = Select_Next_Previous_File_Or_Get_File_Table(file) -- nxt, prev are nil to prevent unnecessary running irrelevant pieces of code
