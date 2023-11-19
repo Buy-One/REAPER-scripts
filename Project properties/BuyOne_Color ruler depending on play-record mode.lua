@@ -10,7 +10,10 @@ About:	The script is supposed to run in the background monitoring
     	play/record mode and coloring the ruler to indicate currently
     	active mode according to the USER SETTINGS below.  
 	When the transport is stopped the ruler colors get reverted 
-	to the theme's default.
+	to the theme's default.  
+	While the script is running it reports On toggle state so if
+	it's linked to the toolbar button or a menu item these will
+	reflect the current toggle state.
 ]]
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
