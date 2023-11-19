@@ -2,13 +2,14 @@
 ReaScript Name: BuyOne_Simplify FX names.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: v1.1 #Changed the logic so that the script only targets selected objects, non-selected are ignored
+Version: 1.2
+Changelog: v1.2 #Added FX container support
+	   v1.1 #Changed the logic so that the script only targets selected objects, non-selected are ignored
 		#Added a feature of user preferences storage between script runs
 Licence: WTFPL
 REAPER: v6.37+
 About: Trims FX names in FX chains according to user preferences
-       FX containers aren't supported.
+
 ]]
 
 function Msg(param, cap) -- caption second or none
@@ -51,8 +52,10 @@ function Reload_Menu_at_Same_Pos(menu, OPTION) -- still doesn't allow keeping th
 -- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
 -- https://forum.cockos.com/showthread.php?t=280658#25
 -- https://forum.cockos.com/showthread.php?t=280658&page=2#44
-local old = tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82
-local init = old and gfx.init('', 0, 0)
+-- local old = tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82
+-- local init = old and gfx.init('', 0, 0)
+-- BUT LACK OF gfx WINDOW DOESN'T ALLOW RE-OPENING THE MENU AT THE SAME POSITION via ::RELOAD::, hence commented out
+gfx.init('', 0, 0)
 -- open menu at the mouse cursor, after reloading the menu doesn't change its position based on the mouse pos after a menu item was clicked, it firmly stays at its initial position
 	-- ensure that if OPTION is enabled the menu opens every time at the same spot
 	if OPTION and not coord_t then -- OPTION is the one which enables menu reload
@@ -67,26 +70,74 @@ return gfx.showmenu(menu) -- menu string
 end
 
 
-function Simplify_FX_Name(tr, take, recFX, prefix, dev_name, jsfx_filename)
+
+function Process_FX_Incl_In_All_Containers(obj, recFX, parent_cntnr_idx, parents_fx_cnt, prefix, dev_name, jsfx_filename)
+-- https://forum.cockos.com/showthread.php?t=282861
+-- https://forum.cockos.com/showthread.php?t=282861#18
+-- https://forum.cockos.com/showthread.php?t=284400
+
+-- obj is track or take, recFX is boolean to target input/Monitoring FX
+-- parent_cntnr_idx, parents_fx_cnt must be nil
+
+local tr, take = r.ValidatePtr(obj, 'MediaTrack*') and obj, r.ValidatePtr(obj, 'MediaItem_Take*') and obj
+
+local FXCount, GetIOSize, GetConfig, SetConfig, GetFXName = 
+table.unpack(tr and {r.TrackFX_GetCount, r.TrackFX_GetIOSize, r.TrackFX_GetNamedConfigParm, 
+r.TrackFX_SetNamedConfigParm, r.TrackFX_GetFXName}
+or take and {r.TakeFX_GetCount, r.TakeFX_GetIOSize, r.TakeFX_GetNamedConfigParm, 
+r.TakeFX_SetNamedConfigParm, r.TakeFX_GetFXName} or {})
+
+local fx_cnt = not parent_cntnr_idx and (recFX and r.TrackFX_GetRecCount(obj) or FXCount(obj))
+fx_cnt = fx_cnt or ({GetConfig(obj, parent_cntnr_idx, 'container_count')})[2]
+
+	if tr or take then
+		for i = 0, fx_cnt-1 do
+		-- only add 0x1000000 to fx index to target input/Monitoring fx inside the outermost fx chain
+		-- (at this stage parent_cntnr_idx is nil)
+		local i = not parent_cntnr_idx and recFX and i+0x1000000 or i
+		-- only use formula to calculate indices of fx in containers once parent_cntnr_idx var is valid
+		-- to keep the indices of fx in the root (outermost) fx chain intact
+		i = parent_cntnr_idx and (i+1)*parents_fx_cnt+parent_cntnr_idx or i
+		local container = GetIOSize(obj, i) == 8
+			if container then
+			-- DO STUFF TO CONTAINER (if needed) and proceed to its FX;
+			-- the following vars must be local to not interfere with the current loop and break i expression above
+			-- only add 0x2000000+1 to the very 1st (belonging to the outermost FX chain) container index 
+			-- (at this stage parent_cntnr_idx is nil)
+			-- and then keep container index obtained via the formula above throughout the recursive loop
+			local parent_cntnr_idx = parent_cntnr_idx and i or 0x2000000+i+1
+			-- multiply fx counts of all (grand)parent containers by the fx count 
+			-- of the current one + 1 as per the formula;
+			-- accounting for the outermost fx chain where parents_fx_cnt is nil
+			local parents_fx_cnt = (parents_fx_cnt or 1) * (fx_cnt+1)
+			Process_FX_Incl_In_All_Containers(obj, recFX, parent_cntnr_idx, parents_fx_cnt, prefix, dev_name, jsfx_filename) -- recFX can be nil/false
+			else -- PROCESS FX
+			Simplify_FX_Name(tr, take, i, recFX, prefix, dev_name, jsfx_filename)
+			end
+		end
+	end
+
+end
+
+
+function Simplify_FX_Name(tr, take, fx_idx, recFX, prefix, dev_name, jsfx_filename)
 
 	if tr or take then
 	local GetFXName, FXCount, SetConfigParm = table.unpack(take and {r.TakeFX_GetFXName, r.TakeFX_GetCount, r.TakeFX_SetNamedConfigParm}
 	or {r.TrackFX_GetFXName, r.TrackFX_GetCount, r.TrackFX_SetNamedConfigParm})
 	FXCount = recFX and r.TrackFX_GetRecCount or FXCount
 	local obj = take or tr
-	local fx_cnt = FXCount(obj)
-		for i = 0, fx_cnt-1 do
-		local _, fx_name = GetFXName(obj, recFX and i+0x1000000 or i, '')
-		local simple_name = prefix and fx_name:match('.-: (.+)') or fx_name
-		simple_name = dev_name and simple_name:match('(.+) [%(%[]+') or simple_name
-		simple_name = jsfx_filename and simple_name:match('.+/(.+)%]') or simple_name
-			if simple_name ~= fx_name then
-			SetConfigParm(obj, recFX and i+0x1000000 or i, 'renamed_name', simple_name)
-			end
+	local _, fx_name = GetFXName(obj, fx_idx, '')
+	local simple_name = prefix and fx_name:match('.-: (.+)') or fx_name
+	simple_name = dev_name and simple_name:match('(.+) [%(%[]+') or simple_name
+	simple_name = jsfx_filename and simple_name:match('.+/(.+)%]') or simple_name
+		if simple_name ~= fx_name then
+		SetConfigParm(obj, fx_idx, 'renamed_name', simple_name)
 		end
 	end
 
 end
+
 
 
 	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.37 then
@@ -101,6 +152,10 @@ local state1, state2, state2, state4 = state:match('(.-);(.-);(.-);(.*)')
 
 ::RELOAD::
 
+--[[ these expressions allowed targeting all objects if none was selected
+--local itm_cnt = r.CountSelectedMediaItems(0) > 0 and r.CountSelectedMediaItems(0) or r.CountMediaItems(0)
+--local tr_cnt = r.CountSelectedTracks2(0, true) > 0 and r.CountSelectedTracks2(0, true) or r.CountTracks(0) -- wantmaster true
+]]
 local itm_cnt = r.CountSelectedMediaItems(0)
 local tr_cnt = r.CountSelectedTracks2(0, true) -- wantmaster true
 
@@ -148,9 +203,9 @@ local tr_cnt = r.CountSelectedTracks2(0, true) -- wantmaster true
 		for i = -1, tr_cnt-1 do -- -1 to account for the Master when no track is selected // a holdover from the version in which non-selected objects could be targeted
 		local tr = r.GetSelectedTrack(0,i,true) or r.GetTrack(0,i) or r.GetMasterTrack(0) -- same
 			if tr then
-			Simplify_FX_Name(tr, take, recFX, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- take, recFX false
+			Process_FX_Incl_In_All_Containers(tr, recFX, parent_cntnr_idx, parents_fx_cnt, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX false
 				if INCL_INSERT_MON_FX then
-				Simplify_FX_Name(tr, take, INCL_INSERT_MON_FX, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX true
+				Process_FX_Incl_In_All_Containers(tr, INCL_INSERT_MON_FX, parent_cntnr_idx, parents_fx_cnt, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX true
 				end
 			end
 		end
@@ -158,12 +213,13 @@ local tr_cnt = r.CountSelectedTracks2(0, true) -- wantmaster true
 		for i = 0, itm_cnt-1 do
 		local item = r.GetSelectedMediaItem(0,i) or r.GetMediaItem(0,i) -- a holdover from the version in which non-selected objects could be targeted
 		local take = r.GetActiveTake(item)
-		Simplify_FX_Name(tr, take, recFX, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- tr, recFX false
+		Process_FX_Incl_In_All_Containers(take, recFX, parent_cntnr_idx, parents_fx_cnt, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX false
 		end
 
 	r.Undo_EndBlock('Simplify FX names', -1)
 
 	else return r.defer(no_undo)
+	
 	end
 
 
