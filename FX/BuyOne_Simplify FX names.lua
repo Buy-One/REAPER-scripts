@@ -124,29 +124,6 @@ fx_cnt = fx_cnt or ({GetConfig(obj, parent_cntnr_idx, 'container_count')})[2]
 end
 
 
---[[ DOESN'T SUPPORT CONTAINERS
-function Simplify_FX_Name(tr, take, recFX, prefix, dev_name, jsfx_filename)
-
-	if tr or take then
-	local GetFXName, FXCount, SetConfigParm = table.unpack(take and {r.TakeFX_GetFXName, r.TakeFX_GetCount, r.TakeFX_SetNamedConfigParm}
-	or {r.TrackFX_GetFXName, r.TrackFX_GetCount, r.TrackFX_SetNamedConfigParm})
-	FXCount = recFX and r.TrackFX_GetRecCount or FXCount
-	local obj = take or tr
-	local fx_cnt = FXCount(obj)
-		for i = 0, fx_cnt-1 do
-		local _, fx_name = GetFXName(obj, recFX and i+0x1000000 or i, '')
-		local simple_name = prefix and fx_name:match('.-: (.+)') or fx_name
-		simple_name = dev_name and simple_name:match('(.+) [%(%[]+') or simple_name
-		simple_name = jsfx_filename and simple_name:match('.+/(.+)%]') or simple_name
-			if simple_name ~= fx_name then
-			SetConfigParm(obj, recFX and i+0x1000000 or i, 'renamed_name', simple_name)
-			end
-		end
-	end
-
-end
-]]
-
 function Simplify_FX_Name(tr, take, fx_idx, recFX, prefix, dev_name, jsfx_filename)
 
 	if tr or take then
