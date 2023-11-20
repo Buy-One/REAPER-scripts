@@ -136,14 +136,10 @@ function Simplify_FX_Name(tr, take, fx_idx, recFX, prefix, dev_name, jsfx_filena
 	-- check if fx instance was likely renamed by the user to avoid accidentally butchering 
 	-- it if it happens to match the captures
 	local _, name_in_fx_brwser = GetConfigParm(obj, fx_idx, 'original_name') -- or 'fx_name'
---Msg(fx_name)
---Msg(name_in_fx_brwser)
 		if fx_name ~= name_in_fx_brwser then return end
 	local simple_name = prefix and fx_name:match('.-: (.+)') or fx_name
 	simple_name = dev_name and simple_name:match('(.+) [%(%[]+') or simple_name
---	simple_name = jsfx_filename and simple_name:match('.+/(.+)%]') or simple_name
 	simple_name = jsfx_filename and simple_name:match('.+/([^%[%]]+)') or simple_name -- covers desc + file path and file path only
---Msg(simple_name)
 		if simple_name ~= fx_name then
 		SetConfigParm(obj, fx_idx, 'renamed_name', simple_name)
 		end
@@ -222,11 +218,9 @@ local tr_cnt = r.CountSelectedTracks2(0, true) -- wantmaster true
 
 		for i = -1, tr_cnt-1 do -- -1 to account for the Master when no track is selected // a holdover from the version in which non-selected objects could be targeted
 		local tr = r.GetSelectedTrack(0,i,true) or r.GetTrack(0,i) or r.GetMasterTrack(0) -- same
-			if tr then
-		--	Simplify_FX_Name(tr, take, recFX, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- take, recFX false // DOESN'T SUPPORT CONTAINERS
+			if tr then	
 			Process_FX_Incl_In_All_Containers(tr, recFX, parent_cntnr_idx, parents_fx_cnt, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX false
 				if INCL_INSERT_MON_FX then
-			--	Simplify_FX_Name(tr, take, INCL_INSERT_MON_FX, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX true // DOESN'T SUPPORT CONTAINERS
 				Process_FX_Incl_In_All_Containers(tr, INCL_INSERT_MON_FX, parent_cntnr_idx, parents_fx_cnt, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX true
 				end
 			end
@@ -237,7 +231,6 @@ local tr_cnt = r.CountSelectedTracks2(0, true) -- wantmaster true
 		local take_cnt = r.CountTakes(item)
 			if not APPLY_TO_ALL_TAKES or take_cnt == 1 then
 			local take = r.GetActiveTake(item)
-		--	Simplify_FX_Name(tr, take, recFX, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- tr, recFX false // DOESN'T SUPPORT CONTAINERS
 			Process_FX_Incl_In_All_Containers(take, recFX, parent_cntnr_idx, parents_fx_cnt, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX false
 			elseif APPLY_TO_ALL_TAKES then
 				for i = 0, take_cnt-1 do
