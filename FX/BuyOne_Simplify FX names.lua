@@ -2,8 +2,12 @@
 ReaScript Name: BuyOne_Simplify FX names.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: v1.2 #Added FX container support
+Version: 1.3
+Changelog: v1.3 #Fixed incorrect user option storage
+		#Fixed trimming JSFX down to file name when no description is displayed in the name
+		#Added an option to apply the script to FX in all takes of multi-take items
+		#Added internal check for user renamed FX instances to prevent changing custom name by accident
+	   v1.2 #Added FX container support
 	   v1.1 #Changed the logic so that the script only targets selected objects, non-selected are ignored
 		#Added a feature of user preferences storage between script runs
 Licence: WTFPL
@@ -120,17 +124,49 @@ fx_cnt = fx_cnt or ({GetConfig(obj, parent_cntnr_idx, 'container_count')})[2]
 end
 
 
-function Simplify_FX_Name(tr, take, fx_idx, recFX, prefix, dev_name, jsfx_filename)
+--[[ DOESN'T SUPPORT CONTAINERS
+function Simplify_FX_Name(tr, take, recFX, prefix, dev_name, jsfx_filename)
 
 	if tr or take then
 	local GetFXName, FXCount, SetConfigParm = table.unpack(take and {r.TakeFX_GetFXName, r.TakeFX_GetCount, r.TakeFX_SetNamedConfigParm}
 	or {r.TrackFX_GetFXName, r.TrackFX_GetCount, r.TrackFX_SetNamedConfigParm})
 	FXCount = recFX and r.TrackFX_GetRecCount or FXCount
 	local obj = take or tr
+	local fx_cnt = FXCount(obj)
+		for i = 0, fx_cnt-1 do
+		local _, fx_name = GetFXName(obj, recFX and i+0x1000000 or i, '')
+		local simple_name = prefix and fx_name:match('.-: (.+)') or fx_name
+		simple_name = dev_name and simple_name:match('(.+) [%(%[]+') or simple_name
+		simple_name = jsfx_filename and simple_name:match('.+/(.+)%]') or simple_name
+			if simple_name ~= fx_name then
+			SetConfigParm(obj, recFX and i+0x1000000 or i, 'renamed_name', simple_name)
+			end
+		end
+	end
+
+end
+]]
+
+function Simplify_FX_Name(tr, take, fx_idx, recFX, prefix, dev_name, jsfx_filename)
+
+	if tr or take then
+	local GetFXName, FXCount, GetConfigParm, SetConfigParm = table.unpack(take and 
+	{r.TakeFX_GetFXName, r.TakeFX_GetCount, r.TakeFX_GetNamedConfigParm, r.TakeFX_SetNamedConfigParm}
+	or {r.TrackFX_GetFXName, r.TrackFX_GetCount, r.TrackFX_GetNamedConfigParm, r.TrackFX_SetNamedConfigParm})
+	FXCount = recFX and r.TrackFX_GetRecCount or FXCount
+	local obj = take or tr
 	local _, fx_name = GetFXName(obj, fx_idx, '')
+	-- check if fx instance was likely renamed by the user to avoid accidentally butchering 
+	-- it if it happens to match the captures
+	local _, name_in_fx_brwser = GetConfigParm(obj, fx_idx, 'original_name') -- or 'fx_name'
+--Msg(fx_name)
+--Msg(name_in_fx_brwser)
+		if fx_name ~= name_in_fx_brwser then return end
 	local simple_name = prefix and fx_name:match('.-: (.+)') or fx_name
 	simple_name = dev_name and simple_name:match('(.+) [%(%[]+') or simple_name
-	simple_name = jsfx_filename and simple_name:match('.+/(.+)%]') or simple_name
+--	simple_name = jsfx_filename and simple_name:match('.+/(.+)%]') or simple_name
+	simple_name = jsfx_filename and simple_name:match('.+/([^%[%]]+)') or simple_name -- covers desc + file path and file path only
+--Msg(simple_name)
 		if simple_name ~= fx_name then
 		SetConfigParm(obj, fx_idx, 'renamed_name', simple_name)
 		end
@@ -147,7 +183,7 @@ end
 local is_new_value, fullpath, sectionID, cmdID, mode, resolution, val = r.get_action_context()
 local cmdID = r.ReverseNamedCommandLookup(cmdID) -- convert to named
 local state = r.GetExtState(cmdID,'USER_PREFS')
-local state1, state2, state2, state4 = state:match('(.-);(.-);(.-);(.*)')
+local state1, state2, state3, state4, state5 = state:match('(.-);(.-);(.-);(.-);(.*)')
 
 
 ::RELOAD::
@@ -166,12 +202,16 @@ local tr_cnt = r.CountSelectedTracks2(0, true) -- wantmaster true
 
 	elseif itm_cnt + tr_cnt > 0 then
 
-	state1, state2, state3, state4 = state1 or '', state2 or '', state3 or '', state4 or ''
-	local menu = 'Set preferences by clicking them:||'..state1..'Trim prefix, e.g. VST(i): etc.|'
+	state1, state2, state3, state4, state5 = state1 or '', state2 or '', state3 or '', state4 or '', state5 or ''
+	local menu = '(Un)Set preferences by clicking them:||'..state1..'Trim prefix, e.g. VST(i): etc.|'
 	..state2..'Trim developer name (file path in JSFX)|'..state3..'Only leave JSFX file name|'
-	..state4..'Include insert / Monitor FX||R U N| ||'
+	..state4..'Apply to FX in all takes of multi-take items|'
+	..state5..'Include insert / Monitor FX||R U N| ||'
 	..'Affects FX in selected objects.|'
-	..'Option "Include insert / Monitor FX"|can only be enabled if at least one|other option is enabled.|'
+	..'If option "Apply to all takes ..."  isn\'t|enabled, the script only affects FX|'
+	..'in active takes of multi-take items.|'
+	..'Options "Apply to all takes ..."|and "Include insert / Monitor FX"|'
+	..'can only be enabled if at least one|other option is enabled.|'
 	..'User preferences are only stored|during the session.'
 
 	local index = Reload_Menu_at_Same_Pos(menu, 1) -- 1 - open at the same pos 
@@ -180,31 +220,36 @@ local tr_cnt = r.CountSelectedTracks2(0, true) -- wantmaster true
 		elseif index == 2 then state1 = #state1 == 0 and '!' or '' -- toggle
 		elseif index == 3 then state2 = #state2 == 0 and '!' or ''
 		elseif index == 4 then state3 = #state3 == 0 and '!' or ''
-		elseif index == 5 then
-		state4 = #(state1..state2..state3) > 0 and #state4 == 0 and '!' or '' -- allows disabling when all other prefs are unchecked
+		elseif index == 5 then 
+		state4 = #(state1..state2..state3) > 0 and #state4 == 0 and '!' or '' -- allows disabling when 3 main prefs are unchecked
+		elseif index == 6 then
+		state5 = #(state1..state2..state3) > 0 and #state5 == 0 and '!' or '' -- allows disabling when 3 main prefs are unchecked
 		end
-		if index ~= 6 then goto RELOAD end -- not RUN and not 0
+		if index ~= 7 then goto RELOAD end -- not RUN and not 0
 
-		if #(state1..state2..state3) == 0 then -- state4 isn't evaluated because by itself it's irrelevant
+		if #(state1..state2..state3) == 0 then -- state4 and state5 aren't evaluated because by they're optional
 		Error_Tooltip('\n\n no option has been enabled \n\n', 1, 1) -- caps, spaced true
 		return r.defer(no_undo) end
 
 	-- store until the next script run, only if the script was run, if aborted nothing will be stored
 	-- since it will exit above
-	r.SetExtState(cmdID, 'USER_PREFS', state1..';'..state2..';'..state3..';'..state4, false) -- pesrist false
+	r.SetExtState(cmdID, 'USER_PREFS', state1..';'..state2..';'..state3..';'..state4..';'..state5, false) -- pesrist false
 	
 	TRIM_PREFIX = #state1 > 0
 	TRIM_DEV_NAME = #state2 > 0
 	ONLY_LEAVE_JSFX_FILENAME = #state3 > 0
-	INCL_INSERT_MON_FX = #state4 > 0
+	APPLY_TO_ALL_TAKES = #state4 > 0
+	INCL_INSERT_MON_FX = #state5 > 0
 
 	r.Undo_BeginBlock()
 
 		for i = -1, tr_cnt-1 do -- -1 to account for the Master when no track is selected // a holdover from the version in which non-selected objects could be targeted
 		local tr = r.GetSelectedTrack(0,i,true) or r.GetTrack(0,i) or r.GetMasterTrack(0) -- same
 			if tr then
+		--	Simplify_FX_Name(tr, take, recFX, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- take, recFX false // DOESN'T SUPPORT CONTAINERS
 			Process_FX_Incl_In_All_Containers(tr, recFX, parent_cntnr_idx, parents_fx_cnt, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX false
 				if INCL_INSERT_MON_FX then
+			--	Simplify_FX_Name(tr, take, INCL_INSERT_MON_FX, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX true // DOESN'T SUPPORT CONTAINERS
 				Process_FX_Incl_In_All_Containers(tr, INCL_INSERT_MON_FX, parent_cntnr_idx, parents_fx_cnt, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX true
 				end
 			end
@@ -212,8 +257,17 @@ local tr_cnt = r.CountSelectedTracks2(0, true) -- wantmaster true
 
 		for i = 0, itm_cnt-1 do
 		local item = r.GetSelectedMediaItem(0,i) or r.GetMediaItem(0,i) -- a holdover from the version in which non-selected objects could be targeted
-		local take = r.GetActiveTake(item)
-		Process_FX_Incl_In_All_Containers(take, recFX, parent_cntnr_idx, parents_fx_cnt, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX false
+		local take_cnt = r.CountTakes(item)
+			if not APPLY_TO_ALL_TAKES or take_cnt == 1 then
+			local take = r.GetActiveTake(item)
+		--	Simplify_FX_Name(tr, take, recFX, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- tr, recFX false // DOESN'T SUPPORT CONTAINERS
+			Process_FX_Incl_In_All_Containers(take, recFX, parent_cntnr_idx, parents_fx_cnt, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX false
+			elseif APPLY_TO_ALL_TAKES then
+				for i = 0, take_cnt-1 do
+				local take = r.GetMediaItemTake(item,i)
+				Process_FX_Incl_In_All_Containers(take, recFX, parent_cntnr_idx, parents_fx_cnt, TRIM_PREFIX, TRIM_DEV_NAME, ONLY_LEAVE_JSFX_FILENAME) -- recFX false
+				end
+			end
 		end
 
 	r.Undo_EndBlock('Simplify FX names', -1)
