@@ -2,8 +2,10 @@
 ReaScript Name: BuyOne_Insert selected FX or FX chain preset in OR copy focused FX to selected objects.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.7
-Changelog:	1.7 #Fixed priority logic between FX menu and focused FX chain
+Version: 1.8
+Changelog:	1.8 #Fixed trimming JSFX down to file name when no description is displayed in the name				
+		    #Added internal check for user renamed FX instances to prevent changing custom name by accident
+		1.7 #Fixed priority logic between FX menu and focused FX chain
 		    #Added error message when the FX menu cannot be opened due to absence of FX
 		    #Added settings to simplify FX names inserted from the FX browser
 		1.6 #Fixed REAPER version evaluation
@@ -360,9 +362,10 @@ end
 function Simplify_FX_Name(tr, take, fx_idx, fx_brws_cnt, recFX, prefix, dev_name, jsfx_filename)
 
 	if tr or take then
-
-	local GetFXName, FXCount, SetConfigParm = table.unpack(take and {r.TakeFX_GetFXName, r.TakeFX_GetCount, r.TakeFX_SetNamedConfigParm}
-	or {r.TrackFX_GetFXName, r.TrackFX_GetCount, r.TrackFX_SetNamedConfigParm})
+	
+	local GetFXName, FXCount, GetConfigParm, SetConfigParm = table.unpack(take and 
+	{r.TakeFX_GetFXName, r.TakeFX_GetCount, r.TakeFX_GetNamedConfigParm, r.TakeFX_SetNamedConfigParm}
+	or {r.TrackFX_GetFXName, r.TrackFX_GetCount, r.TrackFX_GetNamedConfigParm, r.TrackFX_SetNamedConfigParm})
 	FXCount = recFX and r.TrackFX_GetRecCount or FXCount
 	local obj = take or tr
 	local fx_cnt = FXCount(obj)
@@ -373,9 +376,14 @@ function Simplify_FX_Name(tr, take, fx_idx, fx_brws_cnt, recFX, prefix, dev_name
 
 		for i = start, count-1 do
 		local _, fx_name = GetFXName(obj, i, '')
+		-- check if fx instance was likely renamed by the user to avoid accidentally butchering 
+		-- it if it happens to match the captures
+		local _, name_in_fx_brwser = GetConfigParm(obj, i, 'original_name') -- or 'fx_name'
+			if fx_name ~= name_in_fx_brwser then return end
+			
 		local simple_name = prefix and fx_name:match('.-: (.+)') or fx_name
 		simple_name = dev_name and simple_name:match('(.+) [%(%[]+') or simple_name
-		simple_name = jsfx_filename and simple_name:match('.+/(.+)%]') or simple_name
+		simple_name = jsfx_filename and simple_name:match('.+/([^%[%]]+)') or simple_name -- covers desc + file path and file path only
 			if simple_name ~= fx_name then
 			SetConfigParm(obj, recFX and i+0x1000000 or i, 'renamed_name', simple_name)
 			end
