@@ -15,23 +15,23 @@ Licence: WTFPL
 REAPER: at least v5.962, for best performance 7.01 is recommended
 Extensions: SWS/S&M recommented, not mandatory
 About:  If the track contains named notes associated with RS5k instances
-		the names will be shifted as well along the Piano roll keyboard. 
-		Any note names unrelated to the RS5k instrument notes which happen 
-		to stand in the way of the related notes at the moment of shifting 
-		will be deleted. Which is something to be aware of when choosing 
-		the option to ignore bypassed RS5k instances because notes names
-		associated with them will also be ignored.  
-		Note names shifting is the feature for which SWS/S&M extension 
-		is recommended.  So if it happens to faulter, first try installing 
-		the extension and if this fails to fix it contact the developer.
-		
-		The script is able to restore the original note map but only after
-		it's been run at least once. The original map is the one it detects
-		at the very first run. After that if the RS5k instrument track is saved 
-		with the project or as a track template the original map data
-		will be retained in it and available for recall at a later time.  
-		The script is also able to store current note map as default instead
-		of the originally stored note map.
+	the names will be shifted as well along the Piano roll keyboard. 
+	Any note names unrelated to the RS5k instrument notes which happen 
+	to stand in the way of the related notes at the moment of shifting 
+	will be deleted. Which is something to be aware of when choosing 
+	the option to ignore bypassed RS5k instances because notes names
+	associated with them will also be ignored.  
+	Note names shifting is the feature for which SWS/S&M extension 
+	is recommended.  So if it happens to faulter, first try installing 
+	the extension and if this fails to fix it contact the developer.
+	
+	The script is able to restore the original note map but only after
+	it's been run at least once. The original map is the one it detects
+	at the very first run. After that if the RS5k instrument track is saved 
+	with the project or as a track template the original map data
+	will be retained in it and available for recall at a later time.  
+	The script is also able to store current note map as default instead
+	of the originally stored note map.
 		
 ]]
 
