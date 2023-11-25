@@ -2,12 +2,17 @@
 ReaScript name: BuyOne_Shift RS5k instrument note map on selected track by white keys.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
-Changelog: v1.3 Undo point creation mechanism has been updated to work properly in builds newer than 7.001
-	   v1.2 Fixed undo point creation when RS5k UI is open
-	   v1.1 Fixed resetting FX selection to the 1st FX if the script is run with the FX chain closed
+Version: 1.4
+Changelog: 
+	   v1.4 #Re-designed note names management mechanism to be more robust
+		#Updated undo point creation mechanism to dispose of double undo points
+		in closed FX chain scenario in REAPER builds older than 7.01
+		#Added an option to store current note map as default for use in its restoration later
+	   v1.3 #Undo point creation mechanism has been updated to work properly in builds newer than 7.001
+	   v1.2 #Fixed undo point creation when RS5k UI is open
+	   v1.1 #Fixed resetting FX selection to the 1st FX if the script is run with the FX chain closed
 Licence: WTFPL
-REAPER: at least v5.962
+REAPER: at least v5.962, for best performance 7.01 is recommended
 Extensions: SWS/S&M recommented, not mandatory
 About:  The script only affects RS5k instances with drum note mapping, 
 	i.e. Note range start = Note range end, that is 1 note per sample, 
@@ -19,27 +24,24 @@ About:  The script only affects RS5k instances with drum note mapping,
 	The shift value accepted from the user input is interpreted 
 	as the number of white keys to shift by.
 	
-	If the track contains named notes the names will be shifted as well 
-	along the Piano roll keyboard. This is the feature for which SWS/S&M 
-	extension is recommended.  
-	So if it happens to falter, first try installing the extension
-	and if this fails to fix it contact the developer.
-
+	If the track contains named notes associated with RS5k instances
+	the names will be shifted as well along the Piano roll keyboard. 
+	Any note names unrelated to the RS5k instrument notes which happen 
+	to stand in the way of the related notes at the moment of shifting 
+	will be deleted. Which is something to be aware of when choosing 
+	the option to ignore bypassed RS5k instances because notes names
+	associated with them will also be ignored.  
+	Note names shifting is the feature for which SWS/S&M extension 
+	is recommended.  So if it happens to faulter, first try installing 
+	the extension and if this fails to fix it contact the developer.
+	
 	The script is able to restore the original note map but only after
 	it's been run at least once. The original map is the one it detects
-	at the first run. After that if the RS5k instrument track is saved 
+	at the very first run. After that if the RS5k instrument track is saved 
 	with the project or as a track template the original map data
-	will be retained in it and available for recall at a later time.
-	
-	!!! WARNING !!!
-	
-	Due to undo system bug in REAPER builds older than 7.01 
-	https://forum.cockos.com/showthread.php?t=281778
-	if the track FX chain is closed the script needs to create two undo points, 
-	one for RS5k instrument changes and another one for change in note names 
-	association with Paino roll keys. That's provided the track of the RS5k 
-	instrument does contain named notes displayed in the MIDI editor. If it 
-	doesn't, a single undo point is created even if the track FX chain is closed.
+	will be retained in it and available for recall at a later time.  
+	The script is also able to store current note map as default instead
+	of the originally stored note map.
 
 ]]
 
@@ -146,6 +148,26 @@ local env = r.ValidatePtr(obj, 'TrackEnvelope*') -- works for take envelope as w
 end
 
 
+function Get_Track_MIDI_Note_Names(tr)
+local note_names = '<MIDINOTENAMES'
+	for note_idx = 0, 127 do -- note range
+		for chan_idx = -1, 15 do -- MIDI channel range, -1 is omni
+		local name = r.GetTrackMIDINoteNameEx(0, tr, note_idx, chan_idx)
+			if name then
+			-- enclose inside quotes if contains spaces as per REAPER format
+			name = name:match(' ') and '"'..name..'"' or name
+			-- concatenate <MIDINOTENAMES block line
+			note_names = note_names..'\n'..chan_idx..' '..note_idx..' '..name..' 0 '..note_idx
+			-- if name is found under onmi MIDI channel it will also be returned for all 16 channel
+			-- so no point in continuing because this is not how the code looks in the track chunk
+				if chan_idx == -1 then break end
+			end
+		end
+	end
+return note_names ~= '<MIDINOTENAMES' and note_names..'\n>' -- if longer than the 1st line
+end
+
+
 local tr = r.GetSelectedTrack(0,0)
 
 local err = not tr and 'no selected tracks'
@@ -162,21 +184,13 @@ local supported = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.37 -- since 
 
 local rs5k = {}
 	for fx_idx = 0, tr_fx_cnt-1 do
-	local found = true	
-		if supported then 
+	local found = true
+		if supported then -- this option is also used inside Validate_FX_Identity()
 		local _, orig_name = r.TrackFX_GetNamedConfigParm(tr, fx_idx, 'fx_name') -- parmname could be 'original_name'
 			if not orig_name:match('ReaSamplOmatic5000') then found = false end
 		else
-		local parm_cnt = r.TrackFX_GetNumParams(tr, fx_idx)
-			if parm_cnt == 33 then -- RS5k parm count == 33 as of build 6.81
-			-- NOT failproof because if at least 1 parameter has an alias, its name won't match
-			-- currently the original name can only be verified via chunk
-			-- feature request for doing this with FX_GetNamedConfigParm():
-			-- https://forum.cockos.com/showthread.php?t=282037
-				for parm_idx, name in pairs(parm_names) do
-				local retval, parm_name = r.TrackFX_GetParamName(tr, fx_idx, parm_idx, '')
-					if parm_name ~= name then found = false break end
-				end
+			for parm_idx, name in pairs(parm_names) do -- NEW
+				if not Validate_FX_Identity(obj, fx_idx, 'ReaSamplOmatic5000', parm_t) then found = false break end
 			end
 		end
 		if found then
@@ -186,7 +200,7 @@ local rs5k = {}
 			if note_st == note_end then -- if drum style mapping, store
 			rs5k[#rs5k+1] = {idx=fx_idx, note=note_st}
 			end
-		end		
+		end
 	end
 
 table.sort(rs5k, function(a,b) return a.note < b.note end) -- in case the RS5k instances aren't ordered in ascending order
@@ -205,17 +219,36 @@ local orig_map = ''
 	orig_map = orig_map..space..data.idx..':'..data.note
 	end
 
-	if not r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note map (drum style)', '', false) -- setNewValue false
-	then
-	r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note map (drum style)', orig_map, true) -- setNewValue true // store orignal map to be able to restore by typing 0 in the dialogue
+
+-- Store note data for future restoration
+local STORED -- to condition error message if user happen to choose to store the same note map just stored, only relevant for the 1st ever script run which is exremely unlikely
+local ret, stored_map = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note map (drum style)', '', false)-- setNewValue false
+	if not ret or #stored_map == 0 then
+	r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note map', orig_map, true) -- setNewValue true // store orignal map to be able to restore by typing 0 in the dialogue
+	STORED = 1
+	local ret, stored_names = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note names (drum style)', '', false)-- setNewValue fals
+		if not ret or #stored_names == 0 then
+		local orig_names = Get_Track_MIDI_Note_Names(tr)
+			if orig_names then
+			r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note names', orig_names, true) -- setNewValue true // store orignal map to be able to restore by typing 0 in the dialogue
+			end
+		end
+
 	end
 
 
-function Offset_Shift_Value_To_Land_On_Natural_Keys(curr_val, shift_by_val)
+
+function Offset_Shift_Value_To_Land_On_Natural_Keys(curr_val, shift_by_val, normalized)
 -- returns actual MIDI note number, not the one used by RS5k 'Note range start/end' parameters
+-- shift_by_val is treated as white (natural) keys count
+-- normalized is boolean to condition processing curr_val as RS5k internal pitch values in the range of 0-1
+-- identifyng normalized values by their format alone isn't a completelly reliable method
+-- because values 0 and 1 are part of the range as they're part of 0-127 range
+-- even though the likelihood of reaching the range limits in the settings isn't very high
+-- the Offset in the name doesn't apply to this version of the function
 
 local unit = 1/127 -- normalized value used by Note range start/end parameters in the range of 0-1
-local curr_val = math.floor(curr_val/unit + 0.5) -- convert to conventional 0-based note number to be able to use modulo below
+local curr_val = normalized and math.floor(curr_val/unit + 0.5) or curr_val -- convert to conventional 0-based note number to be able to use modulo below
 local sign = shift_by_val < 0 and -1 or shift_by_val > 0 and 1 or 0
 local natural_keys_cnt = 0
 	for i = 1, 127 do -- shift original note number counting how many natural (white) keys have been passed along the way
@@ -231,6 +264,7 @@ local natural_keys_cnt = 0
 
 end
 
+
 function Get_Orig_Note_Map(str)
 local t = {}
 	for fx_idx, note in str:gmatch('(%d+):([%d%.]+)') do
@@ -238,6 +272,28 @@ local t = {}
 	end
 return t
 end
+
+
+function Get_Orig_Note_Data(tr, note_map_t, ignore_bypassed) -- get numbers of notes associated with note names
+-- note_map_t is rs5k table or the one returned by Get_Orig_Note_Map()
+-- if user chose to restore the original map
+-- the function supports note ranges, i.e. when RS5k note start and note end params aren't the same
+local unit = 1/127
+local t = {} -- to be used in note names shifting
+	for k, data in ipairs(note_map_t) do
+		if not ignore_bypassed
+		or ignore_bypassed and r.TrackFX_GetParam(tr, data.idx, 30) == 0 -- Bypass parm, 0 unbupassed
+		then
+		local note_No = math.floor(data.note/unit + 0.5) -- convert to regular number
+		local note_name = r.GetTrackMIDINoteNameEx(0, tr, note_No, -1) -- chan -1 omni which is always the case when notes are named manually in the MIDI Editor // if no assigned note name returns nil // the function is more convenient than without Ex thanks to using track pointer rather than its index
+			if note_name then -- store note number
+			t[#t+1] = note_No
+			end
+		end
+	end
+return t
+end
+
 
 function Shift_Map(tr, t, ignore_bypassed)
 	for idx, data in ipairs(t) do
@@ -257,7 +313,13 @@ function Shift_Map(tr, t, ignore_bypassed)
 end
 
 
-function Shift_Note_Names(chunk, note_map_t)
+function Shift_Note_Names(chunk, orig_note_data, shift_by_val)
+-- orig_note_data table stems from Get_Orig_Note_Data()
+-- shift_by_val is the user supplied value via the dialogue
+
+-- could be done with a function r.SetTrackMIDINoteName(tr, pitch, chan, name)
+-- channel < 0 assigns note name to all channels. pitch 128 assigns name for CC0, pitch 129 for CC1, etc.
+-- BUT it would require deleting the old then assigning the new
 
 local t, last_sel_idx, found = {}, 0
 	for line in chunk:gmatch('[^\n\r]+') do
@@ -268,15 +330,33 @@ local t, last_sel_idx, found = {}, 0
 	end
 
 local old_note_map = table.concat(t,'\n')
-
-local unit, new_note_map = 1/127
+local new_note_map, note
 
 	if #old_note_map > 0 then
 		for k, line in ipairs(t) do -- change note numbers in the MIDINOTENAMES block to update the chunk with it
-			if k > 1 and k < #t then -- excluding MIDINOTENAMES block first and last lines
-			local a, note1, c, d, note1 = line:match('(.-) (.-) ("?.+"?) (.-) (.-)') -- split line
-			local note = math.floor(note_map_t[k-1].note/unit + 0.5) -- convert to conventional 0-based note number because the table will contain normalized value; k-1 to target corect field in note_map_t table because t starts with one 1 extra field with no note data
-			t[k] = a..' '..note..' '..c..' '..d..' '..note
+			if k > 1 and k < #t then -- excluding <MIDINOTENAMES block first and last lines
+			local a, note1, c, d, note2 = line:match('(.-) (.-) ("?.+"?) (.-) (.-)') -- split line
+				for _, note_num in ipairs(orig_note_data) do
+					if note1+0 == note_num then
+					note = Offset_Shift_Value_To_Land_On_Natural_Keys(note1+0, shift_by_val)
+					note = math.floor(note) -- strip trailing decimal 0
+					t[k] = a..' '..note..' '..c..' '..d..' '..note
+					break end
+				end
+
+				-- after updating the relevant note number look for and delete from the original note names list
+				-- the lines which have the same note number as the updated lines but which originally
+				-- differ from the RS5k instrument note numbers and so not belonging to it
+				-- to prevent scenario where after the update lines with the same note number but
+				-- different name, which originally were unrelated to the RS5k instrument, will override
+				-- the relevant note names due to being placed lower in the note names list
+				-- because by REAPER design names placed lower have priority in case note numbers are the same
+				-- after concatenation, the new_note_map var will contain list with empty lines
+				-- but REAPER can handle these
+				if note1+0 == note then
+				t[k] = ''
+				end
+
 			end
 		end
 	new_note_map = table.concat(t,'\n')
@@ -287,64 +367,48 @@ return old_note_map, new_note_map, last_sel_idx
 end
 
 
-function Force_RS5k_Undo_With_Closed_Chain(tr, rs5k, last_sel_idx, chain_vis, last_sel_fx_floats, pass2)
--- pass2 is boolean to trigger FX windows state restoration
-	
-	if not pass2 then -- open and return values
-	local chain_vis = r.TrackFX_GetChainVisible(tr) ~= -1
-	local last_sel_fx_floats = r.TrackFX_GetFloatingWindow(tr, last_sel_idx) -- if last selected fx window floats while the fx chain is closed, after toggling open-close the fx chain below the floating window will be closed because the function will use its index to keep it selected in the chain, so find if it floats to re-float it after toggling the fx chain open-close
-	local open = not chain_vis and r.TrackFX_SetOpen(tr, last_sel_idx or rs5k[1].idx, not chain_vis) -- open if closed, open arg is not chain_vis; fx index alternative in case last_sel_idx is invalid because the chunk size exceeds 4096 kb and the SWS extension isn't installed to help retrieve it
-	return chain_vis, last_sel_fx_floats
-	else -- restore FX windows state changed in pass 1 above
-	local clse = not chain_vis and r.TrackFX_SetOpen(tr, last_sel_idx or rs5k[1].idx, chain_vis) -- close fx chain if was closed originally, open arg is chain_vis; fx index alternative in case last_sel_idx is invalid because the chunk size exceeds 4096 kb and the SWS extension isn't installed to help retrieve it
-	local re_float = not chain_vis and last_sel_fx_floats and r.TrackFX_Show(tr, last_sel_idx, 3) -- 3 show in a floating window
-	end
 
-end
+function MAIN(tr, rs5k, shift_by_val, orig_note_data, orig_note_names, ignore_bypassed)
+-- orig_note_data arg stems from Get_Orig_Note_Data()
+-- orig_note_names stem from extented state inside the track chunk
+-- which is only used to restore the orig names if the user so chooses
 
-
-function MAIN(tr, rs5k, shift_by_val, ignore_bypassed)
-
-r.PreventUIRefresh(1)
 r.Undo_BeginBlock()
 
 local ret, chunk = GetObjChunk(tr)
 	if ret then
-	old_map, new_map, last_sel_idx = Shift_Note_Names(chunk, rs5k) -- must be run here to extract last_sel_idx in order to open fx chain below at the last selected fx for consistency and better UX
-	end
-	
--- Due to REAPER bug https://forum.cockos.com/showthread.php?t=281778 in builds older than 7.01
--- undo point for all RS5k instances is only created with open FX chain window
-local old_build = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.01 -- where bug is present so two undo points must be used
-local undo_flag = old_build and 2 or -1 -- in buggy builds even with open FX chain for changes in RS5k an undo point is only created with flag 2 (UNDO_STATE_FX), with flag -1 it's only created once
-
-local undo = shift_by_val ~= 0 and 'Shift RS5k instrument note map by '..shift_by_val..' white keys' or 'Restore original RS5K instrument map'
-
-local chain_vis, last_sel_fx_floats
-
-	if old_build then -- open closed FX chain and then restore FX windows state and create 1st undo point
-	chain_vis, last_sel_fx_floats = Force_RS5k_Undo_With_Closed_Chain(tr, rs5k, last_sel_idx, chain_vis, last_sel_fx_floats, pass2) -- pass2 false
-	Shift_Map(tr, rs5k, ignore_bypassed)
-	Force_RS5k_Undo_With_Closed_Chain(tr, rs5k, last_sel_idx, chain_vis, last_sel_fx_floats, true) -- pass2 true
-		if not chain_vis then -- only create two undo points if FX chain is closed, this is the 1st one
-		r.Undo_EndBlock('1. '..undo, undo_flag)
+		if not orig_note_names then -- shifting, because if orig_note_names is valid restoration must be performed rather than shifting
+		old_names, new_names, last_sel_idx = Shift_Note_Names(chunk, orig_note_data, shift_by_val) -- must be run here to extract last_sel_idx in order to open fx chain below at the last selected fx for consistency and better UX
+		else -- restoring
+		-- parse and process current <MIDINOTNAMES block
+		cur_names, last_sel_idx = chunk:match('<MIDINOTENAMES.->'), chunk:match('LASTSEL (%d+)')
+		old_names = ''
+			for line in cur_names:gmatch('(.-)\n') do
+			local note_No = line:match('.- (%d+) ')
+				if note_No and note_No+0 > 127 then
+				break -- exclude CC lane names (note # > 127) in case present to avoid their overwriting
+				else
+				old_names = old_names..line..'\n'
+				end
+			end
+		-- if old names block isn't closed due to presense of CC names which have been excluded above
+		-- remove the closing angle bracket from the orig note data
+		new_names = old_names:match('>') and orig_note_names or orig_note_names:match('(.+)>')
 		end
-	else
-	Shift_Map(tr, rs5k, ignore_bypassed)
 	end
 
-r.PreventUIRefresh(-1)
+
+local undo = shift_by_val ~= 0 and 'Shift RS5k instrument note map by '..shift_by_val..' semitones' or 'Restore original RS5K instrument map'
+
+Shift_Map(tr, rs5k, ignore_bypassed)
 
 local ret, chunk = GetObjChunk(tr) -- retrieve the chunk again with the new data after note map shift with Shift_Map() above to apply note names shift to it below
 
-	if ret and #old_map > 0 then -- if track chunk was retrieved and note map was found in it
-	local old_map = Esc(old_map)
-	local new_map = new_map:gsub('%%','%%%%') -- escape just in case otherwise gsub below won't work
-	local new_chunk = chunk:gsub(old_map, new_map)
+	if ret and #old_names > 0 then -- if track chunk was retrieved and note map was found in it
+	local old_names = Esc(old_names)
+	local new_names = new_names:gsub('%%','%%%%') -- escape just in case otherwise gsub below won't work
+	local new_chunk = chunk:gsub(old_names, new_names)
 	SetObjChunk(tr, new_chunk)
-		if old_build and not chain_vis then -- only create two undo points if FX chain is closed in builds older than 7.01
-		r.Undo_OnStateChangeEx('2. Shift RS5K instrument note names', -1, -1) -- whichStates arg (the 2nd) can be 1 and -1
-		end
 	local ME = r.MIDIEditor_GetActive()
 		if ME then -- when 'View: Hide unused and unnamed note rows' toggle state is On, shifting note names reveals unamed notes and conceals named ones, so restore visibility of only named notes by running the action even though its toggle state is already On, not clear if it was designed this way or a happenstance; the toggle state of this action and 3 other's, 'View: Hide unused note rows', 'View: Show all notes' and 'View: Show custom note row view' are mutually exclusive
 		local take_tr = r.GetMediaItemTake_Track(r.MIDIEditor_GetTake(ME))
@@ -354,12 +418,12 @@ local ret, chunk = GetObjChunk(tr) -- retrieve the chunk again with the new data
 			end
 		end
 	end
-	
-	if old_build and chain_vis or not old_build then -- create single undo point if FX chain is open in buggy builds and in builds 7.01 onwards
-	r.Undo_EndBlock(undo, undo_flag)
-	end
+
+	r.Undo_EndBlock(undo, 1) -- 1 is UNDO_STATE_TRACKCFG flag which works for both track note names and FX chain in builds where -1 UNDO_STATE_ALL doesn't work for FX data if FX chain is closed
 
 end
+
+
 
 
 ::RETRY::
@@ -368,7 +432,7 @@ retval, output = r.GetUserInputs('Shift By (count white keys, 0 to restore origi
 
 local shift_by_val, ignore_bypassed = output:match('(.-),(.*)')
 
-local err = #shift_by_val:gsub(' ','') == 0 and 'no value has been specified' or #shift_by_val:gsub(' ','') > 0 and not tonumber(shift_by_val) and 'not a numeric value'
+local err = #shift_by_val:gsub(' ','') == 0 and 'no value has been specified' or #shift_by_val:gsub(' ','') > 0 and not tonumber(shift_by_val) and 'not a numeric value' --or tonumber(shift_by_val) == 0 and 'zero isn\'t a valid value'
 		if err then
 		Error_Tooltip('\n\n '..err..' \n\n', 1,1) -- caps, spaced are true
 		goto RETRY
@@ -392,26 +456,35 @@ ignore_bypassed = #ignore_bypassed:gsub(' ','') > 0
 
 shift_by_val = tonumber(shift_by_val)
 
-	if shift_by_val == 0 then
-	local resp = r.MB('Restore the original map?','PROMPT', 4)
-		if resp == 6 then -- Yes
+local orig_note_data = Get_Orig_Note_Data(tr, rs5k, ignore_bypassed) -- will be used to shift note names with Shift_Note_Names() inside MAIN(), hence must be based on the current note values stored inside rs5k table at this stage, not on the shifted values
+
+	if shift_by_val == 0 then -- (re)store
+	local resp = r.MB('YES —  Restore the original map\n\nNO —  Store current map for restoration later','PROMPT', 3)
+		if resp == 6 then -- response Yes, restore
 		local ret, orig_map = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note map (drum style)', '', false) -- setNewValue false
 			if not ret then Error_Tooltip('\n\n  the original map \n\n data wasn\'t found \n\n', 1,1) -- caps, spaced are true
-			return r.defer(no_undo)
 			else
-			local rs5k = Get_Orig_Note_Map(orig_map)
-			MAIN(tr, rs5k, shift_by_val, ignore_bypassed)
-			return
+			local rs5k = Get_Orig_Note_Map(orig_map) -- parse orig_map data
+			local ret, orig_note_names = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note names (drum style)', '', false) -- setNewValue false
+			MAIN(tr, rs5k, shift_by_val, orig_note_data, orig_note_names, ignore_bypassed)
 			end
-		else return r.defer(no_undo)
+		elseif 7 then -- response No, store replace stored map data with the current one
+			if STORED then r.MB('The same map has just been stored in the background.','ERROR',0) end
+		r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note map (drum style)', orig_map, true) -- setNewValue true // store orignal map to be able to restore by typing 0 in the dialogue
+		local orig_names = Get_Track_MIDI_Note_Names(tr)
+			if orig_names then
+			r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note names (drum style)', orig_names, true) -- setNewValue true // store orignal map to be able to restore by typing 0 in the dialogue
+			end
+		else return -- cancelled by the user
 		end
+	return r.defer(no_undo)
 	end
 
 
 local unit = 1/127
 
 	for k, data in ipairs(rs5k) do -- store shifted note numbers
-	local note = Offset_Shift_Value_To_Land_On_Natural_Keys(data.note, shift_by_val)
+	local note = Offset_Shift_Value_To_Land_On_Natural_Keys(data.note, shift_by_val, true) -- normalized true
 		if note < 0 or note > 127 then
 		Error_Tooltip('\n\n   cannot shift. \n\n note range limit \n\n has been reached.\n\n', 1,1) -- caps, spaced are true
 		return r.defer(no_undo)
@@ -420,8 +493,7 @@ local unit = 1/127
 	end
 
 
-MAIN(tr, rs5k, shift_by_val, ignore_bypassed)
-
+MAIN(tr, rs5k, shift_by_val, orig_note_data, orig_note_names, ignore_bypassed)
 
 
 
