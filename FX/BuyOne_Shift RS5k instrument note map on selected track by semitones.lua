@@ -211,18 +211,6 @@ local env = r.ValidatePtr(obj, 'TrackEnvelope*') -- works for take envelope as w
 end
 
 
-
-function Update_Stored_Data(tr, cmd_ID, key)
-local global_ext_state = r.GetExtState(cmd_ID, key)
-local ret, track_ext_state = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:'..key, '', false) -- setNewValue false
-	if #global_ext_state > 0 then -- store inside the track if the data are present in the global extended state, to keep the data inside the track up-to-date as it's affected by undo and could be reverted to the previous state
-	r.GetSetMediaTrackInfo_String(tr, 'P_EXT:'..key, global_ext_state, true) -- setNewValue true
-	elseif ret and #track_ext_state > 0 then -- if the data don't happen to be present in the global extended state while being present in the track extended state, copy to the global one
-	r.SetExtState(cmd_ID, key, track_ext_state, false) -- persist false
-	end
-end
-
-
 function Get_Track_MIDI_Note_Names(tr)
 local note_names = '<MIDINOTENAMES'
 	for note_idx = 0, 127 do -- note range
@@ -240,6 +228,17 @@ local note_names = '<MIDINOTENAMES'
 		end
 	end
 return note_names ~= '<MIDINOTENAMES' and note_names..'\n>' -- if longer than the 1st line
+end
+
+
+function Update_Stored_Data(tr, cmd_ID, key)
+local global_ext_state = r.GetExtState(cmd_ID, key)
+local ret, track_ext_state = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:'..key, '', false) -- setNewValue false
+	if #global_ext_state > 0 then -- store inside the track if the data are present in the global extended state, to keep the data inside the track up-to-date as it's affected by undo and could be reverted to the previous state
+	r.GetSetMediaTrackInfo_String(tr, 'P_EXT:'..key, global_ext_state, true) -- setNewValue true
+	elseif ret and #track_ext_state > 0 then -- if the data don't happen to be present in the global extended state while being present in the track extended state, copy to the global one
+	r.SetExtState(cmd_ID, key, track_ext_state, false) -- persist false
+	end
 end
 
 
