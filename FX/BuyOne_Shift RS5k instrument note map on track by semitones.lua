@@ -10,6 +10,7 @@ Changelog:
 		susceptible to undo
 		#Made track selection unnecessary if the script is run from the MIDI Editor section
 		of the Action list
+		#Changed the script name to reflect that
 		#Updated the 'About' text
 	   v1.5 #The mechanism of note map storage for restoration later has been made more reliable
 	   v1.4 #Re-designed note names management mechanism to be more robust
