@@ -4,13 +4,13 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.6
 Changelog:
-	    v1.6 #Fixed note map restoration error when the track doesn't have named notes
-		 #Updated track note map storage mechanism so that the stored data are unique to each track
-		 #Updated undo point creation logic to make the note map data stored inside the track less
-		 susceptible to undo
-		 #Made track selection unnecessary if the script is run from the MIDI Editor section
-		 of the Action list
-		 #Updated the 'About' text
+	   v1.6 #Fixed note map restoration error when the track doesn't have named notes
+		#Updated track note map storage mechanism so that the stored data are unique to each track
+		#Updated undo point creation logic to make the note map data stored inside the track less
+		susceptible to undo
+		#Made track selection unnecessary if the script is run from the MIDI Editor section
+		of the Action list
+		#Updated the 'About' text
 	   v1.5 #The mechanism of note map storage for restoration later has been made more reliable
 	   v1.4 #Re-designed note names management mechanism to be more robust
 		#Updated undo point creation mechanism to dispose of double undo points
