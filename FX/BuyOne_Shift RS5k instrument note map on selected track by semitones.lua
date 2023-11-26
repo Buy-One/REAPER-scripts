@@ -2,8 +2,15 @@
 ReaScript name: BuyOne_Shift RS5k instrument note map on selected track by semitones.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.5
+Version: 1.6
 Changelog:
+	    v1.6 #Fixed note map restoration error when the track doesn't have named notes
+		 #Updated track note map storage mechanism so that the stored data are unique to each track
+		 #Updated undo point creation logic to make the note map data stored inside the track less
+		 susceptible to undo
+		 #Made track selection unnecessary if the script is run from the MIDI Editor section
+		 of the Action list
+		 #Updated the 'About' text
 	   v1.5 #The mechanism of note map storage for restoration later has been made more reliable
 	   v1.4 #Re-designed note names management mechanism to be more robust
 		#Updated undo point creation mechanism to dispose of double undo points
@@ -25,7 +32,13 @@ About:  If the track contains named notes associated with RS5k instances
 	Note names shifting is the feature for which SWS/S&M extension 
 	is recommended.  So if it happens to faulter, first try installing 
 	the extension and if this fails to fix it contact the developer.
-	
+		
+	If the script is run from the MIDI Editor section of the action list
+	it automatically targets the RS5k instrument of the track the 
+	currently open MIDI item belongs to.  
+	If it's run from the Main section of the action list it targets
+	the first selected track.
+		
 	The script is able to restore the original note map but only after
 	it's been run at least once. The original map is the one it detects
 	at the very first run. After that if the RS5k instrument track is saved 
@@ -231,18 +244,21 @@ return note_names ~= '<MIDINOTENAMES' and note_names..'\n>' -- if longer than th
 end
 
 
-function Update_Stored_Data(tr, cmd_ID, key)
-local global_ext_state = r.GetExtState(cmd_ID, key)
+function Update_Stored_Data(tr, tr_GUID, key)
+local global_ext_state = r.GetExtState(tr_GUID, key)
 local ret, track_ext_state = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:'..key, '', false) -- setNewValue false
 	if #global_ext_state > 0 then -- store inside the track if the data are present in the global extended state, to keep the data inside the track up-to-date as it's affected by undo and could be reverted to the previous state
 	r.GetSetMediaTrackInfo_String(tr, 'P_EXT:'..key, global_ext_state, true) -- setNewValue true
 	elseif ret and #track_ext_state > 0 then -- if the data don't happen to be present in the global extended state while being present in the track extended state, copy to the global one
-	r.SetExtState(cmd_ID, key, track_ext_state, false) -- persist false
+	r.SetExtState(tr_GUID, key, track_ext_state, false) -- persist false
 	end
 end
 
 
-local tr = r.GetSelectedTrack(0,0)
+local _, scr_name, scr_sect_ID, cmd_ID, _,_,_ = r.get_action_context()
+
+local tr = scr_sect_ID == 32060 and r.GetMediaItemTake_Track(r.MIDIEditor_GetTake(r.MIDIEditor_GetActive()))
+or r.GetSelectedTrack(0,0)
 
 local err = not tr and 'no selected tracks'
 or r.CountSelectedTracks(0) > 1 and 'the script only supports \n\n     one selected track'
@@ -289,6 +305,10 @@ local orig_map = ''
 	local space = k == 1 and '' or ' '
 	orig_map = orig_map..space..data.idx..':'..data.start..':'..data.fin
 	end
+	
+
+-- note map storage must be based on track GUID so that it's stored for each track indivudually
+local ret, tr_GUID = r.GetSetMediaTrackInfo_String(tr, 'GUID', '', false) -- setNewValue false
 
 -- Store note data for future restoration
 local STORED -- to condition error message if user happen to choose to store the same note map just stored, only relevant for the 1st ever script run which is exremely unlikely
@@ -296,20 +316,20 @@ local ret, stored_map = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument
 	
 	if not ret or #stored_map == 0 then -- if there're no stored data in the track chunk, store
 	r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note map', orig_map, true) -- setNewValue true // store note map to be able to restore by typing 0 in the dialogue
-	r.SetExtState(cmd_ID, 'RS5k instrument note map', orig_map, false) -- persist false
+	r.SetExtState(tr_GUID, 'RS5k instrument note map', orig_map, false) -- persist false
 	STORED = 1
 	local ret, stored_names = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note names', '', false)-- setNewValue false
 		if not ret or #stored_names == 0 then
 		local orig_note_names = Get_Track_MIDI_Note_Names(tr)
 			if orig_note_names then
 			r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note names', orig_note_names, true) -- setNewValue true // store note names to be able to restore by typing 0 in the dialogue
-			r.SetExtState(cmd_ID, 'RS5k instrument note names', orig_note_names, false) -- persist false
+			r.SetExtState(tr_GUID, 'RS5k instrument note names', orig_note_names, false) -- persist false
 			end
 		end
 	else -- if there're data in the track chunk
 
-	Update_Stored_Data(tr, cmd_ID, 'RS5k instrument note map')
-	Update_Stored_Data(tr, cmd_ID, 'RS5k instrument note names')
+	Update_Stored_Data(tr, tr_GUID, 'RS5k instrument note map')
+	Update_Stored_Data(tr, tr_GUID, 'RS5k instrument note names')
 	
 	end
 
@@ -433,23 +453,25 @@ local ret, chunk = GetObjChunk(tr)
 		elseif orig_note_names and #orig_note_names > 0 then -- restoring
 		-- parse and process current <MIDINOTNAMES block
 		cur_names, last_sel_idx = chunk:match('<MIDINOTENAMES.->'), chunk:match('LASTSEL (%d+)')
-		old_names = ''
-			for line in cur_names:gmatch('(.-)\n') do
-			local note_No = line:match('.- (%d+) ')
-				if note_No and note_No+0 > 127 then
-				break -- exclude CC lane names (note # > 127) in case present to avoid their overwriting
-				else
-				old_names = old_names..line..'\n'
+			if cur_names then
+			old_names = ''
+				for line in cur_names:gmatch('(.-)\n') do
+				local note_No = line:match('.- (%d+) ')
+					if note_No and note_No+0 > 127 then
+					break -- exclude CC lane names (note # > 127) in case present to avoid their overwriting
+					else
+					old_names = old_names..line..'\n'
+					end
 				end
+			-- if old names block isn't closed due to presense of CC names which have been excluded above
+			-- remove the closing angle bracket from the orig note data
+			new_names = old_names:match('>') and orig_note_names or orig_note_names:match('(.+)>')
 			end
-		-- if old names block isn't closed due to presense of CC names which have been excluded above
-		-- remove the closing angle bracket from the orig note data
-		new_names = old_names:match('>') and orig_note_names or orig_note_names:match('(.+)>')
 		end
 	end	
 	
 	
-local undo = shift_by_val ~= 0 and 'Shift RS5k instrument note map by '..shift_by_val..' semitones' or 'Restore original RS5K instrument map'
+local undo = shift_by_val ~= 0 and 'Shift RS5k instrument note map by '..shift_by_val..' semitones' or 'Restore RS5K instrument note map'
 
 Shift_Map(tr, rs5k, ignore_bypassed)
 
@@ -470,7 +492,7 @@ local ret, chunk = GetObjChunk(tr) -- retrieve the chunk again with the new data
 		end
 	end
 	
-	r.Undo_EndBlock(undo, 1) -- 1 is UNDO_STATE_TRACKCFG flag which works for both track note names and FX chain in builds where -1 UNDO_STATE_ALL doesn't work for FX data if FX chain is closed
+	r.Undo_EndBlock(undo, old_names and #old_names > 0 and 1 or 2) -- when there're note names use flag 1 - UNDO_STATE_TRACKCFG which works for both track note names and FX chain in builds prior to 7.01, where -1 - UNDO_STATE_ALL doesn't work for FX data if FX chain is closed; if there're no note names use flag 2 - UNDO_STATE_FX because, unlike flag 1, when undone note map restoration data stored as the track extended state aren't affected // flag -1 - UNDO_STATE_ALL doesn't work for FX with closed FX chain in builds older than 7.01 https://forum.cockos.com/showthread.php?t=281778
 
 end
 
@@ -512,14 +534,14 @@ local orig_note_data = Get_Orig_Note_Data(tr, rs5k, ignore_bypassed) -- will be 
 	if shift_by_val == 0 then -- (re)store
 	local resp = r.MB('YES —  Restore the original map\n\nNO —  Store current map for restoration later.','PROMPT', 3)
 		if resp == 6 then -- response Yes, restore
-		local orig_map = r.GetExtState(cmd_ID, 'RS5k instrument note map')
+		local orig_map = r.GetExtState(tr_GUID, 'RS5k instrument note map')
 			if #orig_map == 0 then
 			ret, orig_map = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note map', '', false) -- setNewValue false
 			end
 			if not ret or #orig_map == 0 then Error_Tooltip('\n\n  the original map \n\n data wasn\'t found \n\n', 1,1) -- caps, spaced are true
 			else
 			local rs5k = Get_Orig_Note_Map(orig_map) -- parse orig_map data
-			local orig_note_names = r.GetExtState(cmd_ID, 'RS5k instrument note names')
+			local orig_note_names = r.GetExtState(tr_GUID, 'RS5k instrument note names')
 				if #orig_note_names == 0 then
 				ret, orig_note_names = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note names', '', false) -- setNewValue false	
 				end
@@ -527,8 +549,8 @@ local orig_note_data = Get_Orig_Note_Data(tr, rs5k, ignore_bypassed) -- will be 
 			r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note map', orig_map, true) -- setNewValue true // store note map			
 			r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note names', orig_note_names, true) -- setNewValue true // store note names
 				if #orig_note_names > 0 then
-				r.SetExtState(cmd_ID, 'RS5k instrument note map', orig_map, false) -- persist false
-				r.SetExtState(cmd_ID, 'RS5k instrument note names', orig_note_names, false) -- persist false
+				r.SetExtState(tr_GUID, 'RS5k instrument note map', orig_map, false) -- persist false
+				r.SetExtState(tr_GUID, 'RS5k instrument note names', orig_note_names, false) -- persist false
 				end
 			end
 		elseif 7 then -- response No, store replace stored map data with the current one
@@ -536,11 +558,11 @@ local orig_note_data = Get_Orig_Note_Data(tr, rs5k, ignore_bypassed) -- will be 
 			if STORED then r.MB('The same map has just been stored in the background.','ERROR',0) end
 
 		r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note map', orig_map, true) -- setNewValue true // store note map to be able to restore by typing 0 in the dialogue
-		r.SetExtState(cmd_ID, 'RS5k instrument note map', orig_map, false) -- persist false
+		r.SetExtState(tr_GUID, 'RS5k instrument note map', orig_map, false) -- persist false
 		local orig_note_names = Get_Track_MIDI_Note_Names(tr)
 			if orig_note_names then
 			r.GetSetMediaTrackInfo_String(tr, 'P_EXT:RS5k instrument note names', orig_note_names, true) -- setNewValue true // store note names to be able to restore by typing 0 in the dialogue
-			r.SetExtState(cmd_ID, 'RS5k instrument note names', orig_note_names, false) -- persist false
+			r.SetExtState(tr_GUID, 'RS5k instrument note names', orig_note_names, false) -- persist false
 			end
 		else return -- cancelled by the user
 		end
