@@ -9,50 +9,50 @@ Licence: WTFPL
 REAPER: at least v6.30
 Extensions: SWS/S&M can be useful, not mandatory
 About: 	The script allows import of metadata from the media source 
-    		of in-project media items to the Project Render Metadata
-    		settings being mainly geared towards preserving metadata
-    		at rendering without having to re-type it by hand.  
-    		It only supports tags (IDs) listed in Project Render 
-    		Metadata window + user tags including those added via
-    		the Media Explorer as long as the're listed in the source
-    		metadata.
-    
-    		WAYS TO SUPPLY METADATA TO THE SCRIPT
-    
-    		In REAPER builds 6.30 - 6.53 the metadata must be extracted
-    		manually from the item source properties via the action
-    		'Item properties: Show media item source properties',
-    		the Properties button in the Media Item Properties dialogue
-    		or the 'Source properties' item of item context menu.  
-    		If the SWS extension is installed the metadata can be copied
-    		into the clipboard and will be accessed from there provided
-    		no item is selected.  
-    		Alternatively they can be pasted into the notes of any item
-    		and for the script to be able to access them such item must 
-    		be selected.  
-    		The 2nd option is preferable since metadata from several items
-    		can be collected within items notes whereas the clipboard only
-    		holds the last copied data.
-    		
-    		Since REAPER 6.54 metadata can be collected by the script from
-    		selected items. However in this scenario BWF metadata stored
-    		under the IXML scheme (particularly after being embedded in
-    		REAPER) won't be extracted so if this is required the options
-    		described above should be opted for.
-    		
-    		So from build 6.54 the script supports multiple item selection. 
-    		If these contain different data for the same metadata keys (IDs)
-    		or if project metadata settings already contain data for such keys, 
-    		entries from different sources get separated by double slash //.
-    		
-		Since ReaScript API doesn't allow to undo metadata setting,
-		the script provides an option to undo the last metadata import.
-		The undo option is available for 30 minutes after the last 
-		import. After undo the undo data is cleared.  
-    		It also provides options for clearing all metadata or metadata
-    		of a particular scheme from the project render settings. These 
-    		options however clear all entries including those which were 
-    		added by means other than this script.
+	of in-project media items to the Project Render Metadata
+	settings being mainly geared towards preserving metadata
+	at rendering without having to re-type it by hand.  
+	It only supports tags (IDs) listed in Project Render 
+	Metadata window + user tags including those added via
+	the Media Explorer as long as the're listed in the source
+	metadata.
+
+	WAYS TO SUPPLY METADATA TO THE SCRIPT
+
+	In REAPER builds 6.30 - 6.53 the metadata must be extracted
+	manually from the item source properties via the action
+	'Item properties: Show media item source properties',
+	the Properties button in the Media Item Properties dialogue
+	or the 'Source properties' item of item context menu.  
+	If the SWS extension is installed the metadata can be copied
+	into the clipboard and will be accessed from there provided
+	no item is selected.  
+	Alternatively they can be pasted into the notes of any item
+	and for the script to be able to access them such item must 
+	be selected.  
+	The 2nd option is preferable since metadata from several items
+	can be collected within items notes whereas the clipboard only
+	holds the last copied data.
+	
+	Since REAPER 6.54 metadata can be collected by the script from
+	selected items. However in this scenario BWF metadata stored
+	under the IXML scheme (particularly after being embedded in
+	REAPER) won't be extracted so if this is required the options
+	described above should be opted for.
+	
+	So from build 6.54 the script supports multiple item selection. 
+	If these contain different data for the same metadata keys (IDs)
+	or if project metadata settings already contain data for such keys, 
+	entries from different sources get separated by double slash //.
+	
+	Since ReaScript API doesn't allow to undo metadata setting,
+	the script provides an option to undo the last metadata import.
+	The undo option is available for 30 minutes after the last 
+	import. After undo the undo data is cleared.  
+	It also provides options for clearing all metadata or metadata
+	of a particular scheme from the project render settings. These 
+	options however clear all entries including those which were 
+	added by means other than this script.
 		
 ]]
 
