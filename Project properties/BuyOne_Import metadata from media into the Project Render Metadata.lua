@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Import metadata from media into the Project Render Metadata.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: v1.1 #Implemented clearing undo after undo
+		#Updated the About text
 Licence: WTFPL
 REAPER: at least v6.30
 Extensions: SWS/S&M can be useful, not mandatory
@@ -44,10 +45,10 @@ About: 	The script allows import of metadata from the media source
     		or if project metadata settings already contain data for such keys, 
     		entries from different sources get separated by double slash //.
     		
-    		Since ReaScript API doesn't allow to undo metadata setting,
-    		the script provides an option to undo the last metadata import.
-    		The undo option is available for 30 minutes after the last 
-    		import.  
+		Since ReaScript API doesn't allow to undo metadata setting,
+		the script provides an option to undo the last metadata import.
+		The undo option is available for 30 minutes after the last 
+		import. After undo the undo data is cleared.  
     		It also provides options for clearing all metadata or metadata
     		of a particular scheme from the project render settings. These 
     		options however clear all entries including those which were 
@@ -317,6 +318,8 @@ local undo -- to condition an error message if undo wasn't performed
 		until #r.GetExtState(cmd_ID..':'..i, scheme..':1') == 0 -- scheme per item iteration end
 
 	end -- scheme_t loop end
+
+	if undo then r.DeleteExtState(cmd_ID, 'EXPIRY TIMER', true) end -- persist true // clear timer to grey out Undo menu item
 
 return undo
 
