@@ -3,7 +3,7 @@ ReaScript name: BuyOne_Import metadata from media into the Project Render Metada
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
-Changelog: v1.1 #Implemented clearing undo after undo
+Changelog: v1.1 #Implemented clearing undo data after undo
 		#Updated the About text
 Licence: WTFPL
 REAPER: at least v6.30
