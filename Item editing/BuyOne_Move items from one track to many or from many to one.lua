@@ -26,7 +26,7 @@ About:	When one track is selected or all selected items
 	action does (without creating a folder) and what 
 	'Item: Implode items across tracks into items on one track' does 
 	followed by 'Xenakios/SWS: Reposition selected items...' 
-	with the settings being 'Item end' and '0' when removeing gaps 
+	with the settings being 'Item end' and '0' when removing gaps 
 	betnween and overlaps in items.   
 	
 	Also check out mordi_Move selected items to new individual tracks.lua
