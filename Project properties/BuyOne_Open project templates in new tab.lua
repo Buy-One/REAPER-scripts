@@ -7,13 +7,13 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	An alternative to REAPER's native 'Project templates' submenu  
-    		which opens project template in a new tab.
-    	
-    		Also allows opening in another tab an instance of an already open
-    		project template which the native option doesn't allow.
-    		
-    		If the script is run under project template opened via REAPER native 
-    		menu it won't be checkmarked in the script menu as active because 
+	which opens project template in a new tab.
+
+	Also allows opening in another tab an instance of an already open
+	project template which the native option doesn't allow.
+	
+	If the script is run under project template opened via REAPER native 
+	menu it won't be checkmarked in the script menu as active because 
         REAPER opens project template anonymously.
 ]]
 -----------------------------------------------------------------------------
