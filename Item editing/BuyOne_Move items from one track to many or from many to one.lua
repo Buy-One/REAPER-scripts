@@ -7,29 +7,29 @@ Changelog: Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About:	When one track is selected or all selected items 
-		belong to the same track - moves respectively all 
-		or only selected items to separate tracks.   
-		Only works with one track at a time.   
-		
-		When at least two of selected items belong 
-		to different tracks - moves all selected items 
-		to a single track inserted right above the 1st 
-		selected item or at the top of the track list, 
-		depending on user's choice, retaining their 
-		relative positons or lining them up back to back 
-		without gaps and overlaps starting from the 1st 
-		selected item or from the project start depending 
-		on user's choice.  
-		
-		In essense does what 
-		'Xenakios/SWS: Explode selected items to new tracks (keeping positions)' 
-		action does (without creating a folder) and what 
-		'Item: Implode items across tracks into items on one track' does 
-		followed by 'Xenakios/SWS: Reposition selected items...' 
-		with the settings being 'Item end' and '0' when removeing gaps 
-		betnween and overlaps in items.   
-		
-		Also check out mordi_Move selected items to new individual tracks.lua
+	belong to the same track - moves respectively all 
+	or only selected items to separate tracks.   
+	Only works with one track at a time.   
+	
+	When at least two of selected items belong 
+	to different tracks - moves all selected items 
+	to a single track inserted right above the 1st 
+	selected item or at the top of the track list, 
+	depending on user's choice, retaining their 
+	relative positons or lining them up back to back 
+	without gaps and overlaps starting from the 1st 
+	selected item or from the project start depending 
+	on user's choice.  
+	
+	In essense does what 
+	'Xenakios/SWS: Explode selected items to new tracks (keeping positions)' 
+	action does (without creating a folder) and what 
+	'Item: Implode items across tracks into items on one track' does 
+	followed by 'Xenakios/SWS: Reposition selected items...' 
+	with the settings being 'Item end' and '0' when removeing gaps 
+	betnween and overlaps in items.   
+	
+	Also check out mordi_Move selected items to new individual tracks.lua
 ]]
 
 
