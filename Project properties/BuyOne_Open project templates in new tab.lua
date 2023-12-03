@@ -11,6 +11,10 @@ About: 	An alternative to REAPER's native 'Project templates' submenu
 
 	Also allows opening in another tab an instance of an already open
 	project template which the native option doesn't allow.
+
+	The script opens a project template under its file name rather than
+	anonymously like REAPER does so be sure to save it under a different
+	name to avoid overwriting the project template file.
 	
 	If the script is run under project template opened via REAPER native 
 	menu it won't be checkmarked in the script menu as active because 
