@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Remove gaps between regions.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: v1.1 #Added condition to only remove gaps between regions in time selection if one exists
+Version: 1.2
+Changelog: v1.2 #Removed redundant line of code
+	   v1.1 #Added condition to only remove gaps between regions in time selection if one exists
 		#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
@@ -128,7 +129,6 @@ local Act = r.Main_OnCommand
 r.PreventUIRefresh(1)
 r.Undo_BeginBlock()
 
-local time_st, time_end = r.GetSet_LoopTimeRange(false, false, 0, 0, false) -- isSet, isLoop, allowautoseek false
 local link_env = r.GetToggleCommandStateEx(0, 40070) == 1 -- Options: Move envelope points with media items
 local enable = link_env and Act(40070,0) -- Options: Move envelope points with media items
 
