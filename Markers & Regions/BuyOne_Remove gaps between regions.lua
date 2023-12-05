@@ -4,6 +4,7 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
 Changelog: v1.2 #Removed redundant line of code
+		#Updated custom actions in the 'About' text
 	   v1.1 #Added condition to only remove gaps between regions in time selection if one exists
 		#Updated 'About' text
 Licence: WTFPL
@@ -21,11 +22,13 @@ About: 	The script removes gaps between regions shifting them
 	actions can be used:
 	
 	Custom: Remove gap between two adjacent regions (place edit cursor within the 1st region)
+	  Time selection: Remove (unselect) time selection
 	  Markers: Go to next marker/project end
 	  Time selection: Set start point
 	  Markers: Go to next marker/project end
 	  Time selection: Set end point
 	  Time selection: Remove contents of time selection (moving later items)
+	  Time selection: Remove (unselect) time selection
 	  
 	Custom: Remove gap between project start and the 1st region (place edit cursor before 1st region)
 	  Transport: Go to start of project
@@ -33,6 +36,7 @@ About: 	The script removes gaps between regions shifting them
 	  Markers: Go to next marker/project end
 	  Time selection: Set end point
 	  Time selection: Remove contents of time selection (moving later items)
+	  Time selection: Remove (unselect) time selection
 	 
 	
 	They work as long as there're no markers within or outside of the regions
