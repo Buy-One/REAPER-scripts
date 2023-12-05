@@ -2,23 +2,19 @@
 ReaScript name: BuyOne_Open project templates in new tab.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: v1.1 #Made project templates open anonymously as they should
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	An alternative to REAPER's native 'Project templates' submenu  
 	which opens project template in a new tab.
 
 	Also allows opening in another tab an instance of an already open
-	project template which the native option doesn't allow.
+	project template which the native option doesn't allow.		
 
-	The script opens a project template under its file name rather than
-	anonymously like REAPER does so be sure to save it under a different
-	name to avoid overwriting the project template file.
-	
-	If the script is run under project template opened via REAPER native 
-	menu it won't be checkmarked in the script menu as active because 
-        REAPER opens project template anonymously.
+	If the script is run under an opened project template its name won't be 
+	checkmarked in the script menu as active because the template is loaded
+	anonymously.
 ]]
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
@@ -120,7 +116,7 @@ local projfn = output > 0 and proj_t[output]:match('!?(.+)') -- remove ! signify
 
 	if projfn and r.file_exists(projfn) then
 	r.Main_OnCommand(40859,0) -- New project tab
-	r.Main_openProject(projfn)
+	r.Main_openProject('template:'..projfn)
 	return r.defer(function() do return end end) end -- prevent generic undo point in case the above error message is displayed
 
 gfx.quit()
