@@ -2,15 +2,39 @@
 ReaScript name: BuyOne_Remove gaps between regions.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: v1.1 #Added condition to only remove gaps between regions in time selection if one exists
+		#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script removes gaps between regions shifting them
-    		leftwards.  
-    		If the option 'Options: Move envelope points with media items'
-    		is turned off the script temporarily enables it so that 
-    		automation follows regions shift on the time line.
+	leftwards.  
+	If time selection encompasses regions only gaps between 
+	regions within the time selection will be removed.  
+	If the option 'Options: Move envelope points with media items'
+	is turned off the script temporarily enables it so that 
+	automation follows regions shift on the time line.
+	
+	Alternatively to remove gap between two adjacent regions or
+	between the project start and the 1st region the following custom 
+	actions can be used:
+	
+	Custom: Remove gap between two adjacent regions (place edit cursor within the 1st region)
+	  Markers: Go to next marker/project end
+	  Time selection: Set start point
+	  Markers: Go to next marker/project end
+	  Time selection: Set end point
+	  Time selection: Remove contents of time selection (moving later items)
+	  
+	Custom: Remove gap between project start and the 1st region (place edit cursor before 1st region)
+	  Transport: Go to start of project
+	  Time selection: Set start point
+	  Markers: Go to next marker/project end
+	  Time selection: Set end point
+	  Time selection: Remove contents of time selection (moving later items)
+	 
+	
+	They work as long as there're no markers within or outside of the regions
 ]]
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
@@ -64,13 +88,16 @@ until condition and r.time_precise()-time_init >= 0.7 or not condition
 r.UpdateTimeline() -- might be needed because tooltip can sometimes affect graphics
 end
 
-
+local time_st, time_end = r.GetSet_LoopTimeRange(false, false, 0, 0, false) -- isSet, isLoop, allowautoseek false
+local time_sel = time_st ~= time_end
 local t, i = {}, 0
 local region_cnt, prev_end = 0
 	repeat
 	local retval, isrgn, pos, rgn_end, name, idx = r.EnumProjectMarkers(i)
 	region_cnt = isrgn and region_cnt+1 or region_cnt
-		if isrgn and prev_end and pos > prev_end then
+		if isrgn and prev_end and pos > prev_end 
+		and (not time_sel or time_st <= prev_end and time_end >= pos)
+		then
 		t[#t+1] = {st=prev_end, fin=pos}
 		end
 	prev_end = (not prev_end or pos >= prev_end) and rgn_end or prev_end -- if next region end time is smaller than that of the previous one such region is enclosed within the previous hence keep the previous region end because this region is longer, only update if the next region start is equal or greater than the prev region end
@@ -90,6 +117,7 @@ MOVE_TO_PROJ_START = #MOVE_TO_PROJ_START:gsub(' ','') > 0
 local err = region_cnt == 0 and 'no regions in the project'
 or #t == 0 and region_cnt == 1 and '\tnot enough regons \n\n in the project to have gaps'
 or #t == 0 and 'no gaps between regions'
+..(time_sel and ' \n\n      in time selection \n\n\t  or no regions\n\n\tin time selection' or '')
 
 	if err then
 	Error_Tooltip('\n\n '..err..' \n\n', 1,1) -- caps, spaced true
