@@ -7,44 +7,44 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script inserts gaps between regions shifting them
-    		rightwards.  
-    		If time selection encompasses contiguous regions meeting
-    		points only gaps between regions within the time selection 
-    		will be inserted. 
-    		
-    		If the option 'Options: Move envelope points with media items'
-    		is turned off the script temporarily enables it so that 
-    		automation follows regions shift on the time line.
-    		
-    		By defult the length of the gap equals the length of division
-    		in the currently active grid. So to change the gap length change
-    		the grid resolution before running the script.  
-    		If DIALOGUE setting is enabled, gaps of arbitrary length in 
-    		seconds can be inserted.
-    		
-    		Alternatively to insert gap between two contiguous regions or
-    		between the project start and the 1st region the following custom 
-    		actions can be used:
-    		
-    		Custom: Insert gap between two contiguous regions (place edit cursor within the 1st region)
-    		  Time selection: Remove (unselect) time selection
-    		  Markers: Go to next marker/project end
-    		  Time selection: Set start point
-    		  View: Move cursor right to grid division
-    		  Time selection: Set end point
-    		  Time selection: Insert empty space at time selection (moving later items)
-    		  Time selection: Remove (unselect) time selection
-    		  
-    		Custom: Insert gap between project start and the 1st region
-    		  Transport: Go to start of project
-    		  Time selection: Set start point
-    		  View: Move cursor right to grid division
-    		  Time selection: Set end point
-    		  Time selection: Insert empty space at time selection (moving later items)
-    		  Time selection: Remove (unselect) time selection
-    		 
-    		
-    		They work as long as there're no markers within the regions.
+	rightwards.  
+	If time selection encompasses contiguous regions meeting
+	points only gaps between regions within the time selection 
+	will be inserted. 
+	
+	If the option 'Options: Move envelope points with media items'
+	is turned off the script temporarily enables it so that 
+	automation follows regions shift on the time line.
+	
+	By defult the length of the gap equals the length of division
+	in the currently active grid. So to change the gap length change
+	the grid resolution before running the script.  
+	If DIALOGUE setting is enabled, gaps of arbitrary length in 
+	seconds can be inserted.
+	
+	Alternatively to insert gap between two contiguous regions or
+	between the project start and the 1st region the following custom 
+	actions can be used:
+	
+	Custom: Insert gap between two contiguous regions (place edit cursor within the 1st region)
+	  Time selection: Remove (unselect) time selection
+	  Markers: Go to next marker/project end
+	  Time selection: Set start point
+	  View: Move cursor right to grid division
+	  Time selection: Set end point
+	  Time selection: Insert empty space at time selection (moving later items)
+	  Time selection: Remove (unselect) time selection
+	  
+	Custom: Insert gap between project start and the 1st region
+	  Transport: Go to start of project
+	  Time selection: Set start point
+	  View: Move cursor right to grid division
+	  Time selection: Set end point
+	  Time selection: Insert empty space at time selection (moving later items)
+	  Time selection: Remove (unselect) time selection
+	 
+	
+	They work as long as there're no markers within the regions.
 ]]
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
