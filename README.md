@@ -22,6 +22,8 @@ Updating scripts which include USER SETTINGS, in order to retain them, first ove
 
 **Since this repo isn't compatible with ReaPack, if you have a Gihub account you can subscribe to the repo under the *Watch* button to be able to receive updates. To only get updates regarding new scripts and newer versions, under *Custom* submenu of the *Watch* menu enable only options *Pull requests* and *Releases*.** 
 
+**Something to be aware of is that scripts marked with META in their name are supposed to work as individual scripts under different names listed in the META script header, because their functionality depends on the name. If you feel adventerous you're welcome to create their multiple copies having named them according to the names listed inside.** 
+
   
 </br>
 </br>
