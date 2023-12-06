@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Insert gaps between regions.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: v1.1 #Added an option to specify gap length in frames when dialogue is enabled
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script inserts gaps between regions shifting them
@@ -42,9 +42,9 @@ About: 	The script inserts gaps between regions shifting them
 	  Time selection: Set end point
 	  Time selection: Insert empty space at time selection (moving later items)
 	  Time selection: Remove (unselect) time selection
-	 
-	
-	They work as long as there're no markers within the regions.
+		 
+		
+		They work as long as there're no markers within the regions.
 ]]
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
@@ -57,9 +57,9 @@ About: 	The script inserts gaps between regions shifting them
 
 SHIFT_FROM_PROJ_START = ""
 
--- Enable to be able to use arbitrary gap length in seconds
+-- Enable to be able to use arbitrary gap length in seconds or frames
 
-DIALOGUE = ""
+DIALOGUE = "1"
 
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
@@ -114,6 +114,15 @@ return 60/r.Master_GetTempo()*div/0.25 -- duration of 1 grid division in sec; 0.
 end
 
 
+function frames2sec(frames_num)
+local frame_rate, isdropFrame = r.TimeMap_curFrameRate(0)
+return frames_num/frame_rate
+--[[ OR
+local sec_per_frame = 1/frame_rate
+return frames_num*sec_per_frame
+]]
+end
+
 
 local time_st, time_end = r.GetSet_LoopTimeRange(false, false, 0, 0, false) -- isSet, isLoop, allowautoseek false
 local time_sel = time_st ~= time_end
@@ -155,19 +164,24 @@ local Act = r.Main_OnCommand
 DIALOGUE = #DIALOGUE:gsub(' ','') > 0
 
 ::RETRY::
+local comm = ',to indicate frame add F or f'
+output = output and output..comm or comm
 ret, output = table.unpack(DIALOGUE -- global to be able to autofill the dialogue with last entry in RETRY loop
-and {r.GetUserInputs('INSERT GAPS BETWEEN REGIONS', 1, 'Gap length in sec:,extrawidth=100', output or '')}
+and {r.GetUserInputs('INSERT GAPS BETWEEN REGIONS', 2, 'Gap length in sec or frames, comment:,extrawidth=100', output or '')}
 or {})
+output = output and output:match('(.+),') -- exclude comment
 
 	if DIALOGUE and (not ret or #output:gsub(' ','') == 0) then return r.defer(no_undo) end
 	
-val = DIALOGUE and output:gsub('[%-%a%s]+','')
+local frames = DIALOGUE and output:match('[Ff]+')
+val = DIALOGUE and output:gsub('[%-%a%s]+','') -- remove some invalid characters
 val = DIALOGUE and tonumber(val) or not DIALOGUE and Grid_Div_Dur_In_Sec()
 
 	if not val or val == 0 then Error_Tooltip('\n\n not a valid input \n\n', 1,1) -- caps, spaced true
 	goto RETRY
 	end
 
+val = DIALOGUE and frames and frames2sec(val) or val
 
 r.PreventUIRefresh(1)
 r.Undo_BeginBlock()
