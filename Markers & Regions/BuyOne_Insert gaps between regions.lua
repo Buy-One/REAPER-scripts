@@ -44,7 +44,7 @@ About: 	The script inserts gaps between regions shifting them
 	  Time selection: Remove (unselect) time selection
 		 
 		
-		They work as long as there're no markers within the regions.
+	They work as long as there're no markers within the regions.
 ]]
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
