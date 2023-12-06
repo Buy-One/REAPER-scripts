@@ -59,7 +59,7 @@ SHIFT_FROM_PROJ_START = ""
 
 -- Enable to be able to use arbitrary gap length in seconds or frames
 
-DIALOGUE = "1"
+DIALOGUE = ""
 
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
