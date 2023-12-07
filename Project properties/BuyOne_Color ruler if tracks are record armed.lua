@@ -8,12 +8,12 @@ Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is supposed to run in the background monitoring
       	record arm state of tracks to color the ruler when any of them
-    		becomes record armed as long as REAPER doesn't record.  
-    		While the script is running it reports On toggle state 
-    		so if it's linked to the toolbar button or a menu item these 
-    		will reflect the current toggle state.  
-    		For color and additional settings refer to the USER SETTING
-    		below.
+	becomes record armed as long as REAPER doesn't record.  
+	While the script is running it reports On toggle state 
+	so if it's linked to the toolbar button or a menu item these 
+	will reflect the current toggle state.  
+	For color and additional settings refer to the USER SETTING
+	below.
 		
 ]]
 -----------------------------------------------------------------------------
