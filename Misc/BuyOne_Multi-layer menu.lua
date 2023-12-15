@@ -2,13 +2,16 @@
 ReaScript name: BuyOne_Multi-layer menu.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: v1.1 #Optimized some code redundancy
+		#Added menu items sanitization from special menu formatting characters
+		#Added title of the currently active layer to the layer menu title
+		#Updated the guide
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script allows accessing and using multiple menus, constructed by the user 
         within this script, from the same menu interface.
-    		
+		
 	## M E N U  C O N S T R U C T I O N  G U I D E
 	
 	▒ MENU ITEMS
@@ -113,7 +116,11 @@ About: 	The script allows accessing and using multiple menus, constructed by the
 	My submenu TITLE
 		6789 My submenu item|
 	543121 My menu item 2
-
+	
+	The menu layer header format effectively means that menu item labels
+	should not contain square brackets lest they're mistaken for layer
+	header.
+	
 	The entire menu list must be either preceded by one layer header or
 	not contain any layer headers at all. Presence of layer headers further
 	down the list without there being one at the very beginning will result
@@ -127,12 +134,12 @@ About: 	The script allows accessing and using multiple menus, constructed by the
 	Empty lines in the menu list are allowed, they won't be converted into 
 	menu items but can help to visually organize the list.
 
-	Don't use in the menu items the following characters: <,>,|,#,! because 
-	these reserved for menu formatting and their presence is likely to break 
-	the menu structure in the process of the menu list conversion into the 
-	actual menu. Ampersand & character isn't displayed in the menu because
-	it can be used as a quck access shortcut to activate a menu item from the
-	computer keyboard, e.g.
+	Don't precede menu item labels with the following characters: <,>,|,#,! 
+	because these reserved for menu formatting and their presence is likely 
+	to break the menu structure in the process of the menu list conversion 
+	into the actual menu. Ampersand '&' character isn't displayed in the menu 
+	because it can be used as a quick access shortcut to activate a menu item 
+	from the computer keyboard, e.g.
 	
 	12345 &My menu item 1 <----- Can be activated by pressing 'm' on the keyboard
 	6789 My men&u item 2 <----- Can be activated by pressing 'u' on the keyboard
@@ -239,49 +246,40 @@ local last_depth, min_depth = 0
 				if label then
 				local act = tbl_act[#tbl_act] -- get data stored last when submenu title was encountered
 				local orig_submenu_tit = #act > 0 and act..' '..label or label -- reconstruct submenu title which might have got split
+				orig_submenu_tit = orig_submenu_tit:match('^[%s<>|#!]*(.+)') -- removing all formatting characters + spaces, if any, from the submenu title start
 				tbl_menu[#tbl_menu] = '>'..orig_submenu_tit -- re-insert submenu title
 				table.remove(tbl_act, #tbl_act) -- remove blank action added in the block below when submenu title was encountered in the immediately preceding cycle
 				end
-			-- store submenu items and actions
-			label = line:match(' (.+)') or line -- either regular menu item or single word submenu title or random text
-			local act = line:match('(.-) ')
-			tbl_act[#tbl_act+1] = act or ''
-			-- toggle state will only be reflected for actions in the same context the script is run under
-			-- if run from the Main section MIDI Editor toggle states won't be indicated and vice versa
-			local togg_state = act and r.GetToggleCommandStateEx(sectionID, r.NamedCommandLookup(act)) == 1
-			tbl_menu[#tbl_menu+1] = (togg_state and '!' or '')..label..'|'
 			
 			last_depth = cur_depth -- update for subsequent cycles
 			
-			else
-				if cur_depth < last_depth then -- first line of a higher level menu after last submenu has been exited
+			elseif cur_depth < last_depth then -- first line of a higher level menu after last submenu has been exited
 
-				local new_lvl_cnt = cur_depth < min_depth and last_depth-min_depth or last_depth-cur_depth -- count level diff between current and previous to add exit tag accounting for cases where current level's depth is smaller than the mininal depth because the menu started off with indentation
+			local new_lvl_cnt = cur_depth < min_depth and last_depth-min_depth or last_depth-cur_depth -- count level diff between current and previous to add exit tag accounting for cases where current level's depth is smaller than the mininal depth because the menu started off with indentation
 
-					if new_lvl_cnt > 0 then -- if 0 there's no difference in depth so no exit tags are needed, ensures proper handling of cases where a menu item with depth smaller than the minimum is found so that such new depth items and their followers aren't ignored
-					
-					local exit_tag = ('|<'):rep(new_lvl_cnt-1)..'|' -- multiplying by the difference between the last and the current depths to go up to the corresponding level; -1 because 1 exit tag raises menu 2 levels up, 1 level up is a single < preceding the last menu item of the level; if difference is negative string.rep function will simply produce an empty string
-					local last_item = tbl_menu[#tbl_menu]:match('(.+)|') -- excluding last pipe since it will be re-added with exit tag
-									
-					tbl_menu[#tbl_menu] = '<'..last_item..exit_tag -- close previous submenu
-					
-					end
+				if new_lvl_cnt > 0 then -- if 0 there's no difference in depth so no exit tags are needed, ensures proper handling of cases where a menu item with depth smaller than the minimum is found so that such new depth items and their followers aren't ignored
 				
-				last_depth = cur_depth -- update for subsequent cycles				
-				min_depth = cur_depth < min_depth and cur_depth or min_depth -- EXPERIMENT update min depth if current one is yet smaller so that all subsequent memu items are evaluated against it 
+				local exit_tag = ('|<'):rep(new_lvl_cnt-1)..'|' -- multiplying by the difference between the last and the current depths to go up to the corresponding level; -1 because 1 exit tag raises menu 2 levels up, 1 level up is a single < preceding the last menu item of the level; if difference is negative string.rep function will simply produce an empty string
+				local last_item = tbl_menu[#tbl_menu]:match('(.+)|') -- excluding last pipe since it will be re-added with exit tag
+								
+				tbl_menu[#tbl_menu] = '<'..last_item..exit_tag -- close previous submenu
 				
 				end
+			
+			last_depth = cur_depth -- update for subsequent cycles				
+			min_depth = cur_depth < min_depth and cur_depth or min_depth -- EXPERIMENT update min depth if current one is yet smaller so that all subsequent memu items are evaluated against it 
+			
+			end
 
 			-- add label at the current depth level and store action
 			local label = line:match(' (.+)') or line -- either regular menu item or single word submenu title or random text
+			label = label:match('^[%s<>|#!]*(.+)') -- removing all formatting characters + spaces, if any, from the label start
 			local act = line:match('(.-) ')
 			tbl_act[#tbl_act+1] = act or ''
 			-- toggle state will only be reflected for actions in the same context the script is run under
 			-- if run from the Main section MIDI Editor toggle states won't be indicated and vice versa
 			local togg_state = act and r.GetToggleCommandStateEx(sectionID, r.NamedCommandLookup(act)) == 1
 			tbl_menu[#tbl_menu+1] = (togg_state and '!' or '')..label..'|'
-
-			end
 
 		end
 
@@ -399,7 +397,7 @@ local layer_titles_menu = ''
 	end
 
 layer_idx = math.floor(layer_idx) -- remove decimal zero
-local layer_titles_menu = '>LAYERS MENU ('..layer_idx..')|'..layer_titles_menu..'||'
+local layer_titles_menu = '>LAYERS MENU  ('..layer_titles_t[layer_idx]..')|'..layer_titles_menu..'||'
 local cur_layer_menu = type(layers_menu_t[layer_idx]) == 'table' and table.concat(layers_menu_t[layer_idx])
 
 	if not cur_layer_menu then
