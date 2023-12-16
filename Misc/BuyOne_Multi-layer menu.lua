@@ -377,7 +377,6 @@ end
 
 
 local is_new_value, fullpath, sectionID, cmd_ID, mode, resolution, val = r.get_action_context()
-local fullpath = fullpath:match('([^\\/]+)%.%w+') -- without path and extension
 local cmd_ID = r.ReverseNamedCommandLookup(cmd_ID)
 
 local layer_idx = layer_idx or r.GetExtState(cmd_ID, 'LAYER MENU INDEX')
