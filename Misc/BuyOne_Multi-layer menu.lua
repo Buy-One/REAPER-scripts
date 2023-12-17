@@ -272,15 +272,15 @@ local last_depth, min_depth = 0
 			
 			end
 
-			-- add label at the current depth level and store action
-			local label = line:match(' (.+)') or line -- either regular menu item or single word submenu title or random text
-			label = label:match('^[%s<>|#!]*(.+)') -- removing all formatting characters + spaces, if any, from the label start
-			local act = line:match('(.-) ')
-			tbl_act[#tbl_act+1] = act or ''
-			-- toggle state will only be reflected for actions in the same context the script is run under
-			-- if run from the Main section MIDI Editor toggle states won't be indicated and vice versa
-			local togg_state = act and r.GetToggleCommandStateEx(sectionID, r.NamedCommandLookup(act)) == 1
-			tbl_menu[#tbl_menu+1] = (togg_state and '!' or '')..label..'|'
+		-- add label at the current depth level and store action
+		local label = line:match(' (.+)') or line -- either regular menu item or single word submenu title or random text
+		label = label:match('^[%s<>|#!]*(.+)') -- removing all formatting characters + spaces, if any, from the label start
+		local act = line:match('(.-) ')
+		tbl_act[#tbl_act+1] = act or ''
+		-- toggle state will only be reflected for actions in the same context the script is run under
+		-- if run from the Main section MIDI Editor toggle states won't be indicated and vice versa
+		local togg_state = act and r.GetToggleCommandStateEx(sectionID, r.NamedCommandLookup(act)) == 1
+		tbl_menu[#tbl_menu+1] = (togg_state and '!' or '')..label..'|'
 
 		end
 
