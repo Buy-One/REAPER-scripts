@@ -397,7 +397,7 @@ local layer_titles_menu = ''
 	end
 
 layer_idx = math.floor(layer_idx) -- remove decimal zero
-local layer_titles_menu = '>LAYERS MENU  ('..layer_titles_t[layer_idx]..')|'..layer_titles_menu..'||'
+local layer_titles_menu = '>LAYERS MENU  ['..layer_titles_t[layer_idx]..']|'..layer_titles_menu..'||'
 local cur_layer_menu = type(layers_menu_t[layer_idx]) == 'table' and table.concat(layers_menu_t[layer_idx])
 
 	if not cur_layer_menu then
