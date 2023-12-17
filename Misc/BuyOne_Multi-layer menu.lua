@@ -379,7 +379,7 @@ end
 local is_new_value, fullpath, sectionID, cmd_ID, mode, resolution, val = r.get_action_context()
 local cmd_ID = r.ReverseNamedCommandLookup(cmd_ID)
 
-local layer_idx = layer_idx or r.GetExtState(cmd_ID, 'LAYER MENU INDEX')
+local layer_idx = layer_idx or r.GetExtState(cmd_ID, 'LAST LAYER INDEX')
 layer_idx = #layer_idx == 0 and 1 or tonumber(layer_idx)
 
 local layers_menu_t, layers_act_t, layer_titles_t = Parse_Menu_Structure(MULTY_LAYER_MENU, sectionID)
@@ -438,7 +438,7 @@ local output = Reload_Menu_at_Same_Pos(menu, true) -- keep_menu_open true, left_
 		end
 		
 		if output <= 2+layer_cnt then -- store layer index for the next run, +2 because layer menu is preceded by 2 menu items
-		r.SetExtState(cmd_ID, 'LAYER MENU INDEX', layer_idx, false) -- persist false
+		r.SetExtState(cmd_ID, 'LAST LAYER INDEX', layer_idx, false) -- persist false
 		end
 		
 	goto RELOAD
