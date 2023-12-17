@@ -2,8 +2,11 @@
 ReaScript name: BuyOne_Multi-layer menu.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: v1.1 #Optimized some code redundancy
+Version: 1.2
+Changelog: v1.2 #Fixed error when MULTY_LAYER_MENU setting doesn't contain a valid menu
+		#Added custom error messages for such cases
+		#Updated Menu construction guide
+  	   v1.1 #Optimized some code redundancy
 		#Added menu items sanitization from special menu formatting characters
 		#Added title of the currently active layer to the layer menu title
 		#Updated the guide
@@ -101,6 +104,7 @@ About: 	The script allows accessing and using multiple menus, constructed by the
 		6789 My submenu item| <--- The separator will follow 'My submenu TITLE' in the actual menu
 	5431 My menu item 2
 
+	
 	▒ MENU LAYERS
 
 	A menu layer is a separate full-fledged menu which in the main menu
@@ -121,13 +125,13 @@ About: 	The script allows accessing and using multiple menus, constructed by the
 	should not contain square brackets lest they're mistaken for layer
 	header.
 	
-	The entire menu list must be either preceded by one layer header or
-	not contain any layer headers at all. Presence of layer headers further
-	down the list without there being one at the very beginning will result
-	in a script error. 
+	The entire menu list must be preceded by one layer header. Presence 
+	of layer headers further down the list without there being one at 
+	the very beginning will result in a script error. 
 	The error may also be thrown if a layer header of the last used layer
 	was removed from the list between script runs which is a fairly unlikely
 	scenario.
+	
 	
 	▒ MISCELLANEOUS
 
@@ -397,12 +401,22 @@ local layer_titles_menu = ''
 	end
 
 layer_idx = math.floor(layer_idx) -- remove decimal zero
-local layer_titles_menu = '>LAYERS MENU  ['..layer_titles_t[layer_idx]..']|'..layer_titles_menu..'||'
+local layer_title = layer_titles_t[layer_idx]
+
+	if not layer_title then 
+	-- in case MULTY_LAYER_MENU contains text which isn't a menu 
+	-- or doesn't contain at least 1 menu layer header
+	Error_Tooltip('\n\n no valid menu was found \n\n', 1,1) -- caps, spaced true
+	return r.defer(no_undo) end
+
+local layer_titles_menu = '>LAYERS MENU  ['..layer_title..']|'..layer_titles_menu..'||'
 local cur_layer_menu = type(layers_menu_t[layer_idx]) == 'table' and table.concat(layers_menu_t[layer_idx])
 
-	if not cur_layer_menu then
-	Error_Tooltip('\n\n    malformed layer menu. \n\n menu layer '
-	..layer_idx..' wasn\'t found. \n\n', 1,1) -- caps, spaced true
+local err = not cur_layer_menu and '    malformed layer menu. \n\n menu layer '..layer_idx..' wasn\'t found. ' -- layer was removed in between the script runs
+or #cur_layer_menu == 0 and 'no menu was found' -- there's header but no menu
+	
+	if err then
+	Error_Tooltip('\n\n '..err..' \n\n', 1,1) -- caps, spaced true
 	return r.defer(no_undo) end
 
 local menu = 'Next layer -->|Previous layer <--||'..layer_titles_menu..cur_layer_menu
