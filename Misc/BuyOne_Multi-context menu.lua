@@ -239,7 +239,7 @@ TRANSPORT = ""
 -- if action command ID from another section is specified, 
 -- by running the action you won't get the desired result, 
 -- since action with identical command ID from the MIDI Editor 
--- section will be exexuted instead if found
+-- section will be executed instead, if found
 
 MIDI_PIANO_ROLL = ""
 MIDI_CC = ""
