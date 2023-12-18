@@ -8,170 +8,170 @@ Changelog: v1.1 #Redefined condition for running MIDI Editor actions
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script allows accessing and using different menus, constructed 
-		by the user within this script, from the same menu interface, depending
-		on the mouse cursor context. The context is activated by pointing
-		the mouse cursor at a certain area (see USER SETTINGS for details).
-		For this reason the script is mainly designed to be executed with
-		a shortcut so that the mouse cursor is not engaged.  
-		Still it can be run from another menu or from a toolbar button, however
-		in this case its behavior slightly differs because no valid context can
-		be detected. So on the very first run it will load the menu layer for 
-		the context which is active first in the list of contexts of the 
-		USER SETTINGS. After the first run it will store the currently displayed
-		layer and will reload it on the next run. Layers can be switched at will
-		via the layer submenu. Thus in this scenario the script behaves exactly
-		like BuyOne_Multi-layer menu.lua.  
-		The last displayed layer will also be reloaded when the script is run
-		with a shortcut without valid layer having been detected.  
-		During the session the script keeps track of the last used menu layer and
-		loads it when no valid context is detected, but in each new session the 
-		default layer to be loaded when there's no valid context is always the 
-		first one active in the USER SETTINGS.
-		
-		
-		## M E N U  C O N S T R U C T I O N  G U I D E
-		
-		▒ MENU ITEMS
+	by the user within this script, from the same menu interface, depending
+	on the mouse cursor context. The context is activated by pointing
+	the mouse cursor at a certain area (see USER SETTINGS for details).
+	For this reason the script is mainly designed to be executed with
+	a shortcut so that the mouse cursor is not engaged.  
+	Still it can be run from another menu or from a toolbar button, however
+	in this case its behavior slightly differs because no valid context can
+	be detected. So on the very first run it will load the menu layer for 
+	the context which is active first in the list of contexts of the 
+	USER SETTINGS. After the first run it will store the currently displayed
+	layer and will reload it on the next run. Layers can be switched at will
+	via the layer submenu. Thus in this scenario the script behaves exactly
+	like BuyOne_Multi-layer menu.lua.  
+	The last displayed layer will also be reloaded when the script is run
+	with a shortcut without valid layer having been detected.  
+	During the session the script keeps track of the last used menu layer and
+	loads it when no valid context is detected, but in each new session the 
+	default layer to be loaded when there's no valid context is always the 
+	first one active in the USER SETTINGS.
+	
+	
+	## M E N U  C O N S T R U C T I O N  G U I D E
+	
+	▒ MENU ITEMS
 
-		The format of a menu item is as follows:
-		
-		[tab space][action/script command ID/function name][single space][menu item label]
+	The format of a menu item is as follows:
+	
+	[tab space][action/script command ID/function name][single space][menu item label]
 
-		To be recognized all user functions must be suffixed with double parenthesis
-		in the menu and be global in the script, local functions won't be recognized 
-		even with the suffix, e.g.:
+	To be recognized all user functions must be suffixed with double parenthesis
+	in the menu and be global in the script, local functions won't be recognized 
+	even with the suffix, e.g.:
 
-		12345 My menu item <---- REAPER action
-		My_Function() My function menu label <---- User function
+	12345 My menu item <---- REAPER action
+	My_Function() My function menu label <---- User function
 
-		Since the script doesn't create undo points on its own make sure that
-		your functions are configured to create their own undo points if necessary.
-		For ease of organization it's recommended to place all your user functions
-		in the USER FUNCTIONS section of this script but in any event it's not 
-		recommended placing them after the MAIN ROUTINE line of the script.
+	Since the script doesn't create undo points on its own make sure that
+	your functions are configured to create their own undo points if necessary.
+	For ease of organization it's recommended to place all your user functions
+	in the USER FUNCTIONS section of this script but in any event it's not 
+	recommended placing them after the MAIN ROUTINE line of the script.
 
-		To add a separator after a menu item append a pipe character '|' to it, 
-		to thicken the separator add several of them, e.g.:
+	To add a separator after a menu item append a pipe character '|' to it, 
+	to thicken the separator add several of them, e.g.:
 
-		12345 My menu item|
-		6789 My menu item|||
+	12345 My menu item|
+	6789 My menu item|||
 
 
-		▒ NESTED MENUS (SUBMENUS)
+	▒ NESTED MENUS (SUBMENUS)
 
-		Submenu items must be indented by 1 tab space relative to the menu items
-		of am immediately preceding higher level. That's submenu depth. More than 
-		1 tab space may also work but it will complicate things and is likely to 
-		break the menu structure if the depth isn't maintained consistently. 	
-		A list of submenu items must be preceded with the submenu title which will 
-		function as a point of access to the submenu from a higher level menu. 
-		The depth (indentation) of a submenu title must be the same as that of the 
-		menu level immediately preceding the submenu. A submenu title format isn't
-		prescribed because it's not designed to trigger actions, e.g.
+	Submenu items must be indented by 1 tab space relative to the menu items
+	of am immediately preceding higher level. That's submenu depth. More than 
+	1 tab space may also work but it will complicate things and is likely to 
+	break the menu structure if the depth isn't maintained consistently. 	
+	A list of submenu items must be preceded with the submenu title which will 
+	function as a point of access to the submenu from a higher level menu. 
+	The depth (indentation) of a submenu title must be the same as that of the 
+	menu level immediately preceding the submenu. A submenu title format isn't
+	prescribed because it's not designed to trigger actions, e.g.
 
-		12345 My menu item 1 <--------- Top level
-		My submenu TITLE <--------- Top level
-			6789 My submenu item 1 <--------- 2nd level
-			My sub-submenu TITLE <--------- 2nd level
-				9876 My sub-submenu item 1 <--------- 3d level
-			9876 My submenu item 2 <--------- 2nd level
-		5431 My menu item 2 <--------- Top level
+	12345 My menu item 1 <--------- Top level
+	My submenu TITLE <--------- Top level
+		6789 My submenu item 1 <--------- 2nd level
+		My sub-submenu TITLE <--------- 2nd level
+			9876 My sub-submenu item 1 <--------- 3d level
+		9876 My submenu item 2 <--------- 2nd level
+	5431 My menu item 2 <--------- Top level
 
-		If a submenu isn't explicitly preceded with a title, the menu item 
-		immediately preceding the submenu will be used instead because its depth 
-		is 1 tab space smaller than than of the submenu, which isn't something 
-		you'd want, e.g.:
-		
-		12345 My menu item 1 <--------- A top level item turned title of the next submenu
-							<---------  No title
-			6789 My submenu item 1 <--------- 2nd level item turned title of the next submenu
-							<---------  No title
-				9876 My sub-submenu item 1 <--------- 3d level
-			9876 My submenu item 2 <--------- 2nd level
-		5431 My menu item 2 <--------- Top level
-		
-		
-		The menu can start off with a submenu (see below).
+	If a submenu isn't explicitly preceded with a title, the menu item 
+	immediately preceding the submenu will be used instead because its depth 
+	is 1 tab space smaller than than of the submenu, which isn't something 
+	you'd want, e.g.:
+	
+	12345 My menu item 1 <--------- A top level item turned title of the next submenu
+						<---------  No title
+		6789 My submenu item 1 <--------- 2nd level item turned title of the next submenu
+						<---------  No title
+			9876 My sub-submenu item 1 <--------- 3d level
+		9876 My submenu item 2 <--------- 2nd level
+	5431 My menu item 2 <--------- Top level
+	
+	
+	The menu can start off with a submenu (see below).
 
-		The very first menu item is considered a top level item regardless of its 
-		indentation from the left edge of the page and its depth considered 
-		to be the smallest, all other levels will be processed relative to it. 
-		The first menu item whose identation is smaller than that of the top level 
-		sets the new top level depth and all subsequent items will be processed 
-		relative to it, e.g:
+	The very first menu item is considered a top level item regardless of its 
+	indentation from the left edge of the page and its depth considered 
+	to be the smallest, all other levels will be processed relative to it. 
+	The first menu item whose identation is smaller than that of the top level 
+	sets the new top level depth and all subsequent items will be processed 
+	relative to it, e.g:
 
-			My submenu 1 TITLE <--------- Top level
-				12345 My submenu 1 item 1 <--------- 2nd level
-			6789 My top menu item 1 <--------- Top level
-			My submenu 2 TITLE <--------- Top level
-				9876 My submenu 2 item 1 <--------- 2nd level
-		9876 My top menu item 2 <--------- Item at tew top level depth
-		My submenu 3 TITLE <--------- Menu title at new top level depth
-			5431 My submenu 3 item 2 <--------- A submenu relative to the new top level depth
-		6941 My top menu item 3 <--------- Item at tew top level depth
+		My submenu 1 TITLE <--------- Top level
+			12345 My submenu 1 item 1 <--------- 2nd level
+		6789 My top menu item 1 <--------- Top level
+		My submenu 2 TITLE <--------- Top level
+			9876 My submenu 2 item 1 <--------- 2nd level
+	9876 My top menu item 2 <--------- Item at tew top level depth
+	My submenu 3 TITLE <--------- Menu title at new top level depth
+		5431 My submenu 3 item 2 <--------- A submenu relative to the new top level depth
+	6941 My top menu item 3 <--------- Item at tew top level depth
 
-		To add a separator after a nested menu (submenu) title append a pipe 
-		character '|' to the last item in the submenu, e.g.:
+	To add a separator after a nested menu (submenu) title append a pipe 
+	character '|' to the last item in the submenu, e.g.:
 
-		12345 My menu item 1
-		My submenu TITLE
-			6789 My submenu item| <--- The separator will follow 'My submenu TITLE' in the actual menu
-		5431 My menu item 2
+	12345 My menu item 1
+	My submenu TITLE
+		6789 My submenu item| <--- The separator will follow 'My submenu TITLE' in the actual menu
+	5431 My menu item 2
 
-		▒ MENU LAYERS
+	▒ MENU LAYERS
 
-		A menu layer is a separate full-fledged menu which in the main menu
-		can be accessed from the list of layers or with next/previous 
-		navigation menu items.
+	A menu layer is a separate full-fledged menu which in the main menu
+	can be accessed from the list of layers or with next/previous 
+	navigation menu items.
 
-		To define a menu layer precede the list of menu items with the menu 
-		layer header enclosed within square brackets, e.g.:
+	To define a menu layer precede the list of menu items with the menu 
+	layer header enclosed within square brackets, e.g.:
 
-		[My menu layer 1]
+	[My menu layer 1]
 
-		12345 My menu item 1
-		My submenu TITLE
-			6789 My submenu item|
-		543121 My menu item 2
-		
-		The menu layer header format effectively means that menu item labels
-		should not contain square brackets lest they're mistaken for layer
-		header.
-		
-		The entire menu list must be either preceded by one layer header or
-		not contain any layer headers at all. Presence of layer headers further
-		down the list without there being one at the very beginning will result
-		in a script error. 
-		The error may also be thrown if a layer header of the last used layer
-		was removed from the list between script runs which is a fairly unlikely
-		scenario.
-		
-		▒ MISCELLANEOUS
+	12345 My menu item 1
+	My submenu TITLE
+		6789 My submenu item|
+	543121 My menu item 2
+	
+	The menu layer header format effectively means that menu item labels
+	should not contain square brackets lest they're mistaken for layer
+	header.
+	
+	The entire menu list must be either preceded by one layer header or
+	not contain any layer headers at all. Presence of layer headers further
+	down the list without there being one at the very beginning will result
+	in a script error. 
+	The error may also be thrown if a layer header of the last used layer
+	was removed from the list between script runs which is a fairly unlikely
+	scenario.
+	
+	▒ MISCELLANEOUS
 
-		Empty lines in the menu list are allowed, they won't be converted into 
-		menu items but can help to visually organize the list.
+	Empty lines in the menu list are allowed, they won't be converted into 
+	menu items but can help to visually organize the list.
 
-		Don't precede menu item labels with the following characters: <,>,|,#,! 
-		because these reserved for menu formatting and their presence is likely 
-		to break the menu structure in the process of the menu list conversion 
-		into the actual menu. Ampersand '&' character isn't displayed in the menu 
-		because it can be used as a quick access shortcut to activate a menu item 
-		from the computer keyboard, e.g.
-		
-		12345 &My menu item 1 <----- Can be activated by pressing 'm' on the keyboard
-		6789 My men&u item 2 <----- Can be activated by pressing 'u' on the keyboard
-		
-		Only one such quick access shortcut is supported per menu item.
+	Don't precede menu item labels with the following characters: <,>,|,#,! 
+	because these reserved for menu formatting and their presence is likely 
+	to break the menu structure in the process of the menu list conversion 
+	into the actual menu. Ampersand '&' character isn't displayed in the menu 
+	because it can be used as a quick access shortcut to activate a menu item 
+	from the computer keyboard, e.g.
+	
+	12345 &My menu item 1 <----- Can be activated by pressing 'm' on the keyboard
+	6789 My men&u item 2 <----- Can be activated by pressing 'u' on the keyboard
+	
+	Only one such quick access shortcut is supported per menu item.
 
-		Toggle state is only reflected for actions in the same context as the one
-		the script is run under. If run from the Main section MIDI Editor toggle 
-		states won't be indicated and vice versa.
+	Toggle state is only reflected for actions in the same context as the one
+	the script is run under. If run from the Main section MIDI Editor toggle 
+	states won't be indicated and vice versa.
 
-		Compose your multi-layer menu structure between the double square brackets 
-		of MULTY_LAYER_MENU variable below.
+	Compose your multi-layer menu structure between the double square brackets 
+	of MULTY_LAYER_MENU variable below.
 
-		At the bottom of this script there's a simple double-layer example menu
-		which you can insert inside MULTY_LAYER_MENU section to see how it works.
+	At the bottom of this script there's a simple double-layer example menu
+	which you can insert inside MULTY_LAYER_MENU section to see how it works.
 
 ]]
 
