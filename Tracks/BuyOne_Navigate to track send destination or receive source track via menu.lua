@@ -55,7 +55,7 @@ About: 	As far as going to send destination track is concerned
         If there're more than one send to or receive from 
         a particular track, the total of such sends/receives 
         is displayed in square brackets next to the destination 
-        track entry in the menu. This if purely for information.
+        track entry in the menu. This is purely for information.
 
         To close the menu without action click elsewhere with 
         the mouse or click 'Esc' key on the keyboard or click 
