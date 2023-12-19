@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Multi-context menu.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: v1.1 #Redefined condition for running MIDI Editor actions
+Version: 1.2
+Changelog: v1.2 #Added current context readout
+	   v1.1 #Redefined condition for running MIDI Editor actions
 		#Updated description of MIDI_PIANO_ROLL and MIDI_CC contexts
 Licence: WTFPL
 REAPER: at least v5.962
@@ -752,7 +753,8 @@ local cur_layer_menu = type(layers_menu_t[layer_idx]) == 'table' and table.conca
 	..layer_idx..' wasn\'t found. \n\n', 1,1) -- caps, spaced true
 	return r.defer(no_undo) end
 
-local menu = 'Next layer -->|Previous layer <--||'..layer_titles_menu..cur_layer_menu
+local menu = 'Next layer -->|Previous layer <--||'..layer_titles_menu
+..'♦ Context: '..(ctx and ctx:upper() or 'undefined')..'||'..cur_layer_menu
 local output = Reload_Menu_at_Same_Pos(menu, true) -- keep_menu_open true, left_edge_dist false
 	if output == 0 then return
 	else
@@ -763,8 +765,8 @@ local output = Reload_Menu_at_Same_Pos(menu, true) -- keep_menu_open true, left_
 		layer_idx = layer_idx == 1 and layer_cnt or layer_idx-1 -- switch to prev layer
 		elseif output > 2 and output <= 2+layer_cnt then -- select layer from the submenu, +2 because layer menu is preceded by 2 menu items
 		layer_idx = output - 2 -- offset by 2 because layer menu is preceded by 2 menu items while layer tables are indexed from 1
-		else -- actual menu layer // act
-		act_idx = output - (2+layer_cnt)
+		elseif output > 2+layer_cnt+1 then  -- actual menu layer // act // 2 is menu items preceding the layer titles menu, 1 context readout menu item following layer titles menu 
+		act_idx = output - (2+layer_cnt+1)
 		local act = layers_act_t[layer_idx][act_idx] -- command ID or function
 
 			if act:match('.+%(%)') then -- function
