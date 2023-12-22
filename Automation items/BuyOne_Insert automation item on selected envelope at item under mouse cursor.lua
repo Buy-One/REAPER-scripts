@@ -172,7 +172,7 @@ r.Undo_BeginBlock()
 	Error_Tooltip('\n\n no selected ai to pool with \n\n', 1, 1) -- caps, spaced true
 	end
 
-r.Undo_EndBlock('Insert AI on selected envelope at item under mouse cursor'..(pool or ''), -1)
+r.Undo_EndBlock('Insert AI on selected envelope at item under mouse cursor '..(pool or ''), -1)
 
 
 
