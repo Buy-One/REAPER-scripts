@@ -165,7 +165,7 @@ r.Undo_BeginBlock()
 		if trim_ON then r.Main_OnCommand(42206, 0) end -- re-enable
 	
 	GetSetAI(env, pool_src_idx, 'D_UISEL', 1, true) -- is_set true // re-select pool source AI because at insertion of the new AI it gets de-selected, so all subsequent new AI if any use the same source
-	pool = 'and pool'
+	pool = '& pool'
 
 	else
 
