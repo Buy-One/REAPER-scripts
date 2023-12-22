@@ -8,43 +8,43 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: 
 About: 	The script creates an automaion item (AI) of the same length as the item
-    		under the edit cursor on selected track or track under the mouse cursor. 
-    		The item and the selected envelope must belong to the same track. 
-    		An item considered to be under the edit cursor if the edit cursor is 
-    		located between the item start and item end or at the item start. Edit 
-    		cursor aligned with the item end is condsidered to be outside of the item.
-    		
-    		If there's no selected track the script will look for track under the mouse.
-    		
-    		If there's a selected AI on the selected envelope, the newly inserted AI 
-    		will be its pooled copy, otherwise it will be an independent non-pooled AI. 
-    		When a pooled copy is created if there're envelope points at the location 
-    		where the new AI is inserted these will be preserved and the AI will be placed 
-    		over them. Only the first selected AI is treated as a pool source for the
-    		new AI. The pooled copy is stretched or shrunk to fit item length if necessary.
-    		If a non-pooled AI is created, the existing envelope points, if any, will 
-    		be absorbed into it instead.  		
-    		
-    		Whether the newly inserted AI overwrites any AI present at the location it's 
-    		inserted at or whether it's inserted on top of it on a new AI lane depends 
-    		on the option  
-    		'Options: Trim content behind automation items when editing or writing automation'
-    		
-    		However if as a result of insertion of the new AI the pool source AI is going
-    		to be trimmed due to overlap, the above option won't affect the pool source AI 
-    		even if enabled and the pooled AI will be inserted on another AI lane.
-    		
-    		Without pooling the same operation can be realized as a custom action:
-    		
-    		Custom: Insert AI on selected envelope at item under edit cursor on selected track 
-    		(select track & envelope, place edit cursor over item)
-    		  Time selection: Set start point
-    		  View: Move cursor right 8 pixels
-    		  Time selection: Set end point
-    		  Item: Select all items on selected tracks in current time selection
-    		  Time selection: Set time selection to items
-    		  Envelope: Insert automation item
-    		  Time selection: Remove (unselect) time selection
+	under the edit cursor on selected track or track under the mouse cursor. 
+	The item and the selected envelope must belong to the same track. 
+	An item considered to be under the edit cursor if the edit cursor is 
+	located between the item start and item end or at the item start. Edit 
+	cursor aligned with the item end is condsidered to be outside of the item.
+	
+	If there's no selected track the script will look for track under the mouse.
+	
+	If there's a selected AI on the selected envelope, the newly inserted AI 
+	will be its pooled copy, otherwise it will be an independent non-pooled AI. 
+	When a pooled copy is created if there're envelope points at the location 
+	where the new AI is inserted these will be preserved and the AI will be placed 
+	over them. Only the first selected AI is treated as a pool source for the
+	new AI. The pooled copy is stretched or shrunk to fit item length if necessary.
+	If a non-pooled AI is created, the existing envelope points, if any, will 
+	be absorbed into it instead.  		
+	
+	Whether the newly inserted AI overwrites any AI present at the location it's 
+	inserted at or whether it's inserted on top of it on a new AI lane depends 
+	on the option  
+	'Options: Trim content behind automation items when editing or writing automation'
+	
+	However if as a result of insertion of the new AI the pool source AI is going
+	to be trimmed due to overlap, the above option won't affect the pool source AI 
+	even if enabled and the pooled AI will be inserted on another AI lane.
+	
+	Without pooling the same operation can be realized as a custom action:
+	
+	Custom: Insert AI on selected envelope at item under edit cursor on selected track 
+	(select track & envelope, place edit cursor over item)
+	  Time selection: Set start point
+	  View: Move cursor right 8 pixels
+	  Time selection: Set end point
+	  Item: Select all items on selected tracks in current time selection
+	  Time selection: Set time selection to items
+	  Envelope: Insert automation item
+	  Time selection: Remove (unselect) time selection
 
 ]]
 
