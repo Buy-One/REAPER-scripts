@@ -2,8 +2,11 @@
 ReaScript name: BuyOne_Insert automation item on selected envelope at item under mouse cursor.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: v1.1 #Added code to deselect newly inserted AI if pooled
+		so that the original pool source AI is the same for all script runs
+		#Optimized behavior when pool source AI is itself located inder
+		the media item
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: 
@@ -144,7 +147,6 @@ r.Undo_BeginBlock()
 
 	local overlap = (item_st+src_len > src_start and item_st < src_start -- overlapping pool source on the right
 	or src_start + src_len > item_st and src_start < item_st) -- overlapping pool source on the left
-	and not (src_start <= item_st and src_start+src_len >= item_st+item_len) -- pool source AI and new AI are going to overlap before the latter's playrate and length are adjusted, only prevent edges overlap, if they overlap completely trimming will work
 
 	local trim_ON = overlap and r.GetToggleCommandStateEx(0, 42206)	== 1 -- Options: Trim content behind automation items when editing or writing automation
 	local disable = trim_ON and r.Main_OnCommand(42206, 0) -- toggle off to prevent trimming the pool source AI with the newly inserted one if they are going to overlap before playrate and length are fitted to match the item length
@@ -156,15 +158,17 @@ r.Undo_BeginBlock()
 	-- therefore the new AI must be created at full item length and playrate is dealt with afterwards
 	local new_AI_idx = r.InsertAutomationItem(env, pool_ID, item_st, item_len)
 
-		if src_len ~= item_len then -- stretch or shrink to fit item length
-		local src_orig_len = src_len*src_playrate -- calculate orig pool source length, new length is created by division of orig length by playrate, so this is reverse operation
-		local new_playrate = src_orig_len/item_len -- calc playrate required for fitting AI length to item length
-		GetSetAI(env, new_AI_idx, 'D_PLAYRATE', new_playrate, true) -- is_set true
-		end
+	-- always set playrate to cover all cases, including cases when the pool source is already under the item
+	-- and has the same length when inserting a new AI on top of the pool source
+	local src_orig_len = src_len*src_playrate -- calculate orig pool source length, new length is created by division of orig length by playrate, so this is reverse operation
+	local new_playrate = src_orig_len/item_len -- calc playrate required for fitting AI length to item length
+	GetSetAI(env, new_AI_idx, 'D_PLAYRATE', new_playrate, true) -- is_set true
 
 		if trim_ON then r.Main_OnCommand(42206, 0) end -- re-enable
+
+	GetSetAI(env, new_AI_idx, 'D_UISEL', 0, true) -- value 0, is_set true // de-select the newly added AI
+	GetSetAI(env, pool_src_idx, 'D_UISEL', 1, true) -- value 1, is_set true // re-select pool source AI because at insertion of the new AI it gets de-selected, so all subsequent new AI if any use the same source
 	
-	GetSetAI(env, pool_src_idx, 'D_UISEL', 1, true) -- is_set true // re-select pool source AI because at insertion of the new AI it gets de-selected, so all subsequent new AI if any use the same source
 	pool = '& pool'
 
 	else
