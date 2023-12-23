@@ -145,8 +145,9 @@ r.Undo_BeginBlock()
 	local src_len = GetSetAI(env, pool_src_idx, 'D_LENGTH', -1, false)
 	local src_playrate = GetSetAI(env, pool_src_idx, 'D_PLAYRATE', -1, false) -- pool source playrate isn't preserved in the inserted pooled instance, it defaults to 1, therefore the source playrate needs to be retrieved from the source
 
-	local overlap = (item_st+src_len > src_start and item_st < src_start -- overlapping pool source on the right
-	or src_start + src_len > item_st and src_start < item_st) -- overlapping pool source on the left
+	-- partial or full overlap
+	local overlap = src_start >= item_st and item_st+item_len <= src_start+src_len
+	or src_start <= item_st and item_st+item_len >= src_start+src_len
 
 	local trim_ON = overlap and r.GetToggleCommandStateEx(0, 42206)	== 1 -- Options: Trim content behind automation items when editing or writing automation
 	local disable = trim_ON and r.Main_OnCommand(42206, 0) -- toggle off to prevent trimming the pool source AI with the newly inserted one if they are going to overlap before playrate and length are fitted to match the item length
@@ -167,6 +168,7 @@ r.Undo_BeginBlock()
 		if trim_ON then r.Main_OnCommand(42206, 0) end -- re-enable
 
 	GetSetAI(env, new_AI_idx, 'D_UISEL', 0, true) -- value 0, is_set true // de-select the newly added AI
+	pool_src_idx = new_AI_st < src_start and pool_src_idx+1 or pool_src_idx
 	GetSetAI(env, pool_src_idx, 'D_UISEL', 1, true) -- value 1, is_set true // re-select pool source AI because at insertion of the new AI it gets de-selected, so all subsequent new AI if any use the same source
 	
 	pool = '& pool'
