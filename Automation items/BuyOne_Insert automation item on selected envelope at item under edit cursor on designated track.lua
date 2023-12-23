@@ -194,6 +194,7 @@ r.Undo_BeginBlock()
 		if trim_ON then r.Main_OnCommand(42206, 0) end -- re-enable
 		
 	GetSetAI(env, new_AI_idx, 'D_UISEL', 0, true) -- value 0, is_set true // de-select the newly added AI
+	local new_AI_st = GetSetAI(env, new_AI_idx, 'D_POSITION', -1, false)
 	pool_src_idx = new_AI_st < src_start and pool_src_idx+1 or pool_src_idx
 	GetSetAI(env, pool_src_idx, 'D_UISEL', 1, true) -- value 1, is_set true // re-select pool source AI because at insertion of the new AI it gets de-selected, so all subsequent new AI if any use the same source
 	
