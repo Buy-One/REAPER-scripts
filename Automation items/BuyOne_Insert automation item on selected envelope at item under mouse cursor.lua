@@ -127,7 +127,7 @@ local item_st, item_len = r.GetMediaItemInfo_Value(item, 'D_POSITION'), r.GetMed
 
 -- get index of the first selected AI on the envelope, which will be pool source for the newly inserted AI
 local GetSetAI = r.GetSetAutomationItemInfo
-local pool_src_idx, pre_existing_AI
+local pool_src_idx
 	for AI_idx = 0, r.CountAutomationItems(env)-1 do
 		if GetSetAI(env, AI_idx, 'D_UISEL', -1, false) > 0 -- selected; value -1, is_set false
 		then
