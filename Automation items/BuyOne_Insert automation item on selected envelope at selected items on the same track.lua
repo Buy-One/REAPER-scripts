@@ -8,73 +8,73 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: 
 About: 	The script creates automaion items (AI) of the same length as each
-    		of selected media items. The selected media items and the selected 
-    		envelope must belong to the same track. If media items on different 
-    		tracks are selected, only the parent track of the 1st selected item 
-    		will be respected.
-    		
-    		Since making media items and envelope selected at the same time isn't 
-    		very convenient or intuitive in REAPER, the script is executed in two 
-    		steps:
-    		
-    		STEP 1
-    		1. Make item selection.
-    		2. Run the script to store selected items.
-    		
-    		STEP 2
-    		1. Select envelope on the items track.
-    		2. Run the script to insert automation items.
-    		
-    		Or do this in reverse, first select an envelope, store it, then select
-    		media items and run the script to insert AIs. The first option is more
-    		convenient if you're going to create pooled AIs, because when the pool
-    		source AI gets selected the envelope gets selected along with it. When 
-    		it's items which have to be selected at STEP 2 to keep the pool source 
-    		AI selected Ctrl/Cmd or Shift keys must be held down.
-    		
-    		The data stored in STEP 1 is kept in the buffer until STEP 2 is 
-    		executed or as long as the time specified in the STORAGE_TIME 
-    		setting of the USER SETTINGS hasn't elapsed.
-    		
-    		If you changed your mind after executing STEP 1 and need to clear 
-    		the buffer to correct the selection, deselect all items if envelope 
-    		was stored or deselect envelope if items were stored and run the script
-    		in which case you'll be presented with a dialogue to clear the buffer.
-    		
-    		As long as the stored data is in the buffer the toobar button or a menu 
-    		item the script is linked to will be lit or checkmarked respectively.
-    		
-    		The script stores media item or envelope indices therefore if between 
-    		the script execution steps items or envelope order changes the AI will
-    		be inserted on a different envelope and under different media items
-    		than the ones which were selected originally.
-    		
-    		If there's a selected AI on the selected envelope, the newly inserted AI 
-    		will be its pooled copy, otherwise it will be an independent non-pooled AI. 
-    		When a pooled copy is created if there're envelope points at the location 
-    		where the new AI is inserted these will be preserved and the AI will be placed 
-    		over them. Only the first selected AI is treated as a pool source for the
-    		new AI. The pooled copy is stretched or shrunk to fit item length if necessary.
-    		If a non-pooled AI is created, the existing envelope points, if any, will 
-    		be absorbed into it instead.
-    		
-    		Whether the newly inserted AI overwrites any AI present at the location it's 
-    		inserted at or whether it's inserted on top of it on a new AI lane depends 
-    		on the option  
-    		'Options: Trim content behind automation items when editing or writing automation'
-    		
-    		However if as a result of insertion of the new AI the pool source AI is going
-    		to be trimmed due to overlap, the above option won't affect the pool source AI 
-    		even if enabled and the pooled AI will be inserted on another AI lane.
-    		
-    		Without pooling and only for a single item at a time the same operation can be 
-    		realized as a custom action:
-    		
-    		Custom: Insert AI on selected envelope at selected item 
-    		(select item, use Ctrl+Shift+click to select envelope)
-    		  Time selection: Set time selection to items
-    		  Envelope: Insert automation item
-    		  Time selection: Remove (unselect) time selection
+	of selected media items. The selected media items and the selected 
+	envelope must belong to the same track. If media items on different 
+	tracks are selected, only the parent track of the 1st selected item 
+	will be respected.
+	
+	Since making media items and envelope selected at the same time isn't 
+	very convenient or intuitive in REAPER, the script is executed in two 
+	steps:
+	
+	STEP 1
+	1. Make item selection.
+	2. Run the script to store selected items.
+	
+	STEP 2
+	1. Select envelope on the items track.
+	2. Run the script to insert automation items.
+	
+	Or do this in reverse, first select an envelope, store it, then select
+	media items and run the script to insert AIs. The first option is more
+	convenient if you're going to create pooled AIs, because when the pool
+	source AI gets selected the envelope gets selected along with it. When 
+	it's items which have to be selected at STEP 2 to keep the pool source 
+	AI selected Ctrl/Cmd or Shift keys must be held down.
+	
+	The data stored in STEP 1 is kept in the buffer until STEP 2 is 
+	executed or as long as the time specified in the STORAGE_TIME 
+	setting of the USER SETTINGS hasn't elapsed.
+	
+	If you changed your mind after executing STEP 1 and need to clear 
+	the buffer to correct the selection, deselect all items if envelope 
+	was stored or deselect envelope if items were stored and run the script
+	in which case you'll be presented with a dialogue to clear the buffer.
+	
+	As long as the stored data is in the buffer the toobar button or a menu 
+	item the script is linked to will be lit or checkmarked respectively.
+	
+	The script stores media item or envelope indices therefore if between 
+	the script execution steps items or envelope order changes the AI will
+	be inserted on a different envelope and under different media items
+	than the ones which were selected originally.
+	
+	If there's a selected AI on the selected envelope, the newly inserted AI 
+	will be its pooled copy, otherwise it will be an independent non-pooled AI. 
+	When a pooled copy is created if there're envelope points at the location 
+	where the new AI is inserted these will be preserved and the AI will be placed 
+	over them. Only the first selected AI is treated as a pool source for the
+	new AI. The pooled copy is stretched or shrunk to fit item length if necessary.
+	If a non-pooled AI is created, the existing envelope points, if any, will 
+	be absorbed into it instead.
+	
+	Whether the newly inserted AI overwrites any AI present at the location it's 
+	inserted at or whether it's inserted on top of it on a new AI lane depends 
+	on the option  
+	'Options: Trim content behind automation items when editing or writing automation'
+	
+	However if as a result of insertion of the new AI the pool source AI is going
+	to be trimmed due to overlap, the above option won't affect the pool source AI 
+	even if enabled and the pooled AI will be inserted on another AI lane.
+	
+	Without pooling and only for a single item at a time the same operation can be 
+	realized as a custom action:
+	
+	Custom: Insert AI on selected envelope at selected item 
+	(select item, use Ctrl+Shift+click to select envelope)
+	  Time selection: Set time selection to items
+	  Envelope: Insert automation item
+	  Time selection: Remove (unselect) time selection
 
 ]]
 
