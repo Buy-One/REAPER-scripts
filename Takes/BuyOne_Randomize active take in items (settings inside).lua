@@ -7,18 +7,18 @@ Changelog: Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About:	Randomizes active take in selected items 
-		or in all items in the project if none is selected.
-		
-		Thanks to the fact that only active take in an item
-		can be played back, randomization can be used as a creative tool 
-		to try different combinations of performance variations
-		reprsented as takes combined into items at will.
-		
-		An even greater degree of randomization can be achieved
-		by using this script within a custom action with the actions:   
-		SWS/S&M: Takes - Move active down (cycling) in selected items AND/OR   
-		SWS/S&M: Takes - Move active up (cycling) in selected items  
-		having a single or several instances of each or both.
+	or in all items in the project if none is selected.
+	
+	Thanks to the fact that only active take in an item
+	can be played back, randomization can be used as a creative tool 
+	to try different combinations of performance variations
+	reprsented as takes combined into items at will.
+	
+	An even greater degree of randomization can be achieved
+	by using this script within a custom action with the actions:   
+	SWS/S&M: Takes - Move active down (cycling) in selected items AND/OR   
+	SWS/S&M: Takes - Move active up (cycling) in selected items  
+	having a single or several instances of each or both.
 ]]
 
 -----------------------------------------------------------------------------
