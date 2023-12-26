@@ -2,9 +2,10 @@
 ReaScript name: BuyOne_Cycle switch last focused toolbar to next or previous.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #Fixed possible error when toolbar window isn't found
-	   #Made compatible with the increased number of toolbars in REAPER 7
+Version: 1.2
+Changelog: v1.2 #Fixed mousewheel sensitivity logic so it's reset when mousewheel direction changes
+	   v1.1 #Fixed possible error when toolbar window isn't found
+		#Made compatible with the increased number of toolbars in REAPER 7
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
@@ -449,8 +450,10 @@ function Process_Mousewheel_Sensitivity(val, cmdID, MOUSEWHEEL_SENSITIVITY)
 	if MOUSEWHEEL_SENSITIVITY == 1 then return true end
 local cmdID = r.ReverseNamedCommandLookup(cmdID) -- command ID differs in different Action list sections
 local data = r.GetExtState(cmdID, 'MOUSEWHEEL')
-local val = #data == 0 and val or data+0 + val
-local val = math.abs(val/MOUSEWHEEL_SENSITIVITY) >= 15 and 0 or val
+data = #data == 0 and 0 or data+0
+local diff_sign = data > 0 and val < 0 or data < 0 and val > 0
+local val = diff_sign and val or data+val -- when the stored and current vals have diff signs, reset to prevent values offsetting which results in higher sensitivity when scroll direction is reversed, e.g. when sensitivity is 10, if scroll direction after 5 changes, the script will be triggered after only 5 nudges (5-5=0) instead of 10
+val = math.abs(val/MOUSEWHEEL_SENSITIVITY) >= 15 and 0 or val
 r.SetExtState(cmdID, 'MOUSEWHEEL', val, false) -- persist false
 return val == 0
 end
