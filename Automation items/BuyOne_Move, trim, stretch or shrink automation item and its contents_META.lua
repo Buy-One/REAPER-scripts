@@ -3,8 +3,8 @@ ReaScript name: BuyOne_Move, trim, stretch or shrink automation item and its con
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
-Metapackage: true
 Changelog: #Initial release
+Metapackage: true
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: 
