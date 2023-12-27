@@ -1,33 +1,52 @@
 --[[
-ReaScript name: Move edit cursor to snap offset cursor / fades / take|stretch markers / media cues / Razor Edit area edges (16 scripts)
+ReaScript name: BuyOne_Move edit cursor to snap offset cursor; fades; take, stretch markers; media cues; razor edit area and automation item edges_META.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: 1.2 #Fixed REAPER version evaluation
-	   1.1 #Made values in bitwise operation compatible with Lua 5.4
+Version: 1.3
+Changelog: v1.3 #Added 2 new scripts to move cursor to automation item edge
+		#Added functionality to export individual scripts included in the package				 
+		#Added code to prevent generic undo point listing in the undo history readout
+		when cursor position change isn't supposed to create an undo point
+		#Added some error messages
+		#Updated the script name
+		#Updated About text
+	   v1.2 #Fixed REAPER version evaluation
+	   v1.1 #Made values in bitwise operation compatible with Lua 5.4
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M for media cue navigation scripts
 Metapackage: true
 Provides: 	. > BuyOne_Move edit cursor right to snap offset cursor in items.lua
-            . > BuyOne_Move edit cursor left to snap offset cursor in items.lua
-            . > BuyOne_Move edit cursor right to fade in items.lua
-            . > BuyOne_Move edit cursor left to fade in items.lua
-            . > BuyOne_Move edit cursor right to take marker.lua
-            . > BuyOne_Move edit cursor left to take marker.lua
-            . > BuyOne_Move edit cursor right to stretch marker.lua
-            . > BuyOne_Move edit cursor left to stretch marker.lua
-            . > BuyOne_Move edit cursor right to media cue.lua
-            . > BuyOne_Move edit cursor left to media cue.lua
-            . > BuyOne_Move edit cursor right to edge of Razor Edit area.lua
-            . > BuyOne_Move edit cursor left to edge of Razor Edit area.lua
-            . > BuyOne_Move edit cursor right to edge of item Razor Edit area.lua
-            . > BuyOne_Move edit cursor left to edge of item Razor Edit area.lua
-            . > BuyOne_Move edit cursor right to edge of envelope Razor Edit area.lua
-            . > BuyOne_Move edit cursor left to edge of envelope Razor Edit area.lua
-About: 	The set of scripts is meant to complement 
+		. > BuyOne_Move edit cursor left to snap offset cursor in items.lua
+		. > BuyOne_Move edit cursor right to fade in items.lua
+		. > BuyOne_Move edit cursor left to fade in items.lua
+		. > BuyOne_Move edit cursor right to take marker.lua
+		. > BuyOne_Move edit cursor left to take marker.lua
+		. > BuyOne_Move edit cursor right to stretch marker.lua
+		. > BuyOne_Move edit cursor left to stretch marker.lua
+		. > BuyOne_Move edit cursor right to media cue.lua
+		. > BuyOne_Move edit cursor left to media cue.lua
+		. > BuyOne_Move edit cursor right to edge of Razor Edit area.lua
+		. > BuyOne_Move edit cursor left to edge of Razor Edit area.lua
+		. > BuyOne_Move edit cursor right to edge of item Razor Edit area.lua
+		. > BuyOne_Move edit cursor left to edge of item Razor Edit area.lua
+		. > BuyOne_Move edit cursor right to edge of envelope Razor Edit area.lua
+		. > BuyOne_Move edit cursor left to edge of envelope Razor Edit area.lua
+		. > BuyOne_Move edit cursor right to automation item edge on selected envelope.lua
+		. > BuyOne_Move edit cursor left to automation item edge on selected envelope.lua			
+About: 	The set of 16 scripts is meant to complement 
 	REAPER stock navigation actions.  
-	в–є Snap offset cursor, Fades, Take/Stretch markers & Media cues
+		
+	If this script name is suffixed with META it will spawn all 
+	individual scripts included in the package into the directory 
+	supplied by the user in a dialogue. These can then be manually 
+	imported into the Action list from any other location. 
+	If there's no META suffix in this script name it will perfom 
+	the operation indicated in its name.
+	
+	
+	► Snap offset cursor, Fades, Take/Stretch markers & Media cues
+	
 	Scripts which move the edit cursor to snap offset cursor 
 	and fades in items only apply to selected items if any
 	are selected, otherwise they move the edit cursor to snap 
@@ -42,7 +61,9 @@ About: 	The set of scripts is meant to complement
 	other tracks of selected items are not selected !!!  
 	Snap offset cursor position is only respected if it differs
 	from item start.  
-	в–є Razor Edit areas
+	
+	► Razor Edit areas
+	
 	Scripts which move the edit cursor to Razor Edit area edges
 	only apply to these on selected tracks if any are selected,
 	otherwise they apply to Razor Edit area edges on all tracks. 
@@ -56,12 +77,22 @@ About: 	The set of scripts is meant to complement
 	If certain Razor Edit area covers an item on one track and 
 	an envelope on the previous track the script names and selection 
 	conditions described above apply as normal.  
-	The Master track is supported for builds 6.72 onwards.  
+	The Master track is supported for builds 6.72 onwards. 
+
+	► Automation items
+	
+	If there're selected automation items on the selected envelope
+	the edit cursor will only move between selected automation
+	item edges, otherwise it'll move to the edge of each and every
+	automation item in sequence.
+	
+	
 	In the USER SETTINGS you can enable MOVE_VIEW setting so that
 	the the Arrange view scrolls when the edit cursor moves to out
 	of sight areas.  
+	
 	In line with behavior of the stock navigation actions, the scripts 
-	only createmeaningful undo points if 'cursor position' option
+	only create meaningful undo points if 'cursor position' option
 	is enabled at Preferences -> General -> Undo settings.
 ]]
 
@@ -87,10 +118,156 @@ reaper.ShowConsoleMsg(cap..tostring(param)..'\n')
 end
 
 
+function no_undo()
+do return end
+end
+
+
+function Rep(n) -- number of repeats, integer
+return (' '):rep(n)
+end
+
+
+function Error_Tooltip(text)
+local x, y = r.GetMousePosition()
+--r.TrackCtl_SetToolTip(text:upper(), x, y, true) -- topmost true
+r.TrackCtl_SetToolTip(text:upper():gsub('.','%0 '), x, y, true) -- spaced out // topmost true
+end
+
+
+function GetUndoSettings()
+-- Checking settings at Preferences -> General -> Undo settings -> Include selection:
+-- thanks to Mespotine https://mespotin.uber.space/Ultraschall/Reaper_Config_Variables.html
+-- https://github.com/mespotine/ultraschall-and-reaper-docs/blob/master/Docs/Reaper-ConfigVariables-Documentation.txt
+local f = io.open(r.get_ini_file(),'r')
+local cont = f:read('*a')
+f:close()
+local undoflags = cont:match('undomask=(%d+)')+0 -- +0 is accommodating for Lua 5.4 where implicit conversion of strings to integers doesn't work in bitwise operations
+local t = {
+1, -- item selection
+2, -- time selection
+4, -- full undo, keep the newest state
+8, -- cursor pos
+16, -- track selection
+32 -- env point selection
+}
+	for k, bit in ipairs(t) do
+	t[k] = undoflags&bit == bit
+	end
+return t
+end
+
+
+function Invalid_Script_Name(scr_name,...)
+-- check if necessary elements are found in script name
+-- if more than 1 match is needed run twice with different sets of elements which are supposed to appear in the same name, but elements within each set must not be expected to appear in the same name
+local t = {...}
+
+	for k, v in ipairs(t) do
+		if scr_name:match(v) then return end -- at least one match was found
+	end
+
+return true
+
+end
+
+
+function REAPER_Ver_Check(build) -- build is REAPER build number, the function must be followed by 'do return end'
+	if tonumber(r.GetAppVersion():match('[%d%.]+')) < build then -- or match('[%d%.]+')
+	local x,y = r.GetMousePosition()
+	local mess = '\n\n   THE SCRIPT REQUIRES\n\n  REAPER '..build..' AND ABOVE  \n\n '
+	local mess = mess:gsub('.','%0 ')
+	r.TrackCtl_SetToolTip(mess, x, y+10, true) -- topmost true
+	return true
+	end
+end
+
+
+function META_Spawn_Scripts(fullpath, scr_name, names_t)
+
+	local function Dir_Exists(path) -- short
+	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+	local sep = path:match('[\\/]')
+	local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
+	local _, mess = io.open(path)
+	return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+	end
+
+	local function Esc(str)
+		if not str then return end -- prevents error
+	-- isolating the 1st return value so that if vars are initialized in a row outside of the function the next var isn't assigned the 2nd return value
+	local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
+	return str
+	end
+
+	if not fullpath:match(Esc(scr_name)) then return true end -- will allow to continue the script execution outside, since it's not a META script
+
+local names_t, content = names_t
+
+	if not names_t or names_t == 0 then -- if names table isn't supplied search names list in the header
+	-- load this script
+	local this_script = io.open(fullpath, 'r')
+	content = this_script:read('*a')
+	this_script:close()
+	names_t, found = {}
+		for line in content:gmatch('[^\n\r]+') do
+			if line and line:match('Provides') then found = 1 end
+			if found and line:match('%.lua') then
+			names_t[#names_t+1] = line:match('BuyOne.+[%w]')
+			elseif found and #names_t > 0 then
+			break -- the list has ended
+			end
+		end
+	end
+
+	if names_t and #names_t > 0 then
+
+	r.MB('              This meta script will spawn '..#names_t
+	..'\n\n     individual scripts included in the package'
+	..'\n\n     after you supply a path to the directory\n\n\t    they will be placed in'
+	..'\n\n\twhich can be temporary.\n\n           After that the spawned scripts'
+	..'\n\n will have to be imported into the Action list.','META',0)
+
+	local ret, output -- to be able to autofill the dialogue with last entry on RELOAD
+
+	::RETRY::
+	ret, output = r.GetUserInputs('Scripts destination folder', 1,
+	'Full path to the dest. folder, extrawidth=200', output or '')
+
+		if not ret or #output:gsub(' ','') == 0 then return end -- must be aborted outside of the function
+
+	local user_path = Dir_Exists(output) -- validate user supplied path
+		if not user_path then Error_Tooltip('\n\n invalid path \n\n', 1, 1) -- caps, spaced true
+		goto RETRY end
+
+		-- load this script if wasn't loaded above to parse the header for file names list
+		if not content then
+		local this_script = io.open(fullpath, 'r')
+		content = this_script:read('*a')
+		this_script:close()
+		end
+
+		-- spawn scripts
+		for k, scr_name in ipairs(names_t) do
+		local new_script = io.open(user_path..scr_name, 'w') -- create new file
+		content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
+		new_script:write(content)
+		new_script:close()
+		end
+	end
+
+end
+
+
+
 function Move_EditCur_To_SnapoffsetCur(dir, sel_tracks, curs_undo) -- if snap offset differs from item start
 -- dir is string 'right' or 'left' taken from the script name
 -- if sel_tracks true only applies to items on selected tracks, see next condition
 -- if some items are selected, only applies to them, otherwise to all items either on selected or all tracks depending on the above condition
+
+	if not r.GetMediaItem(0,0) then
+	Error_Tooltip('\n\n no items in the project \n\n')
+	return end
 
 local right = dir:match('right')
 local left = dir:match('left')
@@ -114,6 +291,13 @@ local itm_cnt = sel_itm_cnt > 0 and sel_itm_cnt or GetItem and r.CountMediaItems
 			and snapoffs ~= pos then t[#t+1] = snapoffs end
 		end
 
+	local err = sel_tracks and #t == 0 and (sel_itm_cnt == 0 and 'no items on selected tracks'
+	or 'selected items don\'t belong \n\n\tto selected tracks')
+
+		if err then
+		Error_Tooltip('\n\n '..err..' \n\n')
+		return end
+
 		if right then table.sort(t) elseif left then table.sort(t, function(a,b) return a > b end) end
 
 		if curs_undo and #t > 0 then r.Undo_BeginBlock() end
@@ -124,7 +308,7 @@ local itm_cnt = sel_itm_cnt > 0 and sel_itm_cnt or GetItem and r.CountMediaItems
 			break end
 		end
 
-	local edit_cur_pos_new = r.GetCursorPosition()
+	local edit_cur_pos_new = r.GetCursorPosition() -- evaluate whether there was a change
 
 		if curs_undo and edit_cur_pos_new ~= edit_cur_pos then
 		r.Undo_EndBlock(dir..' at '..r.format_timestr(edit_cur_pos_new, ''), -1) end -- dir argument is the script name
@@ -138,6 +322,10 @@ function Move_EditCur_To_Fade(dir, sel_tracks, curs_undo)
 -- dir is string 'right' or 'left' taken from the script name
 -- if sel_tracks true only applies to items on selected tracks, see next condition
 -- if some items are selected, only applies to them, otherwise to all items either on selected or all tracks depending on the above condition
+
+	if not r.GetMediaItem(0,0) then
+	Error_Tooltip('\n\n no items in the project \n\n')
+	return end
 
 local right = dir:match('right')
 local left = dir:match('left')
@@ -167,17 +355,25 @@ local itm_cnt = sel_itm_cnt > 0 and sel_itm_cnt or GetItem and r.CountMediaItems
 			end
 		end
 
+
+	local err = sel_tracks and #t == 0 and (sel_itm_cnt == 0 and 'no items on selected tracks'
+	or 'selected items don\'t belong \n\n\tto selected tracks')
+
+		if err then
+		Error_Tooltip('\n\n '..err..' \n\n')
+		return end
+
 		if right then table.sort(t) elseif left then table.sort(t, function(a,b) return a > b end) end
 
 		if curs_undo and #t > 0 then r.Undo_BeginBlock() end
 
 		for _, fade in ipairs(t) do
-		if right and fade > edit_cur_pos or left and fade < edit_cur_pos then
-		r.SetEditCurPos(fade, MOVE_VIEW, false) -- moveview, seekplay false // if moveview is true only moves if the time point is out of sight
-		break end
+			if right and fade > edit_cur_pos or left and fade < edit_cur_pos then
+			r.SetEditCurPos(fade, MOVE_VIEW, false) -- moveview, seekplay false // if moveview is true only moves if the time point is out of sight
+			break end
 		end
 
-	local edit_cur_pos_new = r.GetCursorPosition()
+	local edit_cur_pos_new = r.GetCursorPosition() -- evaluate whether there was a change
 
 		if curs_undo and edit_cur_pos_new ~= edit_cur_pos then
 		r.Undo_EndBlock(dir..' at '..r.format_timestr(edit_cur_pos_new, ''), -1) end -- dir argument is the script name
@@ -187,17 +383,15 @@ local itm_cnt = sel_itm_cnt > 0 and sel_itm_cnt or GetItem and r.CountMediaItems
 end
 
 
-function Error_Tooltip(text)
-local x, y = r.GetMousePosition()
---r.TrackCtl_SetToolTip(text:upper(), x, y, true) -- topmost true
-r.TrackCtl_SetToolTip(text:upper():gsub('.','%0 '), x, y, true) -- spaced out // topmost true
-end
-
 function Move_EditCur_To_TakeOrStretch_Marker(dir, sel_tracks, curs_undo, wantstretchmarkers, wantmediacues) -- wantstretchmarkers and wantmediacues are booleans to target stretch markers and media cues
 -- dir is string 'right' or 'left' taken from the script name
 -- if sel_tracks true only applies to items on selected tracks, see next condition
 -- if some items are selected, only applies to them, otherwise to all items either on selected or all tracks depending on the above condition
 -- only applies to active takes
+
+	if not r.GetMediaItem(0,0) then
+	Error_Tooltip('\n\n no items in the project \n\n')
+	return end
 
 	local function CollectTakeOrStretchMarkersOrMediaCues(t, act_take, mrkr_cnt, itm_pos, itm_end, startoffs, playrate, wantstretchmarkers, wantmediacues)
 		if wantstretchmarkers or not wantstretchmarkers and not wantmediacues then
@@ -264,6 +458,13 @@ local itm_cnt = sel_itm_cnt > 0 and sel_itm_cnt or GetItem and r.CountMediaItems
 			 end
 		end
 
+		local err = sel_tracks and #t == 0 and (sel_itm_cnt == 0 and 'no items on selected tracks'
+		or 'selected items don\'t belong \n\n\tto selected tracks')
+
+			if err then
+			Error_Tooltip('\n\n '..err..' \n\n')
+			return end
+
 		if right then table.sort(t) elseif left then table.sort(t, function(a,b) return a > b end) end
 
 		if curs_undo and #t > 0 then r.Undo_BeginBlock() end
@@ -274,7 +475,7 @@ local itm_cnt = sel_itm_cnt > 0 and sel_itm_cnt or GetItem and r.CountMediaItems
 			break end
 		end
 
-	local edit_cur_pos_new = r.GetCursorPosition()
+	local edit_cur_pos_new = r.GetCursorPosition() -- evaluate whether there was a change
 
 		if curs_undo and edit_cur_pos_new ~= edit_cur_pos then
 		r.Undo_EndBlock(dir..' at '..r.format_timestr(edit_cur_pos_new, ''), -1) end -- dir argument is the script name
@@ -284,18 +485,8 @@ local itm_cnt = sel_itm_cnt > 0 and sel_itm_cnt or GetItem and r.CountMediaItems
 end
 
 
-
-function REAPER_Ver_Check(build) -- build is REAPER build number, the function must be followed by 'do return end'
-	if tonumber(r.GetAppVersion():match('[%d%.]+')) < build then -- or match('[%d%.]+')
-	local x,y = r.GetMousePosition()
-	local mess = '\n\n   THE SCRIPT REQUIRES\n\n  REAPER '..build..' AND ABOVE  \n\n '
-	local mess = mess:gsub('.','%0 ')
-	r.TrackCtl_SetToolTip(mess, x, y+10, true) -- topmost true
-	return true
-	end
-end
-
 function Move_EditCur_To_RazEdAreaEdge(dir, items, envs, curs_undo)
+-- dir is string 'right' or 'left' taken from the script name
 -- if any tracks are selected only applies to RazEd areas on them, otherwise to RazEd areas on all tracks
 -- if items and envs are both true or both are false, the function applies to both item and env RazEd areas
 
@@ -305,7 +496,7 @@ local right = dir:match('right')
 local left = dir:match('left')
 local edit_cur_pos = r.GetCursorPosition()
 local master_raz = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.72 -- Razor Edit for Master track was added in 6.72
-local sel_tr_cnt = not master_raz and r.CountSelectedTracks(0)
+local sel_tr_cnt = not master_raz and r.CountSelectedTracks(0) or r.CountSelectedTracks2(0, true) -- wantmaster true
 local GetTr = sel_tr_cnt > 0 and r.GetSelectedTrack or r.GetTrack
 local tr_cnt = sel_tr_cnt > 0 and sel_tr_cnt or GetTr and r.CountTracks(0) or 0
 local t = {}
@@ -313,7 +504,7 @@ local t = {}
 	local master = r.GetMasterTrack(0)
 	local master_sel = r.IsTrackSelected(master)
 	local tr = GetTr(0,i) or master_raz and (sel_tr_cnt > 0 and master_sel or sel_tr_cnt == 0) and r.GetMasterTrack(0)
-	local retval, tr_flags = table.unpack(tr and {r.GetTrackState(tr)} or {nil})
+	local retval, tr_flags = table.unpack(tr and {r.GetTrackState(tr)} or {})
 	local tr_vis = tr_flags and tr_flags&512 ~= 512 -- works for the Master track as well
 		if tr and tr_vis then
 		local ret, razor_data = r.GetSetMediaTrackInfo_String(tr, 'P_RAZOREDITS', '', false) -- setNewValue false
@@ -332,6 +523,13 @@ local t = {}
 		end
 	end
 
+	local err = #t == 0 and (sel_tr_cnt > 0 and 'no razor edit areas\n\n  on selected tracks'
+	or 'razor edit areas weren\'t found')
+
+			if err then
+			Error_Tooltip('\n\n '..err..' \n\n')
+			return end
+
 	if right then table.sort(t) elseif left then table.sort(t, function(a,b) return a > b end) end
 
 	if curs_undo and #t > 0 then r.Undo_BeginBlock() end
@@ -342,7 +540,7 @@ local t = {}
 		break end
 	end
 
-	local edit_cur_pos_new = r.GetCursorPosition()
+	local edit_cur_pos_new = r.GetCursorPosition() -- evaluate whether there was a change
 
 		if curs_undo and edit_cur_pos_new ~= edit_cur_pos then
 		r.Undo_EndBlock(dir..' at '..r.format_timestr(edit_cur_pos_new, ''), -1)  -- dir argument is the script name
@@ -351,50 +549,70 @@ local t = {}
 end
 
 
-function GetUndoSettings()
--- Checking settings at Preferences -> General -> Undo settings -> Include selection:
--- thanks to Mespotine https://mespotin.uber.space/Ultraschall/Reaper_Config_Variables.html
--- https://github.com/mespotine/ultraschall-and-reaper-docs/blob/master/Docs/Reaper-ConfigVariables-Documentation.txt
-local f = io.open(r.get_ini_file(),'r')
-local cont = f:read('*a')
-f:close()
-local undoflags = cont:match('undomask=(%d+)')+0 -- +0 is accommodating for Lua 5.4 where implicit conversion of strings to integers doesn't work in bitwise operations
-local t = {
-1, -- item selection
-2, -- time selection
-4, -- full undo, keep the newest state
-8, -- cursor pos
-16, -- track selection
-32 -- env point selection
-}
-	for k, bit in ipairs(t) do
-	t[k] = undoflags&bit == bit
+function Move_EditCur_To_AI_Edge(dir, curs_undo)
+-- dir is string 'right' or 'left' taken from the script name
+-- dir is string 'right' or 'left' taken from the script name
+-- if some AIs are selected, only applies to them, otherwise to all AIs on selected track envelope
+
+local sel_env = r.GetSelectedTrackEnvelope(0)
+local edit_cur_pos = r.GetCursorPosition()
+local right = dir:match('right')
+local left = dir:match('left')
+local AI_cnt = sel_env and r.CountAutomationItems(sel_env)-1
+local err = not sel_env and 'no selected track envelope'
+or AI_cnt < 0 and 'no automation items \n\n on selected envelope'
+
+	if err then
+	Error_Tooltip('\n\n '..err..' \n\n')
+	return end
+
+local GetSetAI = r.GetSetAutomationItemInfo
+local st, fin, step = table.unpack(right and {0, AI_cnt, 1} or left and {AI_cnt, 0, -1}) -- in reverse when moving left
+local closest_edge, selected_exist
+
+	if curs_undo then r.Undo_BeginBlock() end
+
+	-- the loop is used to find and/or move edit cursor to selected AIs
+	-- and store the closest edge if selected AI wasn't found
+	for i = st, fin, step do
+	local AI_start = GetSetAI(sel_env, i, 'D_POSITION', -1, false) -- is_set false
+	local AI_end = AI_start + GetSetAI(sel_env, i, 'D_LENGTH', -1, false) -- is_set false
+	local AI_sel = GetSetAI(sel_env, i, 'D_UISEL', -1, false) ~= 0 -- is_set false
+	local AI_edge = right and (AI_start > edit_cur_pos and AI_start or AI_end > edit_cur_pos and AI_end)
+	or left and (AI_end < edit_cur_pos and AI_end or AI_start < edit_cur_pos and AI_start)
+	closest_edge = closest_edge or AI_edge
+	selected_exist = selected_exist or AI_sel -- used as a boolean to prevent moving to non-selected AI after the loop when there're selected but behind the edit cursor
+		if AI_edge then
+			if AI_sel then
+			r.SetEditCurPos(AI_edge, MOVE_VIEW, false) -- moveview, seekplay false // if moveview is true only moves if the time point is out of sight
+			break
+			end
+		end
 	end
-return t
-end
 
-
-function Invalid_Script_Name(scr_name,...)
--- check if necessary elements are found in script name
--- if more than 1 match is needed run twice with different sets of elements which are supposed to appear in the same name, but elements within each set must not be expected to appear in the same name
-local t = {...}
-
-	for k, v in ipairs(t) do
-		if scr_name:match(v) then return end -- at least one match was found
+	if r.GetCursorPosition() == edit_cur_pos and not selected_exist and closest_edge then -- no selected AI, move to non-selected
+	r.SetEditCurPos(closest_edge, MOVE_VIEW, false)
 	end
 
-return true
+local edit_cur_pos_new = r.GetCursorPosition() -- evaluate whether there was a change
+
+	if curs_undo and edit_cur_pos_new ~= edit_cur_pos then
+	r.Undo_EndBlock(dir..' at '..r.format_timestr(edit_cur_pos_new, ''), -1) -- dir argument is the script name
+	end
 
 end
 
-function Rep(n) -- number of repeats, integer
-return (' '):rep(n)
-end
 
 
-local _, scr_name, sect_ID, cmd_ID, _,_,_ = r.get_action_context() -- UNCOMMENT !!!!!!
-local scr_name = scr_name:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
-local type_t = {'snap offset', 'fade', 'take marker', 'stretch marker', 'media cue', 'Razor Edit'}
+local _, fullpath, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
+local scr_name = fullpath:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
+
+	-- doesn't run in non-META scripts
+	if not META_Spawn_Scripts(fullpath, 'BuyOne_Move edit cursor to snap offset cursor; fades;'
+	..' take, stretch markers; media cues; razor edit area and automation item edges_META.lua', names_t)
+	then return r.defer(no_undo) end -- abort if META script but continue if not
+
+local type_t = {'snap offset', 'fade', 'take marker', 'stretch marker', 'media cue', 'Razor Edit', 'automation item'}
 
 -- validate script name
 local no_elm1 = Invalid_Script_Name(scr_name,table.unpack(type_t))
@@ -404,13 +622,24 @@ local no_elm2 = Invalid_Script_Name(scr_name,'left','right')
 	r.MB([[The script name has been changed]]..br..Rep(7)..[[which renders it inoperable.]]..br..
 	[[   please restore the original name]]..br..[[  referring to the list in the header,]]..br..
 	Rep(9)..[[or reinstall the package.]], 'ERROR', 0)
-	return r.defer(function() do return end end) end
+	return r.defer(no_undo) end
+
+local cur_pos = r.GetCursorPosition()
+local err = not r.GetTrack(0,0) and 'no tracks in the project'
+or scr_name:match('right') and cur_pos == r.GetProjectLength() and 'project end reached'
+or scr_name:match('left') and cur_pos == 0 and 'project start reached'
+
+	if err then
+	Error_Tooltip('\n\n '..err..' \n\n')
+	return r.defer(no_undo) end
+
 
 	for _, v in ipairs(type_t) do -- get script type to condition the selection of functions below
 		if scr_name:match(v) then
 		Type = scr_name:match(v) break
 		end
 	end
+
 
 MOVE_VIEW = #MOVE_VIEW:gsub(' ','') > 0
 
@@ -430,4 +659,12 @@ local curs_undo = GetUndoSettings()[4] -- only create a meaningful undo point if
 	Move_EditCur_To_TakeOrStretch_Marker(scr_name, sel_tracks, curs_undo, wantstretchmarkers, true) -- wantmediacues true
 	elseif Type == 'Razor Edit' then
 	Move_EditCur_To_RazEdAreaEdge(scr_name, scr_name:match('item'), scr_name:match('envelope'), curs_undo) -- dir arg is scr_name, items & envs booleans are obtained from scr_name capture
+	elseif Type == 'automation item' then
+	Move_EditCur_To_AI_Edge(scr_name, curs_undo) -- dir arg is scr_name
 	end
+
+
+do return r.defer(no_undo) end -- if curs_undo not enabled
+
+
+
