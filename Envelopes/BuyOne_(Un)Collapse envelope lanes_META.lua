@@ -42,7 +42,10 @@ About:	In these '(un)collapse envelope lane' scripts
 		Unidirectional scripts will always work according to their name.
 		If there're no lanes to collapse or uncollapse nothing will happen.  
 		The scripts don't support creation of undo point due 
-		to REAPER internal design.
+		to REAPER internal design.  
+
+		The script doesn't support FX container envelopes introduced 
+		in REAPER 7.
 ]]
 
 -----------------------------------------------------------------------------
