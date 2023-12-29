@@ -231,7 +231,7 @@ end
 
 
 local _, fullpath, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
-local scr_name = fullpath:match('([^\\/_]+)%.%w+') -- without scripter name and file ext
+local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- without path, scripter name and file ext
 local ext_state_sect = '(Un)Collapse envelope lanes' -- extended state will be shared by all script instances
 
 
