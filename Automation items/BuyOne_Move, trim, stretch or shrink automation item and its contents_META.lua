@@ -27,13 +27,13 @@ About: 	This package of 31 scripts aims at allowing operations with automation
 	
 	Move contents of selected automation item to edit/mouse cursor (2)		
 	Behavior:	If cursor is to the left of the AI start, contents are moved left, 
-				if it's to the right of the AI start, contents are moved right.
-				The contents are moved by the distance between the cursor and
-				the AI start.
+			if it's to the right of the AI start, contents are moved right.
+			The contents are moved by the distance between the cursor and
+			the AI start.
 
 	Move selected automation item to edit/mouse cursor preserving contents (2)
 	Behavior: 	If cursor is to the left of the AI start, the AI is moved left, 
-				if it's to the right of the AI start, the AI is moved right.
+			if it's to the right of the AI start, the AI is moved right.
 
 	Move contents of selected automation item 10 ms left/right (2)
 	Move selected automation item 10 ms left/right preserving contents (2)
@@ -44,25 +44,25 @@ About: 	This package of 31 scripts aims at allowing operations with automation
 	
 	Trim left/right edge of selected automation item to edit/mouse cursor (4)
 	Behavior:	The edit/mouse cursor must be located within the AI or outside
-				of its target edge.
+			of its target edge.
 	
 	Trim left/right edge of selected automation item to edit/mouse cursor and loop (4)
 	Behavior: 	This is a variant of the previous script which enables AI loop 
-				if it's not enabled
+			if it's not enabled
 	
 	Stretch or shrink left/right edge of selected automation item to edit/mouse cursor (4)
 	Behavior:	The edit/mouse cursor must be located within the AI or outside
-				of its target edge.
+			of its target edge.
 
 	The following scripts must be run with the mousewheel
 
 	Move/trim/stretch of shrink edge of selected automation item to mouse cursor (mousewheel) (3)
 	Behavior:	AI left edge is being affected when the mouse cursor is to the left 
-				of the AI start and the mousewheel is in (down) or the mouse cursor 
-				is between the AI start and its end and the mousewheel out (up). 
-				AI right edge is being affected when the mouse cursor is to the right 
-				of the AI end and the mousewheel is out (up) or the mouse cursor 
-				is between the AI start and its end and the mousewheel in (down).
+			of the AI start and the mousewheel is in (down) or the mouse cursor 
+			is between the AI start and its end and the mousewheel out (up). 
+			AI right edge is being affected when the mouse cursor is to the right 
+			of the AI end and the mousewheel is out (up) or the mouse cursor 
+			is between the AI start and its end and the mousewheel in (down).
 	
 	Move contents of selected automation item to mouse cursor (mousewheel)
 	Behavior:	If the mouse cursor is to the left of the AI start 
@@ -74,16 +74,16 @@ About: 	This package of 31 scripts aims at allowing operations with automation
 
 	Move selected automation item to mouse cursor preserving contents (mousewheel)
 	Behavior:	If the mouse cursor is to the left of the AI start 
-				and the mousewheel is in (down), the AI is moved left, 
-				the mousewheel is out (up) is ignored.  
-				If the mouse cursor to the right of the AI start 
-				and the mousewheel is out (up) the AI is moved right, 
-				the mousewheel in (down) is ignored.
+			and the mousewheel is in (down), the AI is moved left, 
+			the mousewheel is out (up) is ignored.  
+			If the mouse cursor to the right of the AI start 
+			and the mousewheel is out (up) the AI is moved right, 
+			the mousewheel in (down) is ignored.
 
 	Move contents of selected automation item 10 ms (mousewheel)
 	Move selected automation item 10 ms preserving contents (mousewheel)
 	Behavior:	The functionality of both scripts doesn't depend 
-				on the mouse cursor position, only on the mouswheel direction.
+			on the mouse cursor position, only on the mouswheel direction.
 	These two scripts above can be duplicated and value 10 can be replaced in 
 	the duplicates name with another value to be able to move to by a different
 	distance.
@@ -337,7 +337,7 @@ local names_t = {'Move left edge to edit cursor', 'Move left edge to mouse curso
 }
 
 local is_new_value, fullpath, sectionID, cmdID, mode, resolution, val = r.get_action_context()
-local scr_name = fullpath:match('([^\\/_]+)%.%w+') -- without path, extension and author name
+local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- without path, scripter name and file ext
 
 	-- doesn't run in non-META scripts
 	if not META_Spawn_Scripts(fullpath, 'BuyOne_Move, trim, stretch or shrink'
