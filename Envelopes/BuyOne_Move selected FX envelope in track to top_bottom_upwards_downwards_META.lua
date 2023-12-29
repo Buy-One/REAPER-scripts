@@ -90,7 +90,7 @@ local names_t, content = names_t
 		for line in content:gmatch('[^\n\r]+') do
 			if line and line:match('Provides') then found = 1 end
 			if found and line:match('%.lua') then
-			names_t[#names_t+1] = line:match('.+[/](.+)') or line:match('BuyOne.+[%w]')
+			names_t[#names_t+1] = line:match('.+[/](.+)') or line:match('BuyOne.+[%w]') -- in case the new script name line includes a subfolder path, the subfolder won't be created
 			elseif found and #names_t > 0 then
 			break -- the list has ended
 			end
