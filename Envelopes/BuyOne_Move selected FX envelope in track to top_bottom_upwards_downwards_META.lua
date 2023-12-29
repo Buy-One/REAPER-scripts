@@ -1,32 +1,17 @@
 --[[
-ReaScript Name: Move selected FX envelope in track to top/bottom/upwards/downwards (6 scripts)
+ReaScript name: BuyOne_Move selected FX envelope in track to top_bottom_upwards_downwards_META.lua (6 scripts)
 Author: BuyOne
-Version: 1.2
-Changelog: #Fixed script crach when applying to the only envelope of a particular FX
-Author URL: https://forum.cockos.com/member.php?u=134058
+Version: 1.3
+Changelog: v1.3 #Added functionality to export individual scripts included in the package
+		#Added swap scripts behavior clarification to the About text.
+	   v1.2 #Fixed script crach when applying to the only envelope of a particular FX
+	   v1.1 #Added swap mode to complement cyclic mode
+		#Fixed a bug of respecting hidden envelopes during reordering
+Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v5.962
 Screenshots: https://raw.githubusercontent.com/Buy-One/screenshots/main/Move%20selected%20FX%20envelope%20in%20track%20to%20top_bottom_upwards_downwards.gif
 Extensions: SWS/S&M extension (not mandatory but recommended)
-About:  Moves selected FX envelope of a track to the top/bottom lane,
-	upwards/downwards one lane depending on the script name.  
-	(cycle) in the script name means that all envelopes move 
-	upwards/downwards in unison with the selected one.  
-	(swap) in the script name means that the selected envelope 
-	is swapped with the one immediately above/below it while other 
-	envelopes maintain their lanes.  
-	Upwards/downwards movement is cyclic, i.e. if an envelope is pushed
-	past top/bottom lane its movement continues from the oppostite end.  
-	Reordering only affects active envelopes of the track FX
-	the selected envelope belongs to, as all envelopes of a particular
-	FX are grouped together and envelopes of different FX cannot be 
-	mixed while TCP envelopes always precede any FX envelopes and themselves
-	cannot be reordered. Hence the movement is not relative to ALL 
-	active/visible track envelopes but only to those of the same FX
-	as the selected envelope.  
-
-	Screenshot: https://raw.githubusercontent.com/Buy-One/screenshots/main/Move%20selected%20FX%20envelope%20in%20track%20to%20top_bottom_upwards_downwards.gif
-
 Metapackage: true
 Provides: 	[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track to top lane.lua
 		[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track to bottom lane.lua
@@ -34,6 +19,31 @@ Provides: 	[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX e
 		[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track down one lane (cycle).lua
 		[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track up one lane (swap).lua
 		[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track down one lane (swap).lua
+About:  Moves selected FX envelope of a track to the top/bottom lane,
+		upwards/downwards one lane depending on the script name.  
+		
+		(cycle) in the script name means that all envelopes move 
+		upwards/downwards in unison with the selected one.  
+		(swap) in the script name means that the selected envelope 
+		is swapped with the one immediately above/below it while other 
+		envelopes maintain their lanes. Unless the selected envelope 
+		is at the top or at the bottom lane and being at the top 
+		should move up or being at the bottom should move down, in 
+		which case the movement is cyclic, each lane is moved one position.		
+		
+		Upwards/downwards movement is cyclic, i.e. if an envelope is pushed
+		past top/bottom lane its movement continues from the oppostite end.  
+		
+		Reordering only affects active envelopes of the track FX
+		the selected envelope belongs to, as all envelopes of a particular
+		FX are grouped together and envelopes of different FX cannot be 
+		mixed while TCP envelopes always precede any FX envelopes and themselves
+		cannot be reordered. Hence the movement is not relative to ALL 
+		active/visible track envelopes but only to those of the same FX
+		as the selected envelope.  
+		
+		The script doesn't support FX container envelopes introduced 
+		in REAPER 7.
 ]]
 
 
@@ -43,6 +53,88 @@ reaper.ShowConsoleMsg(cap..tostring(param)..'\n')
 end
 
 local r = reaper
+
+
+function no_undo()
+do return end
+end
+
+
+function META_Spawn_Scripts(fullpath, scr_name, names_t)
+
+	local function Dir_Exists(path) -- short
+	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+	local sep = path:match('[\\/]')
+	local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
+	local _, mess = io.open(path)
+	return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+	end
+
+	local function Esc(str)
+		if not str then return end -- prevents error
+	-- isolating the 1st return value so that if vars are initialized in a row outside of the function the next var isn't assigned the 2nd return value
+	local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
+	return str
+	end
+
+	if not fullpath:match(Esc(scr_name)) then return true end -- will allow to continue the script execution outside, since it's not a META script
+
+local names_t, content = names_t
+
+	if not names_t or names_t == 0 then -- if names table isn't supplied search names list in the header
+	-- load this script
+	local this_script = io.open(fullpath, 'r')
+	content = this_script:read('*a')
+	this_script:close()
+	names_t, found = {}
+		for line in content:gmatch('[^\n\r]+') do
+			if line and line:match('Provides') then found = 1 end
+			if found and line:match('%.lua') then
+			names_t[#names_t+1] = line:match('.+[/](.+)') or line:match('BuyOne.+[%w]')
+			elseif found and #names_t > 0 then
+			break -- the list has ended
+			end
+		end
+	end
+
+	if names_t and #names_t > 0 then
+
+	r.MB('              This meta script will spawn '..#names_t
+	..'\n\n     individual scripts included in the package'
+	..'\n\n     after you supply a path to the directory\n\n\t    they will be placed in'
+	..'\n\n\twhich can be temporary.\n\n           After that the spawned scripts'
+	..'\n\n will have to be imported into the Action list.','META',0)
+
+	local ret, output -- to be able to autofill the dialogue with last entry on RELOAD
+
+	::RETRY::
+	ret, output = r.GetUserInputs('Scripts destination folder', 1,
+	'Full path to the dest. folder, extrawidth=200', output or '')
+
+		if not ret or #output:gsub(' ','') == 0 then return end -- must be aborted outside of the function
+
+	local user_path = Dir_Exists(output) -- validate user supplied path
+		if not user_path then Error_Tooltip('\n\n invalid path \n\n', 1, 1) -- caps, spaced true
+		goto RETRY end
+
+		-- load this script if wasn't loaded above to parse the header for file names list
+		if not content then
+		local this_script = io.open(fullpath, 'r')
+		content = this_script:read('*a')
+		this_script:close()
+		end
+
+		-- spawn scripts
+		for k, scr_name in ipairs(names_t) do
+		local new_script = io.open(user_path..scr_name, 'w') -- create new file
+		content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
+		new_script:write(content)
+		new_script:close()
+		end
+	end
+
+end
+
 
 local function GetObjChunk(obj)
 -- https://forum.cockos.com/showthread.php?t=193686
@@ -153,18 +245,22 @@ return env_block_orig, env_block_upd, mess -- orig and updated versions + string
 end
 
 
+local _, fullpath, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
+local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- without path, scripter name and file ext
+
+-- local scr_name = '_ down ' --------------- SCRIPT NAME TESTING
+
+	-- doesn't run in non-META scripts
+	if not META_Spawn_Scripts(fullpath, 'BuyOne_Move selected FX envelope in track to top_bottom_upwards_downwards_META.lua', names_t)
+	then return r.defer(no_undo) end -- abort if META script but continue if not
+	
+	
 local sel_env = r.GetSelectedTrackEnvelope(0)
 
 	if not sel_env then
 	Error_Tooltip(('\n\n  no selected track envelope  \n\n'))
-	return r.defer(function() do return end end) end
-
-
-local _, scr_name, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
-local scr_name = scr_name:match('([^\\/]+)%.%w+')
-
-	-- local scr_name = '_ down ' --------------- SCRIPT NAME TESTING
-
+	return r.defer(function() do return end end) end	
+	
 local tr, fx_idx, parm_idx = r.Envelope_GetParentTrack(sel_env)
 
 r.Undo_BeginBlock()
@@ -212,7 +308,7 @@ r.SetCursorContext(2, sel_env) -- restore env selection
 
 
 r.PreventUIRefresh(-1)
-r.Undo_EndBlock(scr_name:match('_(.+)'),-1)
+r.Undo_EndBlock(scr_name,-1)
 
 
 
