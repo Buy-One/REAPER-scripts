@@ -7,19 +7,19 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The idea behind the script is to facilitate focus
-		on a specific section of an arrangement preventing
-		you from scrolling back and/or forth to other sections
-		by placing project markers past which the Arrange
-		view cannot be scrolled.  
-		
-		The start marker must be placed somewhat ahead of the
-		section which has to be focused on and the end markers
-		somewhat behind it.
-		
-		After being launched the script runs in the background.
-		
-		While the script is running a toolbar button or a menu
-		item it's linked to will be lit or checkmarked respectivly.
+	on a specific section of an arrangement preventing
+	you from scrolling back and/or forth to other sections
+	by placing project markers past which the Arrange
+	view cannot be scrolled.  
+	
+	The start marker must be placed somewhat ahead of the
+	section which has to be focused on and the end markers
+	somewhat behind it.
+	
+	After being launched the script runs in the background.
+	
+	While the script is running a toolbar button or a menu
+	item it's linked to will be lit or checkmarked respectivly.
 		
 ]]
 
