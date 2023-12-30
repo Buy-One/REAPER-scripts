@@ -19,31 +19,40 @@ Provides: 	[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX e
 		[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track down one lane (cycle).lua
 		[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track up one lane (swap).lua
 		[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track down one lane (swap).lua
-About:  Moves selected FX envelope of a track to the top/bottom lane,
-		upwards/downwards one lane depending on the script name.  
-		
-		(cycle) in the script name means that all envelopes move 
-		upwards/downwards in unison with the selected one.  
-		(swap) in the script name means that the selected envelope 
-		is swapped with the one immediately above/below it while other 
-		envelopes maintain their lanes. Unless the selected envelope 
-		is at the top or at the bottom lane and being at the top 
-		should move up or being at the bottom should move down, in 
-		which case the movement is cyclic, each lane is moved one position.		
-		
-		Upwards/downwards movement is cyclic, i.e. if an envelope is pushed
-		past top/bottom lane its movement continues from the oppostite end.  
-		
-		Reordering only affects active envelopes of the track FX
-		the selected envelope belongs to, as all envelopes of a particular
-		FX are grouped together and envelopes of different FX cannot be 
-		mixed while TCP envelopes always precede any FX envelopes and themselves
-		cannot be reordered. Hence the movement is not relative to ALL 
-		active/visible track envelopes but only to those of the same FX
-		as the selected envelope.  
-		
-		The script doesn't support FX container envelopes introduced 
-		in REAPER 7.
+About:	If this script name is suffixed with META it will spawn 
+	all individual scripts included in the package into 
+	the directory supplied by the user in a dialogue.
+	These can then be manually imported into the Action 
+	list from any other location. If there's no META 
+	suffix in this script name it will perfom the 
+	operation indicated in its name.
+
+	The individual scripts move selected FX envelope 
+	of a track to the top/bottom lane, upwards/downwards 
+	one lane depending on the script name.  
+	
+	(cycle) in the script name means that all envelopes move 
+	upwards/downwards in unison with the selected one.  
+	(swap) in the script name means that the selected envelope 
+	is swapped with the one immediately above/below it while other 
+	envelopes maintain their lanes. Unless the selected envelope 
+	is at the top or at the bottom lane and being at the top 
+	should move up or being at the bottom should move down, in 
+	which case the movement is cyclic, each lane is moved one position.		
+	
+	Upwards/downwards movement is cyclic, i.e. if an envelope is pushed
+	past top/bottom lane its movement continues from the oppostite end.  
+	
+	Reordering only affects active envelopes of the track FX
+	the selected envelope belongs to, as all envelopes of a particular
+	FX are grouped together and envelopes of different FX cannot be 
+	mixed while TCP envelopes always precede any FX envelopes and themselves
+	cannot be reordered. Hence the movement is not relative to ALL 
+	active/visible track envelopes but only to those of the same FX
+	as the selected envelope.  
+	
+	The script doesn't support FX container envelopes introduced 
+	in REAPER 7.
 ]]
 
 
