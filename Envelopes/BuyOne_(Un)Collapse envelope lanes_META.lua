@@ -3,6 +3,7 @@ ReaScript name: BuyOne_(Un)Collapse envelope lanes_META.lua (18 scripts)
 Author: BuyOne
 Version: 1.3
 Changelog: v1.3 #Added functionality to export individual scripts included in the package
+		#Updated About text
 	   v1.2 #Added support for theme's default uncollapsed height if starts out from collapsed state
 	   v1.1 #Fixed bug of un-arming envelope
 	        #Added a screenshot
