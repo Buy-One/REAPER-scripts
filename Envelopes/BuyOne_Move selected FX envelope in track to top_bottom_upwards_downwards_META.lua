@@ -4,6 +4,7 @@ Author: BuyOne
 Version: 1.3
 Changelog: v1.3 #Added functionality to export individual scripts included in the package
 		#Added swap scripts behavior clarification to the About text.
+		#Updated About text
 	   v1.2 #Fixed script crach when applying to the only envelope of a particular FX
 	   v1.1 #Added swap mode to complement cyclic mode
 		#Fixed a bug of respecting hidden envelopes during reordering
