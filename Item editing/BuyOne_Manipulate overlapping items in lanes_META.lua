@@ -1,8 +1,11 @@
 --[[
-ReaScript Name: Move, select, im- & explode, crop overlapping items in lanes (13 scripts) - only 6.53 and earlier
+ReaScript name: BuyOne_Move, select, im-, explode, crop overlapping items in lanes_META.lua (13 scripts)
 Author: BuyOne
-Version: 1.1
-Changelog: 1.1 #Fixed REAPER version evaluation
+Version: 1.2
+Changelog: v1.2 #Added functionality to export individual scripts included in the package
+		#Changed META script name
+		#Updated About text
+	   v1.1 #Fixed REAPER version evaluation
 Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v5.962 and not later than 6.53
@@ -11,9 +14,16 @@ About:  The script isn't compatible with REAPER builds 6.54 onward, because
 	the logic governing overlapping items display in lanes was changed
 	while the script was being developed.   
 	https://forum.cockos.com/showthread.php?t=267390
+	
+	If this script name is suffixed with META it will spawn all 
+	individual scripts included in the package into the directory 
+	supplied by the user in a dialogue. These can then be manually 
+	imported into the Action list from any other location.   
+	If there's no META suffix in this script name it will perfom 
+	the operation indicated in its name.
 
 	MOVE SELECTED TO TOP/BOTTOM LANE || ALL UP/DOWN ONE LANE
-
+	
 	In 'move selected to top/bottom lane' scripts, selection of multiple 
 	items within the same overlapping items cluster doesn't make 
 	sense, hence if multiple items are selected it's the first 
@@ -23,16 +33,16 @@ About:  The script isn't compatible with REAPER builds 6.54 onward, because
 	'Cycle' in the script name means that all items change their lane 
 	along with the selected one.  
 	'Swap' means that only two items trade their lanes.  
-
+	
 	In 'move all up/down one lane' scripts the number of selected 
 	overlapping items per cluster doesn't matter.  
-
+	
 	SELECT NEXT/PREVIOUS
-
+	
 	Select any number of overlapping items in a cluster and execute
 	the script. Selection will be shifted down or up respectively.  
 	If all items in a cluster are selected nothing changes.  
-
+	
 	IMPLODE
 
 	* To implode items select them, point mouse cursor at an item 
@@ -58,19 +68,19 @@ About:  The script isn't compatible with REAPER builds 6.54 onward, because
 	* It's only possible to implode selected items into a single cluster 
 	of overlapping items, meaning all selected items can either join an 
 	already existing cluster or coalesce into a new one.
-
+	
 	EXPLODE || CROP
-
+	
 	To explode or crop overlapping items select any number of such
 	overlapping items to have the rest exploded or removed respectively.
 	If all items happen to be selected the action won't be executed.
-
+	
 	BEHAVIOR IN COLLAPSED LANES 
-
+	
 	When overlapping item lanes are collapsed, after a script is applied 
 	generally the outermost (visible) item changes to reflect change 
 	in item positions in lanes with the following caveats:  
-
+	
 	* When actions   
 	'move selected to top/bottom lane', 'move all up/down one lane'   
 	are applied to overlapping items whose lanes are collapsed, only 1 item 
@@ -85,10 +95,10 @@ About:  The script isn't compatible with REAPER builds 6.54 onward, because
 	at its original position or intact respectively.  
 	If the outermost item isn't selected, no exploding or cropping occurs 
 	regardless of other items selection within the cluster.
-
+	
 	___________________________________________________________________
 	Be aware that after duplicating overlapping items in a batch the order
-	of their copies will likely be different. That's REAPER's quirk.
+	of their copies will likely be different. That's REAPER's quirk.			
 Metapackage: true
 Provides: 	[main] . > BuyOne_Overlapping items/BuyOne_Overlapping items - move selected to top lane (cycle).lua
 		[main] . > BuyOne_Overlapping items/BuyOne_Overlapping items - move selected to bottom lane (cycle).lua
@@ -114,6 +124,87 @@ local r = reaper
 
 
 --============================ F U N C T I O N S ===============================
+
+function no_undo()
+do return end
+end
+
+
+function META_Spawn_Scripts(fullpath, scr_name, names_t)
+
+	local function Dir_Exists(path) -- short
+	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+	local sep = path:match('[\\/]')
+	local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
+	local _, mess = io.open(path)
+	return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+	end
+
+	local function Esc(str)
+		if not str then return end -- prevents error
+	-- isolating the 1st return value so that if vars are initialized in a row outside of the function the next var isn't assigned the 2nd return value
+	local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
+	return str
+	end
+
+	if not fullpath:match(Esc(scr_name)) then return true end -- will allow to continue the script execution outside, since it's not a META script
+
+local names_t, content = names_t
+
+	if not names_t or names_t == 0 then -- if names table isn't supplied search names list in the header
+	-- load this script
+	local this_script = io.open(fullpath, 'r')
+	content = this_script:read('*a')
+	this_script:close()
+	names_t, found = {}
+		for line in content:gmatch('[^\n\r]+') do
+			if line and line:match('Provides') then found = 1 end
+			if found and line:match('%.lua') then
+			names_t[#names_t+1] = line:match('.+[/](.+)') or line:match('BuyOne.+[%w]') -- in case the new script name line includes a subfolder path, the subfolder won't be created
+			elseif found and #names_t > 0 then
+			break -- the list has ended
+			end
+		end
+	end
+
+	if names_t and #names_t > 0 then
+
+	r.MB('              This meta script will spawn '..#names_t
+	..'\n\n     individual scripts included in the package'
+	..'\n\n     after you supply a path to the directory\n\n\t    they will be placed in'
+	..'\n\n\twhich can be temporary.\n\n           After that the spawned scripts'
+	..'\n\n will have to be imported into the Action list.','META',0)
+
+	local ret, output -- to be able to autofill the dialogue with last entry on RELOAD
+
+	::RETRY::
+	ret, output = r.GetUserInputs('Scripts destination folder', 1,
+	'Full path to the dest. folder, extrawidth=200', output or '')
+
+		if not ret or #output:gsub(' ','') == 0 then return end -- must be aborted outside of the function
+
+	local user_path = Dir_Exists(output) -- validate user supplied path
+		if not user_path then Error_Tooltip('\n\n invalid path \n\n', 1, 1) -- caps, spaced true
+		goto RETRY end
+
+		-- load this script if wasn't loaded above to parse the header for file names list
+		if not content then
+		local this_script = io.open(fullpath, 'r')
+		content = this_script:read('*a')
+		this_script:close()
+		end
+
+		-- spawn scripts
+		for k, scr_name in ipairs(names_t) do
+		local new_script = io.open(user_path..scr_name, 'w') -- create new file
+		content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
+		new_script:write(content)
+		new_script:close()
+		end
+	end
+
+end
+
 
 local function GetObjChunk(obj)
 -- https://forum.cockos.com/showthread.php?t=193686
@@ -384,6 +475,14 @@ end
 --============================ F U N C T I O N S  E N D ===============================
 
 
+local _, fullpath, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
+local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- without path, scripter name and file ext
+
+
+	-- doesn't run in non-META scripts
+	if not META_Spawn_Scripts(fullpath, 'BuyOne_Move, select, im-, explode, crop overlapping items in lanes_META.lua', names_t)
+	then return r.defer(no_undo) end -- abort if META script but continue if not
+
 
 local build_6_53_and_earlier = tonumber(r.GetAppVersion():match('[%d%.]+')) > 6.53 and ('the script is only compatible \n\n  with builds 6.53 and earlier.'):upper():gsub('.','%0 ')
 local not_overlapping_in_lanes = r.GetToggleCommandStateEx(0, 40507) ~= 1 -- Options: Show overlapping media items in lanes (when room) / Offset overlapping items vertically
@@ -394,8 +493,6 @@ local err_mess = build_6_53_and_earlier or not_overlapping_in_lanes
 	Error_Tooltip('\n\n   '..err_mess..' \n\n ')
 	return r.defer(function() do return end end) end
 
-local _, scr_name, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
-local scr_name = scr_name:match('([^\\/]+)%.%w+')
 
 
 --[[ NAME TESTING
