@@ -29,23 +29,31 @@ Provides: 	. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse selected envel
 		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse track envelope lanes in selected tracks.lua
 		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse FX envelope lanes in selected tracks.lua
 		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse all envelope lanes in selected tracks.lua
-About:	In these '(un)collapse envelope lane' scripts 
-		'track envelope' means envelope of TCP controls, those 
-		which are listed in the 'trim' (envelope) button context 
-		menu or under 'Track Envelopes' heading in the track 
-		envelope panel, including Send envelopes.  
-		'FX envelope' means envelope of a track FX control.  
-		With toggle scripts uncollapsed state gets priority, so
-		if at least one envelope lane in selected tracks is 
-		uncollapsed, it will be collapsed while collapsed lanes 
-		will stay as they are.  
-		Unidirectional scripts will always work according to their name.
-		If there're no lanes to collapse or uncollapse nothing will happen.  
-		The scripts don't support creation of undo point due 
-		to REAPER internal design.  
+About:	If this script name is suffixed with META it will spawn 
+	all individual scripts included in the package into 
+	the directory supplied by the user in a dialogue.
+	These can then be manually imported into the Action 
+	list from any other location. If there's no META 
+	suffix in this script name it will perfom the 
+	operation indicated in its name.
 
-		The script doesn't support FX container envelopes introduced 
-		in REAPER 7.
+	In these '(un)collapse envelope lane' scripts 
+	'track envelope' means envelope of TCP controls, those 
+	which are listed in the 'trim' (envelope) button context 
+	menu or under 'Track Envelopes' heading in the track 
+	envelope panel, including Send envelopes.  
+	'FX envelope' means envelope of a track FX control.  
+	With toggle scripts uncollapsed state gets priority, so
+	if at least one envelope lane in selected tracks is 
+	uncollapsed, it will be collapsed while collapsed lanes 
+	will stay as they are.  
+	Unidirectional scripts will always work according to their name.
+	If there're no lanes to collapse or uncollapse nothing will happen.  
+	The scripts don't support creation of undo point due 
+	to REAPER internal design.  
+
+	The script doesn't support FX container envelopes introduced 
+	in REAPER 7.
 ]]
 
 -----------------------------------------------------------------------------
