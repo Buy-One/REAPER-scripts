@@ -1,15 +1,25 @@
 --[[
-ReaScript name: Switch to next/previous active CC envelope
+ReaScript name: BuyOne_Switch to next;previous active CC envelope_META.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.0
-Changelog: Initial release
+Version: 1.1
+Changelog: v1.1 #Added functionality to export individual scripts included in the package
+		#Updated About text
 Licence: WTFPL
 REAPER: at least v5.962
 Metapackage: true
-Provides: . > BuyOne_Switch to next active CC envelope.lua
-	  . > BuyOne_Switch to previous active CC envelope.lua
-About: 	Works for the last clicked CC lane if several are open.
+Provides: 	. > BuyOne_Switch to next active CC envelope.lua
+		. > BuyOne_Switch to previous active CC envelope.lua
+About:	If this script name is suffixed with META it will spawn 
+	all individual scripts included in the package into 
+	the directory supplied by the user in a dialogue.
+	These can then be manually imported into the Action 
+	list from any other location. If there's no META 
+	suffix in this script name it will perfom the 
+	operation indicated in its name.	
+
+	The individual script works for the last clicked CC lane 
+	if several are open.
 
 	If next/previous active CC envelope is already open in
 	another visible lane, in the active lane it's skipped. 
@@ -32,11 +42,85 @@ end
 
 local r = reaper
 
-local _, scr_name, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
-local scr_name = scr_name:match('.+[\\/](.+)') -- whole script name without path
-	if scr_name:match(' next ') then nxt = 1
-	elseif scr_name:match(' previous ') then prev = 1
+function no_undo()
+do return end
+end
+
+
+function META_Spawn_Scripts(fullpath, scr_name, names_t)
+
+	local function Dir_Exists(path) -- short
+	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+	local sep = path:match('[\\/]')
+	local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
+	local _, mess = io.open(path)
+	return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
 	end
+
+	local function Esc(str)
+		if not str then return end -- prevents error
+	-- isolating the 1st return value so that if vars are initialized in a row outside of the function the next var isn't assigned the 2nd return value
+	local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
+	return str
+	end
+
+	if not fullpath:match(Esc(scr_name)) then return true end -- will allow to continue the script execution outside, since it's not a META script
+
+local names_t, content = names_t
+
+	if not names_t or names_t == 0 then -- if names table isn't supplied search names list in the header
+	-- load this script
+	local this_script = io.open(fullpath, 'r')
+	content = this_script:read('*a')
+	this_script:close()
+	names_t, found = {}
+		for line in content:gmatch('[^\n\r]+') do
+			if line and line:match('Provides') then found = 1 end
+			if found and line:match('%.lua') then
+			names_t[#names_t+1] = line:match('.+[/](.+)') or line:match('BuyOne.+[%w]') -- in case the new script name line includes a subfolder path, the subfolder won't be created
+			elseif found and #names_t > 0 then
+			break -- the list has ended
+			end
+		end
+	end
+
+	if names_t and #names_t > 0 then
+
+	r.MB('              This meta script will spawn '..#names_t
+	..'\n\n     individual scripts included in the package'
+	..'\n\n     after you supply a path to the directory\n\n\t    they will be placed in'
+	..'\n\n\twhich can be temporary.\n\n           After that the spawned scripts'
+	..'\n\n will have to be imported into the Action list.','META',0)
+
+	local ret, output -- to be able to autofill the dialogue with last entry on RELOAD
+
+	::RETRY::
+	ret, output = r.GetUserInputs('Scripts destination folder', 1,
+	'Full path to the dest. folder, extrawidth=200', output or '')
+
+		if not ret or #output:gsub(' ','') == 0 then return end -- must be aborted outside of the function
+
+	local user_path = Dir_Exists(output) -- validate user supplied path
+		if not user_path then Error_Tooltip('\n\n invalid path \n\n', 1, 1) -- caps, spaced true
+		goto RETRY end
+
+		-- load this script if wasn't loaded above to parse the header for file names list
+		if not content then
+		local this_script = io.open(fullpath, 'r')
+		content = this_script:read('*a')
+		this_script:close()
+		end
+
+		-- spawn scripts
+		for k, scr_name in ipairs(names_t) do
+		local new_script = io.open(user_path..scr_name, 'w') -- create new file
+		content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
+		new_script:write(content)
+		new_script:close()
+		end
+	end
+
+end
 
 
 function CC_Evts_Exist(take)
@@ -48,6 +132,16 @@ local evt_idx = 0
 	until not retval
 end
 
+
+local _, fullpath, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
+local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- without path, scripter name and file ext
+	if scr_name:match(' next ') then nxt = 1
+	elseif scr_name:match(' previous ') then prev = 1
+	end
+	
+	-- doesn't run in non-META scripts
+	if not META_Spawn_Scripts(fullpath, 'BuyOne_Switch to next;previous active CC envelope_META.lua', names_t)
+	then return r.defer(no_undo) end -- abort if META script but continue if not
 
 
 local ME = r.MIDIEditor_GetActive()
