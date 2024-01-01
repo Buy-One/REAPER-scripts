@@ -3,7 +3,7 @@ Lua scripts for Cockos' REAPER
 
 **Many scripts feature user settings. Almost all include guide or description of features. Be sure to check those out and configure to your liking.**
 
-**From now on scripts marked with META in their name, when executed allow exporting individual scripts included in the META package to the user specified directory. After export the scripts will have to be manually imported into the Action list.** 
+**From now on scripts marked with META in their name, when executed allow exporting individual scripts included in the META package to the user specified directory. After export the individual scripts will have to be manually imported into the Action list.** 
 
 [Complete list (162)](https://github.com/Buy-One/REAPER-scripts/wiki/SCRIPT-LIST)
 
