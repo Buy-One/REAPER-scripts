@@ -7,69 +7,69 @@ Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/B
 Licence: WTFPL
 REAPER: at least v5.962  		
 About: 	The initial idea proposed by a user on REAPER sub-reddit 
-    		was to convert phone numbers to melodies to be used as 
-    		a ringtone to identify the caller.  
-    		
-    		But besides phone numbers convertion the script can be 
-    		used as a general purpose creative tool because the number 
-    		of digits which can be processed isn't limited. Any random
-    		sequence of digits will do.
-    		
-    		The digits supplied by the user represent scale degrees, 
-    		namely: 1 - tonic, 2 - supertonic, 3 - mediant, 4 - subdominant,
-    		5 - dominant, 6 - submediant, 7 - subtonic / leading tone, 
-    		8 - octave, 9 - supertonic 1 octave higher, 3 - mediant 1 octave higher.
-    
-    		https://en.wikipedia.org/wiki/Degree_(music)#Scale_degree_names		
-    		
-    		The tonic is determined by the first digit and is relative 
-    		to the middle C, where if the first digit is 1 the tonic is 
-    		middle C itself, otherwise it's a degree from the middle C.
-    		This means that the tonic will always be a natural note, 
-    		which is a limitation but which can be cured by transposing
-    		the sequence manually after the fact.
-    		
-    		Digits from the 2nd onwards represent scale degrees from 
-    		the tonic. Thus the resulting note sequence mostly does make 
-    		musical sense.
-    
-    		Forcing it to make rhythmical sense is more challenging.
-    		By default digits are converted into 8th notes. 'r' or 'R' 
-    		modifier allows randomization of note lengths. Currently in 
-    		random mode 4th, 8th, 16th notes and their dotted versions 
-    		are supported. Still the melodic sequence itself may give 
-    		an idea how it could sound best rhythmically.
-    		
-    		Other available modifiers are:
-    		'-' (minus) - to create descending sequence meaning that the 
-    		degrees will be calculated from the tonic lowered by 1 octave 
-    		while keeping the original octave of the tonic itself;
-    		'm' or 'M' - to create sequence in minor scale;
-    		'p' or 'P' - to add random rests between notes, whose duration 
-    		when the 'r/R' modifier isn't used defaults to 8th note, 
-    		otherwise it's randomly selected out of 8th, 16th and their
-    		dotted versions.
-    		
-    		The order in which the modifiers are added before the digit
-    		series is immaterial. Spaces in the input field are ignored.
-    		
-    		The script can be imported into and run from both Main 
-    		and MIDI Editor sections of the Action list. Before running 
-    		from the Main section select an empty MIDI item to be 
-    		populated with notes. If no item is selected, one will 
-    		be created automatically at the edit cursor on the first 
-    		selected track and if none is selected - on the last touched 
-    		one and the track list will be scrolled to it if it's not 
-    		within view.
-    		
-    		If selected MIDI item already contains notes, these will 
-    		be deleted if user assents to the prompt.
-    		
-    		The MIDI item length is adjusted to fit the length of the note
-    		sequence.
-    		
-    		The user input is reflected in the undo points created by
-    		the script.
+	was to convert phone numbers to melodies to be used as 
+	a ringtone to identify the caller.  
+	
+	But besides phone numbers convertion the script can be 
+	used as a general purpose creative tool because the number 
+	of digits which can be processed isn't limited. Any random
+	sequence of digits will do.
+	
+	The digits supplied by the user represent scale degrees, 
+	namely: 1 - tonic, 2 - supertonic, 3 - mediant, 4 - subdominant,
+	5 - dominant, 6 - submediant, 7 - subtonic / leading tone, 
+	8 - octave, 9 - supertonic 1 octave higher, 3 - mediant 1 octave higher.
+
+	https://en.wikipedia.org/wiki/Degree_(music)#Scale_degree_names		
+	
+	The tonic is determined by the first digit and is relative 
+	to the middle C, where if the first digit is 1 the tonic is 
+	middle C itself, otherwise it's a degree from the middle C.
+	This means that the tonic will always be a natural note, 
+	which is a limitation but which can be cured by transposing
+	the sequence manually after the fact.
+	
+	Digits from the 2nd onwards represent scale degrees from 
+	the tonic. Thus the resulting note sequence mostly does make 
+	musical sense.
+
+	Forcing it to make rhythmical sense is more challenging.
+	By default digits are converted into 8th notes. 'r' or 'R' 
+	modifier allows randomization of note lengths. Currently in 
+	random mode 4th, 8th, 16th notes and their dotted versions 
+	are supported. Still the melodic sequence itself may give 
+	an idea how it could sound best rhythmically.
+	
+	Other available modifiers are:
+	'-' (minus) - to create descending sequence meaning that the 
+	degrees will be calculated from the tonic lowered by 1 octave 
+	while keeping the original octave of the tonic itself;
+	'm' or 'M' - to create sequence in minor scale;
+	'p' or 'P' - to add random rests between notes, whose duration 
+	when the 'r/R' modifier isn't used defaults to 8th note, 
+	otherwise it's randomly selected out of 8th, 16th and their
+	dotted versions.
+	
+	The order in which the modifiers are added before the digit
+	series is immaterial. Spaces in the input field are ignored.
+	
+	The script can be imported into and run from both Main 
+	and MIDI Editor sections of the Action list. Before running 
+	from the Main section select an empty MIDI item to be 
+	populated with notes. If no item is selected, one will 
+	be created automatically at the edit cursor on the first 
+	selected track and if none is selected - on the last touched 
+	one and the track list will be scrolled to it if it's not 
+	within view.
+	
+	If selected MIDI item already contains notes, these will 
+	be deleted if user assents to the prompt.
+	
+	The MIDI item length is adjusted to fit the length of the note
+	sequence.
+	
+	The user input is reflected in the undo points created by
+	the script.
 
 ]]
 
