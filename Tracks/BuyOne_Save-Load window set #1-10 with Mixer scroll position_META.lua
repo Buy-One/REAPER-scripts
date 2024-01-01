@@ -1,14 +1,14 @@
 --[[
-ReaScript name: BuyOne_Save-Load window set #1-10 with Mixer scroll position (10 scripts)
+ReaScript name: BuyOne_Save-Load window set #1-10 with Mixer scroll position_META.lua (10 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.3
-Changelog: 	
-	v1.3
-	#Fixed error prone pieces of code
-	v1.2
-	#Fixed capture of MCP folder state
-	#Fixed logic of the search for the parent of a collapsed folder the target track is in
+Version: 1.4
+Changelog: v1.4 #Added functionality to export individual scripts included in the package
+		#Updated About text
+	   v1.3 #Fixed error prone pieces of code
+	   v1.2 #Fixed capture of MCP folder state
+		#Fixed logic of the search for the parent of a collapsed folder the target track is in
+	   v1.1 #More reliable scroll in different situations
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M for best performance
@@ -23,17 +23,23 @@ Provides:
 	[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #7 with Mixer scroll position (guide inside).lua
 	[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #8 with Mixer scroll position (guide inside).lua
 	[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #9 with Mixer scroll position (guide inside).lua
-	[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #10 with Mixer scroll position (guide inside).lua	
-About:	
-	To be used instead of native 'Screenset: Save/Load window set #[number]' actions
-	in situations where track position in the Mixer is important. Position means
-	the leftmost, center and the rightmost.   
+	[main] . > BuyOne_Save-Load window set #1-10 with Mixer scroll position/BuyOne_Save-Load window set #10 with Mixer scroll position (guide inside).lua
+About:	If this script name is suffixed with META it will spawn all individual 
+	scripts included in the package into the directory supplied by the user 
+	in a dialogue. These can then be manually imported into the Action list 
+	from any other location. If there's no META suffix in this script name 
+	it will perfom the operation indicated in its name.
+	
+	The individual scripts are meant to be used instead of native 
+	'Screenset: Save/Load window set #[number]' actions
+	in situations where track position in the Mixer is important. Position 
+	means the leftmost, center and the rightmost.   
 	The script does both:  
 	a) concurrently with saving the actual screenset stores the track 
 	to be scrolled into view when the Mixer is opened with the screenset 
-	whose number is included in the script name; and   
+	whose number is included in the script name; and    
 	b) loads the screenset scrolling the associated track into view.		
-
+	
 	To save a screenset with a track to be scrolled into view in the Mixer:  
 	1) make sure that the track which is supposed to be scrolled into view 
 	on opening has a name and it's unique to avoid confusion;   
@@ -43,7 +49,7 @@ About:
 	to the script that saving needs to be performed, it's not stored 
 	in screensets);   
 	4) run the script ('Screensets/Layout' window will auto-close);   
-	5) 'Save Windows Screenset' dialogue will appear.  
+	5) 'Save Windows Screenset' dialogue will appear. 
 	On Windows once you click save in the 'Save Windows Screenset' dialogue, 
 	the chosen track name will be stored concurrenty with the screenset (re)saving. 
 	If the dialogue is cancelled no storage occurs.   
@@ -51,7 +57,7 @@ About:
 	confirmed or declined via a dialogue which will appear once 'Save Windows Screenset' 
 	dialogue closes. That's because without access to MacOS or Linux i couldn't 
 	devise the same way of track name storage as on Windows.
-
+			
 	To change track name associated with a screenset, load the screenset 
 	and follow the abovelisted steps.  
 	On Windows track name is only stored if the screenset itself 
@@ -59,12 +65,12 @@ About:
 	On MacOS and on Linux they can be stored independently thanks to the 
 	additional dialogue, which turns out to be both the curse and the 
 	blessing so to speak.
-
+	
 	When storing, selected track gets preference, when no track is selected 
 	the script looks for the leftmost track in the Mixer.   
 	If 'Screensets/Layout' window isn't open while the Mixer is open, the script 
 	will work in screenset loading mode provided there's a stored track name.
-
+	
 	To determine the position to scroll the track to, the script evaluates the 
 	track displayed name. By default without any tags in its name the track is 
 	scrolled to the leftmost position. To change that precede the track displayed 
@@ -74,19 +80,19 @@ About:
 	To have the track scroll into view at the start of the Mixer (leftmost position)
 	when its name is already tagged, it suffices to strip the scroll tag of the 
 	letter, leaving only the greater '>' sign intact, e.g. "> My track name".
-
+	
 	To load the screenset and scroll into view a track whose name was stored,
 	run the script.
-
+	
 	After saving the screenset using this script, if the need arises to modify 
 	the screenset by changing Mixer dock state, window size, it can be done
 	the usual way via the corresponding action or 'Screensets/Layouts window',
 	but loaded this screenset must still be with this script.
-
+	
 	The script is linked to the track name, so if the stored name is applied 
 	to a different track, it will become the one to be scrolled into view in the Mixer 
 	when the screenset is loaded, provided the name isn't shared with any other track.
-
+	
 	When the target track is a child in a folder and the folder 
 	is collapsed in the Mixer, the parent track will be scrolled into view
 	instead. If the target track belongs to one of several nested folders the parent 
@@ -94,9 +100,9 @@ About:
 	scrolled into view.   
 	If the script happens to fail to determine whether or not the folder
 	is collapsed, no scrolling occurs.
-
+	
 	SWS/S&M Extension
-
+	
 	It's recommended to have the SWS/S&M extension installed so that all
 	3 track scroll positions are available regardless of the Mixer window width 
 	and that child and parent tracks of collapsed folders are always recognized.    
@@ -116,31 +122,31 @@ About:
 	BOTTOM LINE, absent the SWS/S&M extension use only leftmost position so the track
 	is sure to scroll into view. It could have been hard coded but i opted out just
 	to give the user some freedom of choice.
-
+			
 	CAVEATS
-
+	
 	If there're too few tracks on either end of the tracklist or their combined MCPs 
 	are too narrow to allow sufficient distance for scrolling, the stored track will 
 	be placed only as close to the target position as conditions permit.
-
+	
 	Generally the relative placement of a track at the center and on the right side 
 	of the Mixer is accurate. But it still depends on the stored track and adjacent 
-	tracks MCP width especially with a tracklist mixed in terms of MCP layouts.  
+	tracks MCP width especially with a tracklist mixed in terms of MCP layouts. 
 	Therefore at times some track may appear slightly off center or slightly to the 
 	left of the right edge instead of being flush with it.   
 	However in determining track placement its visibility is given top priority.
 	At the leftmost position the track is always flush with the left edge of the 
 	window or with the Master track.
-
+	
 	Mind that as of build 6.28 the Mixer window is global for all projects 
 	open in tabs, just the contents differ. Therefore changing Mixer scroll 
 	position in one such project will affect it across all open projects.
-
+	
 	* * *
 	Check out also BuyOne_Scroll named track into view in the Mixer (guide inside).lua
 	for a method of scrolling named track into view without hard linking between
 	track name and screenset number.
-
+		
 ]]
 
 
@@ -150,6 +156,88 @@ reaper.ShowConsoleMsg(cap..tostring(param)..'\n')
 end
 
 local r = reaper
+
+
+function no_undo()
+do return end
+end
+
+
+function META_Spawn_Scripts(fullpath, scr_name, names_t)
+
+	local function Dir_Exists(path) -- short
+	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+	local sep = path:match('[\\/]')
+	local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
+	local _, mess = io.open(path)
+	return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+	end
+
+	local function Esc(str)
+		if not str then return end -- prevents error
+	-- isolating the 1st return value so that if vars are initialized in a row outside of the function the next var isn't assigned the 2nd return value
+	local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
+	return str
+	end
+
+	if not fullpath:match(Esc(scr_name)) then return true end -- will allow to continue the script execution outside, since it's not a META script
+
+local names_t, content = names_t
+
+	if not names_t or names_t == 0 then -- if names table isn't supplied search names list in the header
+	-- load this script
+	local this_script = io.open(fullpath, 'r')
+	content = this_script:read('*a')
+	this_script:close()
+	names_t, found = {}
+		for line in content:gmatch('[^\n\r]+') do
+			if line and line:match('Provides') then found = 1 end
+			if found and line:match('%.lua') then
+			names_t[#names_t+1] = line:match('.+[/](.+)') or line:match('BuyOne.+[%w]') -- in case the new script name line includes a subfolder path, the subfolder won't be created
+			elseif found and #names_t > 0 then
+			break -- the list has ended
+			end
+		end
+	end
+
+	if names_t and #names_t > 0 then
+
+	r.MB('              This meta script will spawn '..#names_t
+	..'\n\n     individual scripts included in the package'
+	..'\n\n     after you supply a path to the directory\n\n\t    they will be placed in'
+	..'\n\n\twhich can be temporary.\n\n           After that the spawned scripts'
+	..'\n\n will have to be imported into the Action list.','META',0)
+
+	local ret, output -- to be able to autofill the dialogue with last entry on RELOAD
+
+	::RETRY::
+	ret, output = r.GetUserInputs('Scripts destination folder', 1,
+	'Full path to the dest. folder, extrawidth=200', output or '')
+
+		if not ret or #output:gsub(' ','') == 0 then return end -- must be aborted outside of the function
+
+	local user_path = Dir_Exists(output) -- validate user supplied path
+		if not user_path then Error_Tooltip('\n\n invalid path \n\n', 1, 1) -- caps, spaced true
+		goto RETRY end
+
+		-- load this script if wasn't loaded above to parse the header for file names list
+		if not content then
+		local this_script = io.open(fullpath, 'r')
+		content = this_script:read('*a')
+		this_script:close()
+		end
+
+		-- spawn scripts
+		for k, scr_name in ipairs(names_t) do
+		local new_script = io.open(user_path..scr_name, 'w') -- create new file
+		content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
+		new_script:write(content)
+		new_script:close()
+		end
+	end
+
+end
+
 
 function re_store_sel_trks(t)
 	if not t then
@@ -426,7 +514,11 @@ end
 
 local id = 404 -- 1st three digits of save/load screenset actions command IDs
 local context = {r.get_action_context()}
-local scr_name = context[2]:match('[^\\/]+_(.+)%.lua')
+local scr_name = context[2]:match('[^\\/]-_(.+)%.lua') -- without path, scripter name & ext
+
+	-- doesn't run in non-META scripts
+	if not META_Spawn_Scripts(context[2], 'BuyOne_Save-Load window set #1-10 with Mixer scroll position_META.lua', names_t)
+	then return r.defer(no_undo) end -- abort if META script but continue if not
 
 local set_num = tonumber(context[2]:match('[^\\/_].+#(%d+)')) -- get set # from script name
 
