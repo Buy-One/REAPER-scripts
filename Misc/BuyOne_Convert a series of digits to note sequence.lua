@@ -132,15 +132,15 @@ local ch = chan or want_active_ch
 end
 
 
-function Get_Default_MIDI_Chan(take, cmdID)
+function Get_Default_MIDI_Chan(take, sectID)
 -- the one selected in the channel filter regardless of its being enabled
 -- 'All channels' option defaults to channel 1
 r.PreventUIRefresh(1)
-	if cmdID ~= 32060 then -- script isn't run from the MIDI Editor section // open MIDI Editor
+	if sectID ~= 32060 then -- script isn't run from the MIDI Editor section // open MIDI Editor
 	r.Main_OnCommand(40153,0) -- Item: Open in built-in MIDI editor (set default behavior in preferences)
 	end
 local chan = r.MIDIEditor_GetSetting_int(r.MIDIEditor_GetActive(), 'default_note_chan')
-	if cmdID ~= 32060 then -- script isn't run from the MIDI Editor section // close MIDI editor
+	if sectID ~= 32060 then -- script isn't run from the MIDI Editor section // close MIDI editor
 	r.MIDIEditor_LastFocused_OnCommand(2, false) -- islistviewcommand false // File: Close window
 	end
 r.PreventUIRefresh(-1)
@@ -222,17 +222,15 @@ local named_cmdID = r.ReverseNamedCommandLookup(cmdID):gsub('7d3c_','') -- strip
 local autofill = r.GetExtState(named_cmdID, 'autofill')
 local comment = '- descending sequence, m/M - minor scale, r/R - random note length, p/P - rest'
 
-local ret, output = r.GetUserInputs('Digits to notes (optionally prefix digits with modifiers)', 2, 'Input a series of digits,(supported modifiers legend):,extrawidth=310,separator=:', autofill..':'..comment)
+local ret, output_orig = r.GetUserInputs('Digits to notes (optionally prefix digits with modifiers)', 2, 'Input a series of digits,(supported modifiers legend):,extrawidth=310,separator=:', autofill..':'..comment)
 
-output = ret and output:match('(.+):') -- exclude comment, if ret is false only the 1st field is returned out of several
+output = ret and output_orig:match('(.+):') -- exclude comment, if ret is false only the 1st field is returned out of several
 
 	if not ret or output and #output:gsub(' ','') == 0 or not output then -- not output when ret is true and the input field is empty
 		if output and not tonumber(output:lower():match('[mrp%-]*(.+)')) then -- besides modifiers the input field doesn't contain digits
 		r.DeleteExtState(named_cmdID, 'autofill', true) -- persist true // delete invalid input from buffer
 		end
 	return r.defer(no_undo) end
-
-r.SetExtState(named_cmdID, 'autofill', output, false) -- persist false // store output for autofilling the dialogue on the next load
 
 local output = output:gsub(' ',''):lower() -- remove spaces	and convert to lower register
 local descend = output:match('[%-]+')
@@ -246,6 +244,8 @@ local digits = output:match('[mrp%-]*(.+)')
 	..'\n\n   only digits are supported. \n\n',1,1) -- caps, spaced true
 	goto RETRY
 	end
+	
+r.SetExtState(named_cmdID, 'autofill', output_orig, false) -- persist false // store output for autofilling the dialogue on the next load, place here to only store valid
 
 r.Undo_BeginBlock()
 
@@ -307,7 +307,7 @@ local rest_dur = rest and {0, rand_len and Music_Div_To_Sec(Randomize_Array({1/8
 
 	if delete then Delete_Notes(take) end -- delete notes existing in the selected item
 
-local chan = Get_Default_MIDI_Chan(take, cmdID)
+local chan = Get_Default_MIDI_Chan(take, sectID)
 
 	for k, note in ipairs(digits_t) do
 	r.MIDI_InsertNote(take, false, false, note.start, note.fin, chan, note.pitch, 127, true) -- selected, muted false, chan -1 (Omni?), vel 127, noSortIn true
