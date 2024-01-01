@@ -3,6 +3,8 @@ Lua scripts for Cockos' REAPER
 
 **Many scripts feature user settings. Almost all include guide or description of features. Be sure to check those out and configure to your liking.**
 
+**From now on scripts marked with META when executed allow exporting individual scripts included in the META package to the user specified directory. After export the scripts will have to be manually imported into the Action list.** 
+
 [Complete list (162)](https://github.com/Buy-One/REAPER-scripts/wiki/SCRIPT-LIST)
 
 [Download all](https://github.com/Buy-One/REAPER-scripts/archive/refs/heads/main.zip)
@@ -21,9 +23,6 @@ Scripts from the **MIDI** folder go to the **MIDI Editor** section of the Action
 Updating scripts which include USER SETTINGS, in order to retain them, first overwrite the entire USER SETTINGS section in the newer version of the script with the one from the old one and only then overwrite the actual file.
 
 **Since this repo isn't compatible with ReaPack, if you have a Gihub account you can subscribe to the repo under the *Watch* button to be able to receive updates. To only get updates regarding new scripts and newer versions, under *Custom* submenu of the *Watch* menu enable only options *Pull requests* and *Releases*.** 
-
-**From now on scripts marked with META when executed allow exporting individual scripts included in the META package to the user specified directory. After export the scripts will have to be manually imported into the Action list.** 
-
   
 </br>
 </br>
