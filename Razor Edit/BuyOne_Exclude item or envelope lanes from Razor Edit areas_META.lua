@@ -7,7 +7,7 @@ Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/B
 Licence: WTFPL
 REAPER: at least v5.962
 Metapackage: true
-Provides: 	[main] . > BuyOne_Exclude item lanes from Razor Edit areas on all tracks.lua
+Provides:   [main] . > BuyOne_Exclude item lanes from Razor Edit areas on all tracks.lua
             [main] . > BuyOne_Exclude item lanes from Razor Edit areas on selected tracks.lua
             [main] . > BuyOne_Exclude envelope lanes from Razor Edit areas on all tracks.lua
             [main] . > BuyOne_Exclude envelope lanes from Razor Edit areas on selected tracks.lua
