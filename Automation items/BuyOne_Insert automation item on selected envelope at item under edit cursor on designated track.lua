@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Insert automation item on selected envelope at item under edit cursor on designated track.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: v1.1 #Added code to deselect newly inserted AI if pooled
+Version: 1.2
+Changelog: v1.2 #Added support for getting envelope under mouse cursor if SWS extension is installed
+		#Updated About text
+	   v1.1 #Added code to deselect newly inserted AI if pooled
 		so that the original pool source AI is the same for all script runs
 		#Optimized behavior when pool source AI is itself located inder
 		the media item
@@ -17,7 +19,9 @@ About: 	The script creates an automaion item (AI) of the same length as the item
 	located between the item start and item end or at the item start. Edit 
 	cursor aligned with the item end is condsidered to be outside of the item.
 	
-	If there's no selected track the script will look for track under the mouse.
+	If there's no selected track the script will look for track under the mouse
+	which is either TCP, MCP, envelope lane or the Arrange along the entire time
+	line opposite of the TCP.
 	
 	If there's a selected AI on the selected envelope, the newly inserted AI 
 	will be its pooled copy, otherwise it will be an independent non-pooled AI. 
@@ -27,6 +31,9 @@ About: 	The script creates an automaion item (AI) of the same length as the item
 	new AI. The pooled copy is stretched or shrunk to fit item length if necessary.
 	If a non-pooled AI is created, the existing envelope points, if any, will 
 	be absorbed into it instead.  		
+	
+	If SWS/S&M extension is installed neither the track nor the envelope have 
+	to be selected if the mouse cursor points at an envelope.
 	
 	Whether the newly inserted AI overwrites any AI present at the location it's 
 	inserted at or whether it's inserted on top of it on a new AI lane depends 
@@ -120,10 +127,16 @@ local tr, info = not tr and r.GetTrackFromPoint(x,y) or tr
 	Error_Tooltip('\n\n    no selected track \n\n or track under mouse \n\n', 1, 1) -- caps, spaced true
 	return r.defer(no_undo) end	
 
-local env = r.GetSelectedTrackEnvelope(0)
+local env_sel = r.GetSelectedTrackEnvelope(0)
+local sws = r.APIExists('BR_GetMouseCursorContext_Envelope')
+local wnd, segm, details = table.unpack(sws and {r.BR_GetMouseCursorContext()} or {}) -- must come before BR_GetMouseCursorContext_Envelope() because it relies on it
+local env, takeEnv = table.unpack(sws and {r.BR_GetMouseCursorContext_Envelope()} or {})
+env = env or env_sel
+local err = sws and (takeEnv and '    take envelopes don\'t \n\n support automation items' 
+or not env and 'no track envelope under \n\n      mouse or selected') or not env and 'no selected track envelope'
 
-	if not env then
-	Error_Tooltip('\n\n no selected track envelope \n\n', 1, 1) -- caps, spaced true
+	if err then
+	Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced true
 	return r.defer(no_undo) end
 	
 local edit_cur_pos = r.GetCursorPosition()
