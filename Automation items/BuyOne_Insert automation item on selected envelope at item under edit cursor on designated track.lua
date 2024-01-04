@@ -152,7 +152,7 @@ local item, item_st, item_len
 
 	if not item then
 	Error_Tooltip('\n\n   no item under the edit cursor '
-	..'\n\n on selected or track under mouse\n', 1, 1) -- caps, spaced true
+	..'\n\n on selected or under mouse track\n', 1, 1) -- caps, spaced true
 	return r.defer(no_undo) end
 
 local itm_tr = r.GetMediaItemTrack(item) -- or r.GetMediaItem_Track()
