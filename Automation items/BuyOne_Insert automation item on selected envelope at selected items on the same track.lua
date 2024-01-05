@@ -2,8 +2,11 @@
 ReaScript name: BuyOne_Insert automation item on selected envelope at selected items on the same track.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: v1.1 #Added support for getting envelope under mouse cursor if SWS extension is installed
+		#Fixed error when the first one of multiple selected items happens to not belong to 
+		the same track as the envelope
+		#Updated About text, USER SETTINGS description
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: 
@@ -13,9 +16,16 @@ About: 	The script creates automaion items (AI) of the same length as each
 	tracks are selected, only the parent track of the 1st selected item 
 	will be respected.
 	
-	Since making media items and envelope selected at the same time isn't 
-	very convenient or intuitive in REAPER, the script is executed in two 
-	steps:
+	If the SWS/S&M extension is installed the envelope doesn't have to 
+	be selected as long as the mouse cursor points at it. In this case
+	automation items are inserted under the selected items in a single
+	script execution.
+	
+	If the SWS/S&M extension isn't installed or the script isn't run with
+	a shortcut which doesn't allow free movement of the mouse cursor, then
+	the script should be executed in two steps since making media items 
+	and envelope selected at the same time isn't very convenient or 
+	intuitive in REAPER:
 	
 	STEP 1
 	1. Make item selection.
@@ -66,7 +76,7 @@ About: 	The script creates automaion items (AI) of the same length as each
 	However if as a result of insertion of the new AI the pool source AI is going
 	to be trimmed due to overlap, the above option won't affect the pool source AI 
 	even if enabled and the pooled AI will be inserted on another AI lane.
-	
+			
 	Without pooling and only for a single item at a time the same operation can be 
 	realized as a custom action:
 	
@@ -85,8 +95,10 @@ About: 	The script creates automaion items (AI) of the same length as each
 -- Between the quotes insert time in seconds
 -- of how long the selected items or envelope
 -- data must be kept in the buffer before
--- the main action is executed;
--- if empty or invalid, defaults to 60 sec
+-- the main action (step 2) is executed;
+-- if empty or invalid, defaults to 60 sec;
+-- only relevant when the script is executed
+-- in 2 steps
 STORAGE_TIME = ""
 
 -----------------------------------------------------------------------------
@@ -190,133 +202,177 @@ local storage_time = data:match('time:(.-) ')
 STORAGE_TIME = STORAGE_TIME:gsub('[%s%-]','') -- removing spaces and minus
 STORAGE_TIME = tonumber(STORAGE_TIME) or 60 -- default to 60 sec if not set or malformed
 
-	if storage_time and #storage_time > 0 
-	and r.time_precise()-storage_time >= STORAGE_TIME -- clear data, reset toggle state
-	then
-	r.DeleteExtState(namedID, 'DATA', true) -- persist true
-	Error_Tooltip('\n\n\tthe data has expired \n\n repeat the data storage step \n\n', 1, 1) -- caps, spaced true
-	local toggle = r.GetToggleCommandState(sectionID, cmdID)
-		if toggle == 1 then r.SetToggleCommandState(sectionID, cmdID, 0) end
+local sel_item = r.GetSelectedMediaItem(0,0)
+local sel_env = r.GetSelectedTrackEnvelope(0)
+
+local sws = r.APIExists('BR_GetMouseCursorContext_Envelope')
+local wnd, segm, details = table.unpack(sws and {r.BR_GetMouseCursorContext()} or {}) -- must come before BR_GetMouseCursorContext_Envelope() because it relies on it
+local env, takeEnv = table.unpack(sws and {r.BR_GetMouseCursorContext_Envelope()} or {})
+sel_env = env or sel_env
+local err = '    take envelopes don\'t \n\n support automation items'
+err = not sel_item and (sws and (takeEnv and err
+or not sel_env and '\t  no track envelope \n\n under the mouse or selected \n\n\tand no selected items')
+or not sel_env and ' no selected items\n\n or track envelope') or sel_item and takeEnv and err
+
+	if err then
+	Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced true
 	return r.defer(no_undo) end
 
-	if #data == 0 then
-	
-	local sel_item = r.GetSelectedMediaItem(0,0)
-	local sel_env = r.GetSelectedTrackEnvelope(0)
+	if env then -- sws extension is installed and envelope under mouse
 
-		if not sel_item and not sel_env then 
-		Error_Tooltip('\n\n no selected items or envelope \n\n', 1, 1) -- caps, spaced true
-		return r.defer(no_undo) end
-		
-	local data = ''
-		if sel_item then
-		-- only respect selected items on the same track as the first selected one
-		local tr = r.GetMediaItemTrack(sel_item)
-		local tr_idx = r.CSurf_TrackToID(tr, false) -- mcpView false
-			for i = 0, r.GetTrackNumMediaItems(tr)-1 do
-			local item = r.GetTrackMediaItem(tr, i)
-				if r.IsMediaItemSelected(item) then	-- storing track item idex, alternatively their pointers or GUIDs could be stored to account for possible reorder/removal between script runs, but not sure it's a compelling enough reason
-				data = (#data == 0 and data..'tr:'..tr_idx..' items:' or data)..i..',' -- only storing track idx once
+	data = 'mouse' -- dummy data just to be able to activate AI creation routine in a scenario when there's envelope under mouse cursor
+
+	else -- STEP 1
+
+		if #data > 0 and storage_time and #storage_time > 0
+		and r.time_precise()-storage_time >= STORAGE_TIME -- clear data, reset toggle state
+		then
+
+		r.DeleteExtState(namedID, 'DATA', true) -- persist true
+		Error_Tooltip('\n\n\tthe data has expired \n\n repeat the data storage step \n\n', 1, 1) -- caps, spaced true
+		local toggle = r.GetToggleCommandStateEx(sectionID, cmdID)
+			if toggle == 1 then r.SetToggleCommandState(sectionID, cmdID, 0) end
+
+		return r.defer(no_undo)
+
+		elseif #data == 0 then
+
+			if sel_item then
+			-- only respect selected items on the same track as the first selected one
+			local tr = r.GetMediaItemTrack(sel_item)
+			local tr_idx = r.CSurf_TrackToID(tr, false) -- mcpView false
+				for i = 0, r.GetTrackNumMediaItems(tr)-1 do
+				local item = r.GetTrackMediaItem(tr, i)
+					if r.IsMediaItemSelected(item) then	-- storing track item idex, alternatively their pointers or GUIDs could be stored to account for possible reorder/removal between script runs, but not sure it's a compelling enough reason
+					data = (#data == 0 and data..'tr:'..tr_idx..' items:' or data)..i..',' -- only storing track idx once
+					end
+				end
+			elseif sel_env then
+			local tr = r.GetEnvelopeInfo_Value(sel_env, 'P_TRACK')
+				for i = 0, r.CountTrackEnvelopes(tr)-1 do
+				local env = r.GetTrackEnvelope(tr, 0)
+				local env = r.CountEnvelopePoints(env) > 0 and env -- validate because in REAPER builds before 7.06 fx param envelopes are valid if param modulation is enabled without any actual envelope, such ghost envelopes don't have points, although in this particular case this is redundant because non-existing envelope cannot be selected
+					if env == sel_env then -- storing env index, alternatively its more immutable properties could be stored to account for possible removal/re-opening in a different order, but like with items not sure it's a compelling enough reason
+					local tr_idx = r.CSurf_TrackToID(tr, false) -- mcpView false
+					data = data..'tr:'..tr_idx..' env:'..i
+					break end
 				end
 			end
-		elseif sel_env then
-		local tr = r.GetEnvelopeInfo_Value(sel_env, 'P_TRACK')
-			for i = 0, r.CountTrackEnvelopes(tr)-1 do
-			local env = r.GetTrackEnvelope(tr, 0)
-			local env = r.CountEnvelopePoints(env) > 0 and env -- validate because in REAPER builds before 7.06 fx param envelopes are valid if param modulation is enabled without any actual envelope, such ghost envelopes don't have points, although in this particular case this is redundant because non-existing envelope cannot be selected
-				if env == sel_env then -- storing env index, alternatively its more immutable properties could be stored to account for possible removal/re-opening in a different order, but like with items not sure it's a compelling enough reason
-				local tr_idx = r.CSurf_TrackToID(tr, false) -- mcpView false
-				data = data..'tr:'..tr_idx..' env:'..i
-				break end
+
+			if #data > 0 then
+			r.SetExtState(namedID, 'DATA', 'time:'..r.time_precise()..' '..data, false) -- persist false
+			r.SetToggleCommandState(sectionID, cmdID, 1) ----- UNCOMMENT !!!!!!!
+			local mess = sel_item and 'the item data has been stored' or 'the envelope data \n\n  has been stored'
+			Error_Tooltip('\n\n '..mess..' \n\n', 1, 1) -- caps, spaced true
+			return r.defer(no_undo) end -- abort to prevent automatically going to the step 2
+		end
+
+	end
+
+
+	if #data > 0 then -- there's stored data or sws extension is installed and there's envelope under mouse cursor
+
+		local function Is_Same_Track(tr)
+			for i = 0, r.CountSelectedMediaItems(0)-1 do
+			local item = r.GetSelectedMediaItem(0,i)
+			local itm_tr = r.GetMediaItemTrack(item)
+				if itm_tr == tr then return true end -- one is enough
 			end
 		end
 
-		if #data > 0 then
-		r.SetExtState(namedID, 'DATA', 'time:'..r.time_precise()..' '..data, false) -- persist false
-		r.SetToggleCommandState(sectionID, cmdID, 1)
-		local mess = sel_item and 'the item data has been stored' or 'the envelope data \n\n  has been stored'
-		Error_Tooltip('\n\n '..mess..' \n\n', 1, 1) -- caps, spaced true
-		end
-	
-	else -- there's stored data
-	
-		function PROMPT(err, spaces_cnt, prompt, response)
-		local err = ' |'..space(spaces_cnt)..err:upper():gsub('.','%0 ')..'| '
-		return Show_Menu_Dialogue(err..'|'..prompt..'||'..response)
-		end
-	
-	local prompt = ('    Wish to clear the buffer?'):gsub('.','%0 ')
-	local response = (space(15)..'Y E S'):gsub('.','%0 ')
-	
-	local tr_idx = data:match('tr:(.-) ')
-	local tr = r.CSurf_TrackFromID(tr_idx, false) -- mcpView false	
-	local env_idx = data:match('env:(.+)')
-	local items_data = data:match('items:(.+)') -- isolate item data
+	local itm_idx_t, env, tr = {}, sel_env
 
-	local itm_idx_t, env = {}
-	
-		if not env_idx then -- not env was stored but items
-		
-			for itm_idx in items_data:gmatch('[^,]+') do
-				if itm_idx then
-				itm_idx_t[#itm_idx_t+1] = itm_idx
+		if data == 'mouse' then -- envelope under mouse cursor
+
+			if not sel_item then
+			Error_Tooltip('\n\n no selected items \n\n', 1, 1) -- caps, spaced true
+			return r.defer(no_undo) end
+
+		tr = r.GetEnvelopeInfo_Value(env, 'P_TRACK')
+
+			if not Is_Same_Track(tr) then
+			Error_Tooltip('\n\n     the selected items \n\n and the envelope belong '
+			..'\n\n    to different tracks \n\n', 1, 1) -- caps, spaced true
+			return r.defer(no_undo) end
+
+		else -- stored data // STEP 2
+
+			function PROMPT(err, spaces_cnt, prompt, response)
+			local err = ' |'..space(spaces_cnt)..err:upper():gsub('.','%0 ')..'| '
+			return Show_Menu_Dialogue(err..'|'..prompt..'||'..response)
+			end
+
+		local prompt = ('    Wish to clear the buffer?'):gsub('.','%0 ')
+		local response = (space(15)..'Y E S'):gsub('.','%0 ')
+
+		local tr_idx = data:match('tr:(.-) ')
+		tr = r.CSurf_TrackFromID(tr_idx, false) -- mcpView false
+		local env_idx = data:match('env:(.+)')
+		local items_data = data:match('items:(.+)') -- isolate item data
+
+			if not env_idx then -- not env was stored but items
+
+				for itm_idx in items_data:gmatch('[^,]+') do
+					if itm_idx then
+					itm_idx_t[#itm_idx_t+1] = itm_idx
+					end
 				end
-			end
-	
-		env = r.GetSelectedTrackEnvelope(0)
-		local env_tr = env and r.GetEnvelopeInfo_Value(env, 'P_TRACK')
-		local err = not env and 'no selected track envelope' 
-		or env_tr ~= tr and 'the items and the envelope '
-		..'\n\n belong to different tracks'
-			
-			if err then
-				if not env then
-				local output = PROMPT(err, 0, prompt, response)
+
+			env = r.GetSelectedTrackEnvelope(0)
+			local env_tr = env and r.GetEnvelopeInfo_Value(env, 'P_TRACK')
+			local err = not env and 'no selected track envelope'
+			or env_tr ~= tr and 'the items and the envelope '
+			..'\n\n belong to different tracks'
+
+				if err then
+					if not env then
+					local output = PROMPT(err, 0, prompt, response)
+						if output == 5 then
+						r.DeleteExtState(namedID, 'DATA', true) -- persist true
+						end
+					else
+					Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced true
+					end
+				return r.defer(no_undo) end
+
+			else -- env was stored and not items
+
+			local sel_item = r.GetSelectedMediaItem(0,0)
+
+				if not sel_item then
+				local output = PROMPT('no selected items', 13, prompt, response)
 					if output == 5 then
 					r.DeleteExtState(namedID, 'DATA', true) -- persist true
 					end
-				else
-				Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced true
-				end
-			return r.defer(no_undo) end
-		
-		else -- env was stored and not items
-	
-		local sel_item = r.GetSelectedMediaItem(0,0)
+				return r.defer(no_undo) end
 
-			if not sel_item then
-			local output = PROMPT('no selected items', 13, prompt, response)
-				if output == 5 then
-				r.DeleteExtState(namedID, 'DATA', true) -- persist true
-				end
-			return r.defer(no_undo) end
-		
-			for i = 0, r.CountTrackEnvelopes(tr)-1 do -- search for env index among track envs and get its pointer
-				if i == env_idx+0 then
-				env = r.GetTrackEnvelope(tr, 0)
-					if r.CountEnvelopePoints(env) > 0 -- validate because in REAPER builds before 7.06 fx param envelopes are valid if param modulation is enabled without any actual envelope, such ghost envelopes don't have points
-					then break
-					else
-					env = nil -- reset
+				for i = 0, r.CountTrackEnvelopes(tr)-1 do -- search for env index among track envs and get its pointer
+					if i == env_idx+0 then
+					env = r.GetTrackEnvelope(tr, 0)
+						if r.CountEnvelopePoints(env) > 0 -- validate because in REAPER builds before 7.06 fx param envelopes are valid if param modulation is enabled without any actual envelope, such ghost envelopes don't have points
+						then break
+						else
+						env = nil -- reset
+						end
 					end
 				end
+
+			local err = not env and 'the stored envelope wasn\'t found'
+			or not Is_Same_Track(tr) and 'the items and the envelope \n\n belong to different tracks '
+			or not Is_Env_Visible(env) and 'the stored envelope is hidden '
+
+				if err then
+				Error_Tooltip('\n\n '..err..'\n\n', 1, 1) -- caps, spaced true
+				return r.defer(no_undo) end
+
 			end
-			
-		local item_tr = r.GetMediaItemTrack(sel_item)
-		local err = not env and 'the stored envelope wasn\'t found' 
-		or tr ~= item_tr and 'the items and the envelope \n\n belong to different tracks '
-		or not Is_Env_Visible(env) and 'the stored envelope is hidden '
-		
-			if err then
-			Error_Tooltip('\n\n '..err..'\n\n', 1, 1) -- caps, spaced true
-			return r.defer(no_undo) end	
-		
+
 		end
 
 
 	-- get index of the first selected AI on the envelope, which will be pool source for the newly inserted AI
 	local GetSetAI = r.GetSetAutomationItemInfo
-	local pool_src_idx
+	local pool_src_idx--, pre_existing_AI
 		for AI_idx = 0, r.CountAutomationItems(env)-1 do
 			if GetSetAI(env, AI_idx, 'D_UISEL', -1, false) > 0 -- selected; value -1, is_set false
 			then
@@ -326,8 +382,8 @@ STORAGE_TIME = tonumber(STORAGE_TIME) or 60 -- default to 60 sec if not set or m
 		end
 
 	r.Undo_BeginBlock()
-	
-	local st, fin = table.unpack(#itm_idx_t > 0 and {1, #itm_idx_t} or {0, r.GetTrackNumMediaItems(tr)-1})
+
+	local st, fin = table.unpack(#itm_idx_t > 0 and {1, #itm_idx_t} or {0, r.GetTrackNumMediaItems(tr)-1}) -- depending on what was stored, envelope or items
 
 		for i = st, fin do
 		local item_idx = #itm_idx_t > 0 and itm_idx_t[i]+0 or i -- +0 to convert to number
@@ -340,7 +396,7 @@ STORAGE_TIME = tonumber(STORAGE_TIME) or 60 -- default to 60 sec if not set or m
 				local src_start = GetSetAI(env, pool_src_idx, 'D_POSITION', -1, false)
 				local src_len = GetSetAI(env, pool_src_idx, 'D_LENGTH', -1, false)
 				local src_playrate = GetSetAI(env, pool_src_idx, 'D_PLAYRATE', -1, false) -- pool source playrate isn't preserved in the inserted pooled instance, it defaults to 1, therefore the source playrate needs to be retrieved from the source
-				
+
 				local overlap = src_start >= item_st and src_start < item_st+item_len -- partial overlap incl. enclosed overlap
 				or src_start+src_len > item_st and src_start+src_len <= item_st+item_len -- partial overlap incl. enclosed overlap
 				or src_start <= item_st and src_start+src_len >= item_st+item_len -- full overlap
@@ -358,37 +414,36 @@ STORAGE_TIME = tonumber(STORAGE_TIME) or 60 -- default to 60 sec if not set or m
 				-- always set playrate to cover all cases, including cases when the pool source is already under the item
 				-- and has the same length when inserting a new AI on top of the pool source
 				local src_orig_len = src_len*src_playrate -- calculate orig pool source length, new length is created by division of orig length by playrate, so this is reverse operation
+
 				local new_playrate = src_orig_len/item_len -- calc playrate required for fitting AI length to item length
 				GetSetAI(env, new_AI_idx, 'D_PLAYRATE', new_playrate, true) -- is_set true
-					
+
 					if trim_ON then r.Main_OnCommand(42206, 0) end -- re-enable
-					
+
 				GetSetAI(env, new_AI_idx, 'D_UISEL', 0, true) -- value 0, is_set true // de-select the newly added AI
 				local new_AI_st = GetSetAI(env, new_AI_idx, 'D_POSITION', -1, false)
 				pool_src_idx = new_AI_st < src_start and pool_src_idx+1 or pool_src_idx
 				GetSetAI(env, pool_src_idx, 'D_UISEL', 1, true) -- value 1, is_set true // re-select pool source AI because at insertion of the new AI it gets de-selected, so all subsequent new AI if any use the same source
-				
+
 				pool = '& pool'
-				
+
 				else
-				
-				r.InsertAutomationItem(env, -1 , item_st, item_len) -- if no selected AI pool_id -1 absorbs env points		
-				
+
+				r.InsertAutomationItem(env, -1 , item_st, item_len) -- if no selected AI pool_id -1 absorbs env points
+
 				end
-				
+
 			end -- item condition end
-		
+
 		end
-		
+
 		if not pool_src_idx then
 		Error_Tooltip('\n\n no selected ai to pool with \n\n', 1, 1) -- caps, spaced true
-		end		
-		
+		end
+
 		r.DeleteExtState(namedID, 'DATA', true) -- persist true
-		r.SetToggleCommandState(sectionID, cmdID, 0) -- reset toggle state		
+		r.SetToggleCommandState(sectionID, cmdID, 0) -- reset toggle state	----- UNCOMMENT !!!!!!!
 
 	r.Undo_EndBlock('Insert automation item on selected envelope at selected items on the same track '..(pool or ''), -1)
 
 	end
-
-
