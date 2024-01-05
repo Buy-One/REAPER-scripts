@@ -9,7 +9,6 @@ Changelog: v1.1 #Added support for getting envelope under mouse cursor if SWS ex
 		#Updated About text, USER SETTINGS description
 Licence: WTFPL
 REAPER: at least v5.962
-Extensions: 
 About: 	The script creates automaion items (AI) of the same length as each
 	of selected media items. The selected media items and the selected 
 	envelope must belong to the same track. If media items on different 
