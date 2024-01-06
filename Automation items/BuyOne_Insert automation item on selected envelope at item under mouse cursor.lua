@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Insert automation item on selected envelope at item under mouse cursor.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: v1.1 #Added code to deselect newly inserted AI if pooled
+Version: 1.2
+Changelog: v1.2 #Added support for getting envelope under mouse cursor if SWS extension is installed
+		#Updated About text
+   	   v1.1 #Added code to deselect newly inserted AI if pooled
 		so that the original pool source AI is the same for all script runs
 		#Optimized behavior when pool source AI is itself located inder
 		the media item
@@ -11,10 +13,19 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: 
 About: 	The script creates an automaion item (AI) of the same length as the item
-	under the mouse cursor. The item and the selected envelope must belong
-	to the same track. 
+	under the mouse cursor or directly above the mouse cursor (see next paragraph). 
+	The item and the selected envelope or envelope under mouse cursor (see next 
+	paragraph) must belong to the same track.
 	
-	If there's a selected AI on the selected envelope, the newly inserted AI 
+	If the SWS/S&M extension is installed the envelope doesn't have to be 
+	selected and mouse cursor doesn't have to point at an item as long as it 
+	points at the envelope and the item is located directly above the mouse 
+	cursor on the same track. An item is directly above the mouse cursor when 
+	its start time is identical or earlier and its end time is later than the 
+	mouse cursor position.
+	
+	If there's a selected AI on the selected envelope or envelope under the 
+	mouse cursor (when the SWS/S&M extension is installed), the newly inserted AI 
 	will be its pooled copy, otherwise it will be an independent non-pooled AI. 
 	When a pooled copy is created if there're envelope points at the location 
 	where the new AI is inserted these will be preserved and the AI will be placed 
@@ -103,17 +114,53 @@ r.UpdateTimeline() -- might be needed because tooltip can sometimes affect graph
 end
 
 
-local x, y = r.GetMousePosition()
-local item = r.GetItemFromPoint(x,y, true) -- allow_locked true
+function Get_Mouse_Pos_Sec()
+r.PreventUIRefresh(1)
+local cur_pos = r.GetCursorPosition() -- store current edit cur pos
+r.Main_OnCommand(40514,0) -- View: Move edit cursor to mouse cursor (no snapping)
+local mouse_pos = r.GetCursorPosition()
+r.SetEditCurPos(cur_pos, false, false) -- moveview, seekplay false // restore edit cur pos
+r.PreventUIRefresh(-1)
+return mouse_pos
+end
 
-	if not item then
-	Error_Tooltip('\n\n no item under mouse cursor \n\n', 1, 1) -- caps, spaced true
+
+
+local env_sel = r.GetSelectedTrackEnvelope(0)
+local sws = r.APIExists('BR_GetMouseCursorContext_Envelope')
+local wnd, segm, details = table.unpack(sws and {r.BR_GetMouseCursorContext()} or {}) -- must come before BR_GetMouseCursorContext_Envelope() because it relies on it
+local env, takeEnv = table.unpack(sws and {r.BR_GetMouseCursorContext_Envelope()} or {})
+env = env or env_sel
+local err = sws and (takeEnv and '    take envelopes don\'t \n\n support automation items' 
+or not env and 'no track envelope under \n\n      mouse or selected') or not env and 'no selected track envelope'
+
+	if err then
+	Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced true
 	return r.defer(no_undo) end
 
-local env = r.GetSelectedTrackEnvelope(0)
+local item
 
-	if not env then
-	Error_Tooltip('\n\n no selected track envelope \n\n', 1, 1) -- caps, spaced true
+		if env then
+		local x, y = r.GetMousePosition()
+		item = r.GetItemFromPoint(x,y, true) -- allow_locked true
+			if not item then -- which is likely when mouse points at an envelope when sws extension is installed, look for item on the same Y axis as the mouse cursor
+			local mouse_pos = Get_Mouse_Pos_Sec()
+			local tr = r.GetEnvelopeInfo_Value(env, 'P_TRACK')
+				for i=0,r.GetTrackNumMediaItems(tr)-1 do
+				item = r.GetTrackMediaItem(tr,i)
+				local itm_st = r.GetMediaItemInfo_Value(item, 'D_POSITION')
+				local itm_end = itm_st+r.GetMediaItemInfo_Value(item, 'D_LENGTH')
+					if mouse_pos >= itm_st and mouse_pos < itm_end then break
+					else
+					item = nil -- reset
+					end
+				end
+			end
+		end	
+
+err = sws and ' or directly \n\n     above' or ''
+	if not item then
+	Error_Tooltip('\n\n no item under'..err..' mouse cursor \n\n', 1, 1) -- caps, spaced true
 	return r.defer(no_undo) end
 
 local itm_tr = r.GetMediaItemTrack(item) -- or r.GetMediaItem_Track()
