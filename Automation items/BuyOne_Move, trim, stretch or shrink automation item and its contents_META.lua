@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Move, trim, stretch or shrink automation item and its contents_META.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: v1.1 #Added support for getting envelope under mouse cursor if SWS extension is installed
+		#Updated About text
 Metapackage: true
 Licence: WTFPL
 REAPER: at least v5.962
@@ -11,9 +12,11 @@ Extensions:
 About: 	This package of 31 scripts aims at allowing operations with automation 
 	items (AI) similar to those available for media items with native REAPER
 	actions. The difference is that only one automation item at a time can 
-	be affected. For this not only the target automation item must be selected 
-	but also the envelope it belongs to. If several atuomation items are 
-	selected on an envelope only the first one will be affected by the scripts.
+	be affected. The target automation item must be selected. The envelope 
+	the automation item belongs to must also be selected unless the SWS/S&M 
+	extension is installed and the mouse cursor points at the envelope. If 
+	several automation items are selected on an envelope only the first one 
+	will be affected by the scripts.
 	
 	If this script name is suffixed with META it will spawn all individual scripts
 	included in the package into the directory supplied by the user in a dialogue.
@@ -27,13 +30,13 @@ About: 	This package of 31 scripts aims at allowing operations with automation
 	
 	Move contents of selected automation item to edit/mouse cursor (2)		
 	Behavior:	If cursor is to the left of the AI start, contents are moved left, 
-			if it's to the right of the AI start, contents are moved right.
-			The contents are moved by the distance between the cursor and
-			the AI start.
+				if it's to the right of the AI start, contents are moved right.
+				The contents are moved by the distance between the cursor and
+				the AI start.
 
 	Move selected automation item to edit/mouse cursor preserving contents (2)
 	Behavior: 	If cursor is to the left of the AI start, the AI is moved left, 
-			if it's to the right of the AI start, the AI is moved right.
+				if it's to the right of the AI start, the AI is moved right.
 
 	Move contents of selected automation item 10 ms left/right (2)
 	Move selected automation item 10 ms left/right preserving contents (2)
@@ -44,25 +47,25 @@ About: 	This package of 31 scripts aims at allowing operations with automation
 	
 	Trim left/right edge of selected automation item to edit/mouse cursor (4)
 	Behavior:	The edit/mouse cursor must be located within the AI or outside
-			of its target edge.
+				of its target edge.
 	
 	Trim left/right edge of selected automation item to edit/mouse cursor and loop (4)
 	Behavior: 	This is a variant of the previous script which enables AI loop 
-			if it's not enabled
+				if it's not enabled
 	
 	Stretch or shrink left/right edge of selected automation item to edit/mouse cursor (4)
 	Behavior:	The edit/mouse cursor must be located within the AI or outside
-			of its target edge.
+				of its target edge.
 
 	The following scripts must be run with the mousewheel
 
 	Move/trim/stretch of shrink edge of selected automation item to mouse cursor (mousewheel) (3)
 	Behavior:	AI left edge is being affected when the mouse cursor is to the left 
-			of the AI start and the mousewheel is in (down) or the mouse cursor 
-			is between the AI start and its end and the mousewheel out (up). 
-			AI right edge is being affected when the mouse cursor is to the right 
-			of the AI end and the mousewheel is out (up) or the mouse cursor 
-			is between the AI start and its end and the mousewheel in (down).
+				of the AI start and the mousewheel is in (down) or the mouse cursor 
+				is between the AI start and its end and the mousewheel out (up). 
+				AI right edge is being affected when the mouse cursor is to the right 
+				of the AI end and the mousewheel is out (up) or the mouse cursor 
+				is between the AI start and its end and the mousewheel in (down).
 	
 	Move contents of selected automation item to mouse cursor (mousewheel)
 	Behavior:	If the mouse cursor is to the left of the AI start 
@@ -74,20 +77,20 @@ About: 	This package of 31 scripts aims at allowing operations with automation
 
 	Move selected automation item to mouse cursor preserving contents (mousewheel)
 	Behavior:	If the mouse cursor is to the left of the AI start 
-			and the mousewheel is in (down), the AI is moved left, 
-			the mousewheel is out (up) is ignored.  
-			If the mouse cursor to the right of the AI start 
-			and the mousewheel is out (up) the AI is moved right, 
-			the mousewheel in (down) is ignored.
+				and the mousewheel is in (down), the AI is moved left, 
+				the mousewheel is out (up) is ignored.  
+				If the mouse cursor to the right of the AI start 
+				and the mousewheel is out (up) the AI is moved right, 
+				the mousewheel in (down) is ignored.
 
 	Move contents of selected automation item 10 ms (mousewheel)
 	Move selected automation item 10 ms preserving contents (mousewheel)
 	Behavior:	The functionality of both scripts doesn't depend 
-			on the mouse cursor position, only on the mouswheel direction.
+				on the mouse cursor position, only on the mouswheel direction.
 	These two scripts above can be duplicated and value 10 can be replaced in 
 	the duplicates name with another value to be able to move to by a different
 	distance.
-					
+
 ]]
 
 -----------------------------------------------------------------------------
@@ -231,7 +234,7 @@ function META_Spawn_Scripts(fullpath, scr_name, names_t)
 	local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
 	return str
 	end
-
+	
 	if not fullpath:match(Esc(scr_name)) then return true end -- will allow to continue the script execution outside, since it's not a META script
 
 	if names_t and #names_t > 0 then
@@ -337,7 +340,7 @@ local names_t = {'Move left edge to edit cursor', 'Move left edge to mouse curso
 }
 
 local is_new_value, fullpath, sectionID, cmdID, mode, resolution, val = r.get_action_context()
-local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- without path, scripter name and file ext
+local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- without path, extension and author name
 
 	-- doesn't run in non-META scripts
 	if not META_Spawn_Scripts(fullpath, 'BuyOne_Move, trim, stretch or shrink'
@@ -363,10 +366,16 @@ local not_elm5 = Invalid_Script_Name(scr_name, 'edge', 'contents')
 	Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced true
 	return r.defer(no_undo) end
 
-local env = r.GetSelectedTrackEnvelope(0)
+local env_sel = r.GetSelectedTrackEnvelope(0)
+local sws = r.APIExists('BR_GetMouseCursorContext_Envelope')
+local wnd, segm, details = table.unpack(sws and {r.BR_GetMouseCursorContext()} or {}) -- must come before BR_GetMouseCursorContext_Envelope() because it relies on it
+local env, takeEnv = table.unpack(sws and {r.BR_GetMouseCursorContext_Envelope()} or {})
+env = env or env_sel
+local err = sws and (takeEnv and '    take envelopes don\'t \n\n support automation items' 
+or not env and 'no track envelope under \n\n      mouse or selected') or not env and 'no selected track envelope'
 
-	if not env then
-	Error_Tooltip('\n\n no selected track envelope \n\n', 1, 1) -- caps, spaced true
+	if err then
+	Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced true
 	return r.defer(no_undo) end
 
 
