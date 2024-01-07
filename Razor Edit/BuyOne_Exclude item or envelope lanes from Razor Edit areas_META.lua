@@ -1,11 +1,12 @@
 --[[
 ReaScript name: BuyOne_Exclude item or envelope lanes from Razor Edit areas_META.lua (4 scripts)
 Author: BuyOne
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: v1.1 #Added REAPER version check
+		#Corrected minimal supported version in the header
 Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
-REAPER: at least v5.962
+REAPER: at least v6.24
 Metapackage: true
 Provides:   [main] . > BuyOne_Exclude item lanes from Razor Edit areas on all tracks.lua
             [main] . > BuyOne_Exclude item lanes from Razor Edit areas on selected tracks.lua
@@ -241,6 +242,12 @@ or not target_raz_edit and (envs and '     no envelope lanes \n\n  '..err2 or it
 	end
 
 end
+
+
+	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.24 then
+	-- in 6.24 Razor edit feature was added and 'P_RAZOREDITS' parm was added to GetSetMediaTrackInfo_String() 
+	Error_Tooltip('\n\n\tthe script is supported \n\n in REAPER builds 6.24 onwards \n\n', 1, 1) -- caps, spaced true
+	return r.defer(no_undo) end
 
 
 local is_new_value, fullpath, sectionID, cmdID, mode, resolution, val = r.get_action_context()
