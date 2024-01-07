@@ -1,22 +1,23 @@
 --[[
 ReaScript name: BuyOne_(Re)Store Razor edit areas slots #1-5_META.lua (10 scripts)
 Author: BuyOne
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: v1.1 #Added REAPER version check
+		#Corrected minimal supported version in the header
 Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
-REAPER: at least v5.962
+REAPER: at least v6.54
 Metapackage: true
 Provides: 	[main] . > BuyOne_Store Razor edit areas slot 1.lua
-      			[main] . > BuyOne_Store Razor edit areas slot 2.lua
-      			[main] . > BuyOne_Store Razor edit areas slot 3.lua
-      			[main] . > BuyOne_Store Razor edit areas slot 4.lua
-      			[main] . > BuyOne_Store Razor edit areas slot 5.lua
-      			[main] . > BuyOne_Restore Razor edit areas slot 1.lua
-      			[main] . > BuyOne_Restore Razor edit areas slot 2.lua
-      			[main] . > BuyOne_Restore Razor edit areas slot 3.lua
-      			[main] . > BuyOne_Restore Razor edit areas slot 4.lua
-      			[main] . > BuyOne_Restore Razor edit areas slot 5.lua
+		[main] . > BuyOne_Store Razor edit areas slot 2.lua
+		[main] . > BuyOne_Store Razor edit areas slot 3.lua
+		[main] . > BuyOne_Store Razor edit areas slot 4.lua
+		[main] . > BuyOne_Store Razor edit areas slot 5.lua
+		[main] . > BuyOne_Restore Razor edit areas slot 1.lua
+		[main] . > BuyOne_Restore Razor edit areas slot 2.lua
+		[main] . > BuyOne_Restore Razor edit areas slot 3.lua
+		[main] . > BuyOne_Restore Razor edit areas slot 4.lua
+		[main] . > BuyOne_Restore Razor edit areas slot 5.lua
 About:	If this script name is suffixed with META it will spawn 
     		all individual scripts included in the package into 
     		the directory supplied by the user in a dialogue.
@@ -229,6 +230,11 @@ local tr_cnt = r.CountTracks(0)
 	
 end
 
+
+	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.54 then
+	-- in 6.54 'P_RAZOREDITS_EXT' parm was added to GetSetMediaTrackInfo_String() 
+	Error_Tooltip('\n\n\tthe script is supported \n\n in REAPER builds 6.54 onwards \n\n', 1, 1) -- caps, spaced true
+	return r.defer(no_undo) end
 
 local is_new_value, fullpath, sectionID, cmdID, mode, resolution, val = r.get_action_context()
 local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- without path, extension and author name
