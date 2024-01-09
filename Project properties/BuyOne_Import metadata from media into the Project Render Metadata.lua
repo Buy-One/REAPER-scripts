@@ -53,6 +53,9 @@ About: 	The script allows import of metadata from the media source
 	of a particular scheme from the project render settings. These 
 	options however clear all entries including those which were 
 	added by means other than this script.
+
+	Be aware that in REAPER 7.08 metadata preservation features have 
+	been introduced which may render this script redundant.
 		
 ]]
 
