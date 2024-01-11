@@ -6,22 +6,25 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
-About: 	The script is an alternative to the native action
-    		'Envelope: Split automation items'
-    		in that after automation items are split each part
-    		becomes a unique AI with its own length and can be
-    		immediately looped.
-    		
-    		After AI is split with the native action the parts
-    		of the split end up being simply trimmed instances 
-    		of the original AI, preserving all its envelope data
-    		and original AI length.
-    
-    		The native AI behavior is showcased in this video
-    		https://www.youtube.com/watch?v=ql-e_LUqSB0&t=33s
-    		
-    		The script uses AI gluing to achieve the desired 
-    		result so it's simply an automated way of gluing.
+About: 	The script splits selected automation items
+	under the edit cusrsor.
+	
+	It's an alternative to the native action
+	'Envelope: Split automation items'
+	in that after automation items are split each part
+	becomes a unique AI with its own length and can be
+	immediately looped.
+	
+	After AI is split with the native action the parts
+	of the split end up being simply trimmed instances 
+	of the original AI, preserving all its envelope data
+	and original AI length.
+
+	The native AI behavior is showcased in this video
+	https://www.youtube.com/watch?v=ql-e_LUqSB0&t=33s
+	
+	The script uses AI gluing to achieve the desired 
+	result so it's simply an automated way of gluing.
 		
 ]]
 
