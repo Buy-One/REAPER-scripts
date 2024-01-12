@@ -7,19 +7,19 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script splits selected audio items under 
-    		the edit cusrsor making the split parts loopable.
-    		
-    		Splitting audio items with the native actions 
-    		simply creates trimmed instances of the original 
-    		item with the same loop iteration length.
-    		
-    		The script also supports MIDI items but they're 
-    		not its primary target because when these are 
-    		split with native actions their split parts
-    		become loopable automatically.
-    		
-    		In multi-take items the script only targets the
-    		active take.
+	the edit cursor making the split parts loopable.
+	
+	Splitting audio items with the native actions 
+	simply creates trimmed instances of the original 
+	item with the same loop iteration length.
+	
+	The script also supports MIDI items but they're 
+	not its primary target because when these are 
+	split with native actions their split parts
+	become loopable automatically.
+	
+	In multi-take items the script only targets the
+	active take.
 		
 ]]
 
