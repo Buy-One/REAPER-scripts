@@ -8,12 +8,12 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: 
 About:	Displays length of musical divisions in seconds, samples or frames
-    		for the current BPM and allows selecting the values for pasting
-    		into input fields.
-    		
-    		To paste values into FX parameter fields you may need to use Paste
-    		option from the right mouse button context menu rather than Ctrl/Cmd+V
-    		keyboard shortcut.
+	for the current BPM and allows selecting the values for pasting
+	into input fields.
+	
+	To paste values into FX parameter fields you may need to use Paste
+	option from the right mouse button context menu rather than Ctrl/Cmd+V
+	keyboard shortcut.
 ]]
 
 
