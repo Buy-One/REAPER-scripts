@@ -8,87 +8,87 @@ Licence: WTFPL
 REAPER: at least v5.962
 Screenshots: https://git.io/JSTkE
 About:	An enhancement to 'Ripple edit per track' mode. 
-		As such only works when this mode is enabled. 
-		Makes all items following the one whose length 
-		is being changed move just like what regular 
-		Ripple edit does when selected items are shifted. 
-		This functionality exists in ProTools' 'Shuffle' 
-		edit mode: https://youtu.be/O_jZujPzxyI?t=161  
+	As such only works when this mode is enabled. 
+	Makes all items following the one whose length 
+	is being changed move just like what regular 
+	Ripple edit does when selected items are shifted. 
+	This functionality exists in ProTools' 'Shuffle' 
+	edit mode: https://youtu.be/O_jZujPzxyI?t=161  
 
-		The script demo: https://git.io/JSTkE  
-		
-		The item whose length is being changed MUST BE SELECTED, 
-		otherwise no change occurs in items positioning unless 
-		RETROSPECTIVE_RIPPLE_EDIT option is enabled in the USER SETTINGS.
+	The script demo: https://git.io/JSTkE  
+	
+	The item whose length is being changed MUST BE SELECTED, 
+	otherwise no change occurs in items positioning unless 
+	RETROSPECTIVE_RIPPLE_EDIT option is enabled in the USER SETTINGS.
 
-		Envelopes and automation items are moved just as they 
-		are in regular Ripple edit mode as long as the option 
-		'Move envelope points with media items and razor edits' 
-		is enabled in REAPER and MOVE_AUTOMATION setting is enabled 
-		in the USER SETTINGS below.
+	Envelopes and automation items are moved just as they 
+	are in regular Ripple edit mode as long as the option 
+	'Move envelope points with media items and razor edits' 
+	is enabled in REAPER and MOVE_AUTOMATION setting is enabled 
+	in the USER SETTINGS below.
 
-		The behavior this scripts attempts to reproduce can also 
-		be achieved with custom actions the code of which is provided 
-		at the bottom of this file, with the only difference that the 
-		resolution of item length change is to the closest grid line, 
-		but it can be changed to pixels by replacing the actions 
-		'View: Move cursor rigt/left to grid division' with 
-		'View: Move cursor right/left one/8 pixels'.
-		
-		While the script is running, only 1 media item can be selected
-		at a time. If several media items are selected, all but the 1st 
-		one are auto-deselected. To be able to select multiple items 
-		either stop the script or disable 'Ripple edit per track'.
-		
-		When the script is stopped the first time, in the 'ReaScript
-		task control dialogue' tick 'Remember my answer for this script'
-		checkbox and click 'Terminate instances'.
+	The behavior this scripts attempts to reproduce can also 
+	be achieved with custom actions the code of which is provided 
+	at the bottom of this file, with the only difference that the 
+	resolution of item length change is to the closest grid line, 
+	but it can be changed to pixels by replacing the actions 
+	'View: Move cursor rigt/left to grid division' with 
+	'View: Move cursor right/left one/8 pixels'.
+	
+	While the script is running, only 1 media item can be selected
+	at a time. If several media items are selected, all but the 1st 
+	one are auto-deselected. To be able to select multiple items 
+	either stop the script or disable 'Ripple edit per track'.
+	
+	When the script is stopped the first time, in the 'ReaScript
+	task control dialogue' tick 'Remember my answer for this script'
+	checkbox and click 'Terminate instances'.
 
-		CAVEATS:
+	CAVEATS:
 
-		Do not drag the right edge fast because the data won't 
-		be processed as fast and item positions will end up being 
-		messed up.
+	Do not drag the right edge fast because the data won't 
+	be processed as fast and item positions will end up being 
+	messed up.
 
-		Avoid dragging item right edge over following items.
+	Avoid dragging item right edge over following items.
 
-		It may be difficult to control the pace/amount of the media item length 
-		change done by dragging its left edge when grid is enabled. In the 
-		script a short lag is introduced to mitigate this behavior but 
-		it's not perfect, so the media item may end up somewhat overextended 
-		or overshortened.
+	It may be difficult to control the pace/amount of the media item length 
+	change done by dragging its left edge when grid is enabled. In the 
+	script a short lag is introduced to mitigate this behavior but 
+	it's not perfect, so the media item may end up somewhat overextended 
+	or overshortened.
 
-		If the media item inadvertently becomes deselected while its length 
-		is being changed by dragging its left edge, ripple edit will only 
-		take effect after the item is re-selected and only if it's 
-		the first one to be selected provided RETROSPECTIVE_RIPPLE_EDIT option 
-		is enabled. If another item is selected instead, items positions 
-		won't update.   
-		Which is in line with the general functionality RETROSPECTIVE_RIPPLE_EDIT
-		is designed to provide (for details see USER SETTINGS).
+	If the media item inadvertently becomes deselected while its length 
+	is being changed by dragging its left edge, ripple edit will only 
+	take effect after the item is re-selected and only if it's 
+	the first one to be selected provided RETROSPECTIVE_RIPPLE_EDIT option 
+	is enabled. If another item is selected instead, items positions 
+	won't update.   
+	Which is in line with the general functionality RETROSPECTIVE_RIPPLE_EDIT
+	is designed to provide (for details see USER SETTINGS).
 
-		Minimum length of an automation item within the edited media item 
-		boundaries is 101 ms. Shorter automation items are auto-deleted.
+	Minimum length of an automation item within the edited media item 
+	boundaries is 101 ms. Shorter automation items are auto-deleted.
 
-		Automation item(s) and the media item(s) cannot be selected 
-		at the same time. To be able to select automation item(s) on the track 
-		de-select all media items.
-		
-		When undoing multiple undo points left by this script you may encounter
-		overlapping automation items. This is an intermediary stage which gets
-		saved in the undo history in between the action start and end points. 
-		Simply continue undoing.
-				
-		Since by this script splitting a media item is treated as its length change
-		resulting in shift of the automation and media items located downstream, 
-		in order to split without affecting objects pisitioning you may use a custom 
-		action in which the split action (there're quite a few) is wrapped between 
-		two Ripple edit actions like so:   
-		Set ripple editing off   
-		-- Split action --   
-		Set ripple editing per-track  
-		
-		Alternatively manually turn off Ripple edit mode before splitting.
+	Automation item(s) and the media item(s) cannot be selected 
+	at the same time. To be able to select automation item(s) on the track 
+	de-select all media items.
+	
+	When undoing multiple undo points left by this script you may encounter
+	overlapping automation items. This is an intermediary stage which gets
+	saved in the undo history in between the action start and end points. 
+	Simply continue undoing.
+			
+	Since by this script splitting a media item is treated as its length change
+	resulting in shift of the automation and media items located downstream, 
+	in order to split without affecting objects pisitioning you may use a custom 
+	action in which the split action (there're quite a few) is wrapped between 
+	two Ripple edit actions like so:   
+	Set ripple editing off   
+	-- Split action --   
+	Set ripple editing per-track  
+	
+	Alternatively manually turn off Ripple edit mode before splitting.
 
 ]]
 
