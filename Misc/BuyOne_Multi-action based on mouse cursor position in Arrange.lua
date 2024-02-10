@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Multi-action based on mouse cursor position in Arrange.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
-Changelog: 1.3 #Set up limitation to script functionality in cases where extensions aren't installed
+Version: 1.4
+Changelog: 1.4 #Added 'Envelope manager' window to the list of windows needed in evaluation of docker state
+	   1.3 #Set up limitation to script functionality in cases where extensions aren't installed
 	       #Updated About and USER SETTINGS text accordingly
 	   1.2 #Fixed REAPER version evaluation
 	   1.1 #Fixed validation of command IDs of scripts in the MIDI Editor section of the Action list
@@ -385,7 +386,8 @@ routing = {'routing_dock', 'routingwnd_vis', 40768, 40251, 42031, 41888}, -- 3 t
 --===========================================================================
 regmgr = {'%[regmgr%]', 'dock', 40326, 'wnd_vis'}, -- View: Show region/marker manager window ('Region/Marker Manager')	// doesn't keep size
 explorer = {'%[reaper_explorer%]', 'docked', 50124, 'visible'}, -- Media explorer: Show/hide media explorer ('Media Explorer') // doesn't keep size
-trackmgr = {'%[trackmgr%]', 'dock', 40906, 'wnd_vis'}, -- View: Show track manager window ('Track Manager')	// doesn't keep size
+trackmgr = {'%[trackmgr%]', 'dock', 40906, 'wnd_vis'}, -- View: Show track manager window ('Track Manager') // doesn't keep size
+envmgr = {'%[envmgr%]', 'dock', 42678, 'wnd_vis'} -- View: Show envelope manager window ('Envelop Manager')
 grpmgr = {'%[grpmgr%]', 'dock', 40327, 'wnd_vis'}, -- View: Show track group manager window ('Track Group Manager')
 bigclock = {'%[bigclock%]', 'dock', 40378, 'wnd_vis'}, -- View: Show big clock window ('Big Clock') // doesn't keep size
 video = {'%[reaper_video%]', 'docked', 50125, 'visible'}, -- Video: Show/hide video window ('Video Window')
@@ -476,7 +478,7 @@ local pane = pos == 0 and 'invalid' or pos == 1 and 'leftpanewid' or pos == 2 an
 or pos == 3 and (r.GetToogleCommandStateEx(0,42373) and 'leftpanewid' or 'invalid') -- View: Show TCP on right side of arrange // 'leftpanewid' is also relevant when pos argument is 3 (right) and the tracklist is on the right, otherwise irrelevant)
 local ref_t = {41297, 40279, dock_h, pane, 'transport', 'mixer', 'actions', 'projbay_0',
 'projbay_1', 'projbay_2', 'projbay_3', 'projbay_4', 'projbay_5', 'projbay_6', 'projbay_7', 'routing',
-'regmgr', 'explorer', 'trackmgr', 'grpmgr', 'bigclock', 'video', 'perf', 'navigator', 'vkb', 'fadeedit',
+'regmgr', 'explorer', 'trackmgr', 'envmgr', 'grpmgr', 'bigclock', 'video', 'perf', 'navigator', 'vkb', 'fadeedit',
 'undo', 'fxbrowser', 'itemprops', 'midiedit', 'toolbar:1', 'toolbar:2', 'toolbar:3', 'toolbar:4', 'toolbar:5',
 'toolbar:6', 'toolbar:7', 'toolbar:8', 'toolbar:9', 'toolbar:10', 'toolbar:11', 'toolbar:12', 'toolbar:13',
 'toolbar:14', 'toolbar:15', 'toolbar:16', 'toolbar:17'}
