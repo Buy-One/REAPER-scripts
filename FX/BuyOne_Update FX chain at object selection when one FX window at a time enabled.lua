@@ -1,5 +1,5 @@
 --[[
-ReaScript name: Update FX chain at object selection when one FX window at a time enabled
+ReaScript name: BuyOne_Update FX chain at object selection when one FX window at a time enabled.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
 Version: 1.3
