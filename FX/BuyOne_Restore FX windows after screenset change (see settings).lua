@@ -8,61 +8,61 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: js_ReaScriptAPI recommended
 About:  To be able to use this script, combine it within a custom action
-		with actions which load screensets, e.g.:
-		
-		---| BuyOne_Restore FX windows after screenset change.lua
-		---| Screenset: Load window set #01
-		
-		This will restore FX windows once screenset 01 is loaded.
-		
-		Create such custom actions for all screensets after loading which 
-		you need FX windows to be restored.
-		
-		Whether FX windows are restored after screenset switch can be 
-		conditioned by visibility in the relevant context and lock status 
-		of their source object (track or item) via USER SETTINGS.  
-		
-		As far as visibility is concerned this means that if a track
-		is hidden in the Mixer its FX windows and FX windows of items sitting 
-		on such track won't be restored when a screenset which features a Mixer 
-		is loaded.  
-		Conversely FX windows of a track visible in the Mixer but hidden 
-		in the Arrange view, won't be restored when changing from a screenset
-		featuring the Mixer to one which doesn't.  
-		
-		CAVEATS
-		
-		Without js_ReaScriptAPI extension installed window focus and positions 
-		of FX chain windows are not restored. Last positions of floating FX windows 
-		are stored in REAPER internally by default.  
-		Without the js_ReaScriptAPI extension if a screenset has an open docker 
-		an FX chain window may get attached to it upon loading such a screenset, 
-		despite not being included in it or docked in the initial screenset. 
-		All other features aren't affected by absense of js_ReaScriptAPI extension.
-		
-		When js_ReaScriptAPI extension is installed FX chain window positions 
-		are restored. The script respects position of FX windows included in 
-		a screenset. So an FX window which is docked within a screenset will 
-		remain docked and a floating FX window will retain its position after 
-		the screenset is switched to, while all other FX window positions will 
-		be restored.  
-		Window focus in this case is only restored if screensets are switched 
-		with a shortcut, so that mouse click doesn't affect focus.  		
-		
-		If the same FX chain window is docked within one screenset but not 
-		saved within another screenset, when switching to such other screenset 
-		the position it was in prior to switching to the screenset where it's 
-		docked, won't be restored. 
-		
-		Windows full z-order isn't restored with or without the extension.
-		
-		---
-		
-		Input/Monitoring FX floating windows may flicker a little before 
-		a screenset is changed.  
-		
-		Also worth being aware of screenset related FX chain window size quirks 
-		unrelated to the script: https://forum.cockos.com/showthread.php?t=278245
+	with actions which load screensets, e.g.:
+	
+	---| BuyOne_Restore FX windows after screenset change.lua
+	---| Screenset: Load window set #01
+	
+	This will restore FX windows once screenset 01 is loaded.
+	
+	Create such custom actions for all screensets after loading which 
+	you need FX windows to be restored.
+	
+	Whether FX windows are restored after screenset switch can be 
+	conditioned by visibility in the relevant context and lock status 
+	of their source object (track or item) via USER SETTINGS.  
+	
+	As far as visibility is concerned this means that if a track
+	is hidden in the Mixer its FX windows and FX windows of items sitting 
+	on such track won't be restored when a screenset which features a Mixer 
+	is loaded.  
+	Conversely FX windows of a track visible in the Mixer but hidden 
+	in the Arrange view, won't be restored when changing from a screenset
+	featuring the Mixer to one which doesn't.  
+	
+	CAVEATS
+	
+	Without js_ReaScriptAPI extension installed window focus and positions 
+	of FX chain windows are not restored. Last positions of floating FX windows 
+	are stored in REAPER internally by default.  
+	Without the js_ReaScriptAPI extension if a screenset has an open docker 
+	an FX chain window may get attached to it upon loading such a screenset, 
+	despite not being included in it or docked in the initial screenset. 
+	All other features aren't affected by absense of js_ReaScriptAPI extension.
+	
+	When js_ReaScriptAPI extension is installed FX chain window positions 
+	are restored. The script respects position of FX windows included in 
+	a screenset. So an FX window which is docked within a screenset will 
+	remain docked and a floating FX window will retain its position after 
+	the screenset is switched to, while all other FX window positions will 
+	be restored.  
+	Window focus in this case is only restored if screensets are switched 
+	with a shortcut, so that mouse click doesn't affect focus.  		
+	
+	If the same FX chain window is docked within one screenset but not 
+	saved within another screenset, when switching to such other screenset 
+	the position it was in prior to switching to the screenset where it's 
+	docked, won't be restored. 
+	
+	Windows full z-order isn't restored with or without the extension.
+	
+	---
+	
+	Input/Monitoring FX floating windows may flicker a little before 
+	a screenset is changed.  
+	
+	Also worth being aware of screenset related FX chain window size quirks 
+	unrelated to the script: https://forum.cockos.com/showthread.php?t=278245
 		
 ]]
 
