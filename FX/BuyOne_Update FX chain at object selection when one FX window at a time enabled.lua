@@ -3,11 +3,13 @@ ReaScript name: Update FX chain at object selection when one FX window at a time
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
 Version: 1.3
-Changelog: 	#Added support for empty FX chains as a new setting
-		#Added support for ignoring selection if no FX chain window is open, as a new setting
-		#Added a setting to ignore track FX chains
-		#Added a setting to prefer open track FX chain and prevent replacing it with take FX chain
-		#Fixed bug of inability to close Master/Monitoring FX chains
+Changelog: 1.3 #Added support for empty FX chains as a new setting
+	       #Added support for ignoring selection if no FX chain window is open, as a new setting
+	       #Added a setting to ignore track FX chains
+	       #Added a setting to prefer open track FX chain and prevent replacing it with take FX chain
+	       #Fixed bug of inability to close Master/Monitoring FX chains
+	   1.2 #Added option to prevent updating a docked FX chain when the docker is closed
+	   1.1 #More reliable switching between track and take FX chains
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: jsReaScriptAPI recommended
