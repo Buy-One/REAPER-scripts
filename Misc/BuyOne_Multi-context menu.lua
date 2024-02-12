@@ -8,6 +8,7 @@ Changelog: v1.2 #Added current context readout
 		#Updated description of MIDI_PIANO_ROLL and MIDI_CC contexts
 Licence: WTFPL
 REAPER: at least v5.962
+Provides: [main=main,midi_editor] .
 About: 	The script allows accessing and using different menus, constructed 
 	by the user within this script, from the same menu interface, depending
 	on the mouse cursor context. The context is activated by pointing
