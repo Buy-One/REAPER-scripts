@@ -1,17 +1,18 @@
 --[[
 ReaScript name: Set sends;receives in selected tracks to the next mode (relative to the current)
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
 Changelog: Initial release
+Licence: WTFPL
+REAPER: at least v5.962
+Provides: [main=main,midi_editor] .
 About:
 	- Whether sends or receives are affected is determined by the user settings
 	- The script can be duplicated and each copy dedicated to work either with sends or receives
 	- The next mode is relative to the current mode of each given send/receive, therefore if
 	several sends/receives are initially set to different modes their resulting modes will differ as well
 
-Licence: WTFPL
-REAPER: at least v5.962
 ]]
 
 -----------------------------------------------------------------------------
