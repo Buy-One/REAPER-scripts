@@ -1,7 +1,7 @@
 --[[
 ReaScript name: Scroll to or exclusively show track(s) by name or index
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
 Changelog: #Fixed search by search terms consisting of more than one word
 	   #Fixed switching to exclusive display mode using list and range of track indices
@@ -10,6 +10,7 @@ Changelog: #Fixed search by search terms consisting of more than one word
 	   #Updated Guide
 Licence: WTFPL
 REAPER: at least v5.962
+Provides: [main=main,midi_editor] .
 About:  G I U D E
 		
 	The script in essense does in its own way what the native Track Manager,
