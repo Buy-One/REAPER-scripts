@@ -12,6 +12,7 @@
 * Version: 1.2
 * REAPER: at least v5.962
 * Extensions: SWS/S&M
+* Provides: [main=main,midi_editor] .
 * Changelog:
 	+ v1.2	Added support for Main (alt recording) section;
 		Minor error proofing;
