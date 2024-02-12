@@ -12,6 +12,7 @@ Changelog: v1.2 #Fixed error when MULTY_LAYER_MENU setting doesn't contain a val
 		#Updated the guide
 Licence: WTFPL
 REAPER: at least v5.962
+Provides: [main=main,midi_editor] .
 About: 	The script allows accessing and using multiple menus, constructed by the user 
         within this script, from the same menu interface.
 		
