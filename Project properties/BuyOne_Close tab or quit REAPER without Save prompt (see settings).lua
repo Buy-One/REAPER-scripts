@@ -3,9 +3,10 @@ ReaScript Name: Close tab or quit REAPER without Save prompt
 Author: BuyOne
 Version: 1.0
 Changelog: Initial release
-Author URL: https://forum.cockos.com/member.php?u=134058
+Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v5.962
+Provides: [main=main,midi_editor] .
 About: 	Use instead of the native actions whenever you like to exit  
 	without dealing with the project save prompt.  
 		
