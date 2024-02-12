@@ -6,6 +6,7 @@ Version: 1.1
 Changelog: v1.1 #Made project templates open anonymously as they should
 Licence: WTFPL
 REAPER: at least v5.962
+Provides: [main=main,midi_editor] .
 About: 	An alternative to REAPER's native 'Project templates' submenu  
 	which opens project template in a new tab.
 
