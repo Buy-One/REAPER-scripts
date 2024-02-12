@@ -4,9 +4,10 @@ Author: BuyOne
 Version: 1.1
 Changelog: v1.1 #Added functionality to export individual scripts included in the package
 		#Updated About text
-Author URL: https://forum.cockos.com/member.php?u=134058
+Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v5.962
+Provides: [main=main,midi_editor] .
 Extensions: SWS/S&M extension (recommended for ability to use Cycle action editor)
 About:	If this script name is suffixed with META it will spawn all individual scripts included 
 	in the package into the directory supplied by the user in a dialogue.
