@@ -6,7 +6,7 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
-Extensions: 
+Provides: [main=main,midi_editor] .
 About:	Displays length of musical divisions in seconds, samples or frames
 	for the current BPM and allows selecting the values for pasting
 	into input fields.
