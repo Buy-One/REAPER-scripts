@@ -9,6 +9,7 @@ Changelog: v1.2 #Fixed mousewheel sensitivity logic so it's reset when mousewhee
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
+Provides: [main=main,midi_editor] .
 About: 	▒ THE CONCEPT
 
 	The script only works when exactly one toolbar is open in 
