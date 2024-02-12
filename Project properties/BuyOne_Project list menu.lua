@@ -6,6 +6,7 @@ Version: 1.0
 Changelog: Initial release
 Licence: WTFPL
 REAPER: at least v5.962
+Provides: [main=main,midi_editor] .
 About: 	Provides an open project list in a menu form 
 	allowing navigating between them via the menu.
 	
