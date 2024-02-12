@@ -5,7 +5,8 @@ Version: 1.0
 Changelog: #Initial release
 Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
-REAPER: at least v5.962  		
+REAPER: at least v5.962
+Provides: [main=main,midi_editor] .	
 About: 	The initial idea proposed by a user on REAPER sub-reddit 
 	was to convert phone numbers to melodies to be used as 
 	a ringtone to identify the caller.  
