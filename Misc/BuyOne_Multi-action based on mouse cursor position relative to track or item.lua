@@ -7,28 +7,29 @@ Changelog: Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI
+Provides: [main=main,midi_editor] .
 About: 	The script allows running up to 14 different actions/functions depending
-    		on the mouse cursor position relative to track/item/envelope lane which are
-    		divided into segments (maximum 3), and subdivided into slots if number 
-    		of enabled slots exceeds the number of segments.  
-    		
-    		Setup instructions see in the USER SETTINGS.
-    		
-    		If action slot locations are incorrect on Mac, submit a bug report at the 
-    		addresses listed in the Website tag above and this will be looked into.
-    		
-    		Bind to a shortcut so that the mouse cursor isn't engaged in clicking
-    		a toolbar button or a menu item. It's not recommented biding it to mouse
-    		modifiers in Media item / Track / Envelope control panel and Envelope
-    		lane contexts because it will prevent running actions meant for other 
-    		contexs or locations.
-    		
-    		If you're going to use the script in the MIDI Editor as well, in which
-    		case it doesn't have to be located in the MIDI Editor section of the 
-    		Action list, make sure that the shortcut which the script is mapped to
-    		in the Main section of the Action list isn't already used in the MIDI Editor 
-    		section of the Action list because the latter will take priority and 
-    		instead of the script you'll be running another action.
+	on the mouse cursor position relative to track/item/envelope lane which are
+	divided into segments (maximum 3), and subdivided into slots if number 
+	of enabled slots exceeds the number of segments.  
+	
+	Setup instructions see in the USER SETTINGS.
+	
+	If action slot locations are incorrect on Mac, submit a bug report at the 
+	addresses listed in the Website tag above and this will be looked into.
+	
+	Bind to a shortcut so that the mouse cursor isn't engaged in clicking
+	a toolbar button or a menu item. It's not recommented biding it to mouse
+	modifiers in Media item / Track / Envelope control panel and Envelope
+	lane contexts because it will prevent running actions meant for other 
+	contexs or locations.
+	
+	If you're going to use the script in the MIDI Editor as well, in which
+	case it doesn't have to be located in the MIDI Editor section of the 
+	Action list, make sure that the shortcut which the script is mapped to
+	in the Main section of the Action list isn't already used in the MIDI Editor 
+	section of the Action list because the latter will take priority and 
+	instead of the script you'll be running another action.
 
 ]]
 
