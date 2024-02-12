@@ -6,6 +6,7 @@ Version: 1.0
 Changelog: Initial release
 Licence: WTFPL
 REAPER: at least v5.962
+Provides: [main=main,midi_editor] .
 About: 	Makes track/item of the focused track/take FX window selected.
 	Works in either manual or auto modes, see USER SETTINGS.  
 
