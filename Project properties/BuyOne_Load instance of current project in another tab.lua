@@ -3,9 +3,10 @@ ReaScript Name: Load instance of current project in another tab
 Author: BuyOne
 Version: 1.0
 Changelog: Initial release
-Author URL: https://forum.cockos.com/member.php?u=134058
+Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v5.962
+Provides: [main=main,midi_editor] .
 About: 	Makes REAPER open a new tab and load last SAVED 
 	instance of the currently open project in it.
 ]]
