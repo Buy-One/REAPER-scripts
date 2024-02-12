@@ -4,12 +4,11 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
 Changelog: 
-	  v1.2
-	  #Fixed logic of TCP detection under mouse
-	  v1.1
-	  #Added support for TCP on the right side of the Arrange
+	  v1.2 #Fixed logic of TCP detection under mouse
+	  v1.1 #Added support for TCP on the right side of the Arrange
 Licence: WTFPL
 REAPER: at least v5.962
+Provides: [main=main,midi_editor] .
 About: 	##MANAGING TRACK NOTES
 
 	1. Arm the script. The easiest way is to link it
