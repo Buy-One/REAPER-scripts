@@ -1,9 +1,12 @@
 --[[
 ReaScript name: Set sends;receives in selected tracks to the same mode and cycle through the modes
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
 Changelog: Initial release
+Licence: WTFPL
+REAPER: at least v5.962
+Provides: [main=main,midi_editor] .
 About: 
 	- Sets selected tracks sends or receives to the same mode selected with an interactive dialogue
 	- Whether send or receives are affected is determined by the user settings
@@ -12,9 +15,6 @@ About:
 	- When TYPE_DIALOGUE option is enabled TYPE option value can be whatever, just not empty
 	- The script starts out by setting send/receive mode to 'Post-Fader (Post Pan)', the 1st one in the list
 	- All sends/receives are being synchronously set to the same mode regardless of their initial mode
-	
-Licence: WTFPL
-REAPER: at least v5.962
 ]]
 
 -----------------------------------------------------------------------------
