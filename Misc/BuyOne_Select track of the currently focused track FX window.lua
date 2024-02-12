@@ -7,6 +7,7 @@ Changelog: Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: js_ReaScriptAPI
+Provides: [main=main,midi_editor] .
 About: 	Makes track of the focused track FX window selected.
 	Works in either manual or auto modes, see USER SETTINGS.   
 
