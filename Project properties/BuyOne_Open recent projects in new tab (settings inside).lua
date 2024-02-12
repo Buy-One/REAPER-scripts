@@ -8,6 +8,7 @@ Changelog: 1.3 #Fixed REAPER version evaluation
 	  of project path or file name, if set in Project settings -> Notes
 Licence: WTFPL
 REAPER: at least v5.962
+Provides: [main=main,midi_editor] .
 About: 
 	An alternative to REAPER's native 'Recent projects menu' capable 
 	of opening recent projects in a new tab, desisgned before a
