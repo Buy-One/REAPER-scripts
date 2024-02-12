@@ -4,7 +4,7 @@ ReaScript Name: BuyOne_Exclusive dummy toggle startup script.lua
 Author: BuyOne
 Version: 1.0
 Changelog: Initial release
-Author URL: https://forum.cockos.com/member.php?u=134058
+Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M extension (recommended for ability to use Startup actions)
