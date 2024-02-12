@@ -1,7 +1,7 @@
 --[[
 ReaScript name: BuyOne_Color ruler if tracks are record armed.lua
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
