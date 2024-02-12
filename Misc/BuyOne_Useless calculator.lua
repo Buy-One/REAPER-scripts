@@ -1,7 +1,7 @@
 --[[
 ReaScript name: BuyOne_Useless calculator.lua
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
 Changelog: Initial release
 Licence: WTFPL
@@ -9,61 +9,60 @@ REAPER: at least v5.962
 Provides: [main=main,midi_editor] .
 About:	OPERATORS:
 
-    		+ — add
-    		- — subtract or set numeral negative
-    		* — multiply
-    		/ — divide
-    		^ — raise to power
-    		= — calculate and display the result
-    		
-    		b — backspace, delete character which immediately precedes the cursor
-    		c — clear all
-    		e — export calculations as text
-    		m — store numeral which immediately precedes the cursor in the memory		
-    		n — add new line
-    		r — recall stored numeral inserting it immediately after the cursor
-    		
-    		< — move cursor left
-    		> — move cursor right
-    		{ — move cursor up
-    		" — move cursor down 
-    		
-    		BEHAVIOR
-    		
-    		Storage of a numeral ('m' operator)
-    		— The stored numeral is kept until REAPER is quit or it's overwritten 
-    		with another numeral.
-    		— If a numeral is broken with one part on one line and another on another line 
-    		(odd use case but it's not impossible), only the second part will be stored.		
-    		— Only genuinely negative numerals are stored as negative, a minus operator 
-    		between numerals doesn't make the second one negative; a genuinenly negative 
-    		numeral is one which is preceded with minus following other operator, negative 
-    		numeral which follows an opening parenthesis, one which starts an expression 
-    		or one which represents a result of calculation following '=' operator.
-    		— Storing 0 clears the memory.
-    		
-    		
-    		Recall of a stored numeral ('r' operator)
-    		— If as a result of recall a gap is created between digits it will be ignored 
-    		in the calculation and sequence of digits will be treated as a single number
-    		
-    		The input of numerals and operators is performed either directly from keyboard 
-    		or by clicking the list items.
-    		The user input is stored between script runs until REAPER is quit or 'c' operator 
-    		is used.
-    
-    		A math expression can continue on a next line, either current line may end with 
-    		a math operator or the next line start with one. A line can also be broken at 
-    		a numeral with one part on one line and another on the next line, not practical 
-    		but possible.
-    		
-    		After displaying the result with '=' operator, calculation can continue with such 
-    		result being its first member PROVIDED the result is followed by a math operator 
-    		on the same line. If it's not followed by a math operator but followed by a new line 
-    		such result is ignored in further calculations and the first numeral on the new line 
-    		is considered the first member of a new expression. The last condition is always 
-    		true when CONTINUE_ON_NEW_LINE setting is enabled in the USER SETTINGS below.
+	+ — add
+	- — subtract or set numeral negative
+	* — multiply
+	/ — divide
+	^ — raise to power
+	= — calculate and display the result
+	
+	b — backspace, delete character which immediately precedes the cursor
+	c — clear all
+	e — export calculations as text
+	m — store numeral which immediately precedes the cursor in the memory		
+	n — add new line
+	r — recall stored numeral inserting it immediately after the cursor
+	
+	< — move cursor left
+	> — move cursor right
+	{ — move cursor up
+	" — move cursor down 
+	
+	BEHAVIOR
+	
+	Storage of a numeral ('m' operator)
+	— The stored numeral is kept until REAPER is quit or it's overwritten 
+	with another numeral.
+	— If a numeral is broken with one part on one line and another on another line 
+	(odd use case but it's not impossible), only the second part will be stored.		
+	— Only genuinely negative numerals are stored as negative, a minus operator 
+	between numerals doesn't make the second one negative; a genuinenly negative 
+	numeral is one which is preceded with minus following other operator, negative 
+	numeral which follows an opening parenthesis, one which starts an expression 
+	or one which represents a result of calculation following '=' operator.
+	— Storing 0 clears the memory.
+	
+	
+	Recall of a stored numeral ('r' operator)
+	— If as a result of recall a gap is created between digits it will be ignored 
+	in the calculation and sequence of digits will be treated as a single number
+	
+	The input of numerals and operators is performed either directly from keyboard 
+	or by clicking the list items.
+	The user input is stored between script runs until REAPER is quit or 'c' operator 
+	is used.
 
+	A math expression can continue on a next line, either current line may end with 
+	a math operator or the next line start with one. A line can also be broken at 
+	a numeral with one part on one line and another on the next line, not practical 
+	but possible.
+	
+	After displaying the result with '=' operator, calculation can continue with such 
+	result being its first member PROVIDED the result is followed by a math operator 
+	on the same line. If it's not followed by a math operator but followed by a new line 
+	such result is ignored in further calculations and the first numeral on the new line 
+	is considered the first member of a new expression. The last condition is always 
+	true when CONTINUE_ON_NEW_LINE setting is enabled in the USER SETTINGS below.
 
 ]]
 
