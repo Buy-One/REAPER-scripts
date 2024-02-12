@@ -1,7 +1,6 @@
 -- @noindex
 
 --[[
-
 * ReaScript Name: BuyOne_Convert custom action to Lua ReaScript.lua
 * Description: in the name
 * Instructions: included
@@ -12,6 +11,7 @@
 * Version: 1.2
 * REAPER: at least v5.962
 * Extensions: SWS/S&M
+* Provides: [main=main,midi_editor] .
 * Changelog:
 	+ v1.2	As a safety measure added option to select specific Action list section, might be superfluous;
 		Help updated accordingly;
