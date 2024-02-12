@@ -15,6 +15,7 @@ Changelog: 1.4 #Added 'Envelope manager' window to the list of windows needed in
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
+Provides: [main=main,midi_editor] .
 About: 	The script allows running up to 7 different actions/functions depending
 	on the mouse cursor position within the Arrange view, which is divided 
 	into as many zones and subzones as there're enabled presets minus 1, 
