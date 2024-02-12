@@ -6,45 +6,46 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
+Provides: [main=main,midi_editor] .
 About:	The script creates sends from selected tracks 
-    		to the designated track whose name is specified
-    		in the MONITOR_TRACK_NAME setting in the USER SETTINGS
-    		below.
-    		
-    		It's designed to mimic the 'Current track' feature of
-    		FL Studio: https://www.youtube.com/watch?v=0zcZum7BPeM, quote
-    		"The specially named 'Current' track can only receive audio 
-    		from the currently selected track. Its main purpose is to 
-    		hold an Edison plugin, ready to record any selected tracks 
-    		audio OR visualization plugins, such as WaveCandy"
-    		(https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/mixer_iorouting.htm)
-    		
-    		Needless to say that it can also be used for monitoring
-    		purposes housing analyzers and such.
-    		
-    		In the case of this script however all selected tracks are 
-    		routed to the designated track.
-    		
-    		The Master send on the designated track is disabled to prevent
-    		duplication of the signal on the Master track.
-    		
-    		Receives from selected tracks on the designated track are 
-    		mutually exclusive, any current receive whose source track 
-    		isn't selected is automatically removed, unless no track or
-    		only the designated track is selected in which case receives
-    		remain intact. Sends from tracks already routed to the designated
-    		track aren't duplicated in case the same track is featured 
-    		in different track selections.
-    		
-    		The script can be executed in manual and auto modes. In manual
-    		mode to make it perform operations described above it much be 
-    		run each time new track selection has to be sent to the designated
-    		track. If AUTO setting is enabled in the USER SETTINGS the script
-    		will run in the background and automatically send any selected 
-    		track to the designated track.  
-    		
-    		When the script runs in AUTO mode toolbar button or menu item 
-    		it's linked to are lit or checkmarked respectively.
+	to the designated track whose name is specified
+	in the MONITOR_TRACK_NAME setting in the USER SETTINGS
+	below.
+	
+	It's designed to mimic the 'Current track' feature of
+	FL Studio: https://www.youtube.com/watch?v=0zcZum7BPeM, quote
+	"The specially named 'Current' track can only receive audio 
+	from the currently selected track. Its main purpose is to 
+	hold an Edison plugin, ready to record any selected tracks 
+	audio OR visualization plugins, such as WaveCandy"
+	(https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/mixer_iorouting.htm)
+	
+	Needless to say that it can also be used for monitoring
+	purposes housing analyzers and such.
+	
+	In the case of this script however all selected tracks are 
+	routed to the designated track.
+	
+	The Master send on the designated track is disabled to prevent
+	duplication of the signal on the Master track.
+	
+	Receives from selected tracks on the designated track are 
+	mutually exclusive, any current receive whose source track 
+	isn't selected is automatically removed, unless no track or
+	only the designated track is selected in which case receives
+	remain intact. Sends from tracks already routed to the designated
+	track aren't duplicated in case the same track is featured 
+	in different track selections.
+	
+	The script can be executed in manual and auto modes. In manual
+	mode to make it perform operations described above it much be 
+	run each time new track selection has to be sent to the designated
+	track. If AUTO setting is enabled in the USER SETTINGS the script
+	will run in the background and automatically send any selected 
+	track to the designated track.  
+	
+	When the script runs in AUTO mode toolbar button or menu item 
+	it's linked to are lit or checkmarked respectively.
 		
 ]]
 
