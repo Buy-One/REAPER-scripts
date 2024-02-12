@@ -1,7 +1,7 @@
 --[[
 ReaScript name: Select track of the currently focused track FX window
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
 Changelog: Initial release
 Licence: WTFPL
