@@ -2,21 +2,24 @@
 ReaScript name: BuyOne_Switch to next;previous active CC envelope_META.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.1
-Changelog: v1.1 #Added functionality to export individual scripts included in the package
-		#Updated About text
+Version: 1.2
+Changelog:  v1.2 #Creation of individual scripts has been made hands-free. 
+		 These are created in the directory the META script is located in
+		 and from there are imported into the Action list.
+		 #Updated About text
+	    v1.1 #Added functionality to export individual scripts included in the package
+		 #Updated About text
 Licence: WTFPL
 REAPER: at least v5.962
 Metapackage: true
 Provides: 	. > BuyOne_Switch to next active CC envelope.lua
 		. > BuyOne_Switch to previous active CC envelope.lua
-About:	If this script name is suffixed with META it will spawn 
-	all individual scripts included in the package into 
-	the directory supplied by the user in a dialogue.
-	These can then be manually imported into the Action 
-	list from any other location. If there's no META 
-	suffix in this script name it will perfom the 
-	operation indicated in its name.	
+About:	If this script name is suffixed with META, when executed 
+	it will automatically spawn all individual scripts included 
+	in the package into the directory of the META script and will 
+	import them into the Action list from that directory.  
+	If there's no META suffix in this script name it will perfom 
+	the operation indicated in its name.		
 
 	The individual script works for the last clicked CC lane 
 	if several are open.
@@ -63,6 +66,15 @@ function META_Spawn_Scripts(fullpath, scr_name, names_t)
 	local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
 	return str
 	end
+	
+	local function script_is_installed(fullpath)
+	local sep = r.GetResourcePath():match('[\\/]')
+		for line in io.lines(r.GetResourcePath()..sep..'reaper-kb.ini') do
+		local path = line and line:match('.-%.lua["%s]*(.-)"?')
+			if path and fullpath:match(Esc(path)) then -- installed 
+			return true end
+		end
+	end
 
 	if not fullpath:match(Esc(scr_name)) then return true end -- will allow to continue the script execution outside, since it's not a META script
 
@@ -75,7 +87,7 @@ local names_t, content = names_t
 	this_script:close()
 	names_t, found = {}
 		for line in content:gmatch('[^\n\r]+') do
-			if line and line:match('Provides') then found = 1 end
+			if line and line:match('Provides:') then found = 1 end
 			if found and line:match('%.lua') then
 			names_t[#names_t+1] = line:match('.+[/](.+)') or line:match('BuyOne.+[%w]') -- in case the new script name line includes a subfolder path, the subfolder won't be created
 			elseif found and #names_t > 0 then
@@ -85,25 +97,28 @@ local names_t, content = names_t
 	end
 
 	if names_t and #names_t > 0 then
+	
+--[[ GETTING PATH FROM THE USER INPUT
 
 	r.MB('              This meta script will spawn '..#names_t
 	..'\n\n     individual scripts included in the package'
 	..'\n\n     after you supply a path to the directory\n\n\t    they will be placed in'
 	..'\n\n\twhich can be temporary.\n\n           After that the spawned scripts'
 	..'\n\n will have to be imported into the Action list.','META',0)
-
+	
 	local ret, output -- to be able to autofill the dialogue with last entry on RELOAD
-
+	
 	::RETRY::
 	ret, output = r.GetUserInputs('Scripts destination folder', 1,
 	'Full path to the dest. folder, extrawidth=200', output or '')
 
 		if not ret or #output:gsub(' ','') == 0 then return end -- must be aborted outside of the function
 
-	local user_path = Dir_Exists(output) -- validate user supplied path
-		if not user_path then Error_Tooltip('\n\n invalid path \n\n', 1, 1) -- caps, spaced true
+	local path = Dir_Exists(output) -- validate user supplied path
+		if not path then Error_Tooltip('\n\n invalid path \n\n', 1, 1) -- caps, spaced true
 		goto RETRY end
-
+	]]	
+	
 		-- load this script if wasn't loaded above to parse the header for file names list
 		if not content then
 		local this_script = io.open(fullpath, 'r')
@@ -111,16 +126,29 @@ local names_t, content = names_t
 		this_script:close()
 		end
 
+		local path = fullpath:match('(.+[\\/])') -- WHEN NOT GETTING PATH FROM USER INPUT, USE META SCRIPT PATH
+		
 		-- spawn scripts
 		for k, scr_name in ipairs(names_t) do
-		local new_script = io.open(user_path..scr_name, 'w') -- create new file
+		local new_script = io.open(path..scr_name, 'w') -- create new file
 		content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
 		new_script:write(content)
 		new_script:close()
 		end
+		
+		-- CONDITION BY THE SCRIPT BEING INSTALLED TO OTHERWISE ALLOW SPAWNING SCRIPTS WITH BATCH SCRIPT INSTALLER VIA dofile() WITHOUT INSTALLATION ONLY FOR THE SAKE OF SETTNIGS TRANSFER, get_action_context() is useless as a conditon since when this script is executed via dofile() from the installer script the function returns props of the latter		
+		if script_is_installed(fullpath) then
+			for _, sectID in ipairs{32060} do -- MIDI Ed // per script list
+				for k, scr_name in ipairs(names_t) do
+				local result = r.AddRemoveReaScript(true, sectID, path..scr_name, true) -- add, commit true // doesn't affect the props of an already installed script if attempts to install it again, so is safe
+				end
+			end
+		end
+		
 	end
 
 end
+
 
 
 function CC_Evts_Exist(take)
@@ -134,7 +162,9 @@ end
 
 
 local _, fullpath, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
+fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
 local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- without path, scripter name and file ext
+	
 	if scr_name:match(' next ') then nxt = 1
 	elseif scr_name:match(' previous ') then prev = 1
 	end
