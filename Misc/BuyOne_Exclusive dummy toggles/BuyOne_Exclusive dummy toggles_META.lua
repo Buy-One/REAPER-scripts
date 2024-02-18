@@ -14,8 +14,7 @@ REAPER: at least v5.962
 Extensions: SWS/S&M extension (recommended for ability to use Cycle action editor)
 About:	If this script name is suffixed with META, when executed it will automatically spawn 
 	all individual scripts included in the package into the directory of the META script
-	and will import them into the Action list from that directory.
-	These can then be manually imported into the Action list from any other location. 
+	and will import them into the Action list from that directory.  
 	If there's no META suffix in this script name it will perfom the operation indicated 
 	in its name.
 
@@ -118,6 +117,15 @@ function META_Spawn_Scripts(fullpath, scr_name, names_t)
 	local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
 	return str
 	end
+	
+	local function script_is_installed(fullpath)
+	local sep = r.GetResourcePath():match('[\\/]')
+		for line in io.lines(r.GetResourcePath()..sep..'reaper-kb.ini') do
+		local path = line and line:match('.-%.lua["%s]*(.-)"?')
+			if path and fullpath:match(Esc(path)) then -- installed 
+			return true end
+		end
+	end
 
 	if not fullpath:match(Esc(scr_name)) then return true end -- will allow to continue the script execution outside, since it's not a META script
 
@@ -177,11 +185,14 @@ local names_t, content = names_t
 		content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
 		new_script:write(content)
 		new_script:close()
-		end		
+		end
 		
-		for _, sectID in ipairs{0,32060,32061,32062,32063} do -- Main, MIDI Ed, MIDI Evnt List, Media Ex // per script list
-			for k, scr_name in ipairs(names_t) do
-			local result = r.AddRemoveReaScript(true, sectID, path..scr_name, true) -- add, commit true // doesn't affect the props of an already installed script if attempts to install it again, so is safe
+		-- CONDITION BY THE SCRIPT BEING INSTALLED TO OTHERWISE ALLOW SPAWNING SCRIPTS WITH BATCH SCRIPT INSTALLER VIA dofile() WITHOUT INSTALLATION ONLY FOR THE SAKE OF SETTNIGS TRANSFER, get_action_context() is useless as a conditon since when this script is executed via dofile() from the installer script the function returns props of the latter		
+		if script_is_installed(fullpath) then
+			for _, sectID in ipairs{0,32060,32061,32062,32063} do -- Main, MIDI Ed, MIDI Evnt List, Media Ex // per script list
+				for k, scr_name in ipairs(names_t) do
+				local result = r.AddRemoveReaScript(true, sectID, path..scr_name, true) -- add, commit true // doesn't affect the props of an already installed script if attempts to install it again, so is safe
+				end
 			end
 		end
 		
@@ -221,6 +232,7 @@ end
 
 
 local _, fullpath, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
+fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
 local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- without path, scripter name and file ext
 
 	-- doesn't run in non-META scripts
