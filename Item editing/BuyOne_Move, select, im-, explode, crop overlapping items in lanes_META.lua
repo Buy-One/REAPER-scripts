@@ -1,104 +1,18 @@
 --[[
 ReaScript name: BuyOne_Move, select, im-, explode, crop overlapping items in lanes_META.lua (13 scripts)
 Author: BuyOne
-Version: 1.2
-Changelog: v1.2 #Added functionality to export individual scripts included in the package
-		#Changed META script name
-		#Updated About text
-	   v1.1 #Fixed REAPER version evaluation
+Version: 1.3
+Changelog:  v1.3 #Creation of individual scripts has been made hands-free. 
+		 These are created in the directory the META script is located in
+		 and from there are imported into the Action list.
+		 #Updated About text
+	    v1.2 #Added functionality to export individual scripts included in the package
+		 #Changed META script name
+		 #Updated About text
+	    v1.1 #Fixed REAPER version evaluation
 Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v5.962 and not later than 6.53
-Extensions: SWS/S&M, not mandatory but strongly recommended
-About:  The script isn't compatible with REAPER builds 6.54 onward, because
-	the logic governing overlapping items display in lanes was changed
-	while the script was being developed.   
-	https://forum.cockos.com/showthread.php?t=267390
-	
-	If this script name is suffixed with META it will spawn all 
-	individual scripts included in the package into the directory 
-	supplied by the user in a dialogue. These can then be manually 
-	imported into the Action list from any other location.   
-	If there's no META suffix in this script name it will perfom 
-	the operation indicated in its name.
-
-	MOVE SELECTED TO TOP/BOTTOM LANE || ALL UP/DOWN ONE LANE
-	
-	In 'move selected to top/bottom lane' scripts, selection of multiple 
-	items within the same overlapping items cluster doesn't make 
-	sense, hence if multiple items are selected it's the first 
-	(whose lane is the highest) or the last (whose lane is the lowest) 
-	selected item per cluster which will be moved to the top/bottom 
-	lane respectively.	
-	'Cycle' in the script name means that all items change their lane 
-	along with the selected one.  
-	'Swap' means that only two items trade their lanes.  
-	
-	In 'move all up/down one lane' scripts the number of selected 
-	overlapping items per cluster doesn't matter.  
-	
-	SELECT NEXT/PREVIOUS
-	
-	Select any number of overlapping items in a cluster and execute
-	the script. Selection will be shifted down or up respectively.  
-	If all items in a cluster are selected nothing changes.  
-	
-	IMPLODE
-
-	* To implode items select them, point mouse cursor at an item 
-	you want selected items to be placed underneath in lanes or select 
-	its track and place the edit cursor over such item (designated item).  
-	* If the designated item is already a part of an overlapping items 
-	cluster, the imploded items will be placed in lanes immediately beneath
-	such item provided it's selected, otherwise the imploded items 
-	will be placed beneath the bottommost item of such overlapping items 
-	cluster. If several items are selected in a cluster items are imploded 
-	beneath the last selected.  
-	* The designated item is always considered selected if the mouse cursor 
-	points at it at the moment of the script execution, in which case it has
-	to be run with a shortcut so the mouse cursor isn't enganged.   
-	* Items are imploded in their global project order (left to right,
-	top to bottom) beneath the designated item (one around which imploding 
-	is performed).   
-	* !!! After imploding, the originally selected items may end up in an 
-	unexpected order if there're mutually fully overlapping items among 
-	them, because in this case their global order isn't obvious, fully 
-	overlapping items apparent lanes order isn't governed by their global 
-	order in the project.  	
-	* It's only possible to implode selected items into a single cluster 
-	of overlapping items, meaning all selected items can either join an 
-	already existing cluster or coalesce into a new one.
-	
-	EXPLODE || CROP
-	
-	To explode or crop overlapping items select any number of such
-	overlapping items to have the rest exploded or removed respectively.
-	If all items happen to be selected the action won't be executed.
-	
-	BEHAVIOR IN COLLAPSED LANES 
-	
-	When overlapping item lanes are collapsed, after a script is applied 
-	generally the outermost (visible) item changes to reflect change 
-	in item positions in lanes with the following caveats:  
-	
-	* When actions   
-	'move selected to top/bottom lane', 'move all up/down one lane'   
-	are applied to overlapping items whose lanes are collapsed, only 1 item 
-	can stay selected per cluster which is the outermost (visible) one. 
-	Change in selection is reflected in the change of the outermost item.  
-	The outermost item lane isn't fixed and can be whatever.  		
-	* In 'select next/prevous' scripts, the outermost (visible) item  
-	only changes if it was selected before the script was applied.  
-	* Even when all items in an overlapping items cluster are selected 
-	before 'explode' or 'crop' script is executed all items will be
-	respectively exploded or cropped leaving only the outermost item
-	at its original position or intact respectively.  
-	If the outermost item isn't selected, no exploding or cropping occurs 
-	regardless of other items selection within the cluster.
-	
-	___________________________________________________________________
-	Be aware that after duplicating overlapping items in a batch the order
-	of their copies will likely be different. That's REAPER's quirk.			
 Metapackage: true
 Provides: 	[main] . > BuyOne_Overlapping items/BuyOne_Overlapping items - move selected to top lane (cycle).lua
 		[main] . > BuyOne_Overlapping items/BuyOne_Overlapping items - move selected to bottom lane (cycle).lua
@@ -113,7 +27,99 @@ Provides: 	[main] . > BuyOne_Overlapping items/BuyOne_Overlapping items - move s
 		[main] . > BuyOne_Overlapping items/BuyOne_Overlapping items - explode across tracks (to new tracks).lua
 		[main] . > BuyOne_Overlapping items/BuyOne_Overlapping items - explode across tracks (to track duplicates).lua
 		[main] . > BuyOne_Overlapping items/BuyOne_Overlapping items - crop to selected items.lua
+Extensions: SWS/S&M, not mandatory but strongly recommended
+About:  	The script isn't compatible with REAPER builds 6.54 onward, because
+		the logic governing overlapping items display in lanes was changed
+		while the script was being developed.   
+		https://forum.cockos.com/showthread.php?t=267390
+		
+		If this script name is suffixed with META, when executed it will 
+		automatically spawn all individual scripts included in the package 
+		into the directory of the META script and will import them into the 
+		Action list from that directory.  
+		If there's no META suffix in this script name it will perfom the 
+		operation indicated in its name.
+
+		MOVE SELECTED TO TOP/BOTTOM LANE || ALL UP/DOWN ONE LANE
+		
+		In 'move selected to top/bottom lane' scripts, selection of multiple 
+		items within the same overlapping items cluster doesn't make 
+		sense, hence if multiple items are selected it's the first 
+		(whose lane is the highest) or the last (whose lane is the lowest) 
+		selected item per cluster which will be moved to the top/bottom 
+		lane respectively.	
+		'Cycle' in the script name means that all items change their lane 
+		along with the selected one.  
+		'Swap' means that only two items trade their lanes.  
+		
+		In 'move all up/down one lane' scripts the number of selected 
+		overlapping items per cluster doesn't matter.  
+		
+		SELECT NEXT/PREVIOUS
+		
+		Select any number of overlapping items in a cluster and execute
+		the script. Selection will be shifted down or up respectively.  
+		If all items in a cluster are selected nothing changes.  
+		
+		IMPLODE
+	
+		* To implode items select them, point mouse cursor at an item 
+		you want selected items to be placed underneath in lanes or select 
+		its track and place the edit cursor over such item (designated item).  
+		* If the designated item is already a part of an overlapping items 
+		cluster, the imploded items will be placed in lanes immediately beneath
+		such item provided it's selected, otherwise the imploded items 
+		will be placed beneath the bottommost item of such overlapping items 
+		cluster. If several items are selected in a cluster items are imploded 
+		beneath the last selected.  
+		* The designated item is always considered selected if the mouse cursor 
+		points at it at the moment of the script execution, in which case it has
+		to be run with a shortcut so the mouse cursor isn't enganged.   
+		* Items are imploded in their global project order (left to right,
+		top to bottom) beneath the designated item (one around which imploding 
+		is performed).   
+		* !!! After imploding, the originally selected items may end up in an 
+		unexpected order if there're mutually fully overlapping items among 
+		them, because in this case their global order isn't obvious, fully 
+		overlapping items apparent lanes order isn't governed by their global 
+		order in the project.  	
+		* It's only possible to implode selected items into a single cluster 
+		of overlapping items, meaning all selected items can either join an 
+		already existing cluster or coalesce into a new one.
+		
+		EXPLODE || CROP
+		
+		To explode or crop overlapping items select any number of such
+		overlapping items to have the rest exploded or removed respectively.
+		If all items happen to be selected the action won't be executed.
+		
+		BEHAVIOR IN COLLAPSED LANES 
+		
+		When overlapping item lanes are collapsed, after a script is applied 
+		generally the outermost (visible) item changes to reflect change 
+		in item positions in lanes with the following caveats:  
+		
+		* When actions   
+		'move selected to top/bottom lane', 'move all up/down one lane'   
+		are applied to overlapping items whose lanes are collapsed, only 1 item 
+		can stay selected per cluster which is the outermost (visible) one. 
+		Change in selection is reflected in the change of the outermost item.  
+		The outermost item lane isn't fixed and can be whatever.  		
+		* In 'select next/prevous' scripts, the outermost (visible) item  
+		only changes if it was selected before the script was applied.  
+		* Even when all items in an overlapping items cluster are selected 
+		before 'explode' or 'crop' script is executed all items will be
+		respectively exploded or cropped leaving only the outermost item
+		at its original position or intact respectively.  
+		If the outermost item isn't selected, no exploding or cropping occurs 
+		regardless of other items selection within the cluster.
+		
+		___________________________________________________________________
+		Be aware that after duplicating overlapping items in a batch the order
+		of their copies will likely be different. That's REAPER's quirk.			
+
 ]]
+
 
 function Msg(param, cap) -- caption second or none
 local cap = cap and type(cap) == 'string' and #cap > 0 and cap..' = ' or ''
@@ -146,6 +152,15 @@ function META_Spawn_Scripts(fullpath, scr_name, names_t)
 	local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
 	return str
 	end
+	
+	local function script_is_installed(fullpath)
+	local sep = r.GetResourcePath():match('[\\/]')
+		for line in io.lines(r.GetResourcePath()..sep..'reaper-kb.ini') do
+		local path = line and line:match('.-%.lua["%s]*(.-)"?')
+			if path and fullpath:match(Esc(path)) then -- installed 
+			return true end
+		end
+	end
 
 	if not fullpath:match(Esc(scr_name)) then return true end -- will allow to continue the script execution outside, since it's not a META script
 
@@ -158,7 +173,7 @@ local names_t, content = names_t
 	this_script:close()
 	names_t, found = {}
 		for line in content:gmatch('[^\n\r]+') do
-			if line and line:match('Provides') then found = 1 end
+			if line and line:match('Provides:') then found = 1 end
 			if found and line:match('%.lua') then
 			names_t[#names_t+1] = line:match('.+[/](.+)') or line:match('BuyOne.+[%w]') -- in case the new script name line includes a subfolder path, the subfolder won't be created
 			elseif found and #names_t > 0 then
@@ -168,25 +183,28 @@ local names_t, content = names_t
 	end
 
 	if names_t and #names_t > 0 then
+	
+--[[ GETTING PATH FROM THE USER INPUT
 
 	r.MB('              This meta script will spawn '..#names_t
 	..'\n\n     individual scripts included in the package'
 	..'\n\n     after you supply a path to the directory\n\n\t    they will be placed in'
 	..'\n\n\twhich can be temporary.\n\n           After that the spawned scripts'
 	..'\n\n will have to be imported into the Action list.','META',0)
-
+	
 	local ret, output -- to be able to autofill the dialogue with last entry on RELOAD
-
+	
 	::RETRY::
 	ret, output = r.GetUserInputs('Scripts destination folder', 1,
 	'Full path to the dest. folder, extrawidth=200', output or '')
 
 		if not ret or #output:gsub(' ','') == 0 then return end -- must be aborted outside of the function
 
-	local user_path = Dir_Exists(output) -- validate user supplied path
-		if not user_path then Error_Tooltip('\n\n invalid path \n\n', 1, 1) -- caps, spaced true
+	local path = Dir_Exists(output) -- validate user supplied path
+		if not path then Error_Tooltip('\n\n invalid path \n\n', 1, 1) -- caps, spaced true
 		goto RETRY end
-
+	]]	
+	
 		-- load this script if wasn't loaded above to parse the header for file names list
 		if not content then
 		local this_script = io.open(fullpath, 'r')
@@ -194,13 +212,25 @@ local names_t, content = names_t
 		this_script:close()
 		end
 
+		local path = fullpath:match('(.+[\\/])') -- WHEN NOT GETTING PATH FROM USER INPUT, USE META SCRIPT PATH
+		
 		-- spawn scripts
 		for k, scr_name in ipairs(names_t) do
-		local new_script = io.open(user_path..scr_name, 'w') -- create new file
+		local new_script = io.open(path..scr_name, 'w') -- create new file
 		content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
 		new_script:write(content)
 		new_script:close()
 		end
+		
+		-- CONDITION BY THE SCRIPT BEING INSTALLED TO OTHERWISE ALLOW SPAWNING SCRIPTS WITH BATCH SCRIPT INSTALLER VIA dofile() WITHOUT INSTALLATION ONLY FOR THE SAKE OF SETTNIGS TRANSFER, get_action_context() is useless as a conditon since when this script is executed via dofile() from the installer script the function returns props of the latter		
+		if script_is_installed(fullpath) then
+			for _, sectID in ipairs{0} do -- Main // per script list
+				for k, scr_name in ipairs(names_t) do
+				local result = r.AddRemoveReaScript(true, sectID, path..scr_name, true) -- add, commit true // doesn't affect the props of an already installed script if attempts to install it again, so is safe
+				end
+			end
+		end
+		
 	end
 
 end
@@ -476,6 +506,7 @@ end
 
 
 local _, fullpath, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
+fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
 local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- without path, scripter name and file ext
 
 
