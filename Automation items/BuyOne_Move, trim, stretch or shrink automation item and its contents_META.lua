@@ -2,13 +2,16 @@
 ReaScript name: BuyOne_Move, trim, stretch or shrink automation item and its contents_META.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: v1.1 #Added support for getting envelope under mouse cursor if SWS extension is installed
-		#Updated About text
+Version: 1.2
+Changelog:  v1.2 #Creation of individual scripts has been made hands-free. 
+		 These are created in the directory the META script is located in
+		 and from there are imported into the Action list.
+		 #Updated About text
+	    v1.1 #Added support for getting envelope under mouse cursor if SWS extension is installed
+		 #Updated About text
 Metapackage: true
 Licence: WTFPL
 REAPER: at least v5.962
-Extensions: 
 About: 	This package of 31 scripts aims at allowing operations with automation 
 	items (AI) similar to those available for media items with native REAPER
 	actions. The difference is that only one automation item at a time can 
@@ -18,10 +21,11 @@ About: 	This package of 31 scripts aims at allowing operations with automation
 	several automation items are selected on an envelope only the first one 
 	will be affected by the scripts.
 	
-	If this script name is suffixed with META it will spawn all individual scripts
-	included in the package into the directory supplied by the user in a dialogue.
-	These can then be manually imported into the Action list from any other location.
-	If there's no META suffix in this script name it will perfom the operation
+	If this script name is suffixed with META, when executed it will 
+	automatically spawn all individual scripts included in the package into 
+	the directory of the META script and will import them into the Action list 
+	from that directory.  
+	If there's no META suffix in this script name it will perfom the operation 
 	indicated in its name.
 	
 	THE SCRIPT LIST and the specifics of their behavior
@@ -30,13 +34,13 @@ About: 	This package of 31 scripts aims at allowing operations with automation
 	
 	Move contents of selected automation item to edit/mouse cursor (2)		
 	Behavior:	If cursor is to the left of the AI start, contents are moved left, 
-				if it's to the right of the AI start, contents are moved right.
-				The contents are moved by the distance between the cursor and
-				the AI start.
+			if it's to the right of the AI start, contents are moved right.
+			The contents are moved by the distance between the cursor and
+			the AI start.
 
 	Move selected automation item to edit/mouse cursor preserving contents (2)
 	Behavior: 	If cursor is to the left of the AI start, the AI is moved left, 
-				if it's to the right of the AI start, the AI is moved right.
+			if it's to the right of the AI start, the AI is moved right.
 
 	Move contents of selected automation item 10 ms left/right (2)
 	Move selected automation item 10 ms left/right preserving contents (2)
@@ -47,46 +51,46 @@ About: 	This package of 31 scripts aims at allowing operations with automation
 	
 	Trim left/right edge of selected automation item to edit/mouse cursor (4)
 	Behavior:	The edit/mouse cursor must be located within the AI or outside
-				of its target edge.
+			of its target edge.
 	
 	Trim left/right edge of selected automation item to edit/mouse cursor and loop (4)
 	Behavior: 	This is a variant of the previous script which enables AI loop 
-				if it's not enabled
+			if it's not enabled
 	
 	Stretch or shrink left/right edge of selected automation item to edit/mouse cursor (4)
 	Behavior:	The edit/mouse cursor must be located within the AI or outside
-				of its target edge.
+			of its target edge.
 
 	The following scripts must be run with the mousewheel
 
 	Move/trim/stretch of shrink edge of selected automation item to mouse cursor (mousewheel) (3)
 	Behavior:	AI left edge is being affected when the mouse cursor is to the left 
-				of the AI start and the mousewheel is in (down) or the mouse cursor 
-				is between the AI start and its end and the mousewheel out (up). 
-				AI right edge is being affected when the mouse cursor is to the right 
-				of the AI end and the mousewheel is out (up) or the mouse cursor 
-				is between the AI start and its end and the mousewheel in (down).
+			of the AI start and the mousewheel is in (down) or the mouse cursor 
+			is between the AI start and its end and the mousewheel out (up). 
+			AI right edge is being affected when the mouse cursor is to the right 
+			of the AI end and the mousewheel is out (up) or the mouse cursor 
+			is between the AI start and its end and the mousewheel in (down).
 	
 	Move contents of selected automation item to mouse cursor (mousewheel)
 	Behavior:	If the mouse cursor is to the left of the AI start 
-				and the mousewheel is in (down), contents are moved left, 
-				the mousewheel out (up) is ignored.  
-				If the mouse cursor is to the right of the AI start 
-				and the mousewheel is out (up), contents are moved right, 
-				the mousewheel in (down) is ignored.
+			and the mousewheel is in (down), contents are moved left, 
+			the mousewheel out (up) is ignored.  
+			If the mouse cursor is to the right of the AI start 
+			and the mousewheel is out (up), contents are moved right, 
+			the mousewheel in (down) is ignored.
 
 	Move selected automation item to mouse cursor preserving contents (mousewheel)
 	Behavior:	If the mouse cursor is to the left of the AI start 
-				and the mousewheel is in (down), the AI is moved left, 
-				the mousewheel is out (up) is ignored.  
-				If the mouse cursor to the right of the AI start 
-				and the mousewheel is out (up) the AI is moved right, 
-				the mousewheel in (down) is ignored.
+			and the mousewheel is in (down), the AI is moved left, 
+			the mousewheel is out (up) is ignored.  
+			If the mouse cursor to the right of the AI start 
+			and the mousewheel is out (up) the AI is moved right, 
+			the mousewheel in (down) is ignored.
 
 	Move contents of selected automation item 10 ms (mousewheel)
 	Move selected automation item 10 ms preserving contents (mousewheel)
 	Behavior:	The functionality of both scripts doesn't depend 
-				on the mouse cursor position, only on the mouswheel direction.
+			on the mouse cursor position, only on the mouswheel direction.
 	These two scripts above can be duplicated and value 10 can be replaced in 
 	the duplicates name with another value to be able to move to by a different
 	distance.
@@ -235,10 +239,21 @@ function META_Spawn_Scripts(fullpath, scr_name, names_t)
 	return str
 	end
 	
+	local function script_is_installed(fullpath)
+	local sep = r.GetResourcePath():match('[\\/]')
+		for line in io.lines(r.GetResourcePath()..sep..'reaper-kb.ini') do
+		local path = line and line:match('.-%.lua["%s]*(.-)"?')
+			if path and fullpath:match(Esc(path)) then -- installed 
+			return true end
+		end
+	end
+	
 	if not fullpath:match(Esc(scr_name)) then return true end -- will allow to continue the script execution outside, since it's not a META script
 
 	if names_t and #names_t > 0 then
 
+--[[ GETTING PATH FROM THE USER INPUT
+	
 	r.MB('              This meta script will spawn 31\n\n     individual scripts included in the package'
 	..'\n\n     after you supply a path to the directory\n\n\t    they will be placed in'
 	..'\n\n\twhich can be temporary.\n\n           After that the spawned scripts'
@@ -252,15 +267,19 @@ function META_Spawn_Scripts(fullpath, scr_name, names_t)
 
 		if not ret or #output:gsub(' ','') == 0 then return end -- must be aborted outside of the function
 
-	local user_path = Dir_Exists(output) -- validate user supplied path
-		if not user_path then Error_Tooltip('\n\n invalid path \n\n', 1, 1) -- caps, spaced true
+	local path = Dir_Exists(output) -- validate user supplied path
+		if not path then Error_Tooltip('\n\n invalid path \n\n', 1, 1) -- caps, spaced true
 		goto RETRY end
+		
+	]]
 
 	-- load this script
 	local this_script = io.open(fullpath, 'r')
 	local content = this_script:read('*a')
 	this_script:close()
 
+	local path = fullpath:match('(.+[\\/])') -- WHEN NOT GETTING PATH FROM USER INPUT, USE META SCRIPT PATH
+	
 	local prefix, insert = 'BuyOne_', 'selected automation item'
 		-- spawn scripts
 		for _, scr_name in ipairs(names_t) do
@@ -273,10 +292,20 @@ function META_Spawn_Scripts(fullpath, scr_name, names_t)
 			end
 		scr_name = prefix..scr_name..'.lua'
 		content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
-		local new_script = io.open(user_path..scr_name, 'w') -- create new file
+		local new_script = io.open(path..scr_name, 'w') -- create new file
 		new_script:write(content)
 		new_script:close()
 		end
+		
+		-- CONDITION BY THE SCRIPT BEING INSTALLED TO OTHERWISE ALLOW SPAWNING SCRIPTS WITH BATCH SCRIPT INSTALLER VIA dofile() WITHOUT INSTALLATION ONLY FOR THE SAKE OF SETTNIGS TRANSFER, get_action_context() is useless as a conditon since when this script is executed via dofile() from the installer script the function returns props of the latter		
+		if script_is_installed(fullpath) then
+			for _, sectID in ipairs{0} do -- Main // per script list
+				for k, scr_name in ipairs(names_t) do
+				local result = r.AddRemoveReaScript(true, sectID, path..scr_name, true) -- add, commit true // doesn't affect the props of an already installed script if attempts to install it again, so is safe
+				end
+			end
+		end
+		
 	end
 
 end
@@ -339,8 +368,11 @@ local names_t = {'Move left edge to edit cursor', 'Move left edge to mouse curso
 'Move contents 10 ms (mousewheel)', 'Move 10 ms preserving contents (mousewheel)'
 }
 
+
 local is_new_value, fullpath, sectionID, cmdID, mode, resolution, val = r.get_action_context()
+fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
 local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- without path, extension and author name
+
 
 	-- doesn't run in non-META scripts
 	if not META_Spawn_Scripts(fullpath, 'BuyOne_Move, trim, stretch or shrink'
