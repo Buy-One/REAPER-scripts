@@ -2,20 +2,20 @@
 ReaScript name: BuyOne_Create Razor edit area from cursor to mouse on envelope or item lane_META.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: v1.1 #Fixed error message due to duplicate statement
 Metapackage: true
 Licence: WTFPL
 REAPER: at least v6.24
 Metapackage: true
 Provides:	. > BuyOne_Create Razor edit area from cursor to mouse on any lane.lua
-    			. > BuyOne_Create Razor edit area from cursor to mouse on any lane keeping existing.lua
-    			. > BuyOne_Create Razor edit area from cursor to mouse on track envelope lane.lua
-    			. > BuyOne_Create Razor edit area from cursor to mouse on track envelope lane keeping existing.lua
-    			. > BuyOne_Create Razor edit area from cursor to mouse on track all envelope lanes.lua
-    			. > BuyOne_Create Razor edit area from cursor to mouse on track all envelope lanes keeping existing.lua
-    			. > BuyOne_Create Razor edit area from cursor to mouse on item lane.lua
-    			. > BuyOne_Create Razor edit area from cursor to mouse on item lane keeping existing.lua
+		. > BuyOne_Create Razor edit area from cursor to mouse on any lane keeping existing.lua
+		. > BuyOne_Create Razor edit area from cursor to mouse on track envelope lane.lua
+		. > BuyOne_Create Razor edit area from cursor to mouse on track envelope lane keeping existing.lua
+		. > BuyOne_Create Razor edit area from cursor to mouse on track all envelope lanes.lua
+		. > BuyOne_Create Razor edit area from cursor to mouse on track all envelope lanes keeping existing.lua
+		. > BuyOne_Create Razor edit area from cursor to mouse on item lane.lua
+		. > BuyOne_Create Razor edit area from cursor to mouse on item lane keeping existing.lua
 About:	If this script name is suffixed with META it will spawn 
     		all individual scripts included in the package into 
     		the directory supplied by the user in a dialogue.
@@ -394,7 +394,6 @@ local data = ''
 	elseif item_lane then
 	-- Create Razor edit area from cursor to mouse on item lane
 	-- Create Razor edit area from cursor to mouse on item lane keeping existing
-		if keeping then
 		if keeping then
 		data = Exclude_Raz_Edit_Areas(raz_edit_data, st, fin, env_lane, item_lane)
 		end
