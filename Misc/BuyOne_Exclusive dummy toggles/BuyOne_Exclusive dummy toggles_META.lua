@@ -1,16 +1,20 @@
 --[[
 ReaScript name: BuyOne_Exclusive dummy toggles_META.lua (10 scripts)
 Author: BuyOne
-Version: 1.1
-Changelog: v1.1 #Added functionality to export individual scripts included in the package
+Version: 1.2
+Changelog: v1.2 #Creation of individual scripts has been made hands-free. 
+		 These are created in the directory the META script is located in
+		 and from there are imported into the Action list.
+		#Updated About text
+	   v1.1 #Added functionality to export individual scripts included in the package
 		#Updated About text
 Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v5.962
-Provides: [main=main,midi_editor] .
 Extensions: SWS/S&M extension (recommended for ability to use Cycle action editor)
-About:	If this script name is suffixed with META it will spawn all individual scripts included 
-	in the package into the directory supplied by the user in a dialogue.
+About:	If this script name is suffixed with META, when executed it will automatically spawn 
+	all individual scripts included in the package into the directory of the META script
+	and will import them into the Action list from that directory.
 	These can then be manually imported into the Action list from any other location. 
 	If there's no META suffix in this script name it will perfom the operation indicated 
 	in its name.
@@ -43,7 +47,7 @@ About:	If this script name is suffixed with META it will spawn all individual sc
 	https://raw.githubusercontent.com/Buy-One/screenshots/main/Exclusive%20dummy%20toggle%20scripts.gif  
 	Use case  https://raw.githubusercontent.com/Buy-One/screenshots/main/Insert%20note%20at%20constant%20velocity%20depending%20on%20dummy%20toggle%20scripts.gif
 Metapackage: true
-Provides: 	
+Provides: 	[main=main,midi_editor] .
 		[main=main,midi_editor,midi_inlineeditor,midi_eventlisteditor,mediaexplorer] . > BuyOne_Exclusive dummy toggles/BuyOne_Exclusive dummy toggle 1.lua
 		[main=main,midi_editor,midi_inlineeditor,midi_eventlisteditor,mediaexplorer] . > BuyOne_Exclusive dummy toggles/BuyOne_Exclusive dummy toggle 2.lua
 		[main=main,midi_editor,midi_inlineeditor,midi_eventlisteditor,mediaexplorer] . > BuyOne_Exclusive dummy toggles/BuyOne_Exclusive dummy toggle 3.lua
@@ -126,7 +130,7 @@ local names_t, content = names_t
 	this_script:close()
 	names_t, found = {}
 		for line in content:gmatch('[^\n\r]+') do
-			if line and line:match('Provides') then found = 1 end
+			if line and line:match('Provides:') then found = 1 end
 			if found and line:match('%.lua') then
 			names_t[#names_t+1] = line:match('.+[/](.+)') or line:match('BuyOne.+[%w]') -- in case the new script name line includes a subfolder path, the subfolder won't be created
 			elseif found and #names_t > 0 then
@@ -136,25 +140,28 @@ local names_t, content = names_t
 	end
 
 	if names_t and #names_t > 0 then
+	
+--[[ GETTING PATH FROM THE USER INPUT
 
 	r.MB('              This meta script will spawn '..#names_t
 	..'\n\n     individual scripts included in the package'
 	..'\n\n     after you supply a path to the directory\n\n\t    they will be placed in'
 	..'\n\n\twhich can be temporary.\n\n           After that the spawned scripts'
 	..'\n\n will have to be imported into the Action list.','META',0)
-
+	
 	local ret, output -- to be able to autofill the dialogue with last entry on RELOAD
-
+	
 	::RETRY::
 	ret, output = r.GetUserInputs('Scripts destination folder', 1,
 	'Full path to the dest. folder, extrawidth=200', output or '')
 
 		if not ret or #output:gsub(' ','') == 0 then return end -- must be aborted outside of the function
 
-	local user_path = Dir_Exists(output) -- validate user supplied path
-		if not user_path then Error_Tooltip('\n\n invalid path \n\n', 1, 1) -- caps, spaced true
+	local path = Dir_Exists(output) -- validate user supplied path
+		if not path then Error_Tooltip('\n\n invalid path \n\n', 1, 1) -- caps, spaced true
 		goto RETRY end
-
+	]]	
+	
 		-- load this script if wasn't loaded above to parse the header for file names list
 		if not content then
 		local this_script = io.open(fullpath, 'r')
@@ -162,13 +169,22 @@ local names_t, content = names_t
 		this_script:close()
 		end
 
+		local path = fullpath:match('(.+[\\/])') -- WHEN NOT GETTING PATH FROM USER INPUT, USE META SCRIPT PATH
+		
 		-- spawn scripts
 		for k, scr_name in ipairs(names_t) do
-		local new_script = io.open(user_path..scr_name, 'w') -- create new file
+		local new_script = io.open(path..scr_name, 'w') -- create new file
 		content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
 		new_script:write(content)
 		new_script:close()
+		end		
+		
+		for _, sectID in ipairs{0,32060,32061,32062,32063} do -- Main, MIDI Ed, MIDI Evnt List, Media Ex // per script list
+			for k, scr_name in ipairs(names_t) do
+			local result = r.AddRemoveReaScript(true, sectID, path..scr_name, true) -- add, commit true // doesn't affect the props of an already installed script if attempts to install it again, so is safe
+			end
 		end
+		
 	end
 
 end
