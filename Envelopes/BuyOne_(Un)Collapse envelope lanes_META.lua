@@ -37,7 +37,10 @@ Provides: 	. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse selected envel
 About:	If this script name is suffixed with META, when executed 
 	it will automatically spawn all individual scripts included 
 	in the package into the directory of the META script and will 
-	import them into the Action list from that directory.  
+	import them into the Action list from that directory. That's 
+	provided such scripts don't exist yet, if they do, then in 
+	order to recreate them they have to be deleted from the Action 
+	list and from the disk first.  
 	If there's no META suffix in this script name it will perfom 
 	the operation indicated in its name.
 
@@ -169,11 +172,14 @@ local names_t, content = names_t
 		
 		-- spawn scripts
 		for k, scr_name in ipairs(names_t) do
-		local new_script = io.open(path..scr_name, 'w') -- create new file
-		content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
-		new_script:write(content)
-		new_script:close()
+			if not r.file_exists(path..scr_name) then -- only spawn if doesn't already exist, this is meant to prevent accidental overwriting of custom USER SETTINGS in individial scripts // if spawned script update is required it must be done via installer script, or manually by copy and paste, or by deleting it and running this script
+			local new_script = io.open(path..scr_name, 'w') -- create new file
+			content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
+			new_script:write(content)
+			new_script:close()
+			end
 		end
+
 		
 		-- CONDITION BY THE SCRIPT BEING INSTALLED TO OTHERWISE ALLOW SPAWNING SCRIPTS WITH BATCH SCRIPT INSTALLER VIA dofile() WITHOUT INSTALLATION ONLY FOR THE SAKE OF SETTINGS TRANSFER, get_action_context() is useless as a conditon since when this script is executed via dofile() from the installer script the function returns props of the latter		
 		if script_is_installed(fullpath) then
