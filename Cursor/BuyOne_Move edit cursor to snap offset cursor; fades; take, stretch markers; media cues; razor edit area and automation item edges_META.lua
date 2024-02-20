@@ -3,7 +3,7 @@ ReaScript name: BuyOne_Move edit cursor to snap offset cursor; fades; take, stre
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.5
-Changelog:  v1.5 #Fixed failed META sctript name update in v1.3
+Changelog:  v1.5 #Fixed failed META script name update in v1.3
 	    v1.4 #Creation of individual scripts has been made hands-free. 
 		 These are created in the directory the META script is located in
 		 and from there are imported into the Action list.
