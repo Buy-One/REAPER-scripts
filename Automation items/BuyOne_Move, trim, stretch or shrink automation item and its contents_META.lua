@@ -1,5 +1,5 @@
 --[[
-ReaScript name: BuyOne_Move, trim, stretch or shrink automation item and its contents_META.lua
+ReaScript name: BuyOne_Move, trim, stretch or shrink automation item and its contents_META.lua (31 script)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
