@@ -2,13 +2,14 @@
 ReaScript name: BuyOne_Move, trim, stretch or shrink automation item and its contents_META.lua (31 script)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog:  v1.2 #Creation of individual scripts has been made hands-free. 
-		 These are created in the directory the META script is located in
-		 and from there are imported into the Action list.
+Version: 1.3
+Changelog:  v1.3 #Fixed automatic installation of individual scripts in the Action list
+	    v1.2 #Creation of individual scripts has been made hands-free. 
+		  These are created in the directory the META script is located in
+		  and from there are imported into the Action list.
 		 #Updated About text
 	    v1.1 #Added support for getting envelope under mouse cursor if SWS extension is installed
-		 #Updated About text
+		 #Updated About textxt
 Metapackage: true
 Licence: WTFPL
 REAPER: at least v5.962
@@ -284,7 +285,7 @@ function META_Spawn_Scripts(fullpath, scr_name, names_t)
 	
 	local prefix, insert = 'BuyOne_', 'selected automation item'
 		-- spawn scripts
-		for _, scr_name in ipairs(names_t) do
+		for k, scr_name in ipairs(names_t) do
 			if scr_name:match('edge') then
 			scr_name = scr_name:gsub('edge', '%0 of '..insert)
 			elseif scr_name:match('Move contents') then
@@ -293,6 +294,7 @@ function META_Spawn_Scripts(fullpath, scr_name, names_t)
 			scr_name = scr_name:gsub('Move', '%0 '..insert)
 			end
 		scr_name = prefix..scr_name..'.lua'
+		names_t[k] = scr_name -- store for installation in the Action list below
 			if not r.file_exists(path..scr_name) then -- only spawn if doesn't already exist, this is meant to prevent accidental overwriting of custom USER SETTINGS in individial scripts // if spawned script update is required it must be done via installer script, or manually by copy and paste, or by deleting it and running this script
 			content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
 			local new_script = io.open(path..scr_name, 'w') -- create new file
