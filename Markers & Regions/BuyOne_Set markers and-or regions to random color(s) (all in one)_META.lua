@@ -288,7 +288,7 @@ local retval, mrkr_cnt, rgn_cnt = r.CountProjectMarkers(0)
 local start, fin = r.GetSet_LoopTimeRange(false, false, 0, 0, false) -- isSet, isLoop, allowautoseek false
 local time_sel = start ~= fin
 
-	if output == 0 then return r.defer(no_undo) -- only relevant for 'all in one' version
+		if not output or output == 0 then return r.defer(no_undo) -- only relevant for 'all in one' version // output is nil when the script is executed via dofile() from the installer script
 
 	else
 
