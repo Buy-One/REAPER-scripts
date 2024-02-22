@@ -238,8 +238,6 @@ local x, y = r.GetMousePosition()
 	gfx.x = coord_t and coord_t.x or gfx.mouse_x
 	gfx.y = coord_t and coord_t.y or gfx.mouse_y
 
-	--Msg(gfx.mouse_cap)
-
 	return gfx.showmenu(menu) -- menu string
 
 	end
