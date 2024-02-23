@@ -2,15 +2,17 @@
 ReaScript name: BuyOne_Set markers and-or regions to random color(s) (all in one)_META.lua (7 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: 	v1.2 #Fixed compatibility with installer script
-		v1.1 #The script has been in large part rewritten to work more robustly	
-		     #The META instance now contains all options and can work by itself
-		     #The menu is auto-reloaded after mouse click
-		     #Added functionality of automatic creation and installation of
-		     individual scripts. These are created in the directory the META script 
-		     is located in and from there are imported into the Action list.
-		     #Updated About text
+Version: 1.3
+Changelog:  v1.3 #Fixed individual script installation function
+		 #Made individual script installation function more efficient  
+	    v1.2 #Fixed compatibility with installer script
+	    v1.1 #The script has been in large part rewritten to work more robustly	
+		 #The META instance now contains all options and can work by itself
+		 #The menu is auto-reloaded after mouse click
+		 #Added functionality of automatic creation and installation of
+		 individual scripts. These are created in the directory the META script 
+		 is located in and from there are imported into the Action list.
+		 #Updated About text
 Licence: WTFPL
 REAPER: at least v5.962
 Metapackage: true
@@ -39,12 +41,12 @@ About: 	Sets project markers and/or regions to random colors obeying time select
 	which contains all available options in a menu, a menu item can be run with a numeric
 	keyboard shortcut corresponding to the number of such menu item.	 
 
-	Other available scripts with some or all functionalities of this one:  
-	X-Raym_Color current region or regions in time selection randomly with same color.lua  
-	X-Raym_Color current region or regions in time selection randomly.lua  
-	zaibuyidao_Random Marker Color.lua  
-	zaibuyidao_Random Marker Region Color.lua  
-	zaibuyidao_Random Region Color.lua
+Other available scripts with some or all functionalities of this one:  
+X-Raym_Color current region or regions in time selection randomly with same color.lua  
+X-Raym_Color current region or regions in time selection randomly.lua  
+zaibuyidao_Random Marker Color.lua  
+zaibuyidao_Random Marker Region Color.lua  
+zaibuyidao_Random Region Color.lua
 
 ]]
 
@@ -84,11 +86,11 @@ function META_Spawn_Scripts(fullpath, fullpath_init, scr_name, names_t)
 	local sep = r.GetResourcePath():match('[\\/]')
 		for line in io.lines(r.GetResourcePath()..sep..'reaper-kb.ini') do
 		local path = line and line:match('.-%.lua["%s]*(.-)"?')
-			if path and fullpath:match(Esc(path)) then -- installed
+			if path and #path > 0 and fullpath:match(Esc(path)) then -- installed
 			return true end
 		end
 	end
-	
+
 	if not fullpath:match(Esc(scr_name)) then return true end -- will prevent running the function in individual scripts but allow their execution to continue
 
 local names_t, content = names_t
@@ -142,17 +144,17 @@ local names_t, content = names_t
 		local path = fullpath:match('(.+[\\/])') -- WHEN NOT GETTING PATH FROM USER INPUT, USE META SCRIPT PATH
 
 		-- spawn scripts
-		for k, scr_name in ipairs(names_t) do
-			if not r.file_exists(path..scr_name) then -- only spawn if doesn't already exist, this is meant to prevent accidental overwriting of custom USER SETTINGS in individial scripts // if spawned script update is required it must be done via installer script, or manually by copy and paste, or by deleting it and running this script
-			local new_script = io.open(path..scr_name, 'w') -- create new file
-			content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
-			new_script:write(content)
-			new_script:close()
-			end
+		for k, scr_name in ipairs(names_t) do	
+		local new_script = io.open(path..scr_name, 'w') -- create new file
+		content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
+		new_script:write(content)
+		new_script:close()
 		end
 
 		-- CONDITION BY THE SCRIPT BEING INSTALLED TO OTHERWISE ALLOW SPAWNING SCRIPTS WITH INSTALLER SCRIPT VIA dofile() WITHOUT INSTALLATION ONLY FOR THE SAKE OF SETTINGS TRANSFER WHICH IS SUPPOSED TO BE DONE WHILE THE SCRIPT IS IN A TEMP FOLDER, get_action_context() alone is useless as a condition since when this script is executed via dofile() from the installer script the function returns props of the latter
-		if fullpath_init:match('.+[\\/](.+)') == scr_name then
+	--	if script_is_installed(fullpath) then -- install individual scripts
+	-- OR, which is more efficient, in the scenario described above this condition will be false
+		if fullpath_init:match('.+[\\/](.+)') == scr_name then -- install individual scripts
 			for _, sectID in ipairs{0,32060} do -- Main, MIDI Ed // per script list
 				for k, scr_name in ipairs(names_t) do
 				local result = r.AddRemoveReaScript(true, sectID, path..scr_name, true) -- add, commit true // doesn't affect the props of an already installed script if attempts to install it again, so is safe
