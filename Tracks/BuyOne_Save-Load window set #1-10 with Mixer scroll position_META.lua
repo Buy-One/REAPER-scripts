@@ -11,8 +11,8 @@ Changelog:  v1.6 #Fixed individual script installation function
 		 #Updated About text
 	    v1.4 #Added functionality to export individual scripts included in the package
 		 #Updated About text
-	   v1.3 #Fixed error prone pieces of code
-	   v1.2 #Fixed capture of MCP folder state
+	    v1.3 #Fixed error prone pieces of code
+	    v1.2 #Fixed capture of MCP folder state
 		 #Fixed logic of the search for the parent of a collapsed folder the target track is in
 	    v1.1 #More reliable scroll in different situations
 Licence: WTFPL
