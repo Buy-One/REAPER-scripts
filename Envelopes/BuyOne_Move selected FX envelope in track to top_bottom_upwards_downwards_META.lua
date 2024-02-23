@@ -1,8 +1,10 @@
 --[[
 ReaScript name: BuyOne_Move selected FX envelope in track to top_bottom_upwards_downwards_META.lua (6 scripts)
 Author: BuyOne
-Version: 1.4
-Changelog:  v1.4 #Creation of individual scripts has been made hands-free. 
+Version: 1.5
+Changelog:  v1.5 #Fixed individual script installation function
+		 #Made individual script installation function more efficient
+	    v1.4 #Creation of individual scripts has been made hands-free. 
 		 These are created in the directory the META script is located in
 		 and from there are imported into the Action list.
 		 #Updated About text
@@ -19,44 +21,44 @@ Screenshots: https://raw.githubusercontent.com/Buy-One/screenshots/main/Move%20s
 Extensions: SWS/S&M extension (not mandatory but recommended)
 Metapackage: true
 Provides: 	[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track to top lane.lua
-		[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track to bottom lane.lua
-		[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track up one lane (cycle).lua
-		[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track down one lane (cycle).lua
-		[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track up one lane (swap).lua
-		[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track down one lane (swap).lua
+			[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track to bottom lane.lua
+			[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track up one lane (cycle).lua
+			[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track down one lane (cycle).lua
+			[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track up one lane (swap).lua
+			[main] . > BuyOne_Move selected FX envelope/BuyOne_Move selected FX envelope in track down one lane (swap).lua
 About:	If this script name is suffixed with META, when executed 
-	it will automatically spawn all individual scripts included 
-	in the package into the directory of the META script and will 
-	import them into the Action list from that directory.  
-	If there's no META suffix in this script name it will perfom 
-	the operation indicated in its name.
+		it will automatically spawn all individual scripts included 
+		in the package into the directory of the META script and will 
+		import them into the Action list from that directory.  
+		If there's no META suffix in this script name it will perfom 
+		the operation indicated in its name.
 
-	The individual scripts move selected FX envelope 
-	of a track to the top/bottom lane, upwards/downwards 
-	one lane depending on the script name.   
-	
-	(cycle) in the script name means that all envelopes move 
-	upwards/downwards in unison with the selected one.  
-	(swap) in the script name means that the selected envelope 
-	is swapped with the one immediately above/below it while other 
-	envelopes maintain their lanes. Unless the selected envelope 
-	is at the top or at the bottom lane and being at the top 
-	should move up or being at the bottom should move down, in 
-	which case the movement is cyclic, each lane is moved one position.		
-	
-	Upwards/downwards movement is cyclic, i.e. if an envelope is pushed
-	past top/bottom lane its movement continues from the oppostite end.  
-	
-	Reordering only affects active envelopes of the track FX
-	the selected envelope belongs to, as all envelopes of a particular
-	FX are grouped together and envelopes of different FX cannot be 
-	mixed while TCP envelopes always precede any FX envelopes and themselves
-	cannot be reordered. Hence the movement is not relative to ALL 
-	active/visible track envelopes but only to those of the same FX
-	as the selected envelope.  
-	
-	The script doesn't support FX container envelopes introduced 
-	in REAPER 7.
+		The individual scripts move selected FX envelope 
+		of a track to the top/bottom lane, upwards/downwards 
+		one lane depending on the script name.   
+		
+		(cycle) in the script name means that all envelopes move 
+		upwards/downwards in unison with the selected one.  
+		(swap) in the script name means that the selected envelope 
+		is swapped with the one immediately above/below it while other 
+		envelopes maintain their lanes. Unless the selected envelope 
+		is at the top or at the bottom lane and being at the top 
+		should move up or being at the bottom should move down, in 
+		which case the movement is cyclic, each lane is moved one position.		
+		
+		Upwards/downwards movement is cyclic, i.e. if an envelope is pushed
+		past top/bottom lane its movement continues from the oppostite end.  
+		
+		Reordering only affects active envelopes of the track FX
+		the selected envelope belongs to, as all envelopes of a particular
+		FX are grouped together and envelopes of different FX cannot be 
+		mixed while TCP envelopes always precede any FX envelopes and themselves
+		cannot be reordered. Hence the movement is not relative to ALL 
+		active/visible track envelopes but only to those of the same FX
+		as the selected envelope.  
+		
+		The script doesn't support FX container envelopes introduced 
+		in REAPER 7.
 ]]
 
 
@@ -73,7 +75,7 @@ do return end
 end
 
 
-function META_Spawn_Scripts(fullpath, scr_name, names_t)
+function META_Spawn_Scripts(fullpath, fullpath, scr_name, names_t)
 
 	local function Dir_Exists(path) -- short
 	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
@@ -94,7 +96,7 @@ function META_Spawn_Scripts(fullpath, scr_name, names_t)
 	local sep = r.GetResourcePath():match('[\\/]')
 		for line in io.lines(r.GetResourcePath()..sep..'reaper-kb.ini') do
 		local path = line and line:match('.-%.lua["%s]*(.-)"?')
-			if path and fullpath:match(Esc(path)) then -- installed 
+			if path and #path > 0 and fullpath:match(Esc(path)) then -- installed 
 			return true end
 		end
 	end
@@ -159,8 +161,10 @@ local names_t, content = names_t
 		new_script:close()
 		end
 		
-		-- CONDITION BY THE SCRIPT BEING INSTALLED TO OTHERWISE ALLOW SPAWNING SCRIPTS WITH BATCH SCRIPT INSTALLER VIA dofile() WITHOUT INSTALLATION ONLY FOR THE SAKE OF SETTINGS TRANSFER, get_action_context() is useless as a conditon since when this script is executed via dofile() from the installer script the function returns props of the latter		
-		if script_is_installed(fullpath) then
+		-- CONDITION BY THE SCRIPT BEING INSTALLED TO OTHERWISE ALLOW SPAWNING SCRIPTS WITH INSTALLER SCRIPT VIA dofile() WITHOUT INSTALLATION ONLY FOR THE SAKE OF SETTINGS TRANSFER WHICH IS SUPPOSED TO BE DONE WHILE THE SCRIPT IS IN A TEMP FOLDER, get_action_context() alone is useless as a condition since when this script is executed via dofile() from the installer script the function returns props of the latter
+	--	if script_is_installed(fullpath) then -- install individual scripts
+	-- OR, which is more efficient, in the scenario described above this condition will be false
+		if fullpath_init:match('.+[\\/](.+)') == scr_name then -- install individual scripts
 			for _, sectID in ipairs{0} do -- Main // per script list
 				for k, scr_name in ipairs(names_t) do
 				local result = r.AddRemoveReaScript(true, sectID, path..scr_name, true) -- add, commit true // doesn't affect the props of an already installed script if attempts to install it again, so is safe
@@ -283,14 +287,14 @@ return env_block_orig, env_block_upd, mess -- orig and updated versions + string
 end
 
 
-local _, fullpath, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
+local _, fullpath_init, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
 fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
 local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- without path, scripter name and file ext
 
 -- local scr_name = '_ down ' --------------- SCRIPT NAME TESTING
 
 	-- doesn't run in non-META scripts
-	if not META_Spawn_Scripts(fullpath, 'BuyOne_Move selected FX envelope in track to top_bottom_upwards_downwards_META.lua', names_t)
+	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Move selected FX envelope in track to top_bottom_upwards_downwards_META.lua', names_t)
 	then return r.defer(no_undo) end -- abort if META script but continue if not
 	
 	
