@@ -4,12 +4,13 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
 Changelog: 	v1.2 #Fixed compatibility with installer script
-	   	v1.1 #The script has been in large part rewritten to work more robustly
+		v1.1 #The script has been in large part rewritten to work more robustly	
 		     #The META instance now contains all options and can work by itself
-	 	     #Added functionality of automatic creation and installation of
-	 	     individual scripts. These are created in the directory the META script 
-	 	     is located in and from there are imported into the Action list.
-	 	     #Updated About text
+		     #The menu is auto-reloaded after mouse click
+		     #Added functionality of automatic creation and installation of
+		     individual scripts. These are created in the directory the META script 
+		     is located in and from there are imported into the Action list.
+		     #Updated About text
 Licence: WTFPL
 REAPER: at least v5.962
 Metapackage: true
@@ -62,7 +63,7 @@ do return end
 end
 
 
-function META_Spawn_Scripts(fullpath, scr_name, names_t)
+function META_Spawn_Scripts(fullpath, fullpath_init, scr_name, names_t)
 
 	local function Dir_Exists(path) -- short
 	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
@@ -87,8 +88,8 @@ function META_Spawn_Scripts(fullpath, scr_name, names_t)
 			return true end
 		end
 	end
-
-	if not fullpath:match(Esc(scr_name)) then return true end -- will allow to continue the script execution outside, since it's not a META script
+	
+	if not fullpath:match(Esc(scr_name)) then return true end -- will prevent running the function in individual scripts but allow their execution to continue
 
 local names_t, content = names_t
 
@@ -150,8 +151,8 @@ local names_t, content = names_t
 			end
 		end
 
-		-- CONDITION BY THE SCRIPT BEING INSTALLED TO OTHERWISE ALLOW SPAWNING SCRIPTS WITH BATCH SCRIPT INSTALLER VIA dofile() WITHOUT INSTALLATION ONLY FOR THE SAKE OF SETTINGS TRANSFER, when this script is executed via dofile() from the installer script the function get_action_context() returns props of the latter in which case the following evaluation will be false
-		if fullpath:match('.+[\\/](.+)') == scr_name then
+		-- CONDITION BY THE SCRIPT BEING INSTALLED TO OTHERWISE ALLOW SPAWNING SCRIPTS WITH INSTALLER SCRIPT VIA dofile() WITHOUT INSTALLATION ONLY FOR THE SAKE OF SETTINGS TRANSFER WHICH IS SUPPOSED TO BE DONE WHILE THE SCRIPT IS IN A TEMP FOLDER, get_action_context() alone is useless as a condition since when this script is executed via dofile() from the installer script the function returns props of the latter
+		if fullpath_init:match('.+[\\/](.+)') == scr_name then
 			for _, sectID in ipairs{0,32060} do -- Main, MIDI Ed // per script list
 				for k, scr_name in ipairs(names_t) do
 				local result = r.AddRemoveReaScript(true, sectID, path..scr_name, true) -- add, commit true // doesn't affect the props of an already installed script if attempts to install it again, so is safe
@@ -262,13 +263,13 @@ end
 
 ::RELOAD::
 
-local _, fullpath, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
+local _, fullpath_init, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
 fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
 local scr_name = fullpath:match('([^\\/_]+)%.%w+') -- sans path, scripter name and extension
 local all_in_one = scr_name:match('%(all in one%)')
 
 
-META_Spawn_Scripts(fullpath, 'BuyOne_Set markers and-or regions to random color(s) (all in one)_META.lua', names_t)
+META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Set markers and-or regions to random color(s) (all in one)_META.lua', names_t)
 
 	if all_in_one then
 
@@ -290,7 +291,7 @@ local retval, mrkr_cnt, rgn_cnt = r.CountProjectMarkers(0)
 local start, fin = r.GetSet_LoopTimeRange(false, false, 0, 0, false) -- isSet, isLoop, allowautoseek false
 local time_sel = start ~= fin
 
-		if not output or output == 0 then return r.defer(no_undo) -- only relevant for 'all in one' version // output is nil when the script is executed via dofile() from the installer script
+	if not output or output == 0 then return r.defer(no_undo) -- only relevant for 'all in one' version // output is nil when the script is executed via dofile() from the installer script
 
 	else
 
