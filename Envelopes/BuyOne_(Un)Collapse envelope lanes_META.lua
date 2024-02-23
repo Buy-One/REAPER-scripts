@@ -1,8 +1,10 @@
 --[[
 ReaScript name: BuyOne_(Un)Collapse envelope lanes_META.lua (18 scripts)
 Author: BuyOne
-Version: 1.4
-Changelog:  v1.4 #Creation of individual scripts has been made hands-free. 
+Version: 1.5
+Changelog:  v1.5 #Fixed individual script installation function
+		 #Made individual script installation function more efficient
+	    v1.4 #Creation of individual scripts has been made hands-free. 
 		 These are created in the directory the META script is located in
 		 and from there are imported into the Action list.
 		 #Updated About text
@@ -92,7 +94,7 @@ do return end
 end
 
 
-function META_Spawn_Scripts(fullpath, scr_name, names_t)
+function META_Spawn_Scripts(fullpath, fullpath_init, scr_name, names_t)
 
 	local function Dir_Exists(path) -- short
 	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
@@ -113,7 +115,7 @@ function META_Spawn_Scripts(fullpath, scr_name, names_t)
 	local sep = r.GetResourcePath():match('[\\/]')
 		for line in io.lines(r.GetResourcePath()..sep..'reaper-kb.ini') do
 		local path = line and line:match('.-%.lua["%s]*(.-)"?')
-			if path and fullpath:match(Esc(path)) then -- installed 
+			if path and #path > 0 and fullpath:match(Esc(path)) then -- installed 
 			return true end
 		end
 	end
@@ -170,7 +172,6 @@ local names_t, content = names_t
 
 		local path = fullpath:match('(.+[\\/])') -- WHEN NOT GETTING PATH FROM USER INPUT, USE META SCRIPT PATH
 		
-		-- spawn scripts
 		for k, scr_name in ipairs(names_t) do
 			if not r.file_exists(path..scr_name) then -- only spawn if doesn't already exist, this is meant to prevent accidental overwriting of custom USER SETTINGS in individial scripts // if spawned script update is required it must be done via installer script, or manually by copy and paste, or by deleting it and running this script
 			local new_script = io.open(path..scr_name, 'w') -- create new file
@@ -181,8 +182,10 @@ local names_t, content = names_t
 		end
 
 		
-		-- CONDITION BY THE SCRIPT BEING INSTALLED TO OTHERWISE ALLOW SPAWNING SCRIPTS WITH BATCH SCRIPT INSTALLER VIA dofile() WITHOUT INSTALLATION ONLY FOR THE SAKE OF SETTINGS TRANSFER, get_action_context() is useless as a conditon since when this script is executed via dofile() from the installer script the function returns props of the latter		
-		if script_is_installed(fullpath) then
+		-- CONDITION BY THE SCRIPT BEING INSTALLED TO OTHERWISE ALLOW SPAWNING SCRIPTS WITH INSTALLER SCRIPT VIA dofile() WITHOUT INSTALLATION ONLY FOR THE SAKE OF SETTINGS TRANSFER WHICH IS SUPPOSED TO BE DONE WHILE THE SCRIPT IS IN A TEMP FOLDER, get_action_context() alone is useless as a condition since when this script is executed via dofile() from the installer script the function returns props of the latter
+	--	if script_is_installed(fullpath) then -- install individual scripts
+	-- OR, which is more efficient, in the scenario described above this condition will be false
+		if fullpath_init:match('.+[\\/](.+)') == scr_name then -- install individual scripts
 			for _, sectID in ipairs{0} do -- Main // per script list
 				for k, scr_name in ipairs(names_t) do
 				local result = r.AddRemoveReaScript(true, sectID, path..scr_name, true) -- add, commit true // doesn't affect the props of an already installed script if attempts to install it again, so is safe
@@ -272,14 +275,14 @@ function Is_Track_Envelope_FX_Envelope(tr, env)
 end
 
 
-local _, fullpath, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
+local _, fullpath_init, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
 fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
 local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- without path, scripter name and file ext
 local ext_state_sect = '(Un)Collapse envelope lanes' -- extended state will be shared by all script instances
 
 
 	-- doesn't run in non-META scripts
-	if not META_Spawn_Scripts(fullpath, 'BuyOne_(Un)Collapse envelope lanes_META.lua', names_t)
+	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_(Un)Collapse envelope lanes_META.lua', names_t)
 	then return r.defer(no_undo) end -- abort if META script but continue if not
 
 
