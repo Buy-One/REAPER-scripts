@@ -30,10 +30,13 @@ About: 	Sets project markers and/or regions to random colors obeying time select
 	in custom actions.  
 
 	If this script name is suffixed with META, when executed it will automatically spawn 
-	all individual scripts included in the package into the directory of the META script 
-	and will import them into the Action list from that directory. It will also display
-	a menu with all available options as menu items which can be run with a numeric
-	keyboard shortcut corresponding to the number of such menu item.	
+	all individual scripts included in the package into the directory of the META script.
+	and will import them into the Action list from that directory. That's provided such 
+	scripts don't exist yet, if they do, then in order to recreate them they have to be 
+	deleted from the Action list and from the disk first.
+	This script will also display a menu with all available options as menu items which 
+	can be run with a numeric keyboard shortcut corresponding to the number of such menu 
+	item.	
 	If there's no META suffix in this script name it will perfom only the operation 
 	indicated in its name.
    
@@ -41,12 +44,12 @@ About: 	Sets project markers and/or regions to random colors obeying time select
 	which contains all available options in a menu, a menu item can be run with a numeric
 	keyboard shortcut corresponding to the number of such menu item.	 
 
-Other available scripts with some or all functionalities of this one:  
-X-Raym_Color current region or regions in time selection randomly with same color.lua  
-X-Raym_Color current region or regions in time selection randomly.lua  
-zaibuyidao_Random Marker Color.lua  
-zaibuyidao_Random Marker Region Color.lua  
-zaibuyidao_Random Region Color.lua
+	Other available scripts with some or all functionalities of this one:  
+	X-Raym_Color current region or regions in time selection randomly with same color.lua  
+	X-Raym_Color current region or regions in time selection randomly.lua  
+	zaibuyidao_Random Marker Color.lua  
+	zaibuyidao_Random Marker Region Color.lua  
+	zaibuyidao_Random Region Color.lua
 
 ]]
 
@@ -144,11 +147,13 @@ local names_t, content = names_t
 		local path = fullpath:match('(.+[\\/])') -- WHEN NOT GETTING PATH FROM USER INPUT, USE META SCRIPT PATH
 
 		-- spawn scripts
-		for k, scr_name in ipairs(names_t) do	
-		local new_script = io.open(path..scr_name, 'w') -- create new file
-		content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
-		new_script:write(content)
-		new_script:close()
+		for k, scr_name in ipairs(names_t) do
+			if not r.file_exists(path..scr_name) then -- only spawn if doesn't already exist, this is meant to prevent accidental overwriting of custom USER SETTINGS in individial scripts // if spawned script update is required it must be done via installer script, or manually by copy and paste, or by deleting it and running this script
+			local new_script = io.open(path..scr_name, 'w') -- create new file
+			content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
+			new_script:write(content)
+			new_script:close()
+			end
 		end
 
 		-- CONDITION BY THE SCRIPT BEING INSTALLED TO OTHERWISE ALLOW SPAWNING SCRIPTS WITH INSTALLER SCRIPT VIA dofile() WITHOUT INSTALLATION ONLY FOR THE SAKE OF SETTINGS TRANSFER WHICH IS SUPPOSED TO BE DONE WHILE THE SCRIPT IS IN A TEMP FOLDER, get_action_context() alone is useless as a condition since when this script is executed via dofile() from the installer script the function returns props of the latter
