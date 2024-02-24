@@ -3,7 +3,9 @@ Lua scripts for Cockos' REAPER
 
 **Many scripts feature user settings. Almost all include guide or description of features. Be sure to check those out and configure to your liking.**
 
-**From now on scripts marked with META in their name, when executed allow exporting individual scripts included in the META package to the user specified directory. After export the individual scripts will have to be manually imported into the Action list.** 
+**From now on scripts marked with META in their name, when executed export individual scripts included in the META package into the directory they themeslves reside in AND automatically import them into the Action list.**
+
+**Script batch installation and transfer of scripts user settings from their older versions to the new ones can be done semi-automatically with the script BuyOne_Script updater and installer.lua, which should be installed first.**
 
 [Complete list (171)](https://github.com/Buy-One/REAPER-scripts/wiki/SCRIPT-LIST)
 
