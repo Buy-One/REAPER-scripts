@@ -75,7 +75,7 @@ do return end
 end
 
 
-function META_Spawn_Scripts(fullpath, fullpath, scr_name, names_t)
+function META_Spawn_Scripts(fullpath, fullpath_init, scr_name, names_t)
 
 	local function Dir_Exists(path) -- short
 	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
