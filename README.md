@@ -5,7 +5,7 @@ Lua scripts for Cockos' REAPER
 
 **From now on scripts marked with META in their name, when executed export individual scripts included in the META package into the directory they themeslves reside in AND automatically import them into the Action list.**
 
-**Script batch installation and transfer of scripts user settings from their older versions to the new ones can be done semi-automatically with the script `BuyOne_Script updater and installer.lua`, which should be installed first.**
+**Script batch installation and transfer of scripts user settings from their older versions to the newer ones before their update can be done semi-automatically with the script `BuyOne_Script updater and installer.lua`, which should be installed first.**
 
 [Complete list (171)](https://github.com/Buy-One/REAPER-scripts/wiki/SCRIPT-LIST)
 
