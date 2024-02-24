@@ -1,5 +1,5 @@
 --[[
-ReaScript name: BuyOne_Move edit cursor to snap offset cursor; fades; take, stretch markers; media cues; razor edit area and automation item edges_META.lua
+ReaScript name: BuyOne_Move edit cursor to snap offset cursor; fades; take, stretch markers; media cues; razor edit area and automation item edges_META.lua (18 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.6
@@ -40,7 +40,7 @@ Provides: 	. > BuyOne_Move edit cursor right to snap offset cursor in items.lua
 		. > BuyOne_Move edit cursor left to edge of envelope Razor Edit area.lua
 		. > BuyOne_Move edit cursor right to automation item edge on selected envelope.lua
 		. > BuyOne_Move edit cursor left to automation item edge on selected envelope.lua			
-About: 	The set of 16 scripts is meant to complement 
+About: 	The set of 18 scripts is meant to complement 
 	REAPER stock navigation actions.  
 	
 	
