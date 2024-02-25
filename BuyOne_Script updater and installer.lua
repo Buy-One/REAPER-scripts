@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Script updater and installer.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: v1.1 #Reworded installation report message
 Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main=main,midi_editor] .
@@ -519,7 +519,8 @@ local br = t.zip and '\n\n\n' or ''
 local failure = failed_cnt > 0
 and (t.zip and space(15) or space(16))..failed_cnt..' installations have failed out of '..orig_cnt..',\n\n'
 ..(t.zip and space(18) or space(9))..'see the list in the ReaScript console.'..(br or '') or ''
-local success = #failure == 0 and (t.zip and space(12) or space(6))..#t.total..' scripts have been installed successfully.'..br or ''
+local success = #failure == 0 and (t.zip and space(4) or space(6))..#t.total
+..' script installations have been completed successfully.'..br or ''
 
 	if failed_cnt > 0 then -- list all scripts which failed to get installed
 	Msg('MAIN:\n\n'..table.concat(t,'\n')..'\n\nMIDI EDITOR:\n\n'..table.concat(t.midi,'\n'), r.ClearConsole())
