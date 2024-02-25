@@ -7,103 +7,103 @@ Changelog: v1.1 #Reworded installation report message
 Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main=main,midi_editor] .
-About:			THIS SCRIPT MUST BE INSTALLED FIRST
-		
-					***	 H O W   T O   U S E  ***
-		
-		1. INSTALLATION
-		
-		When you install BuyOne's scripts for the first time,
-		after downloading the entire collection from the repo 
-		at https://github.com/Buy-One/REAPER-scripts simply
-		extract the folder 'REAPER-scripts-main', preferably
-		name it after the scripter so it's clear whose scripts
-		it contains and drop the folder into the /Scripts folder
-		in REAPER's resource directory or external main scripts
-		folder in case you don't keep your scripts in REAPER's
-		resource directory.  
-		
-		Import into the Main section of the Action list this 
-		very script only.  
-		
-		Run this script and in the dialogue supply the path
-		to BuyOne's scripts folder, the one you just dropped
-		into your main scripts folder as described above.
-		
-		Click OK.
-		
-		In the dialogue which will pop up click YES to run
-		installation in the native mode, that's a mode designed
-		for installation of BuyOne's scripts.
-		
-		During the operation REAPER may freeze, so just be patient.
-		
-		When the installation is complete another pop up will appear.
-		Click OK and you're done.
-		
-		During the installation all script instances included in 
-		META scripts will be installed as well so separate execution
-		of META scripts after the installation isn't necessary.
-		
-		2. SETTINGS TRANSFER		
-		
-		If you have BuyOne's scripts already installed but wish to
-		update them with their latest versions and add new scripts, 
-		do not drop the downloaded folder with the scripts as you'd 
-		do when installing them for the first time. Many scripts 
-		feature USER SETTINGS and if you simply overwrite the older 
-		files the settings will revert to their defaults. By the way 
-		this is the problem with ReaPack which is agnostic of user
-		settings.
-		
-		Instead extract the newly downloaded scripts into a 
-		temporary folder.
-		
-		Run this script which by that time will already be installed,
-		and in the dialogue supply path to such temporary folder.
-		In the pop up dialogue click YES to launch transfer of the
-		custom user settings to newer versions of the scripts.
-		
-		During the operation REAPER may freeze, so just be patient.
-		
-		When the transfer is complete another pop up will appear.
-		Click OK to exit.
-		
-		The settings will be transfered to individual instances of 
-		META scripts as well.
-		
-		AS A SAFETY MEASURE, BEFORE PERFORMING THE NEXT STEP CREATE 
-		A BACKUP COPY OF THE CURRENTLY INSTALLED VERSIONS OF THE 
-		SCRIPTS YOU'RE GOING TO OVEWRITE.
-		
-		Now peform the actions described in paragraph 1. INSTALLATION
-		above to overwrite the older versions of the scripts in BuyOne's
-		scripts folder and install any new ones.
-		
-		Check a couple which you know well and if everything is fine, 
-		you can delete the backup copy if one was created as suggested
-		above.
-		
-							***	 N U A N C E S  ***
-		
-		This script can also be used to install 3d party scripts BUT 
-		NOT to transfer their user settings.
-		
-		In the native mode scripts are installed in the section of the
-		Action list designated to them by BuyOne. In the non-native
-		installation mode all scripts will be installed in both Main
-		and MIDI Editor sections of the Action list regardless of their
-		actual purpose just to be on the safe side.
-		
-		If in the native mode you only wish to transfer the settings 
-		between or install scripts in specific folder, supply path to 
-		such folder in the dialogue. Scripts in subfolders of this folder, 
-		if any, will be processed as well.
-		
-		The specifics of native and non-native installation modes are
-		also laid out in the pop uo dialogue so be sure to refer to them
-		in case of a doubt.
-		
+About:		THIS SCRIPT MUST BE INSTALLED FIRST
+	
+		***	 H O W   T O   U S E  	 ***
+	
+	1. INSTALLATION
+	
+	When you install BuyOne's scripts for the first time,
+	after downloading the entire collection from the repo 
+	at https://github.com/Buy-One/REAPER-scripts simply
+	extract the folder 'REAPER-scripts-main', preferably
+	name it after the scripter so it's clear whose scripts
+	it contains and drop the folder into the /Scripts folder
+	in REAPER's resource directory or external main scripts
+	folder in case you don't keep your scripts in REAPER's
+	resource directory.  
+	
+	Import into the Main section of the Action list this 
+	very script only.  
+	
+	Run this script and in the dialogue supply the path
+	to BuyOne's scripts folder, the one you just dropped
+	into your main scripts folder as described above.
+	
+	Click OK.
+	
+	In the dialogue which will pop up click YES to run
+	installation in the native mode, that's a mode designed
+	for installation of BuyOne's scripts.
+	
+	During the operation REAPER may freeze, so just be patient.
+	
+	When the installation is complete another pop up will appear.
+	Click OK and you're done.
+	
+	During the installation all script instances included in 
+	META scripts will be installed as well so separate execution
+	of META scripts after the installation isn't necessary.
+	
+	2. SETTINGS TRANSFER		
+	
+	If you have BuyOne's scripts already installed but wish to
+	update them with their latest versions and add new scripts, 
+	do not drop the downloaded folder with the scripts as you'd 
+	do when installing them for the first time. Many scripts 
+	feature USER SETTINGS and if you simply overwrite the older 
+	files the settings will revert to their defaults. By the way 
+	this is the problem with ReaPack which is agnostic of user
+	settings.
+	
+	Instead extract the newly downloaded scripts into a 
+	temporary folder.
+	
+	Run this script which by that time will already be installed,
+	and in the dialogue supply path to such temporary folder.
+	In the pop up dialogue click YES to launch transfer of the
+	custom user settings to newer versions of the scripts.
+	
+	During the operation REAPER may freeze, so just be patient.
+	
+	When the transfer is complete another pop up will appear.
+	Click OK to exit.
+	
+	The settings will be transfered to individual instances of 
+	META scripts as well.
+	
+	AS A SAFETY MEASURE, BEFORE PERFORMING THE NEXT STEP CREATE 
+	A BACKUP COPY OF THE CURRENTLY INSTALLED VERSIONS OF THE 
+	SCRIPTS YOU'RE GOING TO OVEWRITE.
+	
+	Now peform the actions described in paragraph 1. INSTALLATION
+	above to overwrite the older versions of the scripts in BuyOne's
+	scripts folder and install any new ones.
+	
+	Check a couple which you know well and if everything is fine, 
+	you can delete the backup copy if one was created as suggested
+	above.
+	
+			***	 N U A N C E S     ***
+	
+	This script can also be used to install 3d party scripts BUT 
+	NOT to transfer their user settings.
+	
+	In the native mode scripts are installed in the section of the
+	Action list designated to them by BuyOne. In the non-native
+	installation mode all scripts will be installed in both Main
+	and MIDI Editor sections of the Action list regardless of their
+	actual purpose just to be on the safe side.
+	
+	If in the native mode you only wish to transfer the settings 
+	between or install scripts in specific folder, supply path to 
+	such folder in the dialogue. Scripts in subfolders of this folder, 
+	if any, will be processed as well.
+	
+	The specifics of native and non-native installation modes are
+	also laid out in the pop uo dialogue so be sure to refer to them
+	in case of a doubt.
+	
 ]]
 
 
