@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Set markers and-or regions to random color(s) (all in one)_META.lua (7 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
-Changelog:  v1.3 #Fixed individual script installation function
+Version: 1.4
+Changelog:  v1.4 #Fixed menu loading in the META (all in one) script
+	    v1.3 #Fixed individual script installation function
 		 #Made individual script installation function more efficient  
 	    v1.2 #Fixed compatibility with installer script
 	    v1.1 #The script has been in large part rewritten to work more robustly	
@@ -272,7 +273,7 @@ end
 
 local _, fullpath_init, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
 fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
-local scr_name = fullpath:match('([^\\/_]+)%.%w+') -- sans path, scripter name and extension
+local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- sans path, scripter name and extension
 local all_in_one = scr_name:match('%(all in one%)')
 
 
