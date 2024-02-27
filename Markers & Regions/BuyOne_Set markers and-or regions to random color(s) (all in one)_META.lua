@@ -273,7 +273,7 @@ end
 
 local _, fullpath_init, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
 fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
-local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- sans path, scripter name and extension
+local scr_name = fullpath_init:match('.+[\\/].-_(.+)%.%w+') -- sans path, scripter name and extension // fullpath_init insures that the script doesn't run when executed via dofile() or loadfile() from the installer script because get_action_context() returns path to the installer script
 local all_in_one = scr_name:match('%(all in one%)')
 
 
