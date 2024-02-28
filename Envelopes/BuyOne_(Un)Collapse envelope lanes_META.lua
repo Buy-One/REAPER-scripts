@@ -1,8 +1,11 @@
 --[[
 ReaScript name: BuyOne_(Un)Collapse envelope lanes_META.lua (18 scripts)
 Author: BuyOne
-Version: 1.5
-Changelog:  v1.5 #Fixed individual script installation function
+Version: 1.6
+Changelog:  v1.6 #Fixed behavior of scripts
+		 (Toggle) (Un)Collapse selected envelope lane or all lanes in selected tracks.lua
+		 #Updated About text
+	    v1.5 #Fixed individual script installation function
 		 #Made individual script installation function more efficient
 	    v1.4 #Creation of individual scripts has been made hands-free. 
 		 These are created in the directory the META script is located in
@@ -51,18 +54,30 @@ About:	If this script name is suffixed with META, when executed
 	which are listed in the 'trim' (envelope) button context 
 	menu or under 'Track Envelopes' heading in the track 
 	envelope panel, including Send envelopes.  
+	
 	'FX envelope' means envelope of a track FX control.  
 	With toggle scripts uncollapsed state gets priority, so
 	if at least one envelope lane in selected tracks is 
 	uncollapsed, it will be collapsed while collapsed lanes 
 	will stay as they are.  
-	Unidirectional scripts will always work according to their name.
-	If there're no lanes to collapse or uncollapse nothing will happen.  
-	The scripts don't support creation of undo point due 
-	to REAPER internal design.  
 	
-	The script doesn't support FX container envelopes introduced 
-	in REAPER 7.
+	Unidirectional scripts will always work according to their name.
+	
+	If there're no lanes to collapse or uncollapse nothing will happen.  
+	
+	In toggle scripts the uncollapsed state gets priority 
+	meaning that if at least one envelope lane in selected tracks
+	is uncollapsed the state of all is considered uncollapsed
+	and the script collapses them. 
+	
+	The scripts 
+	(Toggle) (Un)Collapse selected envelope lane or all lanes in selected tracks.lua
+	in tracks with no selected envelope lane all lanes are affected
+	while in track with selected envelope lane this lane is the
+	only one affected.
+	
+	The scripts don't support creation of undo point due 
+	to REAPER internal design. 
 ]]
 
 -----------------------------------------------------------------------------
@@ -355,7 +370,28 @@ Toggle collapse all envelope lanes in selected tracks
 
 local env = r.GetSelectedEnvelope(0)
 
-	if scr_mode1 and env then
+	if scr_mode3 and not env or scr_mode4_6	then
+	local envcp_min_h_stored = r.GetExtState(ext_state_sect, 'envcp_min_h')
+	local is_uncollapsed, envcp_min_h = Is_Any_Autom_Lane_UnCollapsed_And_Min_Height(ext_state_sect, scr_mode3, scr_mode4, scr_mode5, scr_mode6, theme_changed, envcp_min_h_stored) -- condition collapsing all lanes of selected tracks if at least one lane is uncollapsed // not vice versa to ensure that uncollapsed lane height is stored as it's designed to only get stored before collapsing
+	local is_uncollapsed = toggle and is_uncollapsed -- make this var only relevant for toggle scripts to allow non-toggle ones work one way regardless of differences between env lanes height (collapsed vs uncollapsed)
+	r.PreventUIRefresh(1) -- must be placed after Is_Any_Autom_Lane_UnCollapsed_And_Min_Height() which includes Get_Envcp_Min_Height() function because it prevents changing envcp height and getting the minimum height value via chunk
+	local par_tr = env and r.GetEnvelopeInfo_Value(env, 'P_TRACK') -- get selected env parent track
+	for i = 0, r.CountSelectedTracks2(0, true)-1 do -- wantmaster true
+		local tr = r.GetSelectedTrack2(0, i, true) -- wantmaster true
+			for i = 0, r.CountTrackEnvelopes(tr)-1 do
+			local tr_env = r.GetTrackEnvelope(tr, i)
+			local is_fx_env = Is_Track_Envelope_FX_Envelope(tr, env)
+				if scr_mode3 and (tr_env == env or par_tr ~= tr) -- only affect selected env if any otherwise all envs
+				or scr_mode4 and not is_fx_env
+				or scr_mode5 and is_fx_env
+				or scr_mode6 then
+				Un_Collapse_Envelope_Lane(tr_env, envcp_min_h, is_uncollapsed)
+				end
+			end
+		end
+	r.PreventUIRefresh(-1) -- same
+	
+	elseif scr_mode1 and env then
 
 	local par_tr = r.GetEnvelopeInfo_Value(env, 'P_TRACK') -- exclude take envelopes
 
@@ -379,25 +415,7 @@ local env = r.GetSelectedEnvelope(0)
 			end
 		r.PreventUIRefresh(-1) -- same
 		end
-	elseif scr_mode3 and not env or scr_mode4_6	then
-	local envcp_min_h_stored = r.GetExtState(ext_state_sect, 'envcp_min_h')
-	local is_uncollapsed, envcp_min_h = Is_Any_Autom_Lane_UnCollapsed_And_Min_Height(ext_state_sect, scr_mode3, scr_mode4, scr_mode5, scr_mode6, theme_changed, envcp_min_h_stored) -- condition collapsing all lanes of selected tracks if at least one lane is uncollapsed // not vice versa to ensure that uncollapsed lane height is stored as it's designed to only get stored before collapsing
-	local is_uncollapsed = toggle and is_uncollapsed -- make this var only relevant for toggle scripts to allow non-toggle ones work one way regardless of differences between env lanes height (collapsed vs uncollapsed)
-	r.PreventUIRefresh(1) -- must be placed after Is_Any_Autom_Lane_UnCollapsed_And_Min_Height() which includes Get_Envcp_Min_Height() function because it prevents changing envcp height and getting the minimum height value via chunk
-		for i = 0, r.CountSelectedTracks2(0, true)-1 do -- wantmaster true
-		local tr = r.GetSelectedTrack2(0, i, true) -- wantmaster true
-			for i = 0, r.CountTrackEnvelopes(tr)-1 do
-			local env = r.GetTrackEnvelope(tr, i)
-			local is_fx_env = Is_Track_Envelope_FX_Envelope(tr, env)
-				if scr_mode3
-				or scr_mode4 and not is_fx_env
-				or scr_mode5 and is_fx_env
-				or scr_mode6 then
-				Un_Collapse_Envelope_Lane(env, envcp_min_h, is_uncollapsed)
-				end
-			end
-		end
-	r.PreventUIRefresh(-1) -- same
+	
 	end
 
 do return r.defer(function() do return end end) end -- TCP/EnvCP height changes cannot be undone even if they're registered in the undo history, native actions affecting TCP height don't even create undo points https://forums.cockos.com/showthread.php?t=262356 // must be placed outside of the block because at its end only the second condition is covered
