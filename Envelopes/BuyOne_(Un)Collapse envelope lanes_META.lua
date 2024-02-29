@@ -1,8 +1,12 @@
 --[[
 ReaScript name: BuyOne_(Un)Collapse envelope lanes_META.lua (18 scripts)
 Author: BuyOne
-Version: 1.6
-Changelog:  v1.6 #Fixed behavior of scripts
+Version: 1.7
+Changelog:  v1.7 #Added error messages
+		 #Made sure that invisible envelopes are ignored
+		 #Fixed behavior of script
+		 Toggle collapse selected envelope lane or all lanes in selected tracks.lua
+	    v1.6 #Fixed behavior of scripts
 		 (Toggle) (Un)Collapse selected envelope lane or all lanes in selected tracks.lua
 		 #Updated About text
 	    v1.5 #Fixed individual script installation function
@@ -213,6 +217,64 @@ local names_t, content = names_t
 end
 
 
+function Error_Tooltip(text, caps, spaced, x2, y2, want_color, want_blink)
+-- the tooltip sticks under the mouse within Arrange 
+-- but quickly disappears over the TCP, to make it stick 
+-- just a tad longer there it must be directly under the mouse
+-- caps and spaced are booleans
+-- x2, y2 are integers to adjust tooltip position by
+-- want_color is boolean to enable temporary ruler coloring to emphasize the error
+-- want_blink is boolean to enable ruler color blinking
+local x, y = r.GetMousePosition()
+local text = caps and text:upper() or text
+local text = spaced and text:gsub('.','%0 ') or text
+local x2, y2 = x2 and math.floor(x2) or 0, y2 and math.floor(y2) or 0
+r.TrackCtl_SetToolTip(text, x+x2, y+y2, true) -- topmost true
+-- r.TrackCtl_SetToolTip(text:upper(), x, y, true) -- topmost true
+-- r.TrackCtl_SetToolTip(text:upper():gsub('.','%0 '), x, y, true) -- spaced out // topmost true
+	if want_color then	
+	local color_init = r.GetThemeColor('col_tl_bg', 0)
+	local color = color_init ~= 255 and 255 or 65535 -- use red or yellow of red is taken
+		if want_blink then
+		    for i = 1, 100 do    
+				if i == 1 or i == 40 or i == 80 then
+				r.SetThemeColor('col_tl_bg', color, 0)
+				elseif i == 20 or i == 60 or i == 100 then
+				r.SetThemeColor('col_tl_bg', color_init, 0)
+				end
+				r.UpdateTimeline()
+			end		
+		else
+		r.SetThemeColor('col_tl_bg', color, 0) -- Timeline background
+			for i = 1, 200 do -- ensures that the warning color sticks for some time
+			-- without the function inside the loop the end (200) value must be much greater
+			r.UpdateTimeline()
+			end
+		r.SetThemeColor('col_tl_bg', color_init, 0) -- Timeline background // restore the orig color
+		r.UpdateTimeline() -- without this function the color will only be restored when user clicks within the Arrange
+		end
+	end
+--[[
+-- a time loop can be added to run until certain condition obtains, e.g.
+local time_init = r.time_precise()
+repeat
+until condition and r.time_precise()-time_init >= 0.7 or not condition
+]]
+r.UpdateTimeline() -- might be needed because tooltip can sometimes affect graphics
+end
+
+
+function Is_Envelope_Vis(env)
+-- in REAPER builds prior to 7.06 CountTrack/TakeEnvelopes() lists ghost envelopes when fx parameter modulation was enabled at least once without the parameter having an active envelope, hence must be validated with CountEnvelopePoints(env) because in this case there're no points; ValidatePtr(env, 'TrackEnvelope*'), ValidatePtr(env, 'TakeEnvelope*') and ValidatePtr(env, 'Envelope*') on the other hand always return 'true' therefore are useless	
+	if env and tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.05
+	and r.CountEnvelopePoints(env) + r.CountAutomationItems(env) > 0
+	or env then
+	local retval, env_chunk = r.GetEnvelopeStateChunk(env, '', false) -- isundo false
+	return env_chunk:match('\nVIS 1 ')
+	end
+end
+
+
 function Get_Envcp_Min_Height(ext_state_sect, env, cond) -- required to condition toggle and storage of current env lane height
 
 local retval, env_chunk = r.GetEnvelopeStateChunk(env, '', false) -- isundo false
@@ -233,14 +295,14 @@ local envcp_min_h_stored = tonumber(envcp_min_h_stored)
 	for i = 0, r.CountSelectedTracks2(0, true)-1 do -- wantmaster true
 	local tr = r.GetSelectedTrack2(0, i, true) -- wantmaster true
 		for i = 0, r.CountTrackEnvelopes(tr)-1 do
-		local env = r.GetTrackEnvelope(tr, i)
-		local is_fx_env = Is_Track_Envelope_FX_Envelope(tr, env)
-			if scr_mode3
+		local tr_env = r.GetTrackEnvelope(tr, i)
+		local is_fx_env = Is_Track_Envelope_FX_Envelope(tr, tr_env)
+			if scr_mode3 and (tr_env == sel_env or par_tr ~= tr) -- only respect selected env, otherwise any env
 			or scr_mode4 and not is_fx_env
 			or scr_mode5 and is_fx_env
 			or scr_mode6 then
-			local env_h = r.GetEnvelopeInfo_Value(env, 'I_TCPH')
-			envcp_min_h = cond and not envcp_min_h and Get_Envcp_Min_Height(ext_state_sect, env, cond) or envcp_min_h_stored or envcp_min_h -- ensure that Get_Envcp_Min_Height() function only runs once during the loop
+			local env_h = r.GetEnvelopeInfo_Value(tr_env, 'I_TCPH')
+			envcp_min_h = cond and not envcp_min_h and Get_Envcp_Min_Height(ext_state_sect,tr_env, cond) or envcp_min_h_stored or envcp_min_h -- ensure that Get_Envcp_Min_Height() function only runs once during the loop
 				if env_h > envcp_min_h then	return true, envcp_min_h end
 			end
 		end
@@ -354,9 +416,14 @@ local scr_mode6 = scr_name:match('all envelope')
 Toggle collapse all envelope lanes in selected tracks
 ]]
 
+local installer_scr = scr_name:match('^script updater and installer') -- whether this script is run via installer script in which case get_action_context() returns the installer script path
+
 	-- error if script name was changed beyond recognition
-	if not toggle and not unidir_collapse and not unidir_uncollapse
-	and not scr_mode1 and not scr_mode2 and not scr_mode2 and not scr_mode4_6
+	-- unless the script is run from the installer script
+	-- in which case get_action_context() returns installer script path
+	if not installer_scr and not toggle 
+	and not unidir_collapse and not unidir_uncollapse and not scr_mode1 
+	and not scr_mode2 and not scr_mode2 and not scr_mode4_6
 	and not scr_mode4 and not scr_mode5 and not scr_mode6 then
 		function rep(n) -- number of repeats, integer
 		return (' '):rep(n)
@@ -365,56 +432,75 @@ Toggle collapse all envelope lanes in selected tracks
 	r.MB([[The script name has been changed]]..br..rep(7)..[[which renders it inoperable.]]..br..
 	[[   please restore the original name]]..br..[[  referring to the list in the header,]]..br..
 	rep(9)..[[or reinstall the package.]], 'ERROR', 0)
-	return r.defer(function() do return end end) end
+	return r.defer(no_undo) end
+
+
+	if not installer_scr and not r.GetSelectedTrack(0,0) then
+	Error_Tooltip('\n\n no selected tracks \n\n', 1, 1) -- caps, spaced are true
+	return r.defer(no_undo) end
 
 
 local env = r.GetSelectedEnvelope(0)
+local par_tr = env and r.GetEnvelopeInfo_Value(env, 'P_TRACK') -- get selected env parent track
+
+local env_cnt = 0
 
 	if scr_mode3 and not env or scr_mode4_6	then
 	local envcp_min_h_stored = r.GetExtState(ext_state_sect, 'envcp_min_h')
-	local is_uncollapsed, envcp_min_h = Is_Any_Autom_Lane_UnCollapsed_And_Min_Height(ext_state_sect, scr_mode3, scr_mode4, scr_mode5, scr_mode6, theme_changed, envcp_min_h_stored) -- condition collapsing all lanes of selected tracks if at least one lane is uncollapsed // not vice versa to ensure that uncollapsed lane height is stored as it's designed to only get stored before collapsing
+	local is_uncollapsed, envcp_min_h = Is_Any_Autom_Lane_UnCollapsed_And_Min_Height(ext_state_sect, scr_mode3, scr_mode4, scr_mode5, scr_mode6, theme_changed, envcp_min_h_stored, env, par_tr) -- condition collapsing all lanes of selected tracks if at least one lane is uncollapsed // not vice versa to ensure that uncollapsed lane height is stored as it's designed to only get stored before collapsing
 	local is_uncollapsed = toggle and is_uncollapsed -- make this var only relevant for toggle scripts to allow non-toggle ones work one way regardless of differences between env lanes height (collapsed vs uncollapsed)
 	r.PreventUIRefresh(1) -- must be placed after Is_Any_Autom_Lane_UnCollapsed_And_Min_Height() which includes Get_Envcp_Min_Height() function because it prevents changing envcp height and getting the minimum height value via chunk
 	local par_tr = env and r.GetEnvelopeInfo_Value(env, 'P_TRACK') -- get selected env parent track
-	for i = 0, r.CountSelectedTracks2(0, true)-1 do -- wantmaster true
+		for i = 0, r.CountSelectedTracks2(0, true)-1 do -- wantmaster true
 		local tr = r.GetSelectedTrack2(0, i, true) -- wantmaster true
 			for i = 0, r.CountTrackEnvelopes(tr)-1 do
 			local tr_env = r.GetTrackEnvelope(tr, i)
-			local is_fx_env = Is_Track_Envelope_FX_Envelope(tr, env)
-				if scr_mode3 and (tr_env == env or par_tr ~= tr) -- only affect selected env if any otherwise all envs
-				or scr_mode4 and not is_fx_env
-				or scr_mode5 and is_fx_env
-				or scr_mode6 then
-				Un_Collapse_Envelope_Lane(tr_env, envcp_min_h, is_uncollapsed)
+				if Is_Envelope_Vis(tr_env) then
+				env_cnt = env_cnt + 1
+				local is_fx_env = Is_Track_Envelope_FX_Envelope(tr, tr_env)
+					if scr_mode3 and (tr_env == env or par_tr ~= tr) -- only affect selected env, if any, otherwise all envs
+					or scr_mode4 and not is_fx_env
+					or scr_mode5 and is_fx_env
+					or scr_mode6 then
+					Un_Collapse_Envelope_Lane(tr_env, envcp_min_h, is_uncollapsed)
+					end
 				end
 			end
 		end
 	r.PreventUIRefresh(-1) -- same
 	
-	elseif scr_mode1 and env then
+		if env_cnt == 0 then
+		Error_Tooltip('\n\n no visible envelopes \n\n', 1, 1) -- caps, spaced are true
+		end	
+	
+	elseif scr_mode1 and env and par_tr and par_tr ~= 0 then -- the selected envelope isn't take envelope
 
-	local par_tr = r.GetEnvelopeInfo_Value(env, 'P_TRACK') -- exclude take envelopes
-
-		if par_tr then
-		local envcp_min_h_stored = r.GetExtState(ext_state_sect, 'envcp_min_h')
-		local cond = #envcp_min_h_stored == 0 or theme_changed -- not stored or the stored val is outdated due to theme change
-		local envcp_min_h = cond and Get_Envcp_Min_Height(ext_state_sect, env, cond) or tonumber(envcp_min_h_stored)
-		r.PreventUIRefresh(1) -- must be placed after Get_Envcp_Min_Height() function as it prevents changing envcp height and getting the minimum height value via chunk
-		local is_uncollapsed = Un_Collapse_Envelope_Lane(env, envcp_min_h)
-			if scr_mode2 then
-			-- 1st two conditions are for alternating unidirectional script instances
+	local envcp_min_h_stored = r.GetExtState(ext_state_sect, 'envcp_min_h')
+	local cond = #envcp_min_h_stored == 0 or theme_changed -- not stored or the stored val is outdated due to theme change
+	local envcp_min_h = cond and Get_Envcp_Min_Height(ext_state_sect, env, cond) or tonumber(envcp_min_h_stored)
+	r.PreventUIRefresh(1) -- must be placed after Get_Envcp_Min_Height() function as it prevents changing envcp height and getting the minimum height value via chunk
+	local is_uncollapsed = Un_Collapse_Envelope_Lane(env, envcp_min_h)
+	
+		if scr_mode2 then
+		-- 1st two conditions are for alternating unidirectional script instances
 			if not is_uncollapsed and unidir_collapse then unidir_collapse, unidir_uncollapse = x, 1 -- x is nil
 			elseif not toggle then unidir_collapse, unidir_uncollapse = 1, x
-			-- condition for alternating toggle script instance to prevent collapse of all when all are uncollapsed
+		-- condition for alternating toggle script instance to prevent collapse of all when all are uncollapsed
 			elseif not is_uncollapsed then toggle, unidir_uncollapse = x, 1
 			end
-				for i = 0, r.CountTrackEnvelopes(par_tr)-1 do
-				local tr_env = r.GetTrackEnvelope(par_tr, i)
-				local act = tr_env ~= env and Un_Collapse_Envelope_Lane(tr_env, envcp_min_h, is_uncollapsed)
-				end
+			
+			for i = 0, r.CountTrackEnvelopes(par_tr)-1 do
+			local tr_env = r.GetTrackEnvelope(par_tr, i)
+			local act = tr_env ~= env and Un_Collapse_Envelope_Lane(tr_env, envcp_min_h, is_uncollapsed)
 			end
-		r.PreventUIRefresh(-1) -- same
+			
 		end
+
+	r.PreventUIRefresh(-1) -- same
+	
+	elseif scr_mode1 then	
+
+	Error_Tooltip('\n\n no selected track envelope \n\n', 1, 1) -- caps, spaced are true
 	
 	end
 
