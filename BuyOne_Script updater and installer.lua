@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Script updater and installer.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: v1.1 #Reworded installation report message
+Version: 1.2
+Changelog:  v1.2 #Made user setting transfer report message a bit more descriptive
+	    v1.1 #Reworded installation report message
 Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main=main,midi_editor] .
@@ -544,11 +545,15 @@ Spawn_META_Scripts(t)
 t = Collect_Scripts_With_Settings(path, t) -- add spawned scripts to the table
 
 local upd_cnt = Transfer_User_Settings(SCRIPTER_NAME, t)
+local s = ' '
+local explan = upd_cnt == 0 and '\n\n'..s:rep(7)..'either because no differences were detected\n'
+..s:rep(9)..'or because no installed instances of scripts\n\t'
+..s:rep(7)..'with settings were found.\n\n\n' or '.\n\n\n'
 
-	r.MB('  USER SETTINGS of '..upd_cnt..' scripts have been transeferred.\n\n\n'
-	..'       Move the scripts into your main scripts folder\n\n\t   overwriting their older versions\n\n'
-	..'   and run this script again to install any new scripts\n\n'
-	..'     which happen to have come with the download.', 'REPORT', 0)
+r.MB('  USER SETTINGS of '..upd_cnt..' scripts have been transeferred'..explan
+..'    Now move the scripts into your main scripts folder\n\n\t   overwriting their older versions\n\n'
+..'   and run this script again to install any new scripts\n\n'
+..'     which happen to have come with the download.', 'REPORT', 0)
 
 end
 
