@@ -482,7 +482,6 @@ function Install_Scripts(t, native_install_mode)
 	end
 
 --	install in the MIDI Editor section of the Action list
---	for k, scr in ipairs(t.midi) do
 	for i = #t.midi,1,-1 do -- in reverse because fields of scripts installed successfully will be deleted to only keep failed for final stats
 	local scr = t.midi[i]
 		if type(scr) == 'string' then -- ignoring midi and total fields which are tables
