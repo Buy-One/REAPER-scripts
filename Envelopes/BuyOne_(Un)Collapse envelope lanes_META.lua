@@ -272,7 +272,7 @@ end
 
 function Is_Envelope_Vis(env)
 -- in REAPER builds prior to 7.06 CountTrack/TakeEnvelopes() lists ghost envelopes when fx parameter modulation was enabled at least once without the parameter having an active envelope, hence must be validated with CountEnvelopePoints(env) because in this case there're no points; ValidatePtr(env, 'TrackEnvelope*'), ValidatePtr(env, 'TakeEnvelope*') and ValidatePtr(env, 'Envelope*') on the other hand always return 'true' therefore are useless
-	if env and tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.05
+	if env and tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.06
 	and r.CountEnvelopePoints(env) > 0
 	or env then
 	local retval, env_chunk = r.GetEnvelopeStateChunk(env, '', false) -- isundo false
