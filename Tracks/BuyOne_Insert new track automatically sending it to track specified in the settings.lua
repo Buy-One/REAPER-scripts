@@ -15,7 +15,7 @@ About: Configure USER SETTINGS
 ------------------------------ USER SETTINGS --------------------------------
 -----------------------------------------------------------------------------
 
--- Between the quotes insert the name of the destination bus track
+-- Between the quotes insert the name of the destination track
 DESTINATION_TRACK_NAME = ""
 
 -- Between the quotes insert the number corresponding to the send mode:
