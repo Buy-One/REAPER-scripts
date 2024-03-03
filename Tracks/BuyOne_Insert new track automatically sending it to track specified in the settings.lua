@@ -80,6 +80,8 @@ local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val = r.get_action_c
 local scr_name = scr_name:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
 local cmd_ID = scr_name:match('multiple new tracks') and 41067 -- Track: Insert multiple new tracks...
 or 40001 -- Track: Insert new track
+local undo = cmd_ID == 41067 and 'Insert multiple tracks sending them' or 'Insert track sending it'
+undo = undo..' to track "'..DESTINATION_TRACK_NAME..'"'
 
 r.Undo_BeginBlock()
 
@@ -92,7 +94,7 @@ r.Main_OnCommand(cmd_ID,0)
 	end
 
 
-r.Undo_EndBlock('Insert track sending it to track "'..DESTINATION_TRACK_NAME..'"', -1)
+r.Undo_EndBlock(undo, -1)
 
 
 
