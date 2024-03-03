@@ -197,6 +197,7 @@ local names_t, content = names_t
 
 		local path = fullpath:match('(.+[\\/])') -- WHEN NOT GETTING PATH FROM USER INPUT, USE META SCRIPT PATH
 
+		-- spawn scripts
 		for k, scr_name in ipairs(names_t) do
 			if not r.file_exists(path..scr_name) then -- only spawn if doesn't already exist, this is meant to prevent accidental overwriting of custom USER SETTINGS in individial scripts // if spawned script update is required it must be done via installer script, or manually by copy and paste, or by deleting it and running this script
 			local new_script = io.open(path..scr_name, 'w') -- create new file
