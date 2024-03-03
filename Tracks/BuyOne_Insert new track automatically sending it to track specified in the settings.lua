@@ -49,7 +49,7 @@ end
 
 local x, y = r.GetMousePosition()
 
-DESTINATION_TRACK_NAME = DESTINATION_TRACK_NAME:match('^%s*(.-)%s*$') -- stripping leading & trailing spaces
+DESTINATION_TRACK_NAME = DESTINATION_TRACK_NAME:match('^%s*(.-)%s*$')--('[%w%p].*[%w%p]*') -- stripping leading & trailing spaces
 
 
 	if #DESTINATION_TRACK_NAME == 0 then
@@ -76,14 +76,19 @@ local bus_tr
 SEND_MODE = tonumber(SEND_MODE) or 1 -- default to 1 (post-fader)
 SEND_MODE = (SEND_MODE > 0 and SEND_MODE < 3) and SEND_MODE-1 or SEND_MODE > 3 and 1 or SEND_MODE -- -1 to conform to 0-based index of post-fader (0) and pre-fx (1), excluding illegal numbers
 
+local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val = r.get_action_context()
+local scr_name = scr_name:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
+local cmd_ID = scr_name:match('multiple new tracks') and 41067 -- Track: Insert multiple new tracks...
+or 40001 -- Track: Insert new track
+
 r.Undo_BeginBlock()
 
-r.Main_OnCommand(40001,0) -- Track: Insert new track // will be exclusively selected
+r.Main_OnCommand(cmd_ID,0)
 
 	for i=0, r.CountSelectedTracks(0)-1 do -- the tracks inserted with action are always exclusively selected
 	local tr = r.GetSelectedTrack(0,i)
 	r.CreateTrackSend(tr, bus_tr)
-	r.SetTrackSendInfo_Value(tr, 0, 0, 'I_SENDMODE', SEND_MODE) -- category 0 (send), sendidx 0,
+	r.SetTrackSendInfo_Value(tr, 0, 0, 'I_SENDMODE', SEND_MODE) -- category 0 (send), sendidx 0
 	end
 
 
