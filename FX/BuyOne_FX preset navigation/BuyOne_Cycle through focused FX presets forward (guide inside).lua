@@ -46,9 +46,10 @@ If after closing the FX UI you happened to forget which FX it was, you can look 
 its details in the undo point its preset change creates in the REAPER Undo log
 accessible from the main menu panel or via action 'View: Show undo history window'.
 
-If in the preset list, either full or custom, there're presets with identical names
-the script will glitch due to REAPER API bug https://forum.cockos.com/showthread.php?t=270990
-and won't allow cycling through all presets in the list
+In REAPER builds prior to 7.09 if in the preset list, either full or custom, there're 
+presets with identical names the script will glitch due to REAPER API bug 
+https://forum.cockos.com/showthread.php?t=270990 and won't allow cycling through all 
+presets in the list
 
 ]]
 
