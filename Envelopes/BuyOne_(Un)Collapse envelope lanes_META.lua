@@ -1,8 +1,11 @@
 --[[
 ReaScript name: BuyOne_(Un)Collapse envelope lanes_META.lua (18 scripts)
 Author: BuyOne
-Version: 1.9
-Changelog:  v1.9 #Added quck access shortcuts to the menu to be able to run actions from keyboard
+Version: 2.0
+Changelog:  v2.0 #Fixed toggle actions for Master track envelopes when 'Tempo map' envelope is enabled
+		 #Disabled 'No selected track' error message for actions which don't require track selection
+		 #Made 'No selected track' error message account for the Master track
+	    v1.9 #Added quick access shortcuts to the menu to be able to run actions from keyboard
 		 #Updated About text
 	    v1.8 #Added a menu to the META script so it's now functional as well
 		 allowing to use from a single menu all options available as individual scripts
@@ -31,66 +34,66 @@ Screenshots: https://raw.githubusercontent.com/Buy-One/screenshots/main/(Un)Coll
 REAPER: at least v5.962  		
 Metapackage: true
 Provides: 	. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse selected envelope lane in track.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse selected envelope lane in track.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse selected envelope lane or all lanes in selected tracks.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse selected envelope lane or all lanes in selected tracks.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse selected envelope lane uncollapse others in track.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse selected envelope lane collapse others in track.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Alternate collapsing selected envelope lane and other lanes in track.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse track envelope lanes in selected tracks.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse track envelope lanes in selected tracks.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse FX envelope lanes in selected tracks.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse FX envelope lanes in selected tracks.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse all envelope lanes in selected tracks.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse all envelope lanes in selected tracks.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse selected envelope lane in track.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse selected envelope lane or all lanes in selected tracks.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse track envelope lanes in selected tracks.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse FX envelope lanes in selected tracks.lua
-			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse all envelope lanes in selected tracks.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse selected envelope lane in track.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse selected envelope lane or all lanes in selected tracks.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse selected envelope lane or all lanes in selected tracks.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse selected envelope lane uncollapse others in track.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse selected envelope lane collapse others in track.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Alternate collapsing selected envelope lane and other lanes in track.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse track envelope lanes in selected tracks.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse track envelope lanes in selected tracks.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse FX envelope lanes in selected tracks.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse FX envelope lanes in selected tracks.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse all envelope lanes in selected tracks.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse all envelope lanes in selected tracks.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse selected envelope lane in track.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse selected envelope lane or all lanes in selected tracks.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse track envelope lanes in selected tracks.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse FX envelope lanes in selected tracks.lua
+		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse all envelope lanes in selected tracks.lua
 About:	If this script name is suffixed with META, when executed 
-		it will automatically spawn all individual scripts included 
-		in the package into the directory of the META script and will 
-		import them into the Action list from that directory. That's 
-		provided such scripts don't exist yet, if they do, then in 
-		order to recreate them they have to be deleted from the Action 
-		list and from the disk first. It will also display a menu
-		allowing to execute all actions available as individual scripts.
-		Each menu item is preceded with a quick access shortcut so
-		it can be triggered from keyboard.  
-		If there's no META suffix in this script name it will perfom 
-		the operation indicated in its name. Individual scripts can
-		be included in custom actions.
+	it will automatically spawn all individual scripts included 
+	in the package into the directory of the META script and will 
+	import them into the Action list from that directory. That's 
+	provided such scripts don't exist yet, if they do, then in 
+	order to recreate them they have to be deleted from the Action 
+	list and from the disk first. It will also display a menu
+	allowing to execute all actions available as individual scripts.
+	Each menu item is preceded with a quick access shortcut so
+	it can be triggered from keyboard.  
+	If there's no META suffix in this script name it will perfom 
+	the operation indicated in its name. Individual scripts can
+	be included in custom actions.
 
-		In these '(un)collapse envelope lane' scripts 
-		'track envelope' means envelope of TCP controls, those 
-		which are listed in the 'trim' (envelope) button context 
-		menu or under 'Track Envelopes' heading in the track 
-		envelope panel, including Send envelopes.  
-		
-		'FX envelope' means envelope of a track FX control.  
-		With toggle scripts uncollapsed state gets priority, so
-		if at least one envelope lane in selected tracks is 
-		uncollapsed, it will be collapsed while collapsed lanes 
-		will stay as they are.  
-		
-		Unidirectional scripts will always work according to their name.
-		
-		If there're no lanes to collapse or uncollapse nothing will happen.  
-		
-		In toggle scripts the uncollapsed state gets priority 
-		meaning that if at least one envelope lane in selected tracks
-		is uncollapsed the state of all is considered uncollapsed
-		and the script collapses them. 
-		
-		The scripts 
-		(Toggle) (Un)Collapse selected envelope lane or all lanes in selected tracks.lua
-		in tracks with no selected envelope lane all lanes are affected
-		while in track with selected envelope lane this lane is the
-		only one affected.
-		
-		The scripts don't support creation of undo point due 
-		to REAPER internal design. 		
+	In these '(un)collapse envelope lane' scripts 
+	'track envelope' means envelope of TCP controls, those 
+	which are listed in the 'trim' (envelope) button context 
+	menu or under 'Track Envelopes' heading in the track 
+	envelope panel, including Send envelopes.  
+	
+	'FX envelope' means envelope of a track FX control.  
+	With toggle scripts uncollapsed state gets priority, so
+	if at least one envelope lane in selected tracks is 
+	uncollapsed, it will be collapsed while collapsed lanes 
+	will stay as they are.  
+	
+	Unidirectional scripts will always work according to their name.
+	
+	If there're no lanes to collapse or uncollapse nothing will happen.  
+	
+	In toggle scripts the uncollapsed state gets priority 
+	meaning that if at least one envelope lane in selected tracks
+	is uncollapsed the state of all is considered uncollapsed
+	and the script collapses them. 
+	
+	The scripts 
+	(Toggle) (Un)Collapse selected envelope lane or all lanes in selected tracks.lua
+	in tracks with no selected envelope lane all lanes are affected
+	while in track with selected envelope lane this lane is the
+	only one affected.
+	
+	The scripts don't support creation of undo point due 
+	to REAPER internal design. 		
 
 ]]
 
@@ -337,21 +340,31 @@ function Is_Any_Autom_Lane_UnCollapsed_And_Min_Height(ext_state_sect, scr_mode3,
 local envcp_min_h
 local cond = #envcp_min_h_stored == 0 or theme_changed
 local envcp_min_h_stored = tonumber(envcp_min_h_stored)
+local master_tr = r.GetMasterTrack(0)
+
 	for i = 0, r.CountSelectedTracks2(0, true)-1 do -- wantmaster true
 	local tr = r.GetSelectedTrack2(0, i, true) -- wantmaster true
 		for i = 0, r.CountTrackEnvelopes(tr)-1 do
 		local tr_env = r.GetTrackEnvelope(tr, i)
-		local is_fx_env = Is_Track_Envelope_FX_Envelope(tr, tr_env)
-			if scr_mode3 and (tr_env == sel_env or par_tr ~= tr) -- only respect selected env, otherwise any env
-			or scr_mode4 and not is_fx_env
-			or scr_mode5 and is_fx_env
-			or scr_mode6 then
-			local env_h = r.GetEnvelopeInfo_Value(tr_env, 'I_TCPH')
-			envcp_min_h = cond and not envcp_min_h and Get_Envcp_Min_Height(ext_state_sect, tr_env, cond) or envcp_min_h_stored or envcp_min_h -- ensure that Get_Envcp_Min_Height() function only runs once during the loop
-				if env_h > envcp_min_h then
-				return true, envcp_min_h end
+		
+		local retval, name = r.GetEnvelopeName(tr_env)
+			if tr ~= master_tr or tr == master_tr and not name:match('Tempo map') then -- Master track tempo map envelope doesn't have a lane but is included in the count and if it's enabled it breaks the routine making uncollapsed state evaluation true when lanes are actually collapsed, thereby preventing their uncollapse in toggle actions
+		
+			local is_fx_env = Is_Track_Envelope_FX_Envelope(tr, tr_env)
+				if scr_mode3 and (tr_env == sel_env or par_tr ~= tr) -- only respect selected env, otherwise any env
+				or scr_mode4 and not is_fx_env
+				or scr_mode5 and is_fx_env
+				or scr_mode6 then
+				local env_h = r.GetEnvelopeInfo_Value(tr_env, 'I_TCPH')
+				envcp_min_h = cond and not envcp_min_h and Get_Envcp_Min_Height(ext_state_sect, tr_env, cond) or envcp_min_h_stored or envcp_min_h -- ensure that Get_Envcp_Min_Height() function only runs once during the loop
+					if env_h > envcp_min_h then
+					return true, envcp_min_h end
+				end
+				
 			end
+			
 		end
+		
 	end
 return false, envcp_min_h
 end
@@ -390,7 +403,7 @@ end
 
 
 local _, fullpath_init, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
-fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
+local fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
 local scr_name = fullpath_init:match('.+[\\/].-_(.+)%.%w+') -- without path, scripter name and file ext // fullpath_init insures that if the script functionality depends on its name the script doesn't run when executed via dofile() or loadfile() from the installer script because get_action_context() returns path to the installer script
 local ext_state_sect = '(Un)Collapse envelope lanes' -- extended state will be shared by all script instances
 
@@ -511,20 +524,22 @@ local installer_scr = scr_name:match('^script updater and installer') -- whether
 	return r.defer(no_undo) end
 
 
-	if not installer_scr and not r.GetSelectedTrack(0,0) then
-	local x = META and -500 or 0 -- if META script shift the tooltip away from the menu so it's not gets covered by it when the menu is reloaded
-	Error_Tooltip('\n\n no selected tracks \n\n', 1, 1, x) -- caps, spaced are true
-		if META then goto RELOAD
-		else return r.defer(no_undo) end
-	end
-
-
 local env = r.GetSelectedEnvelope(0)
 local par_tr = env and r.GetEnvelopeInfo_Value(env, 'P_TRACK') -- get selected env parent track
 
 local env_cnt = 0
 
 	if scr_mode3 and not env or scr_mode4_6	then
+	
+		-- scr_mode4_6 is selected tracks condition
+		if scr_mode4_6 and not r.GetSelectedTrack2(0, 0, true) -- wantmaster true
+		then
+		local x = META and -500 or 0 -- if META script shift the tooltip away from the menu so it's not gets covered by it when the menu is reloaded
+		Error_Tooltip('\n\n no selected tracks \n\n', 1, 1, x) -- caps, spaced are true
+			if META then goto RELOAD
+			else return r.defer(no_undo) end
+		end	
+	
 	local envcp_min_h_stored = r.GetExtState(ext_state_sect, 'envcp_min_h')
 	local is_uncollapsed, envcp_min_h = Is_Any_Autom_Lane_UnCollapsed_And_Min_Height(ext_state_sect, scr_mode3, scr_mode4, scr_mode5, scr_mode6, theme_changed, envcp_min_h_stored, env, par_tr) -- condition collapsing all lanes of selected tracks if at least one lane is uncollapsed // not vice versa to ensure that uncollapsed lane height is stored as it's designed to only get stored before collapsing
 	local is_uncollapsed = toggle and is_uncollapsed -- make this var only relevant for toggle scripts to allow non-toggle ones work one way regardless of differences between env lanes height (collapsed vs uncollapsed)
