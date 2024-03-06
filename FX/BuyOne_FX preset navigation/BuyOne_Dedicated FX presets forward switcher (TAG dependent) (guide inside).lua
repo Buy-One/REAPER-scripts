@@ -46,9 +46,10 @@ If, when you apply the script to a focused FX with the TAG, the presets don't ch
 there's an earlier (with a smaller project wide index) track or take with the same TAG 
 which IS affected by the script.
 
-If in the preset list, either full or custom, there're presets with identical names
-the script will glitch due to REAPER API bug https://forum.cockos.com/showthread.php?t=270990
-and won't allow cycling through all presets in the list
+In REAPER builds prior to 7.09 if in the preset list, either full or custom, there're 
+presets with identical names the script will glitch due to REAPER API bug 
+https://forum.cockos.com/showthread.php?t=270990 and won't allow cycling through all 
+presets in the list
 
 
 	## VIDEO PROCESSOR PLUGIN
