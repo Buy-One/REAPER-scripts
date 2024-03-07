@@ -240,7 +240,7 @@ function Collect_Files(path, MIDI_FIT_FOLDERS, t, midi, native_install_mode)
 	local start
 		for line in io.lines(scr_path) do
 			if line:match('ReaScript name:') then start = 1 -- header start
-			elseif start and line:match('Provides:') then -- looking for line 'Provides: [main:main, midi_editor]'
+			elseif start and line:match('Provides:') then -- looking for line 'Provides: [main=main, midi_editor]'
 				if line:match('midi_editor') then return true end
 			elseif line:match('About:') or line:match(']]') then break -- header end
 			end
@@ -252,9 +252,8 @@ path = path:match('(.-)[\\/]?$') -- remove last separator since in the following
 
 -- folders scripts in which are fit for the MIDI Editor section of the action list
 local midi = path:match('.+[\\/](.+)') -- folder name
---midi = midi and (midi:lower():match('midi') or midi:lower():match('fx')
---or midi:lower():match('markers & regions') )
 
+-- scripts from the /MIDI folder are installed exclusively in the MIDI Editor section of the action list
 	for _, fldr in ipairs(MIDI_FIT_FOLDERS) do
 		if midi and midi:lower():match(fldr) then
 		midi = 1 break
@@ -299,8 +298,7 @@ i = 0
 				then -- a script fit for the MIDI Editor section
 				t.midi[#t.midi+1] = f_path
 				end
-				if --path:match('.+[\\/](.+)') and
-				(not native_install_mode -- if not native_install_mode collect all scripts regardless of their designation
+				if (not native_install_mode -- if not native_install_mode collect all scripts regardless of their designation
 				or native_install_mode and not path:lower():match('.+[\\/]midi')) then -- not MIDI folder // UP FOR CUSTOMIZATION BY OTHER SCRIPTERS
 				t[#t+1] = f_path
 				end
