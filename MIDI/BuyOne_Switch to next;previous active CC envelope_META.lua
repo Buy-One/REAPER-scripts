@@ -2,8 +2,12 @@
 ReaScript name: BuyOne_Switch to next;previous active CC envelope_META.lua (2 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.3
-Changelog:  v1.3 #Fixed individual script installation function
+Version: 1.4
+Changelog:  v1.4 #Added a menu to the META script so it's now functional as well
+		 allowing to use from a single menu all options available as individual scripts
+		 #Added wrong script name error message
+		 #Updated About text
+	    v1.3 #Fixed individual script installation function
 		 #Made individual script installation function more efficient
 	    v1.2 #Creation of individual scripts has been made hands-free. 
 		 These are created in the directory the META script is located in
@@ -14,14 +18,22 @@ Changelog:  v1.3 #Fixed individual script installation function
 Licence: WTFPL
 REAPER: at least v5.962
 Metapackage: true
-Provides: 	. > BuyOne_Switch to next active CC envelope.lua
-		. > BuyOne_Switch to previous active CC envelope.lua
+Provides: 	[main=midi_editor] .
+		[main=midi_editor] . > BuyOne_Switch to next active CC envelope.lua
+		[main=midi_editor] . > BuyOne_Switch to previous active CC envelope.lua
 About:	If this script name is suffixed with META, when executed 
 	it will automatically spawn all individual scripts included 
 	in the package into the directory of the META script and will 
-	import them into the Action list from that directory.  
+	import them into the Action list from that directory. That's 
+	provided such scripts don't exist yet, if they do, then in 
+	order to recreate them they have to be deleted from the Action 
+	list and from the disk first. It will also display a menu
+	allowing to execute all actions available as individual scripts.
+	Each menu item is preceded with a quick access shortcut so
+	it can be triggered from keyboard.  
 	If there's no META suffix in this script name it will perfom 
-	the operation indicated in its name.		
+	the operation indicated in its name. Individual scripts can
+	be included in custom actions.
 
 	The individual script works for the last clicked CC lane 
 	if several are open.
@@ -46,6 +58,7 @@ reaper.ShowConsoleMsg(cap..tostring(param)..'\n')
 end
 
 local r = reaper
+
 
 function no_undo()
 do return end
@@ -132,10 +145,12 @@ local names_t, content = names_t
 		
 		-- spawn scripts
 		for k, scr_name in ipairs(names_t) do
-		local new_script = io.open(path..scr_name, 'w') -- create new file
-		content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
-		new_script:write(content)
-		new_script:close()
+			if not r.file_exists(path..scr_name) then -- only spawn if doesn't already exist, this is meant to prevent accidental overwriting of custom USER SETTINGS in individial scripts OR writing to disk each time META script is run if it's equipped with a menu // if spawned script update is required it must be done via installer script, or manually by copy and paste, or by deleting it and running this script
+			local new_script = io.open(path..scr_name, 'w') -- create new file
+			content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
+			new_script:write(content)
+			new_script:close()
+			end
 		end
 		
 		-- CONDITION BY THE SCRIPT BEING INSTALLED TO OTHERWISE ALLOW SPAWNING SCRIPTS WITH INSTALLER SCRIPT VIA dofile() WITHOUT INSTALLATION ONLY FOR THE SAKE OF SETTINGS TRANSFER WHICH IS SUPPOSED TO BE DONE WHILE THE SCRIPT IS IN A TEMP FOLDER, get_action_context() alone is useless as a condition since when this script is executed via dofile() from the installer script the function returns props of the latter
@@ -154,7 +169,6 @@ local names_t, content = names_t
 end
 
 
-
 function CC_Evts_Exist(take)
 local evt_idx = 0
 	repeat
@@ -165,29 +179,81 @@ local evt_idx = 0
 end
 
 
-local _, fullpath_init, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
-fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
-local scr_name = fullpath:match('.+[\\/].-_(.+)%.%w+') -- without path, scripter name and file ext
-	
-	if scr_name:match(' next ') then nxt = 1
-	elseif scr_name:match(' previous ') then prev = 1
+function Reload_Menu_at_Same_Pos(menu, keep_menu_open, left_edge_dist)
+-- keep_menu_open is boolean
+-- left_edge_dist is integer to only display the menu
+-- when the mouse cursor is within the sepecified distance in px from the screen left edge
+-- only useful for looking up the result of a toggle action, below see a more practical example
+
+left_edge_dist = left_edge_dist and left_edge_dist > 0 and math.floor(left_edge_dist)
+local x, y = r.GetMousePosition()
+
+	if left_edge_dist and x <= left_edge_dist or not left_edge_dist then -- 100 px within the screen left edge
+	-- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
+	-- https://forum.cockos.com/showthread.php?t=280658#25
+	-- https://forum.cockos.com/showthread.php?t=280658&page=2#44
+	-- BUT LACK OF gfx WINDOW DOESN'T ALLOW RE-OPENING THE MENU AT THE SAME POSITION via ::RELOAD::
+	-- therefore enabled with keep_menu_open is valid
+	local old = tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82
+	local init = (old or not old and keep_menu_open) and gfx.init('', 0, 0)
+	-- open menu at the mouse cursor, after reloading the menu doesn't change its position based on the mouse pos after a menu item was clicked, it firmly stays at its initial position
+		-- ensure that if keep_menu_open is enabled the menu opens every time at the same spot
+		if keep_menu_open and not coord_t then -- keep_menu_open is the one which enables menu reload
+		coord_t = {x = gfx.mouse_x, y = gfx.mouse_y}
+		elseif not keep_menu_open then
+		coord_t = nil
+		end
+	gfx.x = coord_t and coord_t.x or gfx.mouse_x
+	gfx.y = coord_t and coord_t.y or gfx.mouse_y
+
+	return gfx.showmenu(menu) -- menu string
+
 	end
-	
-	-- doesn't run in non-META scripts
-	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Switch to next;previous active CC envelope_META.lua', names_t)
-	then return r.defer(no_undo) end -- abort if META script but continue if not
+
+end
+
+
+
+local _, fullpath_init, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
+local fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
+local scr_name = fullpath_init:match('.+[\\/].-_(.+)%.%w+') -- without path, scripter name and file ext // fullpath_init insures that if the script functionality depends on its name the script doesn't run when executed via dofile() or loadfile() from the installer script because get_action_context() returns path to the installer script
+
+
+-- doesn't run in non-META scripts
+META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Switch to next;previous active CC envelope_META.lua', names_t)
+
+
+local menu_t = {' |SWITCH TO ACTIVE CC ENVELOPE|', '&1. NEXT', '&2. PREVIOUS| '}
+local META = scr_name:match('.+_META$')
+
+::RELOAD::
+local output = META and Reload_Menu_at_Same_Pos(table.concat(menu_t,'|'), 1) -- keep_menu_open true
+
+	if output == 0 then 
+	return r.defer(no_undo) -- output is 0 when the menu in the META script is clicked away from
+	elseif output and (output < 3 or output > 4) then -- menu title was clicked
+	goto RELOAD
+	elseif output == 3 or scr_name:match(' next ') then nxt = 1
+	elseif output == 4 or scr_name:match(' previous ') then prev = 1
+	end
 
 
 local ME = r.MIDIEditor_GetActive()
 local take = r.MIDIEditor_GetTake(ME)
 
-local err = r.MIDIEditor_GetSetting_int(ME, 'last_clicked_cc_lane') == -1 and '\tlast clicked cc lane \n\n'..string.rep(' ', 10)..' was\'t found. \n\n click at least one cc lane.' -- happens when a lane was closed
+local err = not nxt and not prev and 'wrong script name'
+or r.MIDIEditor_GetSetting_int(ME, 'last_clicked_cc_lane') == -1 and '\tlast clicked cc lane \n\n'..string.rep(' ', 10)..' was\'t found. \n\n click at least one cc lane.' -- happens when a lane was closed
 or not CC_Evts_Exist(take) and 'no active cc envelopes'
 
-	if err then
+local installer_scr = scr_name:match('^script updater and installer') -- whether this script is run via installer script in which case get_action_context() returns the installer script path
+
+	if err and not installer_scr then
 	local x, y = r.GetMousePosition()
+	local x = META and x-400 or 0 -- if META script shift the tooltip away from the menu so it's not gets covered by it when the menu is reloaded
 	r.TrackCtl_SetToolTip(('\n\n '..err..' \n\n '):upper():gsub('.','%0 '), x, y, true) -- spaced out // topmost true
-	return r.defer(function() do return end end) end
+		if META then goto RELOAD
+		else return r.defer(no_undo) end
+	end
 
 
 function ACT(comm_ID, midi) -- midi is boolean
@@ -204,7 +270,8 @@ local evt_idx = 0
 	repeat
 	local retval, sel, muted, ppqpos, chanmsg, chan, msg2, msg3 = r.MIDI_GetCC(take, evt_idx) -- Velocity / Off Velocity / Text events / Notation enents / SySex lanes are ignored
 		if retval then
-			if chanmsg == 176 and msg2 == cur_CC_lane then return msg2  -- -- CC message, chanmsg = 176 // as soon as event is found in the current lane
+			if chanmsg == 176 and msg2 == cur_CC_lane then
+			return msg2  -- -- CC message, chanmsg = 176 // as soon as event is found in the current lane
 			elseif chanmsg == cur_CC_lane then -- non-CC message (chanmsg =/= 176)
 			return chanmsg == 192 and 'Program change' or chanmsg == 208 and 'Channel pressure' or chanmsg == 224 and 'Pitch bend'
 			end
@@ -229,21 +296,25 @@ local i = 0
 end
 
 
-r.PreventUIRefresh(1)
-r.Undo_BeginBlock()
+	if nxt or prev then -- won't run if the META script is executed via dofile() or loadfile() from the installer script
 
-local CC = Switch_2_Next_Prev_Active_CCLane(ME, take, 129, nxt, prev)
+	r.PreventUIRefresh(1)
+	r.Undo_BeginBlock()
 
--- a trick shared by juliansader to force MIDI API to register undo point; Undo_OnStateChange() works too but with native actions it may create extra undo points, therefore Undo_Begin/EndBlock() functions must stay
--- https://forum.cockos.com/showpost.php?p=1925555
-local item = r.GetMediaItemTake_Item(take)
-local is_item_sel = r.IsMediaItemSelected(item)
-r.SetMediaItemSelected(item, not is_item_sel) -- unset
-r.SetMediaItemSelected(item, is_item_sel) -- restore
+	local CC = Switch_2_Next_Prev_Active_CCLane(ME, take, 129, nxt, prev)
 
-
-r.Undo_EndBlock('Switch to '..(tonumber(CC) and 'CC'..CC or CC)..' lane', -1)
-r.PreventUIRefresh(-1)
+	-- a trick shared by juliansader to force MIDI API to register undo point; Undo_OnStateChange() works too but with native actions it may create extra undo points, therefore Undo_Begin/EndBlock() functions must stay
+	-- https://forum.cockos.com/showpost.php?p=1925555
+	local item = r.GetMediaItemTake_Item(take)
+	local is_item_sel = r.IsMediaItemSelected(item)
+	r.SetMediaItemSelected(item, not is_item_sel) -- unset
+	r.SetMediaItemSelected(item, is_item_sel) -- restore
 
 
+	r.Undo_EndBlock('Switch to '..(tonumber(CC) and 'CC'..CC or CC)..' lane', -1)
+	r.PreventUIRefresh(-1)
+	
+	if META then goto RELOAD end
+
+	end
 
