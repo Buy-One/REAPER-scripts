@@ -443,7 +443,7 @@ local META = scr_name:match('.+_META$')
 local output = META and Reload_Menu_at_Same_Pos(table.concat(names_t,'|'), 1) -- keep_menu_open true
 
 	if output == 0 then return r.defer(no_undo) -- output is 0 when the menu in the META script is clicked away from
-	elseif output < 3 then -- menu title was clicked
+	elseif output and output < 3 then -- menu title was clicked
 	goto RELOAD
 	end
 
