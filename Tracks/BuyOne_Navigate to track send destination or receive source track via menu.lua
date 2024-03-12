@@ -2,8 +2,9 @@
 ReaScript name: Navigate to track send destination or receive source track via menu
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: 1.1 #Fixed REAPER version evaluation
+Version: 1.2
+Changelog: 1.2 #Added current track name readout
+	   1.1 #Fixed REAPER version evaluation
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	As far as going to send destination track is concerned 
@@ -285,12 +286,13 @@ local menu = (snd_menu_t and table.concat(snd_menu_t) or '')..sep..(rcv_menu_t a
 
 	if #menu > 0 then
 	local tr_idx = math.floor(r.GetMediaTrackInfo_Value(tr, 'IP_TRACKNUMBER')) -- to truncate decimal 0 // OR (r.GetMediaTrackInfo_Value(tr, 'IP_TRACKNUMBER')..''):match('(.+)%.')
+	local ret, name = r.GetSetMediaTrackInfo_String(tr, 'P_NAME', '', false) -- setNewValue false
 	-- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
 	-- https://forum.cockos.com/showthread.php?t=280658#25
 	-- https://forum.cockos.com/showthread.php?t=280658&page=2#44
 		if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82 then gfx.init('', 0, 0) end
 	gfx.x, gfx.y = gfx.mouse_x, gfx.mouse_y
-	local idx = gfx.showmenu('#Track # '..tr_idx..'||'..menu)
+	local idx = gfx.showmenu('#Track # '..tr_idx..' — '..name..'||'..menu)
 		if idx > 2 then -- 2 to account for 'Track #' menu title and a submenu title which don't have corresponding fields in snd_t and rcv_t tables, otherwise click on these menu entrues may produce an error
 		local idx = idx-2 -- -2 to restore the index count valid for snd_t and rcv_t tables
 		local tr = snd_t and rcv_t and (idx <= #snd_t and snd_t[idx] or idx > #snd_t and rcv_t[idx-#snd_t-1]) -- when idx > #snd_t it's either corresponds to receive menu title or to rcv_t fields hence -1 to explude the title
