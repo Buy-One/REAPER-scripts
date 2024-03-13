@@ -1,66 +1,68 @@
 --[[
-ReaScript name: Navigate to track send destination or receive source track via menu
+ReaScript name: BuyOne_Navigate to track send destination or receive source track via menu.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: 1.2 #Added current track name readout
-	   1.1 #Fixed REAPER version evaluation
+Version: 1.3
+Changelog: 	1.3 #Minor tweak of the current track name readout 
+		for cases when the track isn't named
+		1.2 #Added current track name readout
+		1.1 #Fixed REAPER version evaluation
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	As far as going to send destination track is concerned 
-        the script is an alternative to the native feature 
-        accessible in the TCP/MCP send slot right click menu. 
-        It lists all send destinations in a single menu along 
-        with their basic information.
+	the script is an alternative to the native feature 
+	accessible in the TCP/MCP send slot right click menu. 
+	It lists all send destinations in a single menu along 
+	with their basic information.
+	
+	In addition the script provides a facility to go to 
+	receive source tracks which isn't available natively.
+	
+	The menu lists send destination / receive source track
+	index, name (if any), number of sends/receives routed
+	from/to the given track, whether send destination / receive 
+	source track is a child in a collapsed folder (-c) and 
+	whether it's hidden in the currently active context (-h) 
+	which is either the Arrange view or the Mixer.
+	
+	The currently active context is determined by the Mixer
+	visibility. If visible the target track will be scrolled
+	to in the Mixer, otherwise it will be scrolled to in 
+	the Arrange view.
+	
+	When the script is run via a shortcut, it displays
+	sends/receives menu of a track under mouse cursor.
+	A click on the send or receive menu item makes the tracklist
+	scroll to the corresponding track and select it.
+	In the Mixer such track ends up at the leftmost position,
+	in the Arrange view - in the middle of the tracklist. 
 
-        In addition the script provides a facility to go to 
-        receive source tracks which isn't available natively.
-
-        The menu lists send destination / receive source track
-        index, name (if any), number of sends/receives routed
-        from/to the given track, whether send destination / receive 
-        source track is a child in a collapsed folder (-c) and 
-        whether it's hidden in the currently active context (-h) 
-        which is either the Arrange view or the Mixer.
-
-        The currently active context is determined by the Mixer
-        visibility. If visible the target track will be scrolled
-        to in the Mixer, otherwise it will be scrolled to in 
-        the Arrange view.
-
-        When the script is run via a shortcut, it displays
-        sends/receives menu of a track under mouse cursor.
-        A click on the send or receive menu item makes the tracklist
-        scroll to the corresponding track and select it.
-        In the Mixer such track ends up at the leftmost position,
-        in the Arrange view - in the middle of the tracklist. 
-
-        If the send destination / receive source track happens to 
-        be inside a collapsed folder in the Mixer, its parent or the 
-        leftmost visible grandparent track of a collapsed folder its 
-        parent is a child in (if any) is scrolled into view instead.  
-        If the track is visible in the Mixer and happens to be in a
-        collapsed folder whose parent track is hidden, the leftmost
-        visible grandparent track of a collapsed folder its parent
-        is a child in (if any) is scrolled into view.  
-        The send destination / receive source track is selected even
-        if its (grand)parents are scrolled into view, so in case it's 
-        inside a collapsed folder it's easy to pick it out after 
-        uncollapsing the folder.  
-
-        If there's no track under mouse cursor the script looks 
-        for the first selected track. Thus it can also be run from 
-        a toolbar or a menu in which case the relevant track must 
-        be selected.
-
-        If there're more than one send to or receive from 
-        a particular track, the total of such sends/receives 
-        is displayed in square brackets next to the destination 
-        track entry in the menu. This is purely for information.
-
-        To close the menu without action click elsewhere with 
-        the mouse or click 'Esc' key on the keyboard or click 
-        'close' menu item at the bottom.
+	If the send destination / receive source track happens to 
+	be inside a collapsed folder in the Mixer, its parent or the 
+	leftmost visible grandparent track of a collapsed folder its 
+	parent is a child in (if any) is scrolled into view instead.  
+	If the track is visible in the Mixer and happens to be in a
+	collapsed folder whose parent track is hidden, the leftmost
+	visible grandparent track of a collapsed folder its parent
+	is a child in (if any) is scrolled into view.  
+	The send destination / receive source track is selected even
+	if its (grand)parents are scrolled into view, so in case it's 
+	inside a collapsed folder it's easy to pick it out after 
+	uncollapsing the folder.  
+	
+	If there's no track under mouse cursor the script looks 
+	for the first selected track. Thus it can also be run from 
+	a toolbar or a menu in which case the relevant track must 
+	be selected.
+	
+	If there're more than one send to or receive from 
+	a particular track, the total of such sends/receives 
+	is displayed in square brackets next to the destination 
+	track entry in the menu. This if purely for information.
+	
+	To close the menu without action click elsewhere with 
+	the mouse or click 'Esc' key on the keyboard or click 
+	'close' menu item at the bottom.
 
 ]]
 
@@ -73,7 +75,7 @@ About: 	As far as going to send destination track is concerned
 
 -- Enable this setting to permanently 
 -- prevent USER SETTINGS reminder pop-up
-REMINDER_OFF = ""
+REMINDER_OFF = "1"
 
 -- Both settings are valid if both are filled out or both are empty;
 -- it's recommended to have both valid because this will allow easy
@@ -128,7 +130,6 @@ local ret, state = r.GetProjExtState(0, scr_name, 'REMINDER_OFF')
 	else return true
 	end
 end
-
 
 
 function Error_Tooltip(text)
@@ -290,9 +291,9 @@ local menu = (snd_menu_t and table.concat(snd_menu_t) or '')..sep..(rcv_menu_t a
 	-- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
 	-- https://forum.cockos.com/showthread.php?t=280658#25
 	-- https://forum.cockos.com/showthread.php?t=280658&page=2#44
-		if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82 then gfx.init('', 0, 0) end
+			if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82 then gfx.init('', 0, 0) end
 	gfx.x, gfx.y = gfx.mouse_x, gfx.mouse_y
-	local idx = gfx.showmenu('#Track # '..tr_idx..' — '..name..'||'..menu)
+	local idx = gfx.showmenu('#Track # '..tr_idx..(#name > 0 and ' — ' or '')..name..'||'..menu)
 		if idx > 2 then -- 2 to account for 'Track #' menu title and a submenu title which don't have corresponding fields in snd_t and rcv_t tables, otherwise click on these menu entrues may produce an error
 		local idx = idx-2 -- -2 to restore the index count valid for snd_t and rcv_t tables
 		local tr = snd_t and rcv_t and (idx <= #snd_t and snd_t[idx] or idx > #snd_t and rcv_t[idx-#snd_t-1]) -- when idx > #snd_t it's either corresponds to receive menu title or to rcv_t fields hence -1 to explude the title
