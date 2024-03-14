@@ -422,7 +422,7 @@ local scr_name = fullpath_init:match('.+[\\/].-_(.+)%.%w+') -- without path, ext
 local META = scr_name:match('.+_META$')
 
 -- doesn't run in non-META scripts
-META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Remove item or envelope lanes from Razor Edit areas_META.lua', names_t)
+META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Remove Razor Edit areas from item or envelope lanes_META.lua', names_t)
 
 
 local names_t = {(' |Remove Razor Edit areas from|'):upper(),
