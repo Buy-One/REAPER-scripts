@@ -1,5 +1,5 @@
 --[[
-ReaScript name: BuyOne_Remove item or envelope lanes from Razor Edit areas_META.lua (8 scripts)
+ReaScript name: BuyOne_Remove Razor Edit areas from item or envelope lanes_META.lua (8 scripts)
 Author: BuyOne
 Version: 1.5
 Changelog:  v1.5 #Renamed the scripts to accurately reflect their functionality
