@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Navigate to track send destination or receive source track via menu.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
-Changelog: 	1.3 #Minor tweak of the current track name readout 
+Version: 1.4
+Changelog: 	1.4 #Made gfx window display in REAPER builds newer than 6.82 
+		conditional on presence of OSARA extension
+		1.3 #Minor tweak of the current track name readout 
 		for cases when the track isn't named
 		1.2 #Added current track name readout
 		1.1 #Fixed REAPER version evaluation
@@ -143,7 +145,7 @@ r.TrackCtl_SetToolTip(text:upper():gsub('.','%0 '), x, y, true) -- spaced out //
 end
 
 
-function Collect_Snds_Rcvs(tr, cat, mixer_vis) -- cat is number: < 0 receives, 0 sends; mixer_vis is booleand
+function Collect_Snds_Rcvs(tr, cat, mixer_vis) -- cat is number: < 0 receives, 0 sends; mixer_vis is boolean
 local parm = cat < 0 and 'P_SRCTRACK' or cat == 0 and 'P_DESTTRACK'
 local t, menu_t = {}, {''} -- empty string as a placeholder for menu titles, without it table.insert() would have to be used outside of the function instead of simply assigning the title to the field
 local dest_tr_init, dest_snd_cnt = nil, 0
@@ -256,6 +258,7 @@ BOTH = not LIST_SENDS and not LIST_RECEIVES or LIST_SENDS and LIST_RECEIVES
 DISPLAY_OVER_SEND_LIST = #DISPLAY_OVER_SEND_LIST:gsub(' ','') > 0
 DISPLAY_OVER_IO_BUTTON = #DISPLAY_OVER_IO_BUTTON:gsub(' ','') > 0
 local supported_build = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.37
+local OSARA = r.GetToggleCommandState(r.NamedCommandLookup('_OSARA_CONFIG_reportFx')) >= 0 -- OSARA extension is installed
 
 local mixer_vis = r.GetToggleCommandStateEx(0,40078) == 1 -- View: Toggle mixer visible // when docked and the docker is closed the state is OFF so 'View: Show docker' toggle state doesn't need to be additionally evaluated
 local x, y = r.GetMousePosition()
@@ -291,12 +294,15 @@ local menu = (snd_menu_t and table.concat(snd_menu_t) or '')..sep..(rcv_menu_t a
 	-- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
 	-- https://forum.cockos.com/showthread.php?t=280658#25
 	-- https://forum.cockos.com/showthread.php?t=280658&page=2#44
-			if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82 then gfx.init('', 0, 0) end
+	-- screen reader used by blind users with OSARA extension may be affected by the absence if the gfx window
+	-- therefore only disable it in builds newer than 6.82 if OSARA extension isn't installed
+	-- ref: https://github.com/Buy-One/REAPER-scripts/issues/8#issuecomment-1992859534
+			if tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82 or OSARA then gfx.init('', 0, 0) end
 	gfx.x, gfx.y = gfx.mouse_x, gfx.mouse_y
 	local idx = gfx.showmenu('#Track # '..tr_idx..(#name > 0 and ' — ' or '')..name..'||'..menu)
 		if idx > 2 then -- 2 to account for 'Track #' menu title and a submenu title which don't have corresponding fields in snd_t and rcv_t tables, otherwise click on these menu entrues may produce an error
 		local idx = idx-2 -- -2 to restore the index count valid for snd_t and rcv_t tables
-		local tr = snd_t and rcv_t and (idx <= #snd_t and snd_t[idx] or idx > #snd_t and rcv_t[idx-#snd_t-1]) -- when idx > #snd_t it's either corresponds to receive menu title or to rcv_t fields hence -1 to explude the title
+		local tr = snd_t and rcv_t and (idx <= #snd_t and snd_t[idx] or idx > #snd_t and rcv_t[idx-#snd_t-1]) -- when idx > #snd_t it's either corresponds to receive menu title or to rcv_t fields hence -1 to exclude the title
 		or snd_t and snd_t[idx] or rcv_t and rcv_t[idx]
 
 			if tr then -- tr var can be nil if 'close' menu item has been selected
