@@ -2,16 +2,17 @@
 ReaScript name: BuyOne_Multi-action based on mouse cursor position in Arrange.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.4
-Changelog: 1.4 #Added 'Envelope manager' window to the list of windows needed in evaluation of docker state
-	   1.3 #Set up limitation to script functionality in cases where extensions aren't installed
-	       #Updated About and USER SETTINGS text accordingly
-	   1.2 #Fixed REAPER version evaluation
-	   1.1 #Fixed validation of command IDs of scripts in the MIDI Editor section of the Action list
-	   	#Fixed execution of MIDI Editor actions
-	   	#Changed the logic of designating an action as the MIDI Editor action in the USER SETTINGS,
-	   	updated the explanation accordingly
-	   	#Introduced a message to indicate that no action is associated with the slot if it's set to '0'
+Version: 1.5
+Changelog: 	1.5 #Fixed table formatting error
+		1.4 #Added 'Envelope manager' window to the list of windows needed in evaluation of docker state
+		1.3 #Set up limitation to script functionality in cases where extensions aren't installed
+		    #Updated About and USER SETTINGS text accordingly
+		1.2 #Fixed REAPER version evaluation
+		1.1 #Fixed validation of command IDs of scripts in the MIDI Editor section of the Action list
+		    #Fixed execution of MIDI Editor actions
+		    #Changed the logic of designating an action as the MIDI Editor action in the USER SETTINGS,
+		    updated the explanation accordingly
+		    #Introduced a message to indicate that no action is associated with the slot if it's set to '0'
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
@@ -388,7 +389,7 @@ routing = {'routing_dock', 'routingwnd_vis', 40768, 40251, 42031, 41888}, -- 3 t
 regmgr = {'%[regmgr%]', 'dock', 40326, 'wnd_vis'}, -- View: Show region/marker manager window ('Region/Marker Manager')	// doesn't keep size
 explorer = {'%[reaper_explorer%]', 'docked', 50124, 'visible'}, -- Media explorer: Show/hide media explorer ('Media Explorer') // doesn't keep size
 trackmgr = {'%[trackmgr%]', 'dock', 40906, 'wnd_vis'}, -- View: Show track manager window ('Track Manager') // doesn't keep size
-envmgr = {'%[envmgr%]', 'dock', 42678, 'wnd_vis'} -- View: Show envelope manager window ('Envelope Manager')
+envmgr = {'%[envmgr%]', 'dock', 42678, 'wnd_vis'}, -- View: Show envelope manager window ('Envelope Manager')
 grpmgr = {'%[grpmgr%]', 'dock', 40327, 'wnd_vis'}, -- View: Show track group manager window ('Track Group Manager')
 bigclock = {'%[bigclock%]', 'dock', 40378, 'wnd_vis'}, -- View: Show big clock window ('Big Clock') // doesn't keep size
 video = {'%[reaper_video%]', 'docked', 50125, 'visible'}, -- Video: Show/hide video window ('Video Window')
