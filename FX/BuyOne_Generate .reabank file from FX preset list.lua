@@ -44,6 +44,8 @@ About: 	The script allows creating .reabank files for individual plugins
 	of the User Guide and/or in this video https://www.youtube.com/watch?v=216O6xGWCxU
 	by Kenneth A of Crashwaggon Music
 
+	The script doesn't support focused plugins in FX containers introduced
+	in REAPER v7
 ]]
 
 local r = reaper
