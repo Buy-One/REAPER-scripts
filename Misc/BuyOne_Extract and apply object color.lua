@@ -7,76 +7,76 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About:  Apply color of one object to other objects. Can be done manually
-    		but it's tedious.
-    		
-    		Objects are: tracks, items, takes, envelopes, project markers/regions
-    		
-    		Order of source objects precedence at the extraction stage:
-    		
-    		1. Objects at the mouse cursor: project marker, region, 
-    		take (in multi-take items), item, TCP (track control panel)
-    		Among these take and item have precedence over merker/region 
-    		if both object types are found at the mouse cursor.
-    		For project marker, region to be detected as a source the mouse
-    		cursor must be located within the Arrange area; 
-    		2. Objects at the edit cursor: project marker, region  
-    		Edit cursor must be aligned with marker or with region start/end; 
-    		3. Selected envelope
-    		'Send Volume' and 'Send Pan' envelopes aren't supported due
-    		to REAPER color assignment mechanism;  
-    		4. Selected/active objects in the active context  
-    		Active context Arrange: active take (in multi-take items), item
-    		Active context Track: track  
-    		The contexts are activated with the mouse click within Arrange
-    		or within the Tracklist respectively.
-    		
-    		Order of target objects precedence at the application stage:
-    		
-    		1. Objects at the mouse cursor: take (in multi-take items), item, 
-    		TCP, project marker/region;
-    		Among these take and item have precedence over merker/region 
-    		if both object types are found at the mouse cursor;		
-    		2. Project markers, regions within time selection;
-    		Alignment with the time selection start/end is considered being
-    		within time selection;  
-    		3. Selected/active objects in the active context 
-    		Active context Arrange: active takes (in multi-take items), items
-    		Active context Track: tracks  
-    		The contexts are activated with the mouse click within Arrange
-    		or within the Tracklist respectively.
-    		
-    		Refer to the current context readout in the Apply dialogue making
-    		sure that it matches the one you're aiming at.
-    		
-    		Applying color to envelopes isn't supported because the applied 
-    		color cannot be saved with the project anyway. If it's not saved
-    		into the theme it will be loaded from reaper.ini file on the next 
-    		REAPER startup and apply to all projects.
-    		
-    		With MIDI items and tracks the color may differ depending on whether 
-    		their default non-selected and selected state colors are customized 
-    		in the 'Theme development / tweaker' dialogue'. However the color 
-    		which is extracted and applied is that of the non-selected state.
-    		
-    		Once color is applied to selected tracks/items they get de-selected
-    		so that the new color is apparent.
-    		
-    		Once color is applied it's cleared from the buffer.
-    		To clear the stored color from the buffer without applying it, make
-    		sure that there're no markers/regions within time selection or at the 
-    		mouse cursor, then: 
-    		A1) Deselect all items (by default it's left click within Arrange area)
-    		or deselect all items and click within the Arrange area
-    		OR
-    		A2) Deselect all tracks and click empty space beneath the track list
-    		(this option is less convenient)
-    		B) Run the script and assent to the prompt.
-    		Alternatively run the script, remove color codes from the Apply
-    		dialogue and click OK, in which case no prompt will be called.
-    		
-    		When there's color data in the buffer the script toggle state is ON.
-    		If the script is linked to a toolbar button or a menu item these
-    		are lit or checkmarked respectively while its toggle state is ON.
+	but it's tedious.
+	
+	Objects are: tracks, items, takes, envelopes, project markers/regions
+	
+	Order of source objects precedence at the extraction stage:
+	
+	1. Objects at the mouse cursor: project marker, region, 
+	take (in multi-take items), item, TCP (track control panel)
+	Among these take and item have precedence over merker/region 
+	if both object types are found at the mouse cursor.
+	For project marker, region to be detected as a source the mouse
+	cursor must be located within the Arrange area; 
+	2. Objects at the edit cursor: project marker, region  
+	Edit cursor must be aligned with marker or with region start/end; 
+	3. Selected envelope
+	'Send Volume' and 'Send Pan' envelopes aren't supported due
+	to REAPER color assignment mechanism;  
+	4. Selected/active objects in the active context  
+	Active context Arrange: active take (in multi-take items), item
+	Active context Track: track  
+	The contexts are activated with the mouse click within Arrange
+	or within the Tracklist respectively.
+	
+	Order of target objects precedence at the application stage:
+	
+	1. Objects at the mouse cursor: take (in multi-take items), item, 
+	TCP, project marker/region;
+	Among these take and item have precedence over merker/region 
+	if both object types are found at the mouse cursor;		
+	2. Project markers, regions within time selection;
+	Alignment with the time selection start/end is considered being
+	within time selection;  
+	3. Selected/active objects in the active context 
+	Active context Arrange: active takes (in multi-take items), items
+	Active context Track: tracks  
+	The contexts are activated with the mouse click within Arrange
+	or within the Tracklist respectively.
+	
+	Refer to the current context readout in the Apply dialogue making
+	sure that it matches the one you're aiming at.
+	
+	Applying color to envelopes isn't supported because the applied 
+	color cannot be saved with the project anyway. If it's not saved
+	into the theme it will be loaded from reaper.ini file on the next 
+	REAPER startup and apply to all projects.
+	
+	With MIDI items and tracks the color may differ depending on whether 
+	their default non-selected and selected state colors are customized 
+	in the 'Theme development / tweaker' dialogue'. However the color 
+	which is extracted and applied is that of the non-selected state.
+	
+	Once color is applied to selected tracks/items they get de-selected
+	so that the new color is apparent.
+	
+	Once color is applied it's cleared from the buffer.
+	To clear the stored color from the buffer without applying it, make
+	sure that there're no markers/regions within time selection or at the 
+	mouse cursor, then: 
+	A1) Deselect all items (by default it's left click within Arrange area)
+	or deselect all items and click within the Arrange area
+	OR
+	A2) Deselect all tracks and click empty space beneath the track list
+	(this option is less convenient)
+	B) Run the script and assent to the prompt.
+	Alternatively run the script, remove color codes from the Apply
+	dialogue and click OK, in which case no prompt will be called.
+	
+	When there's color data in the buffer the script toggle state is ON.
+	If the script is linked to a toolbar button or a menu item these
+	are lit or checkmarked respectively while its toggle state is ON.
 
 ]]
 
@@ -270,7 +270,7 @@ local color, mrkr_reg_props_t
 	color, mrkr_reg_props_t = get_mrkr_reg(cur_pos) -- at the edit cursor
 	end
 
-	if not color then -- the edit cursor is not aligned with marker or region start/end // look for these at the mouse cursor
+	if not color and r.GetTrackFromPoint(r.GetMousePosition()) then -- the edit cursor is not aligned with marker or region start/end // look for these at the mouse cursor // GetTrackFromPoint() prevents this context from activation if the script is run from a toolbar or the Action list window floating over Arrange or if mouse cursor is outside of Arrange
 	r.PreventUIRefresh(1)
 	ACT(40513) -- View: Move edit cursor to mouse cursor [with snapping so it can snap to marker / region start/end]
 	local new_cur_pos = r.GetCursorPosition()
