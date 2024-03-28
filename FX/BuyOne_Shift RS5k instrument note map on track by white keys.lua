@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Shift RS5k instrument note map on track by white keys.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.6
+Version: 1.7
 Changelog:
+	   v1.7 #Added absent function Validate_FX_Identity()
 	   v1.6 #Fixed note map restoration error when the track doesn't have named notes
 		#Updated track note map storage mechanism so that the stored data are unique to each track
 		#Updated undo point creation logic to make the note map data stored inside the track less
@@ -30,7 +31,7 @@ About:  The script only affects RS5k instances with drum note mapping,
 	While shifting it snaps note in each RS5k instance on selected track
 	to natural (white) keys in case some are mapped to black keys.
 	
-	The shift value accepted from the user input is interpreted 
+	The 'shift by' value accepted from the user input is interpreted 
 	as the number of white keys to shift by.
 	
 	If the track contains named notes associated with RS5k instances
@@ -43,7 +44,7 @@ About:  The script only affects RS5k instances with drum note mapping,
 	Note names shifting is the feature for which SWS/S&M extension 
 	is recommended.  So if it happens to faulter, first try installing 
 	the extension and if this fails to fix it contact the developer.
-
+	
 	If the script is run from the MIDI Editor section of the action list
 	it automatically targets the RS5k instrument of the track the 
 	currently open MIDI item belongs to.  
@@ -52,11 +53,11 @@ About:  The script only affects RS5k instances with drum note mapping,
 	
 	The script is able to restore the original note map but only after
 	it's been run at least once. The original map is the one it detects
-	at the very first run. After that if the RS5k instrument track is saved 
-	with the project or as a track template the original map data
-	will be retained in it and available for recall at a later time.  
-	The script is also able to store current note map as default instead
-	of the originally stored note map.
+at the very first run. After that if the RS5k instrument track is saved 
+with the project or as a track template the original map data
+will be retained in it and available for recall at a later time.  
+The script is also able to store current note map as default instead
+of the originally stored note map.
 
 ]]
 
@@ -126,6 +127,91 @@ function Esc(str)
 local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
 return str
 end
+
+
+function Validate_FX_Identity(obj, fx_idx, fx_name, parm_t)
+-- the function is based on Get_FX_Parm_Orig_Name() above
+-- in case it's been aliased by the user
+-- obj is track or take
+--, fx_name is the original name of the plugin being validated
+-- parm_t is a table indexed by param indices whose fields hold corresponding original param names
+-- e.g. {[4] = 'parm name 4', [12] = 'parm name 12', [23] = 'parm name 23'}
+-- works with builds 6.37+
+-- relies on Esc() function
+local tr, take = r.ValidatePtr(obj, 'MediaTrack*'), r.ValidatePtr(obj, 'MediaItem_Take*')
+local GetFXName, GetConfig, CopyFX =
+table.unpack(tr and {r.TrackFX_GetFXName, r.TrackFX_GetNamedConfigParm, r.TrackFX_CopyToTrack}
+or take and {r.TakeFX_GetFXName, r.TakeFX_GetNamedConfigParm, r.TakeFX_CopyToTrack} or {})
+-- get name displayed in fx chain
+local retval, fx_chain_name = GetFXName(obj, fx_idx, '')
+	if fx_chain_name:match(Esc(fx_name)) then return true end -- ignoring fx type prefix
+
+-- if fx chain displayed name doesn't match the user supplied name, meaning was renamed
+-- get fx browser displayed name in builds which support this option
+
+local build_6_37 = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.37
+
+local orig_fx_name
+
+	if build_6_37 then
+	retval, orig_fx_name = GetConfig(obj, fx_idx, 'original_name') -- or 'fx_name' // returned with fx type prefix
+		if orig_fx_name:match(Esc(fx_name)) then return true end -- ignoring fx type prefix
+	end
+
+-- if validation by the original name failed or wasn't supported
+-- validate using parameter names
+
+-- add temp track and copy the fx instance to it
+r.PreventUIRefresh(1)
+r.InsertTrackAtIndex(r.GetNumTracks(), false) -- wantDefaults false; insert new track at end of track list and hide it; action 40702 'Track: Insert new track at end of track list' creates undo point hence unsuitable
+local temp_track = r.GetTrack(0,r.CountTracks(0)-1)
+r.SetMediaTrackInfo_Value(temp_track, 'B_SHOWINMIXER', 0) -- hide in Mixer
+r.SetMediaTrackInfo_Value(temp_track, 'B_SHOWINTCP', 0) -- hide in Arrange
+-- search for the name of fx parameter at the same index as the one being evaluated, in the copy of the fx
+-- on the temp track
+CopyFX(obj, fx_idx, temp_track, 0, false) -- is_move false
+local name_match = true
+	for i = 0, r.TrackFX_GetNumParams(temp_track, 0)-1 do -- fx_idx 0
+	local retval, parm_name = r.TrackFX_GetParamName(temp_track, 0, i, '') -- fx_idx 0
+		if parm_t[i] and parm_t[i] ~= parm_name then
+		-- break rather than return to allow deletion of the temp track
+		-- before returning the value
+		name_match = false break
+		end
+	end
+
+-- if name_match ends up being false there's possibility that the parameters have been aliased
+-- in which case collate parm names in the clean instance of the fx loaded from the fx browser in builds 6.37+
+	if build_6_37 then
+	-- delete fx instance copied in the previous routine to the temp track
+	DeleteFX(obj, 0)
+	-- use fx name displayed in fx browser
+	-- to insert FX instance on the temp track
+	-- the fx names retrieved with GetNamedConfigParm() always contain fx type prefix,
+	-- the function FX_AddByName() supports fx type prefixing but in the retrieved fx name 
+	-- the fx type prefix is followed by space which wasn't allowed in FX_AddByName()
+	-- before build 7.06 so it must be removed, otherwise the function will fail
+	-- https://forum.cockos.com/showthread.php?t=285430	
+	orig_fx_name = orig_fx_name:gsub(' ','',1) -- 1 is index of the 1st space in the string	
+	r.TrackFX_AddByName(temp_track, orig_fx_name, 0, -1000) -- insert // recFX 0 = false, instantiate at index 0
+	name_match = true
+		for i = 0, r.TrackFX_GetNumParams(temp_track, 0)-1 do -- fx_idx 0
+		local retval, parm_name = r.TrackFX_GetParamName(temp_track, 0, i, '') -- fx_idx 0
+			if parm_t[i] and parm_t[i] ~= parm_name then
+			-- break rather than return to allow deletion of the temp track 
+			-- before returning the value
+			name_match = false break
+			end
+		end
+	end
+
+r.DeleteTrack(temp_track)
+r.PreventUIRefresh(-1)
+
+return name_match
+
+end
+
 
 
 local function GetObjChunk(obj)
