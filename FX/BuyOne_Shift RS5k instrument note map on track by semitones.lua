@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Shift RS5k instrument note map on track by semitones.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.6
+Version: 1.7
 Changelog:
+	   v1.7 #Added lacking argument to the CopyFX function
 	   v1.6 #Fixed note map restoration error when the track doesn't have named notes
 		#Updated track note map storage mechanism so that the stored data are unique to each track
 		#Updated undo point creation logic to make the note map data stored inside the track less
@@ -33,13 +34,13 @@ About:  If the track contains named notes associated with RS5k instances
 	Note names shifting is the feature for which SWS/S&M extension 
 	is recommended.  So if it happens to faulter, first try installing 
 	the extension and if this fails to fix it contact the developer.
-		
+	
 	If the script is run from the MIDI Editor section of the action list
 	it automatically targets the RS5k instrument of the track the 
 	currently open MIDI item belongs to.  
 	If it's run from the Main section of the action list it targets
 	the first selected track.
-		
+	
 	The script is able to restore the original note map but only after
 	it's been run at least once. The original map is the one it detects
 	at the very first run. After that if the RS5k instrument track is saved 
@@ -136,6 +137,18 @@ local retval, fx_chain_name = GetFXName(obj, fx_idx, '')
 	if fx_chain_name:match(Esc(fx_name)) then return true end -- ignoring fx type prefix
 
 -- if fx chain displayed name doesn't match the user supplied name, meaning was renamed
+-- get fx browser displayed name in builds which support this option
+
+local build_6_37 = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.37
+
+local orig_fx_name
+
+	if build_6_37 then
+	retval, orig_fx_name = GetConfig(obj, fx_idx, 'original_name') -- or 'fx_name' // returned with fx type prefix
+		if orig_fx_name:match(Esc(fx_name)) then return true end -- ignoring fx type prefix
+	end
+
+-- if validation by the original name failed or wasn't supported
 -- validate using parameter names
 
 -- add temp track and copy the fx instance to it
@@ -146,7 +159,7 @@ r.SetMediaTrackInfo_Value(temp_track, 'B_SHOWINMIXER', 0) -- hide in Mixer
 r.SetMediaTrackInfo_Value(temp_track, 'B_SHOWINTCP', 0) -- hide in Arrange
 -- search for the name of fx parameter at the same index as the one being evaluated, in the copy of the fx
 -- on the temp track
-CopyFX(obj, fx_idx, temp_track, 0)
+CopyFX(obj, fx_idx, temp_track, 0, false) -- is_move false
 local name_match = true
 	for i = 0, r.TrackFX_GetNumParams(temp_track, 0)-1 do -- fx_idx 0
 	local retval, parm_name = r.TrackFX_GetParamName(temp_track, 0, i, '') -- fx_idx 0
@@ -157,25 +170,25 @@ local name_match = true
 		end
 	end
 
--- if name_match ends up being false there's possibility that it has been aliased
+-- if name_match ends up being false there's possibility that the parameters have been aliased
 -- in which case collate parm names in the clean instance of the fx loaded from the fx browser in builds 6.37+
-	if tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.37 then -- instead of '< 6.37 then return name_match' to allow deletion of the temp track
-	-- get fx name displayed in fx browser
-	local retval, orig_fx_name = GetConfig(obj, fx_idx, 'original_name') -- or 'fx_name' // returned with fx type prefix
-	-- insert temp track
-	-- insert FX instance on the temp track
-	-- the fx names retrieved with GetNamedConfigParm() always contains fx type prefix,
-	-- the function FX_AddByName() supports fx type prefixing but in the retrieved fx name
-	-- the fx type prefix is followed by space which isn't allowed in FX_AddByName()
-	-- so it must be removed, otherwise the function will fail
-	-- https://forum.cockos.com/showthread.php?t=285430
-	orig_fx_name = orig_fx_name:gsub(' ','',1) -- 1 is index of the 1st space in the string
+	if build_6_37 then
+	-- delete fx instance copied in the previous routine to the temp track
+	DeleteFX(obj, 0)
+	-- use fx name displayed in fx browser
+	-- to insert FX instance on the temp track
+	-- the fx names retrieved with GetNamedConfigParm() always contain fx type prefix,
+	-- the function FX_AddByName() supports fx type prefixing but in the retrieved fx name 
+	-- the fx type prefix is followed by space which wasn't allowed in FX_AddByName()
+	-- before build 7.06 so it must be removed, otherwise the function will fail
+	-- https://forum.cockos.com/showthread.php?t=285430	
+	orig_fx_name = orig_fx_name:gsub(' ','',1) -- 1 is index of the 1st space in the string	
 	r.TrackFX_AddByName(temp_track, orig_fx_name, 0, -1000) -- insert // recFX 0 = false, instantiate at index 0
 	name_match = true
 		for i = 0, r.TrackFX_GetNumParams(temp_track, 0)-1 do -- fx_idx 0
 		local retval, parm_name = r.TrackFX_GetParamName(temp_track, 0, i, '') -- fx_idx 0
 			if parm_t[i] and parm_t[i] ~= parm_name then
-			-- break rather than return to allow deletion of the temp track
+			-- break rather than return to allow deletion of the temp track 
 			-- before returning the value
 			name_match = false break
 			end
