@@ -174,7 +174,7 @@ local name_match = true
 -- in which case collate parm names in the clean instance of the fx loaded from the fx browser in builds 6.37+
 	if build_6_37 then
 	-- delete fx instance copied in the previous routine to the temp track
-	DeleteFX(obj, 0)
+	DeleteFX(temp_track, 0)
 	-- use fx name displayed in fx browser
 	-- to insert FX instance on the temp track
 	-- the fx names retrieved with GetNamedConfigParm() always contain fx type prefix,
