@@ -2,8 +2,9 @@
 ReaScript Name: BuyOne_Simplify FX names.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
-Changelog: v1.3 #Fixed incorrect user option storage
+Version: 1.4
+Changelog: v1.4 #Updated About text
+	   v1.3 #Fixed incorrect user option storage
 		#Fixed trimming JSFX down to file name when no description is displayed in the name
 		#Added an option to apply the script to FX in all takes of multi-take items
 		#Added internal check for user renamed FX instances to prevent changing custom name by accident
@@ -12,7 +13,12 @@ Changelog: v1.3 #Fixed incorrect user option storage
 		#Added a feature of user preferences storage between script runs
 Licence: WTFPL
 REAPER: v6.37+
-About: Trims FX names in FX chains according to user preferences
+About: 	Trims FX names in FX chains according to user preferences.
+		
+	Only applies to original FX names. If FX name in FX chain
+	differs from the one displayed in the FX browser, which 
+	may be a result of renaming by the user, no change occurs 
+	to prevent butchering user custom FX instance name.
 
 ]]
 
