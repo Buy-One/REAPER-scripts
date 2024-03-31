@@ -173,7 +173,7 @@ local scr_name = scr_name:match('([^\\/]+)%.%w+')
 
 local TAG = #TAG:gsub('[%s]','') > 0 and TAG
 
-	if TAG then r.MB('  The TAG has not been set\n\nin the script USER SETTINGS.','ERROR',0) r.defer(function() end) return end
+	if not TAG then r.MB('  The TAG has not been set\n\nin the script USER SETTINGS.','ERROR',0) r.defer(function() end) return end
 
 	if r.CSurf_NumTracks(true) + r.CountMediaItems(0) == 0 then r.MB('No tracks or items in the project.','ERROR',0) r.defer(function() end) return end
 
