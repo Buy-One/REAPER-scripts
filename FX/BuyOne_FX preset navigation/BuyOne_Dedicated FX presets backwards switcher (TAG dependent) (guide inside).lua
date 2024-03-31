@@ -4,13 +4,14 @@
 * Author: BuyOne
 * Author URL: https://forum.cockos.com/member.php?u=134058
 * Licence: WTFPL
-* Version: 1.1
+* Version: 1.2
 * Forum Thread:
 * Demo:
 * REAPER: at least v5.962
 * Changelog:
-	+ v1.0 	Initial release
+	+ v1.2	Tag evaluation has been made more reliable
 	+ v1.1	Added option for using custom preset lists for selective cycling
+	+ v1.0 	Initial release
 
 --############################## G U I D E #####################################
 
@@ -251,7 +252,10 @@ end
 
 function EvaluateTAG(fx_name,TAG)
 local tag = TAG:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
-return fx_name:match('^('..tag..')%s') or fx_name:match('%s('..tag..')%s') or fx_name:match('%s('..tag..')$') or fx_name:match(tag)
+return fx_name:match('^('..tag..')%s')
+or fx_name:match('%s('..tag..')%s') 
+or fx_name:match('%s('..tag..')$') 
+or fx_name:match('^%s*'..tag..'%s*$') -- when the TAG is the whole name
 end
 
 
