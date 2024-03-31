@@ -7,16 +7,16 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script displays a menu of TCP/MCP layouts available
-    		in the current theme.
-    		
-    		It's meant to be used within a custom action with
-    		any of the track insert actions, such as
-    		Track: Insert new track
-    		Track: Insert new track at end of mixer
-    		Track: Insert new track at end of track list
-    		Track: Insert multiple new tracks...
-    		
-    		and follow such action within the custom action.		
+	in the current theme.
+	
+	It's meant to be used within a custom action with
+	any of the track insert actions, such as
+	Track: Insert new track
+	Track: Insert new track at end of mixer
+	Track: Insert new track at end of track list
+	Track: Insert multiple new tracks...
+	
+	and follow such action within the custom action.
 ]]
 
 
