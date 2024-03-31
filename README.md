@@ -7,7 +7,7 @@ Lua scripts for Cockos' REAPER
 
 **Script batch installation and transfer of scripts user settings from their older versions to the newer ones before their update can be done semi-automatically with the script `BuyOne_Script updater and installer.lua`, which should be installed first. Refer to the detailed instructions inside the script.**
 
-[Complete list (175)](https://github.com/Buy-One/REAPER-scripts/wiki/SCRIPT-LIST)
+[Complete list (177)](https://github.com/Buy-One/REAPER-scripts/wiki/SCRIPT-LIST)
 
 [Download all](https://github.com/Buy-One/REAPER-scripts/archive/refs/heads/main.zip)
 
