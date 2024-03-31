@@ -6,7 +6,7 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
-About: 	The script displays a menu of TCP/MCP layouts available
+About: 	The script displays a menu of TCP layouts available
 	in the current theme.
 	
 	It's meant to be used within a custom action with
