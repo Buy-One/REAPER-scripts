@@ -10,6 +10,7 @@
 * REAPER: at least v5.962
 * Changelog:
 	+ v1.2	Tag evaluation has been made more reliable
+		Multi-word tag has been allowed
 	+ v1.1	Added option for using custom preset lists for selective cycling
 	+ v1.0 	Initial release
 
@@ -185,9 +186,9 @@ or fx_name:match('^%s*'..tag..'%s*$') -- when the TAG is the whole name
 end
 
 
-local TAG = TAG:gsub('[%s]','') -- remove empty spaces
+local TAG = #TAG:gsub('[%s]','') > 0 and TAG
 
-	if TAG == '' then r.MB('  The TAG has not been set\n\nin the script USER SETTINGS.','ERROR',0) r.defer(function() end) return end
+	if not TAG then r.MB('  The TAG has not been set\n\nin the script USER SETTINGS.','ERROR',0) r.defer(function() end) return end
 
 local ret, fx_GUID = r.GetProjExtState(0, scr_name, 'PRESET_SWITCHER_DATA')
 
