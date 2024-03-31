@@ -10,6 +10,7 @@
 * REAPER: at least v5.962
 * Changelog:
 	+ v1.2	Tag evaluation has been made more reliable
+		Multi-word tag has been allowed
 	+ v1.1	Added option for using custom preset lists for selective cycling
 	+ v1.0 	Initial release
 
@@ -170,9 +171,9 @@ local _,scr_name, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
 local scr_name = scr_name:match('([^\\/]+)%.%w+')
 
 
-local TAG = TAG:gsub('[%s]','') -- remove empty spaces
+local TAG = #TAG:gsub('[%s]','') > 0 and TAG
 
-	if TAG == '' then r.MB('  The TAG has not been set\n\nin the script USER SETTINGS.','ERROR',0) r.defer(function() end) return end
+	if TAG then r.MB('  The TAG has not been set\n\nin the script USER SETTINGS.','ERROR',0) r.defer(function() end) return end
 
 	if r.CSurf_NumTracks(true) + r.CountMediaItems(0) == 0 then r.MB('No tracks or items in the project.','ERROR',0) r.defer(function() end) return end
 
