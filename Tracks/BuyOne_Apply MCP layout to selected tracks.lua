@@ -118,7 +118,7 @@ local layout_type = scr_name:match('TCP') or scr_name:match('MCP')
 local i, t = 0, {}
 
 	repeat
-	local retval, layout = r.ThemeLayout_GetLayout(layout_type, i)
+	local retval, layout = r.ThemeLayout_GetLayout(layout_type, i) -- layout_type arg is apparently case agnostic
 		if retval and #layout > 0 then t[#t+1] = layout	end
 	i = i+1
 	until not retval
