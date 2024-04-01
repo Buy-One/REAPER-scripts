@@ -7,7 +7,7 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script allows to insert tracks with specific
-	TC layout.
+	TCP layout.
 	
 	Upon script execution a layout menu appears.
 	Select the preferred layout from the menu by
