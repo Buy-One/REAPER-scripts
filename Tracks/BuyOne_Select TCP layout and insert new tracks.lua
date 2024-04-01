@@ -137,7 +137,7 @@ local output = Show_Menu_Dialogue(layout_type:gsub('.','%0  ')..'|'..table.conca
 	local layout = t[output-1] -- offsetting to account for the menu title
 
 	local ret, output =
-	r.GetUserInputs('INSERT & APPLY LAYOUT (empty and 0 is 1, negative is positive, < 1 is 1)', 1, 'Number of tracks ( integer ),extrawidth=190','')
+	r.GetUserInputs('INSERT WITH LAYOUT (empty and 0 is 1, negative is positive, < 1 is 1)', 1, 'Number of tracks ( integer ),extrawidth=190','')
 	output = output:gsub(' ','')
 		if not ret then return r.defer(no_undo) end
 
