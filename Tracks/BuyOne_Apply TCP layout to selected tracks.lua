@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Apply TCP layout to selected tracks.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #1.1 Added menu title
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script displays a menu of TCP layouts available
@@ -118,21 +118,23 @@ local layout_type = scr_name:match('TCP') or scr_name:match('MCP')
 local i, t = 0, {}
 
 	repeat
-	local retval, layout = r.ThemeLayout_GetLayout(layout_type, i)
+	local retval, layout = r.ThemeLayout_GetLayout(layout_type, i) -- layout_type arg is apparently case agnostic
 		if retval and #layout > 0 then t[#t+1] = layout	end
 	i = i+1
 	until not retval
 
-local output = Show_Menu_Dialogue(table.concat(t,'|'))
+local output = Show_Menu_Dialogue(layout_type:gsub('.','%0  ')..'|'..table.concat(t,'|'))
 
-	if output > 0 then
+	if output > 1 then -- accounting for the title
 	r.Undo_BeginBlock()
-	local layout = t[output]
+	r.PreventUIRefresh(1)
+	local layout = t[output-1] -- offsetting to account for the menu title
 		for i = 0, tr_cnt-1 do
 		local tr = r.GetSelectedTrack(0,i)
 		r.GetSetMediaTrackInfo_String(tr, 'P_TCP_LAYOUT', layout, true) -- setNewValue true
 		end
-	r.Undo_EndBlock('Apply TCP layout "'..layout..'" to selected tracks', -1)
+	r.PreventUIRefresh(-1)
+	r.Undo_EndBlock('Apply TCP layout "'..layout..'" to selected tracks', -1)	
 	end
 
 
