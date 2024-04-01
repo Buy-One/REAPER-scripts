@@ -7,27 +7,27 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script allows to insert tracks with specific
-    		TC layout.
-    		
-    		Upon script execution a layout menu appears.
-    		Select the preferred layout from the menu by
-    		clicking the menu item.
-    		Once clicked a track number input box will appear.
-    		Input the desired number of tracks and click OK.
-    		In the box obviously only integers are supported.
-    		Zero and empty field default to 1, negative numerals
-    		are treated as positive, decimals are rounded down,
-    		decimals smaller that 1 are clamped to l.
-    		
-    		The script uses 'Track: Insert new track' action
-    		to insert tracks therefore the same rules apply, i.e.
-    		new tracks are inserted after the last clicked
-    		track whether currently selected or not.
-    		
-    		If the setting Preferences -> Appearence -> Hightlight
-    		edit cursor over last selected track is enabled
-    		the last clicked track will be indicated by a bracket
-    		displayed over the edit cursor.
+	TC layout.
+	
+	Upon script execution a layout menu appears.
+	Select the preferred layout from the menu by
+	clicking the menu item.
+	Once clicked a track number input box will appear.
+	Input the desired number of tracks and click OK.
+	In the box obviously only integers are supported.
+	Zero and empty field default to 1, negative numerals
+	are treated as positive, decimals are rounded down,
+	decimals smaller that 1 are clamped to l.
+	
+	The script uses 'Track: Insert new track' action
+	to insert tracks therefore the same rules apply, i.e.
+	new tracks are inserted after the last clicked
+	track whether currently selected or not.
+	
+	If the setting Preferences -> Appearence -> Hightlight
+	edit cursor over last selected track is enabled
+	the last clicked track will be indicated by a bracket
+	displayed over the edit cursor.
 		
 ]]
 
