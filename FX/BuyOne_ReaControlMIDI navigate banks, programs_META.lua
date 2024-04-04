@@ -8,174 +8,174 @@ Licence: WTFPL
 REAPER: at least v5.962
 Metapackage: true
 Provides:	[main=main,midi_editor] .
-    			. > BuyOne_ReaControlMIDI select next bank (MSB).lua
-    			. > BuyOne_ReaControlMIDI select previous bank (MSB).lua
-    			. > BuyOne_ReaControlMIDI select next program.lua
-    			. > BuyOne_ReaControlMIDI select previous program.lua
-    			. > BuyOne_ReaControlMIDI select next bank with Bank Select slider (MSB).lua
-    			. > BuyOne_ReaControlMIDI select previous bank with Bank Select slider (MSB).lua
-    			. > BuyOne_ReaControlMIDI select next bank with Bank Select slider (LSB).lua
-    			. > BuyOne_ReaControlMIDI select previous bank with Bank Select slider (LSB).lua
-    			. > BuyOne_ReaControlMIDI cycle through banks (MSB) (mousewheel).lua
-    			. > BuyOne_ReaControlMIDI cycle through programs.lua
-    			. > BuyOne_ReaControlMIDI cycle through banks with Bank Select slider (MSB) (mousewheel).lua
-    			. > BuyOne_ReaControlMIDI cycle through banks with Bank Select slider (LSB) (mousewheel).lua
+		. > BuyOne_ReaControlMIDI select next bank (MSB).lua
+		. > BuyOne_ReaControlMIDI select previous bank (MSB).lua
+		. > BuyOne_ReaControlMIDI select next program.lua
+		. > BuyOne_ReaControlMIDI select previous program.lua
+		. > BuyOne_ReaControlMIDI select next bank with Bank Select slider (MSB).lua
+		. > BuyOne_ReaControlMIDI select previous bank with Bank Select slider (MSB).lua
+		. > BuyOne_ReaControlMIDI select next bank with Bank Select slider (LSB).lua
+		. > BuyOne_ReaControlMIDI select previous bank with Bank Select slider (LSB).lua
+		. > BuyOne_ReaControlMIDI cycle through banks (MSB) (mousewheel).lua
+		. > BuyOne_ReaControlMIDI cycle through programs.lua
+		. > BuyOne_ReaControlMIDI cycle through banks with Bank Select slider (MSB) (mousewheel).lua
+		. > BuyOne_ReaControlMIDI cycle through banks with Bank Select slider (LSB) (mousewheel).lua
 About:	If this script name is suffixed with META, when executed 
-    		it will automatically spawn all individual scripts included 
-    		in the package into the directory of the META script and will 
-    		import them into the Action list from that directory. 
-    		That's provided such scripts don't exist yet, if they do, 
-    		then in order to recreate them they have to be deleted from 
-    		the Action list and from the disk first.  
-    		If there's no META suffix in this script name it will perfom 
-    		the operation indicated in its name.  
-    
-    		The scripts included in the package target ReaControlMIDI 
-    		instance whose name in FX chain contains the TAG which has 
-    		been defined in the USER SETTINGS. All FX chain types are 
-    		supported.
-    		
-    		!!! IMPORTANT !!! The TAG must be be followed by a space 
-    		if it's appended to the beginning of the FX instance name 
-    		(e.g. 'TAG My plugin'), preceded by space at the end of
-    		the name (e.g. 'My plugin TAG'), bordered by spaces in the 
-    		middle of the name (e.g. 'My TAG plugin') unless it only 
-    		consist of the TAG.
-    		
-    		The script targets the first found tagged ReaControlMIDI 
-    		instance. First it looks among tracks, then among takes.		
-    
-    		Tracks hidden in Arrange view and items on such tracks 
-    		are ignored. 
-    		
-    		Due to REAPER bug https://forum.cockos.com/showthread.php?t=289639
-    		in rare use cases where bank LSB number matters, program 
-    		navigation scripts only support .reabank programs under LSB bank 0. 
-    		Therefore if you intend to use the script with .reabank files 
-    		make sure that bank LSB number of all relevant program lists 
-    		is 0. See PROGRAM/PRESET NAVIGATION paragraph below.
-    		
-    		In scripts which contain 'CC slider (MSB)' verbiage in the 
-    		name, that is those aimed at navigation of MSB bank numbers 
-    		with a slider, the navigation step size is 128 when 'Raw mode' 
-    		option is disabled, i.e.  0 (1), 128 (2), 256 (3), 384 (4), 
-    		512 (5), 740 (6) ... 16256 (127). When 'Raw mode' option is 
-    		enabled the step size is 1. Selection of an MSB bank value is 
-    		also a selection of LSB bank number 0.
-    		
-    		In scripts which contain 'CC slider (LSB)' verbiage in the 
-    		name, that is those aimed at navigation of LSB bank numbers 
-    		with a slider, the navigation is limited to the LSB range of 
-    		the current MSB bank value, i.e. the LSB range of the MSB bank 
-    		value 0 (1) is 0 - 127, the LSB range of the MSB bank value 128 
-    		(2) is 128 - 255, that is current MSB bank value + 127.
-    		
-    		
-    		PROGRAM/PRESET NAVIGATION
-    		
-    		Scripts which contain the word 'program' in the name, that is
-    		those aimed at navigation of programs can be used to navigate
-    		presets in other plugins. For this to work the tagged instance
-    		of ReaControlMIDI must be inserted upstream of such plugins
-    		and the plugins themselves have set to receive program change 
-    		message via the + button -> Link to MIDI program change -> 
-    		Link all channels sequentially OR Channel 1-16.  
-    		To be able to navigate a selection of plugin presets create a 
-    		custom .reabank file listing in it only numbers of presets you 
-    		want to be able to switch and load it into the tagged 
-    		ReaControlMIDI instance. Obviously a maximum of 128 presets are
-    		supported. Current bank MSB and LSB numbers don't matter.	
-    		
-    		Plugin preset navigation as described above can be automated 
-    		with SWS/S&M extension action markers on the fly during 
-    		playback/recording to select specific program/preset. Ation 
-    		markers feature must be turned on in the extension settings 
-    		at 'Extensions -> SWS Options -> Marker actions' from the main 
-    		menu or directly with 'SWS: Enable marker actions' 
-    		or 'SWS: Toggle marker actions enable' 
-    		actions in the Action list.				
-    		
-    		If program numbers are specified in action markers to trigger
-    		program/preset selection they must be 0-based, i.e. 0 = preset 1, 
-    		1 = preset 2, 2 = preset 3 and so on, that is using numbering 
-    		convention supported by .reabank files regardless of actual
-    		use of .reabank file.
-    		
-    		The action marker name must adhere to the following formats:
-    
-    		1) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; 6		
-    		Where: '!' is the action marker modifier, always the same;
-    		'_RSceeb8ead418881000e42adc04b33bd67d04e3d79' is this script 
-    		command ID or a command ID of a custom/cycle action featuring this 
-    		script, which can be copied from their right click context menu 
-    		in the Action list with 'Copy selected action command ID' option, 
-    		will be different in your installation;
-    		and '6' is the program number which will trigger selection 
-    		of preset 7 (6+1) in the target plugin
-    		
-    		2) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; My program name
-    		Where: 'My program name' is the program name found in the .reabank 
-    		file. The program name will be searched in the entire .reabank file 
-    		and the number associated with the first found instance will trigger 
-    		preset selection in the target plugin.
-    		This format is only relevant if REABANK_FILE setting has been 
-    		enabled in the USER SETTINGS.
-    		
-    		The formats 1) and 2) are suitable in most cases because most 
-    		plugins don't support multiple banks and subbanks which could be 
-    		selected with MIDI Bank Select MSB and LSB messages.  
-    		
-    		Selection of plugin presets via ReaControlMIDI works regardless
-    		of bank MSB and LSB values, only program numbers matter.
-    		
-    
-    		3) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; 0 0 6
-    		Where: first '0' is the bank MSB value, second '0' is the bank LSB 
-    		value and '6' is the program number which will trigger selection 
-    		of preset 7 in the target plugin
-    		
-    		4) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; 0 0 My program name
-    		Where: first '0' is the bank MSB value, second '0' is the bank LSB 
-    		value and 'My program name' is the program name in the listed MSB
-    		and LSB banks. The program number associated with the first found 
-    		instance of this program name will trigger preset selection in the 
-    		target plugin.  
-    		This format is only relevant if REABANK_FILE setting has been 
-    		enabled in the USER SETTINGS.
-    		
-    		The formats 3) and 4) are much less suitable for the same reason 
-    		why formats 1) and 2) are much more suitable.		
-    		
-    		C a v e a t
-    
-    		If after a particular preset selection was triggered in the target 
-    		plugin from the action marker with one of program related scripts 
-    		as decribed above via ReaControlMIDI and then another preset was 
-    		selected manually or by other means in the target plugin, it won't
-    		be possible to re-trigger selection of the same preset again from
-    		the action marker unless selection of another preset was triggered
-    		via ReaControlMIDI. That's because after the first trigger, the 
-    		program value in ReaControlMIDI doesn't change or reset when another 
-    		preset is selected by other means in the target plugin, while program 
-    		select message sent by ReaControlMIDI is based on changing values.
-    		
-    		If you prefer selecting presets via ReaConrolMIDI plugin by relying 
-    		on a .reabank file you may be interested in the script 
-    		BuyOne_Generate .reabank file from FX preset list.lua
-    		https://github.com/Buy-One/REAPER-scripts/blob/main/FX/BuyOne_Generate%20.reabank%20file%20from%20FX%20preset%20list.lua
-    		
-    		
-    		MOUSEWHEEL
-    		
-    		When running scripts from the package which are supposed to be run 
-    		with the mouswheel (unclude 'mouswheel' verbiage in their name) 
-    		the mouse cursor must be located outside of ReaControlMIDI UI to prevent 
-    		on one hand affecting the controls with the mousewheel directly rather 
-    		than via the script when the preference at 'Editing Behavior -> Mouse -> 
-    		Ignore mousewheel on all faders' is disabled, and on the other to be able 
-    		to call the script to begin with when it's enabled because in this case
-    		mousewheel over the plugin UI will be ignored.
-		
+	it will automatically spawn all individual scripts included 
+	in the package into the directory of the META script and will 
+	import them into the Action list from that directory. 
+	That's provided such scripts don't exist yet, if they do, 
+	then in order to recreate them they have to be deleted from 
+	the Action list and from the disk first.  
+	If there's no META suffix in this script name it will perfom 
+	the operation indicated in its name.  
+
+	The scripts included in the package target ReaControlMIDI 
+	instance whose name in FX chain contains the TAG which has 
+	been defined in the USER SETTINGS. All FX chain types are 
+	supported.
+	
+	!!! IMPORTANT !!! The TAG must be be followed by a space 
+	if it's appended to the beginning of the FX instance name 
+	(e.g. 'TAG My plugin'), preceded by space at the end of
+	the name (e.g. 'My plugin TAG'), bordered by spaces in the 
+	middle of the name (e.g. 'My TAG plugin') unless it only 
+	consist of the TAG.
+	
+	The script targets the first found tagged ReaControlMIDI 
+	instance. First it looks among tracks, then among takes.		
+
+	Tracks hidden in Arrange view and items on such tracks 
+	are ignored. 
+	
+	Due to REAPER bug https://forum.cockos.com/showthread.php?t=289639
+	in rare use cases where bank LSB number matters, program 
+	navigation scripts only support .reabank programs under LSB bank 0. 
+	Therefore if you intend to use the script with .reabank files 
+	make sure that bank LSB number of all relevant program lists 
+	is 0. See PROGRAM/PRESET NAVIGATION paragraph below.
+	
+	In scripts which contain 'CC slider (MSB)' verbiage in the 
+	name, that is those aimed at navigation of MSB bank numbers 
+	with a slider, the navigation step size is 128 when 'Raw mode' 
+	option is disabled, i.e.  0 (1), 128 (2), 256 (3), 384 (4), 
+	512 (5), 740 (6) ... 16256 (127). When 'Raw mode' option is 
+	enabled the step size is 1. Selection of an MSB bank value is 
+	also a selection of LSB bank number 0.
+	
+	In scripts which contain 'CC slider (LSB)' verbiage in the 
+	name, that is those aimed at navigation of LSB bank numbers 
+	with a slider, the navigation is limited to the LSB range of 
+	the current MSB bank value, i.e. the LSB range of the MSB bank 
+	value 0 (1) is 0 - 127, the LSB range of the MSB bank value 128 
+	(2) is 128 - 255, that is current MSB bank value + 127.
+	
+	
+	PROGRAM/PRESET NAVIGATION
+	
+	Scripts which contain the word 'program' in the name, that is
+	those aimed at navigation of programs can be used to navigate
+	presets in other plugins. For this to work the tagged instance
+	of ReaControlMIDI must be inserted upstream of such plugins
+	and the plugins themselves have set to receive program change 
+	message via the + button -> Link to MIDI program change -> 
+	Link all channels sequentially OR Channel 1-16.  
+	To be able to navigate a selection of plugin presets create a 
+	custom .reabank file listing in it only numbers of presets you 
+	want to be able to switch and load it into the tagged 
+	ReaControlMIDI instance. Obviously a maximum of 128 presets are
+	supported. Current bank MSB and LSB numbers don't matter.	
+	
+	Plugin preset navigation as described above can be automated 
+	with SWS/S&M extension action markers on the fly during 
+	playback/recording to select specific program/preset. Ation 
+	markers feature must be turned on in the extension settings 
+	at 'Extensions -> SWS Options -> Marker actions' from the main 
+	menu or directly with 'SWS: Enable marker actions' 
+	or 'SWS: Toggle marker actions enable' 
+	actions in the Action list.				
+	
+	If program numbers are specified in action markers to trigger
+	program/preset selection they must be 0-based, i.e. 0 = preset 1, 
+	1 = preset 2, 2 = preset 3 and so on, that is using numbering 
+	convention supported by .reabank files regardless of actual
+	use of .reabank file.
+	
+	The action marker name must adhere to the following formats:
+
+	1) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; 6		
+	Where: '!' is the action marker modifier, always the same;
+	'_RSceeb8ead418881000e42adc04b33bd67d04e3d79' is this script 
+	command ID or a command ID of a custom/cycle action featuring this 
+	script, which can be copied from their right click context menu 
+	in the Action list with 'Copy selected action command ID' option, 
+	will be different in your installation;
+	and '6' is the program number which will trigger selection 
+	of preset 7 (6+1) in the target plugin
+	
+	2) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; My program name
+	Where: 'My program name' is the program name found in the .reabank 
+	file. The program name will be searched in the entire .reabank file 
+	and the number associated with the first found instance will trigger 
+	preset selection in the target plugin.
+	This format is only relevant if REABANK_FILE setting has been 
+	enabled in the USER SETTINGS.
+	
+	The formats 1) and 2) are suitable in most cases because most 
+	plugins don't support multiple banks and subbanks which could be 
+	selected with MIDI Bank Select MSB and LSB messages.  
+	
+	Selection of plugin presets via ReaControlMIDI works regardless
+	of bank MSB and LSB values, only program numbers matter.
+	
+
+	3) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; 0 0 6
+	Where: first '0' is the bank MSB value, second '0' is the bank LSB 
+	value and '6' is the program number which will trigger selection 
+	of preset 7 in the target plugin
+	
+	4) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; 0 0 My program name
+	Where: first '0' is the bank MSB value, second '0' is the bank LSB 
+	value and 'My program name' is the program name in the listed MSB
+	and LSB banks. The program number associated with the first found 
+	instance of this program name will trigger preset selection in the 
+	target plugin.  
+	This format is only relevant if REABANK_FILE setting has been 
+	enabled in the USER SETTINGS.
+	
+	The formats 3) and 4) are much less suitable for the same reason 
+	why formats 1) and 2) are much more suitable.		
+	
+	C a v e a t
+
+	If after a particular preset selection was triggered in the target 
+	plugin from the action marker with one of program related scripts 
+	as decribed above via ReaControlMIDI and then another preset was 
+	selected manually or by other means in the target plugin, it won't
+	be possible to re-trigger selection of the same preset again from
+	the action marker unless selection of another preset was triggered
+	via ReaControlMIDI. That's because after the first trigger, the 
+	program value in ReaControlMIDI doesn't change or reset when another 
+	preset is selected by other means in the target plugin, while program 
+	select message sent by ReaControlMIDI is based on changing values.
+	
+	If you prefer selecting presets via ReaConrolMIDI plugin by relying 
+	on a .reabank file you may be interested in the script 
+	BuyOne_Generate .reabank file from FX preset list.lua
+	https://github.com/Buy-One/REAPER-scripts/blob/main/FX/BuyOne_Generate%20.reabank%20file%20from%20FX%20preset%20list.lua
+	
+	
+	MOUSEWHEEL
+	
+	When running scripts from the package which are supposed to be run 
+	with the mouswheel (unclude 'mouswheel' verbiage in their name) 
+	the mouse cursor must be located outside of ReaControlMIDI UI to prevent 
+	on one hand affecting the controls with the mousewheel directly rather 
+	than via the script when the preference at 'Editing Behavior -> Mouse -> 
+	Ignore mousewheel on all faders' is disabled, and on the other to be able 
+	to call the script to begin with when it's enabled because in this case
+	mousewheel over the plugin UI will be ignored.
+	
 ]]
 
 -----------------------------------------------------------------------------
@@ -964,7 +964,7 @@ local scr_name = fullpath_init:match('[^\\/]+_(.+)%.%w+') -- without path, scrip
 ----------- NAME TESTING --------------
 --scr_name = 'next/previous bank (MSB)'
 --scr_name = 'next/previous bank (LSB)' -- NOT SUPPORTED CURRENTLY
-scr_name = 'ReaControlMIDI next/previous program'
+--scr_name = 'ReaControlMIDI next/previous program'
 --scr_name = 'next/previous bank select control change slider (MSB)'
 --scr_name = 'next/previous bank select control change slider (LSB)'
 --scr_name = 'scroll through banks (MSB) (LSB) / programs (mousewheel)'
