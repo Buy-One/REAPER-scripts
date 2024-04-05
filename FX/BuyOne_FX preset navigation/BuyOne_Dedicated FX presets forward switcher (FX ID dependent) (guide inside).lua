@@ -10,7 +10,8 @@
 * REAPER: at least v5.962
 * Changelog:
 	+ v1.3	Fixed action marker name format to disambiguate
-		preset index from an action command ID 
+		preset index from an action command ID;
+		Updated GUIDE
 	+ v1.2	Tag evaluation has been made more reliable
 		Multi-word tag has been allowed
 	+ v1.1	Added option for using custom preset lists for selective cycling
