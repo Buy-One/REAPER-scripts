@@ -4,11 +4,14 @@
 * Author: BuyOne
 * Author URL: https://forum.cockos.com/member.php?u=134058
 * Licence: WTFPL
-* Version: 1.2
+* Version: 1.3
 * Forum Thread:
 * Demo:
 * REAPER: at least v5.962
 * Changelog:
+	+ v1.3	Fixed action marker name format to disambiguate
+		preset index from an action command ID;
+		Updated GUIDE
 	+ v1.2	Tag evaluation has been made more reliable
 		Multi-word tag has been allowed
 	+ v1.1	Added option for using custom preset lists for selective cycling
@@ -84,9 +87,9 @@ enable' action in the Action list.
 
 The action marker name must adhere to the following format:
 
-!_RSceeb8ead418881000e42adc04b33bd67d04e3d79 6
+!_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; 6
 OR
-!_RSceeb8ead418881000e42adc04b33bd67d04e3d79 My preset name
+!_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; My preset name
 
 Where:
 '_RSceeb8ead418881000e42adc04b33bd67d04e3d79' is this script command ID or a command ID
@@ -96,7 +99,9 @@ Will be different in your installation.
 '6' is the preset number in the FX preset list
 'My preset name' is the preset actual name
 
-The action marker name must end with either the preset number or the preset name.
+The action marker name must end with either the preset number or the preset name
+separated from this script command ID by a semi-colon padded by at least one space
+on each side.
 
 Although the preset number must be counted, its name can be easily copied by selecting
 the preset, clicking the '+' button on the FX panel and selecting 'Rename preset...'
@@ -272,13 +277,12 @@ local play_state = r.GetPlayState()
 	local play_pos = r.GetPlayPosition()
 	local mrk_idx, reg_idx = reaper.GetLastMarkerAndCurRegion(0, play_pos)
 	local retval, isrgn, mrk_pos, rgnend, mrk_name, mrk_num = reaper.EnumProjectMarkers(mrk_idx)
-	local preset = mrk_name:match('!.-%s+(.+)$') -- accounting for mulitple leading empty spaces
-	local preset = preset:match('.+[%w%p]') -- trimming trailing empty space if any
+	local preset = mrk_name:match('!%s*_'..cmd_ID..'.-%s;.-%s(.+)$') -- accounting for mulitple leading empty spaces // the command ID and preset index/name must be separated by semi-colon ; padded with spaces, i.e. 'command_ID ; preset index/name', because action markers allow multiple space separated command IDs and preset index separated by a space only will be treated as another action command ID
+	local preset = preset:match('.*[%w%p]') -- trimming trailing empty space if any, accounting for a single numeral
 	return type(tonumber(preset)) == 'number' and tonumber(preset) or preset -- either index or name
 	end
 
 end
-
 
 -- these functions are used for convenient breaking out from a nested loop with return and to cut down redundancy
 
