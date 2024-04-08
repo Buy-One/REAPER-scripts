@@ -8,28 +8,28 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: 
 Provides: 	[main=main,midi_editor] .
-      			. > BuyOne_Duplicate project marker in time selection to edit cursor.lua
-      			. > BuyOne_Duplicate project marker in time selection to mouse cursor.lua
-      			. > BuyOne_Duplicate project marker at edit cursor to time selection start.lua
-      			. > BuyOne_Duplicate project marker at edit cursor to mouse cursor.lua
-      			. > BuyOne_Duplicate project marker at mouse cursor to time selection start.lua
-      			. > BuyOne_Duplicate project marker at mouse cursor to edit cursor.lua
-      			. > BuyOne_Duplicate project marker in time selection.lua
-      			. > BuyOne_Duplicate project marker at edit cursor.lua
-      			. > BuyOne_Duplicate project marker at mouse cursor.lua
+		. > BuyOne_Duplicate project marker in time selection to edit cursor.lua
+		. > BuyOne_Duplicate project marker in time selection to mouse cursor.lua
+		. > BuyOne_Duplicate project marker at edit cursor to time selection start.lua
+		. > BuyOne_Duplicate project marker at edit cursor to mouse cursor.lua
+		. > BuyOne_Duplicate project marker at mouse cursor to time selection start.lua
+		. > BuyOne_Duplicate project marker at mouse cursor to edit cursor.lua
+		. > BuyOne_Duplicate project marker in time selection.lua
+		. > BuyOne_Duplicate project marker at edit cursor.lua
+		. > BuyOne_Duplicate project marker at mouse cursor.lua
 About:	If this script name is suffixed with META, when executed 
-    		it will automatically spawn all individual scripts included 
-    		in the package into the directory of the META script and will 
-    		import them into the Action list from that directory.  
-    		If there's no META suffix in this script name it will perfom 
-    		the operation indicated in its name.
-    		
-    		Scripts in whose name the target position of the duplicated 
-    		marker isn't indicated place one at 50 px to the right of the 
-    		source marker.
-    		
-    		Scripts which duplicate marker in time selection only respect
-    		first marker found in time selection.
+	it will automatically spawn all individual scripts included 
+	in the package into the directory of the META script and will 
+	import them into the Action list from that directory.  
+	If there's no META suffix in this script name it will perfom 
+	the operation indicated in its name.
+	
+	Scripts in whose name the target position of the duplicated 
+	marker isn't indicated place one at 50 px to the right of the 
+	source marker.
+	
+	Scripts which duplicate marker in time selection only respect
+	first marker found in time selection.
 ]]
 
 
