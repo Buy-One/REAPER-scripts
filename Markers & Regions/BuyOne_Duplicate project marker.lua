@@ -9,27 +9,27 @@ REAPER: at least v5.962
 Extensions: 
 Provides: 	[main=main,midi_editor] .
 About:	Order of precedence of source and target marker locations:
-		1. Mouse cursor
-		2. Edit cursor
-		3. Time selection (time selection start as target location)
-		4. 50 px to the right of the source marker (only relevant 
-		as a target location and when other target locations are
-		invalid, which is only possible when duplicating a marker 
-		at the edit cursor)
-		
-		The source marker current location cannot be also the target 
-		location, hence three other available options should be 
-		considered.
-		
-		For the mouse cursor position to be valid it must be located
-		within Arrange opposite of a TCP.
-		
-		When duplicating a marker in time selection the script
-		only respects the first marker found in time selection.
-		
-		For a more reliable detection of the source marker at the 
-		mouse cursor it's recommended that the snaping and snap 
-		to markers be enabled.
+	1. Mouse cursor
+	2. Edit cursor
+	3. Time selection (time selection start as target location)
+	4. 50 px to the right of the source marker (only relevant 
+	as a target location and when other target locations are
+	invalid, which is only possible when duplicating a marker 
+	at the edit cursor)
+	
+	The source marker current location cannot be also the target 
+	location, hence three other available options should be 
+	considered.
+	
+	For the mouse cursor position to be valid it must be located
+	within Arrange opposite of a TCP.
+	
+	When duplicating a marker in time selection the script
+	only respects the first marker found in time selection.
+	
+	For a more reliable detection of the source marker at the 
+	mouse cursor it's recommended that the snaping and snap 
+	to markers be enabled.
 
 ]]
 
