@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Scroll TCP and MCP with variable speed.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.6
-Changelog: v1.6 #Fixed REAPER version evaluation
+Version: 1.7
+Changelog: v1.7 #Updated About text 
+	   v1.6 #Fixed REAPER version evaluation
 	   v1.5 #Fixed scroll when the mouse is over the TCP displayed on the right side of the Arrange
 	   view at certain horizontal scroll position
 	   v1.4 #Removed limitation on using Ctrl+Shift modifier when extensions aren't installed
@@ -17,10 +18,10 @@ Changelog: v1.6 #Fixed REAPER version evaluation
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
-About:  Alternative to the native 'View: Scroll vertically (MIDI CC relative/mousewheel)' 
-	which doesn't allow variable scroll step size and scrolls exactly
-	by tracks although not very precise when tracks have different heights,
-	and to the native Mixer scroll which also scrolls track by track.
+About: 	Alternative to the native 'View: Scroll vertically (MIDI CC relative/mousewheel)' 
+	which before version 7.0 didn't allow variable scroll step size and scrolled exactly
+	by tracks although not very precisely when tracks had different heights,
+	and to the native Mixer scroll which still scrolls track by track.
 
 	Bind to mousewheel (optionally with modifiers).  
 
