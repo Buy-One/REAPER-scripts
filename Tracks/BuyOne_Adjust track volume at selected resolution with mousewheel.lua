@@ -5,7 +5,7 @@ Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-
 Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
-REAPER: at least v5.962
+REAPER: at least v5.962, 6.36 and later recommended
 Extensions: 
 Provides: [main=main,midi_editor] .
 About:	The script only makes sense if the options
