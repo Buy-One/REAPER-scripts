@@ -9,32 +9,32 @@ REAPER: at least v5.962
 Extensions: 
 Provides: [main=main,midi_editor] .
 About:	The script only makes sense if the options
-		'Ignore mousewheel on all faders'
-		AND/OR
-		'Ignore mousewheel on track panel controls'
-		are enabled at Preferences -> Editing Behavior -> Mouse
+	'Ignore mousewheel on all faders'
+	AND/OR
+	'Ignore mousewheel on track panel controls'
+	are enabled at Preferences -> Editing Behavior -> Mouse
 
-		Otherwise control with the mousewheel is supported natively.
-		
-		Bind to a mousewheel, preferably with a modifier if your
-		aim is to be able to adjust track panel controls with
-		the mousewheel while preventing bare mousewheel from
-		affecting controls when it's placed over the TCP.
-		
-		With builds prior to 6.36 the mouse cursor doesn't 
-		have to be over the volume control for the script to work,
-		but hovering over the TCP is essential.		
-		
-		MCP is only supported in builds 6.36 and later provided
-		the preference at 
-		Preferences -> Editing behavior -> Mouse -> Mousewheel targets
-		is set to 'Window with focus', the Mixer window is not in
-		focus and the mouse cursor hovers over the volume control.
-		If the Mixer window is in focus REAPER's built-in Mixer scroll
-		will take over and override the script.
-		
-		See also script 
-		BuyOne_Adjust track, item, envelope points, FX parameters with mousewheel.lua
+	Otherwise control with the mousewheel is supported natively.
+	
+	Bind to a mousewheel, preferably with a modifier if your
+	aim is to be able to adjust track panel controls with
+	the mousewheel while preventing bare mousewheel from
+	affecting controls when it's placed over the TCP.
+	
+	With builds prior to 6.36 the mouse cursor doesn't 
+	have to be over the volume control for the script to work,
+	but hovering over the TCP is essential.		
+	
+	MCP is only supported in builds 6.36 and later provided
+	the preference at 
+	Preferences -> Editing behavior -> Mouse -> Mousewheel targets
+	is set to 'Window with focus', the Mixer window is not in
+	focus and the mouse cursor hovers over the volume control.
+	If the Mixer window is in focus REAPER's built-in Mixer scroll
+	will take over and override the script.
+	
+	See also script 
+	BuyOne_Adjust track, item, envelope points, FX parameters with mousewheel.lua
 		
 ]]
 
