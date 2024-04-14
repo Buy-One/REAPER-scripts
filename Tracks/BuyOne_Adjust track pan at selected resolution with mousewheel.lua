@@ -8,10 +8,7 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: 
 Provides: [main=main,midi_editor] .
-About:	The script applies to all pan modes, that is stereo pan
-	and dual pan as well.
-	
-	The script only makes sense if the options
+About:	The script only makes sense if the options
 	'Ignore mousewheel on all faders'
 	AND/OR
 	'Ignore mousewheel on track panel controls'
