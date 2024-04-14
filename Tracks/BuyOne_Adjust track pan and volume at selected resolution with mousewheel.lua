@@ -9,34 +9,34 @@ REAPER: at least v6.63
 Extensions: 
 Provides: [main=main,midi_editor] .
 About:	The script only makes sense if the options
-		'Ignore mousewheel on all faders'
-		AND/OR
-		'Ignore mousewheel on track panel controls'
-		are enabled at Preferences -> Editing Behavior -> Mouse
+	'Ignore mousewheel on all faders'
+	AND/OR
+	'Ignore mousewheel on track panel controls'
+	are enabled at Preferences -> Editing Behavior -> Mouse
 
-		Otherwise control with the mousewheel is supported natively.
-		
-		To target a control the mouse cursor must be placed
-		directly over it.
-		
-		With respect to pan control the script applies to all 
-		pan modes, that is stereo pan and dual pan as well.
-		
-		Bind to a mousewheel, preferably with a modifier if your
-		aim is to be able to adjust track panel controls with
-		the mousewheel while preventing bare mousewheel from
-		affecting controls when it's placed over the TCP.
-		
-		The script is able to affect relevant MCP controls provided
-		the preference at 
-		Preferences -> Editing behavior -> Mouse -> Mousewheel targets
-		is set to 'Window with focus', the Mixer window is not in
-		focus and the mouse cursor hovers over the pan/width control.
-		If the Mixer window is in focus REAPER's built-in Mixer scroll
-		will take over and override the script.
-		
-		See also script 
-		BuyOne_Adjust track, item, envelope points, FX parameters with mousewheel.lua
+	Otherwise control with the mousewheel is supported natively.
+	
+	To target a control the mouse cursor must be placed
+	directly over it.
+	
+	With respect to pan control the script applies to all 
+	pan modes, that is stereo pan and dual pan as well.
+	
+	Bind to a mousewheel, preferably with a modifier if your
+	aim is to be able to adjust track panel controls with
+	the mousewheel while preventing bare mousewheel from
+	affecting controls when it's placed over the TCP.
+	
+	The script is able to affect relevant MCP controls provided
+	the preference at 
+	Preferences -> Editing behavior -> Mouse -> Mousewheel targets
+	is set to 'Window with focus', the Mixer window is not in
+	focus and the mouse cursor hovers over the pan/width control.
+	If the Mixer window is in focus REAPER's built-in Mixer scroll
+	will take over and override the script.
+	
+	See also script 
+	BuyOne_Adjust track, item, envelope points, FX parameters with mousewheel.lua
 		
 ]]
 
