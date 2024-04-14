@@ -181,7 +181,7 @@ return left_down, right_up
 end
 
 
-RESOLUTION = validate_sett(RESOLUTION) and tonumber(RESOLUTION) and tonumber(RESOLUTION) or 0.05 -- TO USE WITH API
+RESOLUTION = validate_sett(RESOLUTION) and tonumber(RESOLUTION) and tonumber(RESOLUTION) or 0.05
 UNDO = validate_sett(UNDO)
 MOUSEWHEEL_REVERSE = validate_sett(MOUSEWHEEL_REVERSE)
 local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
