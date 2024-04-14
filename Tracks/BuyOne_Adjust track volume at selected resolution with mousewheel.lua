@@ -203,7 +203,7 @@ local vol_dB = 20*math.log(vol, 10) + RESOLUTION*sign
 local vol_dB = vol_dB > 12 and 12 or vol_dB < -144 and -144 or vol_dB -- cap the extremes to prevent going beyond the acceptable range limits // -144 is the dynamic range lower limit of 24 bit audio
 local vol_new = 10^(vol_dB/20)	
 local displ_sign = vol_dB > 0 and '+' or ''
-Error_Tooltip('\n  '..displ_sign..round(vol_dB, 2)..' dB \n ', false, false, 0, -60) -- caps, spaced false, x2 0, y2 -60 // truncating the value down to 2 decimal places
+Error_Tooltip('\n  '..displ_sign..round(vol_dB, 3)..' dB \n ', false, false, 0, -60) -- caps, spaced false, x2 0, y2 -60 // truncating the value down to 2 decimal places
 	
 local undo = UNDO and r.Undo_BeginBlock()
 
