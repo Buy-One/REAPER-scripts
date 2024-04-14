@@ -2,15 +2,17 @@
 ReaScript name: Adjust track, item, envelope points, FX parameters with mousewheel
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.3
-Changelog: v1.3 #Improved detection of the TCP under mouse when it's displayed on the right side of the Arrange
-	   view at certain horizontal scroll position 
+Version: 1.4
+Changelog: v1.4 #Added MCP support when certain conditions are met
+		#Updated About text
+	   v1.3 #Improved detection of the TCP under mouse when it's displayed 
+		on the right side of the Arrange view at certain horizontal scroll position 
 	   v1.2 #Corrected logic of TCP detection under mouse
-	   v1.1
-	   #Corrected calculation of mouse cursor distance from item edge
-	   #Added support for TCP on the right side of the Arrange
+	   v1.1 #Corrected calculation of mouse cursor distance from item edge
+		#Added support for TCP on the right side of the Arrange
 Licence: WTFPL
 REAPER: at least v6.36
+Provides: [main=main,midi_editor] .
 About:	The script is meant to allow using mousewheel on controls with a modifier which
 	isn't possible natively. This gives the benefit of avoiding accidental parameter
 	change with a mousewheel if allowed in Preferences -> Editing behavior -> Mouse.
@@ -27,7 +29,13 @@ About:	The script is meant to allow using mousewheel on controls with a modifier
 	Envelope points - track, take and plugin parameter envelope points, 
 	including Master track tempo and playrate envelopes
 
-	Track MCP is not supported due to REAPER limitations.
+	The script is able to affect MCP pan/width/volume controls provided
+	the preference at 
+	Preferences -> Editing behavior -> Mouse -> Mousewheel targets
+	is set to 'Window with focus', the Mixer window is not in
+	focus and the mouse cursor hovers over the pan/width control.
+	If the Mixer window is in focus REAPER's built-in Mixer scroll
+	will take over and override the script.
 
 
 	▓ MOUSE CURSOR PLACEMENTS  
@@ -580,7 +588,7 @@ TAKE_PITCH_ENV_RESOLUTION = validate_setting2(TAKE_PITCH_ENV_RESOLUTION)
 
 local x, y = r.GetMousePosition()
 local retval, ui_obj = r.GetThingFromPoint(x,y) -- if track is locked its UI elements aren't returned
-local vol, pan, width = ui_obj == 'tcp.volume', ui_obj == 'tcp.pan', ui_obj == 'tcp.width'
+local vol, pan, width = ui_obj:match('[tm]cp.volume'), ui_obj:match('[tm]cp.pan'), ui_obj:match('[tm]cp.width')
 local TCP = vol or pan or width -- tr and info_code < 1 -- not envelope and not docked FX window in info_code
 local TCP = not TCP and Get_TCP_Under_Mouse() or TCP -- only run if ui elements above weren't found; for the time offset parameter
 local env = r.GetCursorContext() == 2 and r.GetSelectedEnvelope(0)
