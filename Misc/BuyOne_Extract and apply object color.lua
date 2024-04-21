@@ -474,8 +474,9 @@ local color
 local tr_color_alt
 
 	if color and not is_env then -- process color of objects other than envelope
-	-- col_mi_bg (Media item odd tracks, in fact even, bug report https://forum.cockos.com/showthread.php?t=289479)
-	-- col_mi_bg2 (Media item even tracks, in fact odd, same bug)
+	-- col_mi_bg (Media item odd tracks) until 7.15 was officially referring to odd tracks when in fact refers to even	
+	-- col_mi_bg2 (Media item even tracks) until 7.15 was officially referring to even tracks when in fact refers to odd
+	-- bug report https://forum.cockos.com/showthread.php?t=289479
 	-- col_tr1_itembgsel (Media item selected odd tracks)
 	-- col_tr2_itembgsel (Media item selected even tracks)
 	-- col_seltrack : Selected track control panel background
@@ -487,7 +488,7 @@ local tr_color_alt
 		elseif (is_take or is_itm) and color == 0 then -- default theme settings dependent color
 		local obj = is_take and r.GetMediaItemTake_Item(obj) or obj
 		local tr_No = r.CSurf_TrackToID(r.GetMediaItemTrack(obj), false) -- mcpView false // get track number because default item color may differ on odd and even tracks if changed in the 'Theme development/tweaker' dialogue and will be displayed if their track color isn't custom
-		key = tr_No%2 > 0 and 'col_mi_bg2' or tr_No%2 == 0 and 'col_mi_bg' -- non-selected on odd or even track, as of build 7.11 these are mixed up, see link to bug report above
+		key = tr_No%2 > 0 and 'col_mi_bg2' or tr_No%2 == 0 and 'col_mi_bg' -- non-selected on odd or even track, until build 7.15 these were mixed up in the 'Theme development/tweaker', see link to bug report above, the bug fix was cosmetic with no change in the keys association
 		end
 	color = key and r.GetThemeColor(key, 0) -- get default theme color, determined by the setting in the 'Theme development/tweaker' dialogue: Media item background (odd, even), Unselected track control panel background
 	or color -- either default theme color or custom
