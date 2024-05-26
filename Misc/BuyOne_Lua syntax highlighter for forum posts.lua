@@ -111,13 +111,16 @@ USE_CUSTOM_COLORS = ""
 
 ----------------------------------------------------------
 
+-- C U S T O M  C O L O R  S C H E M E
+
 -- If you wish to change any of the default colors
 -- insert HEX color code between the quotes
 -- opposite of the corresponding element name, e.g. #000000,
 -- shortened color format, e.g. #000, is supported,
 -- the preceding hash sign is optional;
 -- if no or invalid color code is supplied the script
--- default color will be used
+-- default color will be used from the color scheme
+-- defined by the DEFAULT_COLOR_SCHEME setting above
 
 KEYWORDS = ""
 PUNCTUATION = ""
