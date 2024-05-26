@@ -1547,8 +1547,10 @@ local liter_str_placeholder, regul_str_placeholder, comment_placeholder = ('LITE
 	end
 
 
-local link = '[url="https://github.com/Buy-One/REAPER-scripts/tree/main/Misc/'
-..'BuyOne_Lua code highlighter.lua"][i][size="1"]Formatted with Lua code highlighter[/size][/i][/url]'
+local link = '[url="https://github.com/Buy-One/REAPER-scripts/blob/main/Misc/'
+..'BuyOne_Lua%20syntax%20highlighter%20for%20forum%20posts.lua"][i][size="1"]'
+..'Formatted with Lua code highlighter[/size][/i][/url]'
+local code_form = '[CODE]\n'..table.concat(lines_t,'\n')..'\n[/CODE]\n'..link
 local code_form = '[CODE]\n'..table.concat(lines_t,'\n')..'\n[/CODE]\n'..link
 
 
