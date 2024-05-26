@@ -88,7 +88,9 @@ COLOR_LUA_LIBS = "1"
 
 -- All ReaScript API functions, incl. 3d party,
 -- only applies to functions which include 'reaper' or 'gfx'
--- field in their name
+-- field in their name, otherwise these will be colored
+-- accordng to the USER_FUNCTION setting provided
+-- the COLOR_USER_FUNCTIONS setting is enabled
 COLOR_REAPER_LIB = "1"
 
 -- Color separator dot between library and method names,
