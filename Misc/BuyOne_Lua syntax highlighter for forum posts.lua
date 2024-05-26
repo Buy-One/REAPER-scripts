@@ -8,40 +8,40 @@ Licence: WTFPL
 REAPER: at least v5.0
 Extensions: SWS/S&M recommended but not mandatory
 About: 	The script formats Lua code with syntax highlighting for posting
-    		on Cockos offical forum http://forum.cockos.com
-    
-    		If the script is run from inside REAPER it retrieves the original code
-    		from the selected item notes and outputs formatted code into the notes
-    		of a new item automatically placed next to the original one. 
-    		If SWS/S&M extension is installed it also stores the formatted code
-    		in the clipboard so no need to copy it manually from the item notes
-    		which pop up.
-    
-    		If the script isn't run from inside REAPER it looks for the original code
-    		in the INPUT setting of the USER SETTINGS and outputs the formatted code
-    		to a file named FORMATTED CODE.txt at the path specified in the
-    		OUTPUT_FILE_PATH setting of the USER SETTINGS or, if no path is specified,
-    		the formatted code is output directly to a console.
-    
-    		If block comments or multi-line literal strings are malformed, all code
-    		following thereafter is colored with block comment or literal string 
-    		color respectively. Also an error will be raised to alert about the fact.
-    
-    		The script seems to work well with minified code but hasn't been tested 
-    		extensively in this respect and wasn't designed to support it to begin with.
-    
-    		The only inconvenience in using the sctipt is that after formatting, the code
-    		becomes pretty much uneditable inside the forum post editor and to update
-    		the code in the forum post after editing, it must be run through this script
-    		again.		
-    		
-    		!!!! Formatting may take a while, especially when all USER SETTINGS are
-    		enabled and the code is relatively long, so have patience.
-    		If the script is run within REAPER its finishing will be indicated by 
-    		creation of an item with the formatted code.
-    		
-    		The resulting code is wrapped between [CODE][/CODE] tags and is ready 
-        to be posted.
+	on Cockos offical forum http://forum.cockos.com
+
+	If the script is run from inside REAPER it retrieves the original code
+	from the selected item notes and outputs formatted code into the notes
+	of a new item automatically placed next to the original one. 
+	If SWS/S&M extension is installed it also stores the formatted code
+	in the clipboard so no need to copy it manually from the item notes
+	which pop up.
+
+	If the script isn't run from inside REAPER it looks for the original code
+	in the INPUT setting of the USER SETTINGS and outputs the formatted code
+	to a file named FORMATTED CODE.txt at the path specified in the
+	OUTPUT_FILE_PATH setting of the USER SETTINGS or, if no path is specified,
+	the formatted code is output directly to a console.
+
+	If block comments or multi-line literal strings are malformed, all code
+	following thereafter is colored with block comment or literal string 
+	color respectively. Also an error will be raised to alert about the fact.
+
+	The script seems to work well with minified code but hasn't been tested 
+	extensively in this respect and wasn't designed to support it to begin with.
+
+	The only inconvenience in using the sctipt is that after formatting, the code
+	becomes pretty much uneditable inside the forum post editor and to update
+	the code in the forum post after editing, it must be run through this script
+	again.		
+	
+	!!!! Formatting may take a while, especially when all USER SETTINGS are
+	enabled and the code is relatively long, so have patience.
+	If the script is run within REAPER its finishing will be indicated by 
+	creation of an item with the formatted code.
+	
+	The resulting code is wrapped between [CODE][/CODE] tags and is ready 
+	to be posted.
 
 ]]
 
