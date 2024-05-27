@@ -41,7 +41,8 @@ About: 	The script formats Lua code with syntax highlighting for posting
 	creation of an item with the formatted code.
 	
 	The resulting code is wrapped between [CODE][/CODE] tags and is ready 
-	to be posted.
+	to be posted. These tags are necessary to preserve spaces within the code
+	otherwise multiple spaces will be reduced to a single one.
 
 ]]
 
