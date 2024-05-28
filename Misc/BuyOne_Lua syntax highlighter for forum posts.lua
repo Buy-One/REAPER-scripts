@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Lua syntax highlighter for forum posts.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog:	#Fixed last line capture if the script is run from inside REAPER
+		#Made sure that the item with the output is placed on the same track 
+		as the first one when the script is run from inside REAPER
 Licence: WTFPL
 REAPER: at least v5.0
 Extensions: SWS/S&M recommended but not mandatory
@@ -1159,6 +1161,41 @@ return code:gsub('\r','') -- removing carriage return which is auto-added to the
 end
 
 
+function re_store_sel_trks(t)
+-- used in Display_Formatted_Code_In_Item_Notes()
+-- with deselection; t is the stored tracks table to be fed in at restoration stage
+	if not t then
+	local sel_trk_cnt = reaper.CountSelectedTracks2(0,true) -- plus Master, wantmaster true
+	local trk_sel_t = {}
+		if sel_trk_cnt > 0 then
+		local i = sel_trk_cnt -- in reverse because of deselection
+			while i > 0 do -- not >= 0 because sel_trk_cnt is not reduced by 1, i-1 is on the next line
+			local tr = r.GetSelectedTrack2(0,i-1,true) -- plus Master, wantmaster true
+			trk_sel_t[#trk_sel_t+1] = tr
+			r.SetTrackSelected(tr, 0) -- selected 0 or false // unselect each track
+			i = i-1
+			end
+		end
+	return trk_sel_t
+	elseif t
+	then
+	r.PreventUIRefresh(1)
+	-- deselect all tracks, this ensures that if none was selected originally
+	-- none will end up selected because re-selection loop below won't start
+	local master = r.GetMasterTrack(0)
+	r.SetOnlyTrackSelected(master) -- select master
+	r.SetTrackSelected(master, 0) -- immediately deselect
+		for _,v in next, t do
+		r.SetTrackSelected(v,1)
+		end
+	r.UpdateArrange()
+	r.TrackList_AdjustWindows(0)
+	r.PreventUIRefresh(-1)
+	end
+end
+
+
+
 function Display_Formatted_Code_In_Item_Notes(code)
 
 local item = r.GetSelectedMediaItem(0,0)
@@ -1166,6 +1203,15 @@ local item = r.GetSelectedMediaItem(0,0)
 	local item_fin = r.GetMediaItemInfo_Value(item, 'D_POSITION') + r.GetMediaItemInfo_Value(item, 'D_LENGTH')
 	r.SetEditCurPos(item_fin, true, false) -- moveview true, seekplay false
 	local act = r.Main_OnCommand
+		local itm_tr = r.GetMediaItemTrack(item)
+		-- make the item track last touched because a copy is pasted to the last touched
+		if r.GetLastTouchedTrack() ~= itm_tr then
+		r.PreventUIRefresh(1)
+		local t = re_store_sel_trks() -- store
+		act(40914, 0) -- Track: Set first selected track as last touched track
+		re_store_sel_trks(t) -- restore
+		r.PreventUIRefresh(-1)
+		end
 	act(40698, 0) -- Edit: Copy items
 	act(42398, 0) -- Item: Paste items/tracks
 	local item = r.GetSelectedMediaItem(0,0) -- pasted copy
@@ -1378,6 +1424,9 @@ local err2 = '\tthe input seems \n\n to be already formatted '
 	if reaper then
 	INPUT = Get_Code_From_Item_Notes()
 		if not INPUT then return r.defer(no_undo) end
+	-- add trailing new line if absent so that pattern in INPUT:gmatch() 
+	-- in the split into lines loop below can capture the last line as well
+	INPUT = not INPUT:match('.+\n%s*$') and INPUT..'\n' or INPUT
 	end
 
 local is_formatted_code = select(2,INPUT:gsub('%[color=".-"%].-%[/color%]','%0'))
