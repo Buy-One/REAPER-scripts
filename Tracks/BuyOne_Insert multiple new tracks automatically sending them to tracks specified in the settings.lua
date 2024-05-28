@@ -1,5 +1,3 @@
--- https://old.reddit.com/r/Reaper/comments/1b4xdha/dealing_with_a_secondary_master_track_in_reaper/
-
 --[[
 ReaScript name: BuyOne_Insert multiple new tracks automatically sending them to tracks specified in the settings.lua
 Author: BuyOne
