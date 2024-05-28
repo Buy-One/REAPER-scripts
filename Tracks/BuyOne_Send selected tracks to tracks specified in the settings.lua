@@ -1,5 +1,5 @@
 --[[
-ReaScript name: BuyOne_Send selected tracks to track specified in the settings.lua
+ReaScript name: BuyOne_Send selected tracks to tracks specified in the settings.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
@@ -8,38 +8,38 @@ REAPER: at least v5.962
 Extensions: 
 Provides: [main=main,midi_editor] .
 About: 	The script is a derivative of 
-    		BuyOne_Insert new track automatically sending it to tracks specified in the settings.lua
-    		meant to be used within custom actions because it only performs one task - send creation.
-    		
-    		For example custom actions to create new tracks and send them to a certain other track
-    		would look like so:
-    		
-    			Track: Insert new track
-    			BuyOne_Send selected tracks to track specified in the settings.lua
-    		
-    		OR
-    		
-    			Track: Insert multiple new tracks...
-    			BuyOne_Send selected tracks to track specified in the settings.lua
-    		
-    		OR
-    		
-    			Track: Insert new track
-    			BuyOne_Send selected tracks to track specified in the settings.lua
-    			Track: Insert new track
-    			BuyOne_Send selected tracks to track specified in the settings.lua
-    			Track: Insert new track
-    			BuyOne_Send selected tracks to track specified in the settings.lua
-    		
-    		The script file can be duplicated as many times as needed with each copy
-    		having different USER SETTINGS, such as the DESTINATION_TRACK_NAME,
-    		which will allow creating sends to multiple tracks named differently.
-    		
-    		See also
-    		BuyOne_Send selected tracks to designated track for monitoring.lua
-    		
-    		
-    		Configure USER SETTINGS
+	BuyOne_Insert new track automatically sending it to tracks specified in the settings.lua
+	meant to be used within custom actions because it only performs one task - send creation.
+	
+	For example custom actions to create new tracks and send them to a certain other track
+	would look like so:
+	
+		Track: Insert new track
+		BuyOne_Send selected tracks to track specified in the settings.lua
+	
+	OR
+	
+		Track: Insert multiple new tracks...
+		BuyOne_Send selected tracks to track specified in the settings.lua
+	
+	OR
+	
+		Track: Insert new track
+		BuyOne_Send selected tracks to track specified in the settings.lua
+		Track: Insert new track
+		BuyOne_Send selected tracks to track specified in the settings.lua
+		Track: Insert new track
+		BuyOne_Send selected tracks to track specified in the settings.lua
+	
+	The script file can be duplicated as many times as needed with each copy
+	having different USER SETTINGS, such as the DESTINATION_TRACK_NAME,
+	which will allow creating sends to multiple tracks named differently.
+	
+	See also
+	BuyOne_Send selected tracks to designated track for monitoring.lua
+	
+	
+	Configure USER SETTINGS
 
 ]]
 
