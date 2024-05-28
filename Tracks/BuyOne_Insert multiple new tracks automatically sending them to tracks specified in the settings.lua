@@ -17,7 +17,7 @@ About: 	Configure USER SETTINGS
 		
 	See also 
 	BuyOne_Insert new track automatically sending it to tracks specified in the settings.lua
-	BuyOne_Send selected tracks to track specified in the settings.lua
+	BuyOne_Send selected tracks to tracks specified in the settings.lua
 	BuyOne_Send selected tracks to designated track for monitoring.lua
 
 ]]
