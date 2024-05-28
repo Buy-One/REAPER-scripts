@@ -15,21 +15,21 @@ About: 	The script is a derivative of
 	would look like so:
 	
 		Track: Insert new track
-		BuyOne_Send selected tracks to track specified in the settings.lua
+		BuyOne_Send selected tracks to tracks specified in the settings.lua
 	
 	OR
 	
 		Track: Insert multiple new tracks...
-		BuyOne_Send selected tracks to track specified in the settings.lua
+		BuyOne_Send selected tracks to tracks specified in the settings.lua
 	
 	OR
 	
 		Track: Insert new track
-		BuyOne_Send selected tracks to track specified in the settings.lua
+		BuyOne_Send selected tracks to tracks specified in the settings.lua
 		Track: Insert new track
-		BuyOne_Send selected tracks to track specified in the settings.lua
+		BuyOne_Send selected tracks to tracks specified in the settings.lua
 		Track: Insert new track
-		BuyOne_Send selected tracks to track specified in the settings.lua
+		BuyOne_Send selected tracks to tracks specified in the settings.lua
 	
 	The script file can be duplicated as many times as needed with each copy
 	having different USER SETTINGS, such as the DESTINATION_TRACK_NAME,
