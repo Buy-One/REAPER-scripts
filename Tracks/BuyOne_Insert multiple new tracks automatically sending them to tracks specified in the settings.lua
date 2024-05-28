@@ -3,7 +3,7 @@ ReaScript name: BuyOne_Insert multiple new tracks automatically sending them to 
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
-Changelog: v1.2 #Expanded the number of destination tracks to 4
+Changelog: v1.2 #Made the number of destination tracks limitless
 		#Added prompt if destination track name is found in more than on track
 		#Added user setting to disable master/parent send in the newly inserted track
 		#Updated script name to reflect new functionality
@@ -26,12 +26,12 @@ About: 	Configure USER SETTINGS
 ------------------------------ USER SETTINGS --------------------------------
 -----------------------------------------------------------------------------
 
--- Between the quotes insert the name of the destination track,
--- empty settings will be ignored
-DESTINATION_TRACK_NAME_A = ""
-DESTINATION_TRACK_NAME_B = ""
-DESTINATION_TRACK_NAME_C = ""
-DESTINATION_TRACK_NAME_D = ""
+-- Between the double square brackets insert names 
+-- of the destination tracks, one line per track name
+DESTINATION_TRACK_NAMES = [[
+
+]]-- keep on a separate line
+
 
 -- Between the quotes insert the number corresponding to the send mode:
 -- 1 - post-fader (post-pan), 2 - pre-fader (pre-fx), 3 - pre-fader (post-fx)
@@ -71,33 +71,29 @@ end
 
 local x, y = r.GetMousePosition()
 
-local dest_tr_name_t = {DESTINATION_TRACK_NAME_A, DESTINATION_TRACK_NAME_B,
-DESTINATION_TRACK_NAME_C, DESTINATION_TRACK_NAME_D}
-
-
-local cnt = #dest_tr_name_t
-
-	for _, name in ipairs(dest_tr_name_t) do
-		if not name:match('^%s*(.-)%s*$'):match('%S+') then cnt = cnt-1 end
-	end
-
-	if cnt == 0 then
+	if #DESTINATION_TRACK_NAMES:gsub('[%s%c]','') == 0 then
 	r.TrackCtl_SetToolTip('\n\n  '
-	..('DESTINATION TRACK NAME \n\n    SETTINGS ARE EMPTY'):gsub('.','%0 ')
+	..('DESTINATION TRACK NAMES \n\n      SETTING IS EMPTY'):gsub('.','%0 ')
 	..' \n\n ', x, y, true) -- topmost true
 	return r.defer(no_undo) end
 
-	-- exclude empty track name settings
-	-- will help to only list valid detination track names in the undo point name
-	for i = #dest_tr_name_t, 1, -1 do -- in reverse to accommodate deletion
-		if #dest_tr_name_t[i]:gsub('%s','') == 0 then -- empty name setting
-		table.remove(dest_tr_name_t, i)
+
+-- add trailing line break in case the setting closing square brackets have been moved
+-- to the line of the last track name, otherwise the last line won't be captured with the pattern
+-- in the gmatch loop below
+DESTINATION_TRACK_NAMES = not DESTINATION_TRACK_NAMES:match('.+\n%s*$') and DESTINATION_TRACK_NAMES..'\n' or DESTINATION_TRACK_NAMES
+
+local dest_tr_name_t = {}
+
+		for name in DESTINATION_TRACK_NAMES:gmatch('(.-)\n') do
+			if #name:gsub(' ','') > 0 then -- ignoring empty lines
+			dest_tr_name_t[#dest_tr_name_t+1] = name
+			end
 		end
-	end
 
 local dest_tr_t = {}
 
-	for i=0,r.GetNumTracks()-1 do -- find the bus tracks
+	for i=0,r.GetNumTracks()-1 do -- find the destination tracks
 	local tr = r.GetTrack(0,i)
 	local retval, tr_name = r.GetTrackName(tr)
 		for _, name in ipairs(dest_tr_name_t) do
@@ -148,4 +144,5 @@ r.Main_OnCommand(cmd_ID,0)
 
 
 r.Undo_EndBlock(undo, -1)
+
 
