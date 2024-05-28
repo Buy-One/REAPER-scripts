@@ -2,10 +2,12 @@
 ReaScript name: BuyOne_Lua syntax highlighter for forum posts.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog:	#Fixed last line capture if the script is run from inside REAPER
-		#Made sure that the item with the output is placed on the same track 
-		as the item with the input when the script is run from inside REAPER
+Version: 1.2
+Changelog:	v1.2 #Fixed last line capture if the INPUT setting closure is located 
+		     on the last line of the string rather than on the next line
+		v1.1 #Fixed last line capture if the script is run from inside REAPER
+		     #Made sure that the item with the output is placed on the same track 
+		     as the item with the input when the script is run from inside REAPER
 Licence: WTFPL
 REAPER: at least v5.0
 Extensions: SWS/S&M recommended but not mandatory
@@ -1124,28 +1126,6 @@ return code
 end
 
 
-
-function Get_Code_From_Item_Notes_OLD(err1, err2)
-
-local item = r.GetSelectedMediaItem(0,0)
-
-	if not item then
-	Error_Tooltip('\n\n no selected item \n\n', 1, 1, -200, y2) -- caps, spaced true, x2 -200
-	return end
-
-local ret, code = r.GetSetMediaItemInfo_String(item, 'P_NOTES', '', false) -- isSet false
-local err = #code:gsub('[%c%s]', '') == 0 and err1
-or select(2,code:gsub('%[color=".-"%].-%[/color%]','%0')) > 0 and err2
-
-	if err then
-	Error_Tooltip('\n\n '..err..'\n\n', 1, 1, -200, y2) -- caps, spaced true, x2 -200
-	return end
-
-return code:gsub('\r','') -- removing carriage return which is auto-added to the notes
-
-end
-
-
 function Get_Code_From_Item_Notes()
 
 local item = r.GetSelectedMediaItem(0,0)
@@ -1424,10 +1404,13 @@ local err2 = '\tthe input seems \n\n to be already formatted '
 	if reaper then
 	INPUT = Get_Code_From_Item_Notes()
 		if not INPUT then return r.defer(no_undo) end
-	-- add trailing new line if absent so that pattern in INPUT:gmatch() 
-	-- in the split into lines loop below can capture the last line as well
-	INPUT = not INPUT:match('.+\n%s*$') and INPUT..'\n' or INPUT
 	end
+
+-- add trailing new line if absent so that pattern in INPUT:gmatch() 
+-- in the split into lines loop below can capture the last line as well
+-- with the script INPUT setting this may happen if the closure is moved
+-- to the last line of the input code
+INPUT = not INPUT:match('.+\n%s*$') and INPUT..'\n' or INPUT
 
 local is_formatted_code = select(2,INPUT:gsub('%[color=".-"%].-%[/color%]','%0'))
 local err = #INPUT:gsub('[%s%c]','') == 0 and err1 or is_formatted_code > 0 and err2
