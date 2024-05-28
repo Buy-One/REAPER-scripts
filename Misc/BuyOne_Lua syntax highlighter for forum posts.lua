@@ -5,7 +5,7 @@ Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-
 Version: 1.1
 Changelog:	#Fixed last line capture if the script is run from inside REAPER
 		#Made sure that the item with the output is placed on the same track 
-		as the first one when the script is run from inside REAPER
+		as the item with the input when the script is run from inside REAPER
 Licence: WTFPL
 REAPER: at least v5.0
 Extensions: SWS/S&M recommended but not mandatory
