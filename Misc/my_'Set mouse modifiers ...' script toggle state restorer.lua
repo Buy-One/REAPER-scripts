@@ -1,5 +1,5 @@
 --[[
-ReaScript name: Mouse modifier context config activation script toggle state restorer.lua
+ReaScript name: 'Set mouse modifiers ...' script toggle state restorer.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
@@ -7,106 +7,106 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: v7.0 and later
 About: 	The script is meant to restore on REAPER statrup 
-			the toggle state of mouse modifier context config 
-			activation scripts exported from the Mouse Modifier 
-			section of the Preferences.
-			
-			It can restore toggle state of specific script instances 
-			in the Main, MIDI Editor and MIDI Event List Editor 
-			sections of the action list. The two latter if the 
-			corresponding settings are enabled in the USER SETTINGS
-			of this script.
+	the toggle state of mouse modifier context config 
+	activation scripts exported from the Mouse Modifier 
+	section of the Preferences.
+	
+	It can restore toggle state of specific script instances 
+	in the Main, MIDI Editor and MIDI Event List Editor 
+	sections of the action list. The two latter if the 
+	corresponding settings are enabled in the USER SETTINGS
+	of this script.
 
-			This script must be imported into the Main section 
-			of the action list and its command ID must be added 
-			to the SWS extension Startup actions or alternatively 
-			to __startup.lua script which is to be placed in the 
-			root of the \Scripts folder under REAPER resource directory.
+	This script must be imported into the Main section 
+	of the action list and its command ID must be added 
+	to the SWS extension Startup actions or alternatively 
+	to __startup.lua script which is to be placed in the 
+	root of the \Scripts folder under REAPER resource directory.
 
-			For the __startup.lua script the code must look as follows:
+	For the __startup.lua script the code must look as follows:
 
-			--------------------------------------------
+	--------------------------------------------
 
-			local command_ID = reaper.NamedCommandLookup("_RSa0a817b9096ab2a5f7f61ca038c60992a3228147") -- !!! REPLACE THE COMMAND ID WITHIN THE QUOTES WITH THAT OF YOUR INSTANCE OF THIS SCRIPT
+	local command_ID = reaper.NamedCommandLookup("_RSa0a817b9096ab2a5f7f61ca038c60992a3228147") -- !!! REPLACE THE COMMAND ID WITHIN THE QUOTES WITH THAT OF YOUR INSTANCE OF THIS SCRIPT
 
-			reaper.Main_OnCommand(command_ID, 0)
+	reaper.Main_OnCommand(command_ID, 0)
 
-			--------------------------------------------
+	--------------------------------------------
 
-			The __startup.lua file doesn't need to be imported into the 
-			Action list or added to SWS startup actions, it is automatically 
-			picked up by REAPER.
-			
-			
-			TO BE ABLE TO USE THIS SCRIPT TO RESTORE TOGGLE STATE
-			OF CONTEXT CONFIG ACTIVATON SCRIPTS EXPORTED FROM MOUSE MODIFIERS
-			SECTION IN REAPER PREFERENCES some additional code must be 
-			incorporated in them as follows:
-			
-			1. Find the line 'reaper.RefreshToolbar(0)'
-			2. Immediately below it add the following line:
-			Store_CommandID(is_set)
-			3. Find the last word 'end' further down
-			4. Add a few empty lines below it and insert the following code
-			without the dashed lines:
-			
-			--------------------------------------------------------------------
-			function Store_CommandID(is_set)
-			-- store script command ID for restoration with 
-			-- 'Mouse modifier context config activation script toggle state restorer.lua' script
-			local is_new_val,f_name,sectID,cmdID,mode,resol,val,ctx_str = reaper.get_action_context()
-			local MM_CTX
-				-- find name of the context this script was exported from
-				for line in io.lines(f_name) do
-				MM_CTX = line:match('reaper.GetMouseModifier%(\'([%u_]+)')
-					if MM_CTX then break end
-				end
-			local scr_name = f_name:match('.+[\\/](.+)')
-			local sect = 'LAST ACTIVE MOUSE MODIFIER CONFIG ACTIVATION SCRIPT PER CONTEXT'
-			-- for storage concatenate base named command ID excluding Action list section specific infix
-			-- in case the script instance is run from a different Action list section
-			-- because reliably only Main section scripts can be run from the API
-			-- therefore 'Mouse modifier context config activation script toggle state restorer.lua'
-			-- only targets scripts in this section
-			local named_cmdID = ('_'..reaper.ReverseNamedCommandLookup(cmdID)):gsub('_RS7d3[c-f]_','_RS')
-				if MM_CTX then
-					if is_set then -- toggle state set to ON
-					reaper.SetExtState(sect, MM_CTX, named_cmdID..' '..scr_name, true) -- persist true
-					else
-					-- remove this script command ID from storage if its command ID is the last to be stored
-					-- at the moment of its toggle state being set to OFF;
-					-- this can only happen when mouse modifiers config under the same context 
-					-- was changed manually by the user;
-					-- in this scenario toggle state of a script, if any, with the matching config
-					-- will be auto-set to ON, if there's none the toggle state of all scripts 
-					-- with the matching config will be set to OFF
-					-- and toggling any of them on startup to ON with the script
-					-- 'Mouse modifier context config activation script toggle state restorer.lua'
-					-- will be pointless and misleading if command ID of one of them keeps being stored 
-					-- in reaper-extstate.ini;
-					-- on the other hand, when the mouse modifiers config is changed from another script 
-					-- that script command ID becomes the last stored and by the time the equality below
-					-- is evaluated the condition will be false, therefore the last stored command ID 
-					-- of another script won't be deleted;
-					local cmdID_named = reaper.GetExtState(sect, MM_CTX)
-						if cmdID == reaper.NamedCommandLookup(cmdID_named) then
-						reaper.DeleteExtState(sect, MM_CTX, true) -- persist true
-						end
-					end
+	The __startup.lua file doesn't need to be imported into the 
+	Action list or added to SWS startup actions, it is automatically 
+	picked up by REAPER.
+	
+	
+	TO BE ABLE TO USE THIS SCRIPT TO RESTORE TOGGLE STATE
+	OF CONTEXT CONFIG ACTIVATON SCRIPTS EXPORTED FROM MOUSE MODIFIERS
+	SECTION IN REAPER PREFERENCES some additional code must be 
+	incorporated in them as follows:
+	
+	1. Find the line 'reaper.RefreshToolbar(0)'
+	2. Immediately below it add the following line:
+	Store_CommandID(is_set)
+	3. Find the last word 'end' further down
+	4. Add a few empty lines below it and insert the following code
+	without the dashed lines:
+	
+	--------------------------------------------------------------------
+	function Store_CommandID(is_set)
+	-- store script command ID for restoration with 
+	-- 'Mouse modifier context config activation script toggle state restorer.lua' script
+	local is_new_val,f_name,sectID,cmdID,mode,resol,val,ctx_str = reaper.get_action_context()
+	local MM_CTX
+		-- find name of the context this script was exported from
+		for line in io.lines(f_name) do
+		MM_CTX = line:match('reaper.GetMouseModifier%(\'([%u_]+)')
+			if MM_CTX then break end
+		end
+	local scr_name = f_name:match('.+[\\/](.+)')
+	local sect = 'LAST ACTIVE MOUSE MODIFIER CONFIG ACTIVATION SCRIPT PER CONTEXT'
+	-- for storage concatenate base named command ID excluding Action list section specific infix
+	-- in case the script instance is run from a different Action list section
+	-- because reliably only Main section scripts can be run from the API
+	-- therefore 'Mouse modifier context config activation script toggle state restorer.lua'
+	-- only targets scripts in this section
+	local named_cmdID = ('_'..reaper.ReverseNamedCommandLookup(cmdID)):gsub('_RS7d3[c-f]_','_RS')
+		if MM_CTX then
+			if is_set then -- toggle state set to ON
+			reaper.SetExtState(sect, MM_CTX, named_cmdID..' '..scr_name, true) -- persist true
+			else
+			-- remove this script command ID from storage if its command ID is the last to be stored
+			-- at the moment of its toggle state being set to OFF;
+			-- this can only happen when mouse modifiers config under the same context 
+			-- was changed manually by the user;
+			-- in this scenario toggle state of a script, if any, with the matching config
+			-- will be auto-set to ON, if there's none the toggle state of all scripts 
+			-- with the matching config will be set to OFF
+			-- and toggling any of them on startup to ON with the script
+			-- 'Mouse modifier context config activation script toggle state restorer.lua'
+			-- will be pointless and misleading if command ID of one of them keeps being stored 
+			-- in reaper-extstate.ini;
+			-- on the other hand, when the mouse modifiers config is changed from another script 
+			-- that script command ID becomes the last stored and by the time the equality below
+			-- is evaluated the condition will be false, therefore the last stored command ID 
+			-- of another script won't be deleted;
+			local cmdID_named = reaper.GetExtState(sect, MM_CTX)
+				if cmdID == reaper.NamedCommandLookup(cmdID_named) then
+				reaper.DeleteExtState(sect, MM_CTX, true) -- persist true
 				end
 			end
+		end
+	end
 
-			--------------------------------------------------------------------
-				
-			Below the line 'SET MOUSE MODIFIERS SCRIPT MIDIFICATION EXAMPLE'
-			at the bottom of this script see an example of a complete 
-			'Set mouse modifiers' script with the suggested additions applied 
-			marked by lines 
-			'INSERT THIS LINE HERE START'
-			and 
-			'INSERT THIS CODE HERE START'				
-			
-			https://forum.cockos.com/showthread.php?t=284185
+	--------------------------------------------------------------------
+		
+	Below the line 'SET MOUSE MODIFIERS SCRIPT MIDIFICATION EXAMPLE'
+	at the bottom of this script see an example of a complete 
+	'Set mouse modifiers' script with the suggested additions applied 
+	marked by lines 
+	'INSERT THIS LINE HERE START'
+	and 
+	'INSERT THIS CODE HERE START'				
+	
+	https://forum.cockos.com/showthread.php?t=284185
 
 ]]
 
