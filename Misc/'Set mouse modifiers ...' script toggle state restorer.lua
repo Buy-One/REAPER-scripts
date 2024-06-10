@@ -115,7 +115,7 @@ About: 	The script is meant to restore on REAPER statrup
 -----------------------------------------------------------------------------
 
 -- Enable by inserting any alphanumeric character between the quotes
--- to activate instances of mouse modifier context activation scripts
+-- to activate instances of mouse modifier context config activation scripts
 -- in the MIDI Editor sections of the Action list as well
 -- on REAPER startup
 
