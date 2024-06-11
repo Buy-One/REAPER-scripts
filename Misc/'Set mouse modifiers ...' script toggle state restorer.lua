@@ -9,7 +9,10 @@ REAPER: v7.0 and later
 About: 	The script is meant to restore on REAPER statrup 
 	the toggle state of mouse modifier context config 
 	activation scripts exported from the Mouse Modifier 
-	section of the Preferences.
+	section of the Preferences, because REAPER doesn't
+	do this natively. This helps to get visual feedback
+	of the currently active mouse modifier config.  
+	Only ON toggle state is restored.
 	
 	It can restore toggle state of specific script instances 
 	in the Main, MIDI Editor and MIDI Event List Editor 
