@@ -1,181 +1,193 @@
 --[[
-ReaScript name: BuyOne_ReaControlMIDI navigate banks, programs_META.lua (12 scripts)
+ReaScript name: BuyOne_ReaControlMIDI navigate banks, programs_META.lua (15 scripts since build 7.16, 12 otherwise)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Added Bank/Program select list LSB support for builds older than 7.15
+			  #Fixed .reabank file REABANK_FILE setting validation when its name doesn't contain spaces
+			  #Improved program navigation readout tooltip
+			  #Made tooltips more verbose
+			  #Updated the About text
 Licence: WTFPL
-REAPER: at least v5.962
+REAPER: at least v5.962, 7.16 recommended
 Metapackage: true
 Provides:	[main=main,midi_editor] .
-		. > BuyOne_ReaControlMIDI select next bank (MSB).lua
-		. > BuyOne_ReaControlMIDI select previous bank (MSB).lua
-		. > BuyOne_ReaControlMIDI select next program.lua
-		. > BuyOne_ReaControlMIDI select previous program.lua
-		. > BuyOne_ReaControlMIDI select next bank with Bank Select slider (MSB).lua
-		. > BuyOne_ReaControlMIDI select previous bank with Bank Select slider (MSB).lua
-		. > BuyOne_ReaControlMIDI select next bank with Bank Select slider (LSB).lua
-		. > BuyOne_ReaControlMIDI select previous bank with Bank Select slider (LSB).lua
-		. > BuyOne_ReaControlMIDI cycle through banks (MSB) (mousewheel).lua
-		. > BuyOne_ReaControlMIDI cycle through programs.lua
-		. > BuyOne_ReaControlMIDI cycle through banks with Bank Select slider (MSB) (mousewheel).lua
-		. > BuyOne_ReaControlMIDI cycle through banks with Bank Select slider (LSB) (mousewheel).lua
+			. > BuyOne_ReaControlMIDI select next bank (MSB).lua
+			. > BuyOne_ReaControlMIDI select previous bank (MSB).lua
+			. > BuyOne_ReaControlMIDI select next program.lua
+			. > BuyOne_ReaControlMIDI select previous program.lua
+			. > BuyOne_ReaControlMIDI select next bank with Bank Select slider (MSB).lua
+			. > BuyOne_ReaControlMIDI select previous bank with Bank Select slider (MSB).lua
+			. > BuyOne_ReaControlMIDI select next bank with Bank Select slider (LSB).lua
+			. > BuyOne_ReaControlMIDI select previous bank with Bank Select slider (LSB).lua
+			. > BuyOne_ReaControlMIDI cycle through banks (MSB) (mousewheel).lua
+			. > BuyOne_ReaControlMIDI cycle through programs.lua
+			. > BuyOne_ReaControlMIDI cycle through banks with Bank Select slider (MSB) (mousewheel).lua
+			. > BuyOne_ReaControlMIDI cycle through banks with Bank Select slider (LSB) (mousewheel).lua		
+			. > BuyOne_ReaControlMIDI select next bank (LSB).lua
+			. > BuyOne_ReaControlMIDI select previous bank (LSB).lua
+			. > BuyOne_ReaControlMIDI cycle through banks (LSB) (mousewheel).lua
 About:	If this script name is suffixed with META, when executed 
-	it will automatically spawn all individual scripts included 
-	in the package into the directory of the META script and will 
-	import them into the Action list from that directory. 
-	That's provided such scripts don't exist yet, if they do, 
-	then in order to recreate them they have to be deleted from 
-	the Action list and from the disk first.  
-	If there's no META suffix in this script name it will perfom 
-	the operation indicated in its name.  
+			it will automatically spawn all individual scripts included 
+			in the package into the directory of the META script and will 
+			import them into the Action list from that directory. 
+			That's provided such scripts don't exist yet, if they do, 
+			then in order to recreate them they have to be deleted from 
+			the Action list and from the disk first.  
+			If there's no META suffix in this script name it will perfom 
+			the operation indicated in its name.  
 
-	The scripts included in the package target ReaControlMIDI 
-	instance whose name in FX chain contains the TAG which has 
-	been defined in the USER SETTINGS. All FX chain types are 
-	supported.
-	
-	!!! IMPORTANT !!! The TAG must be be followed by a space 
-	if it's appended to the beginning of the FX instance name 
-	(e.g. 'TAG My plugin'), preceded by space at the end of
-	the name (e.g. 'My plugin TAG'), bordered by spaces in the 
-	middle of the name (e.g. 'My TAG plugin') unless it only 
-	consist of the TAG.
-	
-	The script targets the first found tagged ReaControlMIDI 
-	instance. First it looks among tracks, then among takes.		
+			The scripts included in the package target ReaControlMIDI 
+			instance whose name in FX chain contains the TAG which has 
+			been defined in the USER SETTINGS. All FX chain types are 
+			supported.
+			
+			!!! IMPORTANT !!! The TAG must be be followed by a space 
+			if it's appended to the beginning of the FX instance name 
+			(e.g. 'TAG My plugin'), preceded by space at the end of
+			the name (e.g. 'My plugin TAG'), bordered by spaces in the 
+			middle of the name (e.g. 'My TAG plugin') unless it only 
+			consist of the TAG.
+			
+			The script targets the first found tagged ReaControlMIDI 
+			instance. First it looks among tracks, then among takes.		
 
-	Tracks hidden in Arrange view and items on such tracks 
-	are ignored. 
-	
-	Due to REAPER bug https://forum.cockos.com/showthread.php?t=289639
-	in rare use cases where bank LSB number matters, program 
-	navigation scripts only support .reabank programs under LSB bank 0. 
-	Therefore if you intend to use the script with .reabank files 
-	make sure that bank LSB number of all relevant program lists 
-	is 0. See PROGRAM/PRESET NAVIGATION paragraph below.
-	
-	In scripts which contain 'CC slider (MSB)' verbiage in the 
-	name, that is those aimed at navigation of MSB bank numbers 
-	with a slider, the navigation step size is 128 when 'Raw mode' 
-	option is disabled, i.e.  0 (1), 128 (2), 256 (3), 384 (4), 
-	512 (5), 740 (6) ... 16256 (127). When 'Raw mode' option is 
-	enabled the step size is 1. Selection of an MSB bank value is 
-	also a selection of LSB bank number 0.
-	
-	In scripts which contain 'CC slider (LSB)' verbiage in the 
-	name, that is those aimed at navigation of LSB bank numbers 
-	with a slider, the navigation is limited to the LSB range of 
-	the current MSB bank value, i.e. the LSB range of the MSB bank 
-	value 0 (1) is 0 - 127, the LSB range of the MSB bank value 128 
-	(2) is 128 - 255, that is current MSB bank value + 127.
-	
-	
-	PROGRAM/PRESET NAVIGATION
-	
-	Scripts which contain the word 'program' in the name, that is
-	those aimed at navigation of programs can be used to navigate
-	presets in other plugins. For this to work the tagged instance
-	of ReaControlMIDI must be inserted upstream of such plugins
-	and the plugins themselves have set to receive program change 
-	message via the + button -> Link to MIDI program change -> 
-	Link all channels sequentially OR Channel 1-16.  
-	To be able to navigate a selection of plugin presets create a 
-	custom .reabank file listing in it only numbers of presets you 
-	want to be able to switch and load it into the tagged 
-	ReaControlMIDI instance. Obviously a maximum of 128 presets are
-	supported. Current bank MSB and LSB numbers don't matter.	
-	
-	Plugin preset navigation as described above can be automated 
-	with SWS/S&M extension action markers on the fly during 
-	playback/recording to select specific program/preset. Ation 
-	markers feature must be turned on in the extension settings 
-	at 'Extensions -> SWS Options -> Marker actions' from the main 
-	menu or directly with 'SWS: Enable marker actions' 
-	or 'SWS: Toggle marker actions enable' 
-	actions in the Action list.				
-	
-	If program numbers are specified in action markers to trigger
-	program/preset selection they must be 0-based, i.e. 0 = preset 1, 
-	1 = preset 2, 2 = preset 3 and so on, that is using numbering 
-	convention supported by .reabank files regardless of actual
-	use of .reabank file.
-	
-	The action marker name must adhere to the following formats:
+			Tracks hidden in Arrange view and items on such tracks 
+			are ignored. 
+			
+			Due to REAPER bug https://forum.cockos.com/showthread.php?t=289639
+			in builds older than 7.16 in rare use cases where bank LSB 
+			number matters, program navigation scripts only support .reabank 
+			programs under bank LSB 0. Therefore if you intend to use the 
+			script with .reabank files make sure that bank LSB number 
+			of all relevant program lists is 0.  
+			Because of this even if any other LSB bank number is selected
+			in the LSB field under Bank/Program Select, only programs belonging
+			to bank under the LSB 0 will be navigated, provided there's LSB 0 
+			under the current bank MSB number and a .reabank file is selected.
+			See PROGRAM/PRESET NAVIGATION paragraph below.
+			
+			In scripts which contain 'CC slider (MSB)' verbiage in the 
+			name, that is those aimed at navigation of MSB bank numbers 
+			with a slider, the navigation step size is 128 when 'Raw mode' 
+			option is disabled, i.e.  0 (1), 128 (2), 256 (3), 384 (4), 
+			512 (5), 740 (6) ... 16256 (127). When 'Raw mode' option is 
+			enabled the step size is 1. Selection of an MSB bank value is 
+			also a selection of LSB bank number 0.
+			
+			In scripts which contain 'CC slider (LSB)' verbiage in the 
+			name, that is those aimed at navigation of LSB bank numbers 
+			with a slider, the navigation is limited to the LSB range of 
+			the current MSB bank value, i.e. the LSB range of the MSB bank 
+			value 0 (1) is 0 - 127, the LSB range of the MSB bank value 128 
+			(2) is 128 - 255, that is current MSB bank value + 127.
+			
+			
+			PROGRAM/PRESET NAVIGATION
+			
+			Scripts which contain the word 'program' in the name, that is
+			those aimed at navigation of programs can be used to navigate
+			presets in other plugins. For this to work the tagged instance
+			of ReaControlMIDI must be inserted upstream of such plugins
+			and the plugins themselves have set to receive program change 
+			message via the + button -> Link to MIDI program change -> 
+			Link all channels sequentially OR Channel 1-16.  
+			To be able to navigate a selection of plugin presets create a 
+			custom .reabank file listing in it only numbers of presets you 
+			want to be able to switch and load it into the tagged 
+			ReaControlMIDI instance. Obviously a maximum of 128 presets are
+			supported. Current bank MSB and LSB numbers don't matter.	
+			
+			Plugin preset navigation as described above can be automated 
+			with SWS/S&M extension action markers on the fly during 
+			playback/recording to select specific program/preset. Ation 
+			markers feature must be turned on in the extension settings 
+			at 'Extensions -> SWS Options -> Marker actions' from the main 
+			menu or directly with 'SWS: Enable marker actions' 
+			or 'SWS: Toggle marker actions enable' 
+			actions in the Action list.				
+			
+			If program numbers are specified in action markers to trigger
+			program/preset selection they must be 0-based, i.e. 0 = preset 1, 
+			1 = preset 2, 2 = preset 3 and so on, that is using numbering 
+			convention supported by .reabank files regardless of actual
+			use of .reabank file.
+			
+			The action marker name must adhere to the following formats:
 
-	1) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; 6		
-	Where: '!' is the action marker modifier, always the same;
-	'_RSceeb8ead418881000e42adc04b33bd67d04e3d79' is this script 
-	command ID or a command ID of a custom/cycle action featuring this 
-	script, which can be copied from their right click context menu 
-	in the Action list with 'Copy selected action command ID' option, 
-	will be different in your installation;
-	and '6' is the program number which will trigger selection 
-	of preset 7 (6+1) in the target plugin
-	
-	2) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; My program name
-	Where: 'My program name' is the program name found in the .reabank 
-	file. The program name will be searched in the entire .reabank file 
-	and the number associated with the first found instance will trigger 
-	preset selection in the target plugin.
-	This format is only relevant if REABANK_FILE setting has been 
-	enabled in the USER SETTINGS.
-	
-	The formats 1) and 2) are suitable in most cases because most 
-	plugins don't support multiple banks and subbanks which could be 
-	selected with MIDI Bank Select MSB and LSB messages.  
-	
-	Selection of plugin presets via ReaControlMIDI works regardless
-	of bank MSB and LSB values, only program numbers matter.
-	
+			1) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; 6		
+			Where: '!' is the action marker modifier, always the same;
+			'_RSceeb8ead418881000e42adc04b33bd67d04e3d79' is this script 
+			command ID or a command ID of a custom/cycle action featuring this 
+			script, which can be copied from their right click context menu 
+			in the Action list with 'Copy selected action command ID' option, 
+			will be different in your installation;
+			and '6' is the program number which will trigger selection 
+			of preset 7 (6+1) in the target plugin
+			
+			2) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; My program name
+			Where: 'My program name' is the program name found in the .reabank 
+			file. The program name will be searched in the entire .reabank file 
+			and the number associated with the first found instance will trigger 
+			preset selection in the target plugin.
+			This format is only relevant if REABANK_FILE setting has been 
+			enabled in the USER SETTINGS.
+			
+			The formats 1) and 2) are suitable in most cases because most 
+			plugins don't support multiple banks and subbanks which could be 
+			selected with MIDI Bank Select MSB and LSB messages.  
+			
+			Selection of plugin presets via ReaControlMIDI works regardless
+			of bank MSB and LSB values, only program numbers matter.
+			
 
-	3) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; 0 0 6
-	Where: first '0' is the bank MSB value, second '0' is the bank LSB 
-	value and '6' is the program number which will trigger selection 
-	of preset 7 in the target plugin
-	
-	4) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; 0 0 My program name
-	Where: first '0' is the bank MSB value, second '0' is the bank LSB 
-	value and 'My program name' is the program name in the listed MSB
-	and LSB banks. The program number associated with the first found 
-	instance of this program name will trigger preset selection in the 
-	target plugin.  
-	This format is only relevant if REABANK_FILE setting has been 
-	enabled in the USER SETTINGS.
-	
-	The formats 3) and 4) are much less suitable for the same reason 
-	why formats 1) and 2) are much more suitable.		
-	
-	C a v e a t
+			3) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; 0 0 6
+			Where: first '0' is the bank MSB value, second '0' is the bank LSB 
+			value and '6' is the program number which will trigger selection 
+			of preset 7 in the target plugin
+			
+			4) !_RSceeb8ead418881000e42adc04b33bd67d04e3d79 ; 0 0 My program name
+			Where: first '0' is the bank MSB value, second '0' is the bank LSB 
+			value and 'My program name' is the program name in the listed MSB
+			and LSB banks. The program number associated with the first found 
+			instance of this program name will trigger preset selection in the 
+			target plugin.  
+			This format is only relevant if REABANK_FILE setting has been 
+			enabled in the USER SETTINGS.
+			
+			The formats 3) and 4) are much less suitable for the same reason 
+			why formats 1) and 2) are much more suitable.		
+			
+			C a v e a t
 
-	If after a particular preset selection was triggered in the target 
-	plugin from the action marker with one of program related scripts 
-	as decribed above via ReaControlMIDI and then another preset was 
-	selected manually or by other means in the target plugin, it won't
-	be possible to re-trigger selection of the same preset again from
-	the action marker unless selection of another preset was triggered
-	via ReaControlMIDI. That's because after the first trigger, the 
-	program value in ReaControlMIDI doesn't change or reset when another 
-	preset is selected by other means in the target plugin, while program 
-	select message sent by ReaControlMIDI is based on changing values.
-	
-	If you prefer selecting presets via ReaConrolMIDI plugin by relying 
-	on a .reabank file you may be interested in the script 
-	BuyOne_Generate .reabank file from FX preset list.lua
-	https://github.com/Buy-One/REAPER-scripts/blob/main/FX/BuyOne_Generate%20.reabank%20file%20from%20FX%20preset%20list.lua
-	
-	
-	MOUSEWHEEL
-	
-	When running scripts from the package which are supposed to be run 
-	with the mouswheel (unclude 'mouswheel' verbiage in their name) 
-	the mouse cursor must be located outside of ReaControlMIDI UI to prevent 
-	on one hand affecting the controls with the mousewheel directly rather 
-	than via the script when the preference at 'Editing Behavior -> Mouse -> 
-	Ignore mousewheel on all faders' is disabled, and on the other to be able 
-	to call the script to begin with when it's enabled because in this case
-	mousewheel over the plugin UI will be ignored.
-	
+			If after a particular preset selection was triggered in the target 
+			plugin from the action marker with one of program related scripts 
+			as decribed above via ReaControlMIDI and then another preset was 
+			selected manually or by other means in the target plugin, it won't
+			be possible to re-trigger selection of the same preset again from
+			the action marker unless selection of another preset was triggered
+			via ReaControlMIDI. That's because after the first trigger, the 
+			program value in ReaControlMIDI doesn't change or reset when another 
+			preset is selected by other means in the target plugin, while program 
+			select message sent by ReaControlMIDI is based on changing values.
+			
+			If you prefer selecting presets via ReaConrolMIDI plugin by relying 
+			on a .reabank file you may be interested in the script 
+			BuyOne_Generate .reabank file from FX preset list.lua
+			https://github.com/Buy-One/REAPER-scripts/blob/main/FX/BuyOne_Generate%20.reabank%20file%20from%20FX%20preset%20list.lua
+			
+			
+			MOUSEWHEEL
+			
+			When running scripts from the package which are supposed to be run 
+			with the mouswheel (unclude 'mouswheel' verbiage in their name) 
+			the mouse cursor must be located outside of ReaControlMIDI UI to prevent 
+			on one hand affecting the controls with the mousewheel directly rather 
+			than via the script when the preference at 'Editing Behavior -> Mouse -> 
+			Ignore mousewheel on all faders' is disabled, and on the other to be able 
+			to call the script to begin with when it's enabled because in this case
+			mousewheel over the plugin UI will be ignored.
+		
 ]]
 
 -----------------------------------------------------------------------------
@@ -185,24 +197,24 @@ About:	If this script name is suffixed with META, when executed
 -- Place any alphanumeric character or a combination thereof
 -- between the double square brackets;
 -- leading/trailing spaces will be ignored
-TAG = [[]]
+TAG = [[X]]
 
 
 -- Optionally insert .reabank file name, with or without the extension,
 -- to be able to navigate through a limited list of banks/programs;
--- the file must be located in the /Data folder inside REAPER 
+-- the file must be located in the /Data folder inside REAPER
 -- resource directory, where the stock GM.reabank file
 -- is located, and since the ReaScript API doesn't allow detection
 -- of the .reabank file loaded into the 'Bank/Pogram Select' section
--- of a ReaConrolMIDI instance, the file name must be specified 
--- in this setting even if it's not loaded into the ReaConrolMIDI, 
--- but if it is, both files must be the same so navigation makes 
+-- of a ReaConrolMIDI instance, the file name must be specified
+-- in this setting even if it's not loaded into the ReaConrolMIDI,
+-- but if it is, both files must be the same so navigation makes
 -- sense, otherwise bewildering irregularities will occur;
 -- if no file has been loaded into the tagged instance of ReaControlMIDI
 -- but 'Bank/Program Select' section has been enabled, the values will
--- only be displayed in the raw UI of ReaControlMIDI instance activated 
+-- only be displayed in the raw UI of ReaControlMIDI instance activated
 -- with the UI button;
--- if no file name is specified in this setting, the script will cycle 
+-- if no file name is specified in this setting, the script will cycle
 -- through all 127 banks/programs sequentially
 -- regardless of a .reabank file being loaded into ReaControlMIDI
 REABANK_FILE = ""
@@ -234,9 +246,12 @@ UNDO = ""
 
 local r = reaper
 
+local Debug = ""
 function Msg(param, cap) -- caption second or none
 local cap = cap and type(cap) == 'string' and #cap > 0 and cap..' = ' or ''
-reaper.ShowConsoleMsg(cap..tostring(param)..'\n')
+	if #Debug:gsub(' ','') > 0 then -- declared outside of the function, allows to only didplay output when true without the need to comment the function out when not needed, borrowed from spk77
+	reaper.ShowConsoleMsg(cap..tostring(param)..'\n')
+	end
 end
 
 
@@ -294,10 +309,20 @@ local names_t, content = names_t
 	content = this_script:read('*a')
 	this_script:close()
 	names_t, found = {}
+	local old_build = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.16
 		for line in content:gmatch('[^\n\r]+') do
 			if line and line:match('Provides:') then found = 1 end
 			if found and line:match('%.lua') then
-			names_t[#names_t+1] = line:match('.+[/](.+)') or line:match('BuyOne.+[%w]') -- in case the new script name line includes a subfolder path, the subfolder won't be created
+			local scr_name = line:match('.+[/](.+)') or line:match('BuyOne.+[%w]') -- in case the new script name line includes a subfolder path, the subfolder won't be created
+				-- prevent creaton of 'Bank/Program Select' LSB navigation scripts in builds older than 7.16 due to bug
+				-- of FX_GetParam() function returning MSB value for LSB param https://forum.cockos.com/showthread.php?t=289639
+				-- ReaControlMIDI select next bank (LSB).lua
+				--	ReaControlMIDI select previous bank (LSB).lua
+				--	ReaControlMIDI cycle through banks (LSB) (mousewheel).lua
+				if old_build and (not scr_name:match('LSB') or scr_name:match('LSB') and scr_name:match('slider'))
+				or not old_build then
+				names_t[#names_t+1] = scr_name
+				end
 			elseif found and #names_t > 0 then
 			break -- the list has ended
 			end
@@ -305,27 +330,6 @@ local names_t, content = names_t
 	end
 
 	if names_t and #names_t > 0 then
-
---[[ GETTING PATH FROM THE USER INPUT
-
-	r.MB('              This meta script will spawn '..#names_t
-	..'\n\n     individual scripts included in the package'
-	..'\n\n     after you supply a path to the directory\n\n\t    they will be placed in'
-	..'\n\n\twhich can be temporary.\n\n           After that the spawned scripts'
-	..'\n\n will have to be imported into the Action list.','META',0)
-
-	local ret, output -- to be able to autofill the dialogue with last entry on RELOAD
-
-	::RETRY::
-	ret, output = r.GetUserInputs('Scripts destination folder', 1,
-	'Full path to the dest. folder, extrawidth=200', output or '')
-
-		if not ret or #output:gsub(' ','') == 0 then return end -- must be aborted outside of the function
-
-	local path = Dir_Exists(output) -- validate user supplied path
-		if not path then Error_Tooltip('\n\n invalid path \n\n', 1, 1) -- caps, spaced true
-		goto RETRY end
-	]]
 
 		-- load this script if wasn't loaded above to parse the header for file names list
 		if not content then
@@ -481,7 +485,8 @@ end
 function Parse_ReaBank_File(file_name)
 -- the expected location is /Data folder in the REAPER resource directory
 	if file_name then
-	local file_name = file_name:match('[%p%w].+[%p%w]') -- strip leading and trailing spaces
+	local file_name = file_name:match('^%s*(.-)%s*$') -- strip leading and trailing spaces
+--Msg(file_name)
 	file_name = file_name:lower():match('%.reabank') and file_name
 	or file_name..'.reabank'
 	local sep = r.GetResourcePath():match('[\\/]')
@@ -663,7 +668,7 @@ end
 
 
 
-function Switch_Bank_Program(obj, fx_idx, scr_name, down, up, reabank_t, mrker_prog)
+function Switch_Bank_Program(obj, fx_idx, scr_name, down, up, reabank_t)
 -- obj is track or take
 -- fx_idx is idx of the fx whose name in the fx chain contains the tag
 local nxt, prev, MSB, LSB, bank_select, prog = Parse_Script_Name(scr_name, 'next', 'previous', '(MSB)', '(LSB)', 'Bank Select', 'program')
@@ -697,7 +702,7 @@ ALL use normalized scale, 0-1, so no way to recognize param by its unique scale,
 			for msb, data in pairs(t) do
 			nxt_val, prev_val, max_val, min_val = get_new_val(cur_val, msb, nxt_val, prev_val, max_val, min_val)
 			end
-		elseif LSB and t[cur_msb] then -- CURRENTLY NOT SUPPORTED DUE TO THE BUG DESCRIBED IN THE MAIN FUNCTION
+		elseif LSB and t[cur_msb] then -- SUPPORTED SINCE build 7.16 due to bug in previous builds
 			for lsb, proggs in pairs(t[cur_msb]) do
 			nxt_val, prev_val, max_val, min_val = get_new_val(cur_val, lsb, nxt_val, prev_val, max_val, min_val)
 			-- proggs.name -- LSB bank name
@@ -709,7 +714,6 @@ ALL use normalized scale, 0-1, so no way to recognize param by its unique scale,
 				end
 			end
 		end
-
 	local val_new = nxt and (nxt_val or min_val) or prev and (prev_val or max_val) -- wrapping around at the start or end of the list
 	return val_new
 	end
@@ -725,20 +729,21 @@ local undo = 'Set ReaControMIDI '
 		local parm_idx = MSB and 0 or LSB and 1 or 2 -- 2 is program
 		local typ = MSB and 'MSB' or LSB and 'LSB' or 'Program'
 		local val, max, min = GetParm(obj, fx_idx, parm_idx)
-	--	!!! FX_GetParam() returns MSB value for LSB param and LSB param cannot be set
+	--	!!! In builds prior to 7.16 FX_GetParam() returns MSB value for LSB param and LSB param cannot be set reliably
 	--	bug report https://forum.cockos.com/showthread.php?t=289639
+		local old_build = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.16
 		local val_new
 
 			if reabank_t then -- content of the reabank file whose name has been supplied by the user; only navigate existing banks/programs
 			local cur_msb, max, min = GetParm(obj, fx_idx, 0) -- get current MSB number to limit programs navigation to it and display in program readout tooltip
 			cur_msb = math.floor(cur_msb*127+0.5)
-			local cur_lsb = 0 -- progr and GetParm(obj, fx_idx, 1) -- get current LSB number to limit programs navigation to it, BUT AS OF NOW DUE TO LSB RETURN VALUE BUG (see above) ONLY LSB VALUE 0 IS SUPPORTED
-			cur_lsb = math.floor(cur_lsb*127+0.5) -- for consistency as if the value was returned by the function above (commented out)
+			local cur_lsb = old_build and 0 or GetParm(obj, fx_idx, 1) -- get current LSB number to limit programs navigation to it, IN BUILDS OLDER THAN 7.16 DUE TO LSB RETURN VALUE BUG (see above) ONLY LSB VALUE 0 IS SUPPORTED
+			cur_lsb = math.floor(cur_lsb*127+0.5) -- in buids older than 7.16 for consistency as if the value was returned by the GetParm() function, otherwise 0 doesn't need any calculation
 			val_new = get_reabank_value(reabank_t, MSB, LSB, prog, cur_msb, cur_lsb, val, nxt, prev)
 				if not val_new then
 				mess = MSB and ' there\'s only 1 bank'
-				or LSB and ' there\'s only 1 LSB bank\n\nunder current MSB bank '..cur_msb -- NOT SUPPORTED AT THE MOMENT DUE TO THE ABOVEMENTIONED BUG
-				or prog and reabank_t[cur_msb] and not reabank_t[cur_msb][cur_lsb] -- THIS IS ONLY RELEVANT AS LONG AS THE BUG PERSISTS BECAUSE PROGRAM NAVIGATION ONLY SUPPORTED FOR LSB 0 WHICH MIGHT BE ABSENT IN the .reabank file
+				or LSB and ' there\'s only 1 LSB bank\n\nunder current MSB bank '..cur_msb -- THIS IS ONLY RELEVANT FOR BUILDS NEWER THAN 7.16 DUE TO THE ABOVEMENTIONED BUG
+				or prog and reabank_t[cur_msb] and not reabank_t[cur_msb][cur_lsb] -- THIS IS ONLY RELEVANT FOR BUILDS OLDER THAN 7.16 DUE TO THE ABOVEMENTIONED BUG WHERE PROGRAM NAVIGATION ONLY SUPPORTED FOR LSB 0 WHICH MIGHT BE ABSENT IN the .reabank file
 				and '   bank LSB '..cur_lsb..' was\'t found \n\n     in the .reabank file \n\n under current bank msb '..cur_msb
 				or prog and ' there\'s only 1 or no programs \n\n\t  in the current bank'
 				err = true
@@ -746,33 +751,44 @@ local undo = 'Set ReaControMIDI '
 				-- concatenate a tooltip text
 				local lsb_name = reabank_t[cur_msb][cur_lsb].name
 				local prog_name = reabank_t[cur_msb][cur_lsb][val_new]
-				mess = (MSB or LSB) and '  '..typ..' '..val_new..' ' -- LSB IS NOT SUPPORTED AS LONG AS THE ABOVEMENTIONED BUG PERSISTS
-				or prog and ' MSB '..cur_msb..'   LSB 0 "'..lsb_name..'" \n\n Program: '
-				..val_new..' '..prog_name -- 0 is LSB number, see comment above
+				mess = MSB and '  '..typ..' '..val_new..' '
+				or LSB and ' MSB '..cur_msb..'\n\n LSB '..cur_lsb..' "'..lsb_name..'"' -- IN Bank/Program file selector LSB IS NOT SUPPORTED IN BUILDS OLDER THAN 7.16 DUE TO THE ABOVEMENTIONED BUG
+				or prog and ' MSB '..cur_msb..'\n\n LSB '..cur_lsb..' "'..lsb_name..'" \n\n Program: '
+				..val_new..' '..(#prog_name < 21 and prog_name or '\n\n '..prog_name) -- to make sure that the program name doesn't get split between two lines if long, however not failproof if its extra long and doesn't fit a full line after the line break
 
-				undo = MSB and undo..'bank MSB to '..val_new or LSB and undo..'bank MSB '..cur_msb..' bank LSB to'..val_new
+				undo = MSB and undo..'bank MSB to '..val_new or LSB and undo..'bank MSB '..cur_msb..' bank LSB to '..val_new
 				or prog and undo..'bank MSB '..cur_msb..' bank LSB '..cur_lsb..' "'..lsb_name..'" program to '..val_new
 				..' '..prog_name
 
 				val_new = val_new*(1/127) -- convert to the normalized value to apply
 
 				end
+
 			else -- no reabank file name has been supplied by the user OR its content couldn't be parsed, switch sequentially in ascending/descending order
 			val_new = nxt and (val == 1 and 0 or val + 1/127) or prev and (val == 0 and 1 or val - 1/127)
-			mess = '  '..typ..' '..math.floor(val_new*127+0.5)..' '
+
+			local val_new = math.floor(val_new*127+0.5) -- round and strip trailing decimal 0, here and below // local var doesn't seem to override the global one above which is use to set the new value below with SetParm()
+			local cur_msb = math.floor(GetParm(obj, fx_idx, 0)*127+0.5)
+			local cur_lsb = old_build and 0 or math.floor(GetParm(obj, fx_idx, 1)*127+0.5) -- get current LSB number to limit programs navigation to it, IN BUILDS OLDER THAN 7.16 DUE TO LSB RETURN VALUE BUG (see above) ONLY LSB VALUE 0 IS SUPPORTED
+			mess = MSB and '  '..typ..' '..val_new..' ' or LSB and ' MSB '..cur_msb..'   LSB '..val_new
+			or prog and ' MSB '..cur_msb..'   LSB '..cur_lsb..'\n\n Program: '..val_new
+
 			end
 
 			local set = val_new and SetParm(obj, fx_idx, parm_idx, val_new)
 
 		end
+
 	elseif bank_select then -- CC slider
 		if GetParm(obj, fx_idx, 14) == 0 then -- 14 'CC Enable' is disabled
 		mess = ' "CC Slots" are disabled '
 		err = true
 		else
 		local found
+
 			for i=3, 7 do -- 5 Control Change slots, param indices from 3 to 7
 			local ret, parm_name = GetParmName(obj, fx_idx, i, '')
+
 				if parm_name:match('Bank Select') then
 				local val, max, min = GetParm(obj, fx_idx, i)
 				val = val > 1 and 1 or val < 0 and 0 or val -- rectify invalid values if any have been input manually
@@ -792,15 +808,10 @@ local undo = 'Set ReaControMIDI '
 
 					val = math.floor(val/unit+0.5) -- convert to regular integer which is much easier and more reliable to use for calculaions
 					local mult1 = math.floor(val/128) -- find multiple of 128 in the current value
-				--[[ in/decrement continuously regardless of the current MSB value, e.g. if MSB is 128, the value continues to be in/decremented beyond 128 rather than wrap around to MSB 0
-					val_new = nxt and (val == 1 and unit or cur_lsb+unit)
-					or prev and (val == 0 and 128*127*unit*127 or cur_lsb-unit)
-					]]
 					val_new = nxt and val+1 or prev and val-1
 					local mult2 = math.floor(val_new/128) -- find multiple of 128 in the new value
 					val_new = nxt and (mult2 > mult1 and 128*mult1 or val_new) -- if value exceeds the next MSB value (mult2*128), wrap around to stay within the current MSB range, i.e. MSB - MSB+127
 					or prev and (mult2 < mult1 and mult1*128+127 or val_new) -- if value goes past the current MSB value (mult1*128), wrap around to stay within the current MSB range, i.e. MSB - MSB+127
-
 					local integ = math.modf(val_new/128) -- isolate the integral part of the multiple to calculate the MSB value
 					local displ_val = val_new-integ*128 -- subtract MSB value
 					mess = ' MSB '..integ..'   LSB '..displ_val -- tooltip
@@ -877,25 +888,27 @@ function Get_Set_Program_From_Action_Marker(cmd_ID, reabank_t, mrkr_data, obj, f
 		local mrk_idx, reg_idx = r.GetLastMarkerAndCurRegion(0, play_pos)
 		local retval, isrgn, mrk_pos, rgnend, mrk_name, mrk_num = r.EnumProjectMarkers(mrk_idx)
 		local prog = mrk_name:match('!%s*_'..cmd_ID..'.-%s;.-%s(.+)$') -- accounting for mulitple leading empty spaces // the command ID and program address must be separated by semi-colon ; padded with spaces, i.e. 'command_ID ; program address, because action markers allow multiple space separated command IDs and program number separated by a space only will be treated as another action command ID
-		prog = prog:match('.*[%w%p]') -- trimming trailing empty space if any
+		prog = prog:match('.*[%w%p]') -- trimming trailing empty space if any, accounting for a single numeral
 
 			if tonumber(prog) then -- reabank file isn't needed
 			mrkr_data = {prog+0} -- one numeral, i.e. program number // current msb/lsb will be used
 
 			else
-			msb, lsb, progNo = prog:match('(%d+) (%d+) (%d+)') -- DUE TO BUG https://forum.cockos.com/showthread.php?t=289639 FOR NOW ONLY LSB 0 IS SUPPORTED, HERE AND BELOW
+			msb, lsb, progNo = prog:match('(%d+) (%d+) (%d+)') -- DUE TO BUG https://forum.cockos.com/showthread.php?t=289639 IN BUILDS OLDER THAN 7.16 ONLY LSB 0 IS SUPPORTED, HERE AND BELOW
 
 				if msb -- captures are valid, all are numerals
 				then -- reabank file isn't needed
-				mrkr_data = {msb+0, lsb+0, progNo+0} -- UNTIL THE BUG ABOVE IS FIXED, ONLY LSB 0 IS SUPPORTED
+				mrkr_data = {msb+0, lsb+0, progNo+0} -- IN BUILDS OLDER THAN 7.16 ONLY LSB 0 IS SUPPORTED
 
 				else -- see if program is represented by a name rather than by number, in which case reabank_t must be valid
 				msb, lsb, prog_name = prog:match('(%d+) (%d+) (.+)')
-					if msb and reabank_t and reabank_t[msb+0] and reabank_t[msb+0][0] then -- program is likely a string rather than a number // [0] instead of [lsb+0] due to the bug above
-						for no, name in pairs(reabank_t[msb+0][0]) do -- LSB is [0] instead of [lsb+0] since that's the only one supported currently due to the bug mentioned above
+				local old_build = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.16 -- used to condition LSB value 0 below for builds older than 7.16 due to the abovementioned bug
+				local t = msb and reabank_t and (old_build and reabank_t[msb+0][0] or reabank_t[msb+0][lsb+0])
+					if t then -- program is likely a string rather than a number
+						for no, name in pairs(t) do
 							if no ~= 'name' -- not name field which holds bank name associated with current bank LSB number
 							and name:lower() == prog_name:lower() then
-							mrkr_data = {msb+0, lsb+0, no} -- UNTIL THE BUG ABOVE IS FIXED, ONLY LSB 0 IS SUPPORTED
+							mrkr_data = {msb+0, lsb+0, no} -- IN BUILDS OLDER THAN 7.16 ONLY LSB 0 IS SUPPORTED
 							break end
 						end
 					end
@@ -939,6 +952,7 @@ function Get_Set_Program_From_Action_Marker(cmd_ID, reabank_t, mrkr_data, obj, f
 		Error_Tooltip('\n\n'..err..'\n\n', 1, 1, -200, 20) -- caps, spaced true, x2 -200, y2 20 // display the value placing the tooltip away from mouse cursor in case the script is run with a click otherwise tooltip blocks next mouse event
 		elseif #mrkr_data == 1 then -- only program number was included in the action marker
 		SetParm(obj, fx_idx, 2, mrkr_data[1]*unit) -- set program in the current bank msb/lsb
+
 		else -- full program address was included in the action marker: msb, lsb, program
 			for idx, val in ipairs(mrkr_data) do -- set all 3 params: msb, lsb, program
 			-- THE LSB BUG DOESN'T APPLY TO SETTING LSB VALUE
@@ -960,15 +974,15 @@ local scr_name = fullpath_init:match('[^\\/]+_(.+)%.%w+') -- without path, scrip
 	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_ReaControlMIDI navigate banks, programs_META.lua', names_t) -- names_t is optional only if constructed outside of the function, otherwise names are collected from the list in the header
 	then return r.defer(no_undo) end -- abort if META script but continue if not
 
-
------------ NAME TESTING --------------
+--[[--------- NAME TESTING --------------
+--REABANK_FILE = "GM"
 --scr_name = 'next/previous bank (MSB)'
---scr_name = 'next/previous bank (LSB)' -- NOT SUPPORTED CURRENTLY
+--scr_name = 'next/previous bank (LSB)' -- NOT SUPPORTED IN BUILDS OLDER THAN 7.16
 --scr_name = 'ReaControlMIDI next/previous program'
 --scr_name = 'next/previous bank select control change slider (MSB)'
 --scr_name = 'next/previous bank select control change slider (LSB)'
 --scr_name = 'scroll through banks (MSB) (LSB) / programs (mousewheel)'
------------------------------------------
+--]]---------------------------------------
 
 
 local elm1 = Invalid_Script_Name(scr_name, 'next','previous','cycle')
@@ -1011,7 +1025,7 @@ UNDO = validate_sett(UNDO)
 local reabank_t = REABANK_FILE and not scr_name:match('slider') and Parse_ReaBank_File(REABANK_FILE) -- only if script is meant to control 'Bank/Program Select' section
 	if reabank_t == true then return r.defer(no_undo) end -- file wasn't found, error message is inside the function
 
-local track, fx_idx, fx_GUID, item, take_idx = Re_Store_Data(named_ID) -- restore
+local track, fx_idx, fx_GUID, item, take_idx = Re_Store_Data(named_ID) -- recall ReaControlMIDI instance props
 
 local ret, fx_name, obj, found
 
@@ -1021,13 +1035,13 @@ local undo = UNDO and not mrker_data and r.Undo_BeginBlock() -- placed here in c
 
 -- SEARCH FOR A TAGGED INSTANCE OF ReaControlMIDI
 
-	if track then -- strored data exist
+	if track then -- stored ReaControlMIDI instance data exist
 		for i=-1, r.CountTracks(0)-1 do -- -1 to account for the Master track
 		local tr = r.GetTrack(0,i) or r.GetMasterTrack(0)
 			if tostring(tr) == track -- target track found
 			and r.IsTrackVisible(tr, false) -- mixer false
 			then
-				if item ~= 'userdata: ' then -- take fx // or #item > #('userdata: ') // item var contains actual pointer rather than a placeholder only
+				if item ~= 'userdata: ' then -- take fx // or #item > #('userdata: ') // item var contains actual pointer rather than a placeholder only as in the case of no item
 					for i=0, r.GetTrackNumMediaItems(tr)-1 do
 					local itm = r.GetTrackMediaItem(tr,i)
 						if tostring(itm) == item then -- target item found
@@ -1047,7 +1061,6 @@ local undo = UNDO and not mrker_data and r.Undo_BeginBlock() -- placed here in c
 		end
 	end
 
-
 -- The following routines run at the very 1st execution of the script in a session or when the stored data have become invalid
 
 	if not obj then -- look among track FX
@@ -1060,7 +1073,8 @@ local undo = UNDO and not mrker_data and r.Undo_BeginBlock() -- placed here in c
 				end
 				if fx_idx then -- tagged FX found
 				found = 1
-					if Validate_FX_Identity(tr, fx_idx, 'ReaControlMIDI', {[0]='Bank MSB',[1]='Bank LSB',[2]='Program'}, TAG) then
+					if Validate_FX_Identity(tr, fx_idx, 'ReaControlMIDI', {[0]='Bank MSB',[1]='Bank LSB',[2]='Program'}, TAG)
+					then
 					obj = tr
 					break end
 				end
@@ -1078,7 +1092,8 @@ local undo = UNDO and not mrker_data and r.Undo_BeginBlock() -- placed here in c
 				fx_idx, fx_name = Process_FX_Incl_In_All_Containers(take, recFX, parent_cntnr_idx, parents_fx_cnt, TAG)
 					if fx_idx then -- tagged FX found
 					found = 1
-						if Validate_FX_Identity(take, fx_idx, 'ReaControlMIDI', {[0]='Bank MSB',[1]='Bank LSB',[2]='Program'}, TAG) then
+						if Validate_FX_Identity(take, fx_idx, 'ReaControlMIDI', {[0]='Bank MSB',[1]='Bank LSB',[2]='Program'}, TAG)
+						then
 						obj = take
 						break end
 					end
@@ -1094,10 +1109,10 @@ local undo = UNDO and not mrker_data and r.Undo_BeginBlock() -- placed here in c
 		if mrker_data then -- switch program from action marker // only supported in program select scripts
 		Get_Set_Program_From_Action_Marker(cmd_ID, reabank_t, mrker_data, obj, fx_idx)
 		else
-		err, undo = Switch_Bank_Program(obj, fx_idx, scr_name, down, up, reabank_t, mrker_prog) -- down, up args stem from Process_Mouse_Wheel_Direction() function
-		local undo = UNDO and r.Undo_EndBlock(err and (r.Undo_CanUndo2(0) or '') or undo, -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following  Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
+		err, undo = Switch_Bank_Program(obj, fx_idx, scr_name, down, up, reabank_t) -- down, up args stem from Process_Mouse_Wheel_Direction() function
+		local undo = UNDO and r.Undo_EndBlock(err and (r.Undo_CanUndo2(0) or '') or undo, -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
 			if found then -- 'found' var will only be valid when either there's no extended state yet i.e. very 1st execution of the script during session or when extended data has become invalid
-			Re_Store_Data(named_ID, obj, fx_idx) -- store
+			Re_Store_Data(named_ID, obj, fx_idx) -- store ReaControlMIDI instance props for the sake of efficiency so as to not search for it anew at every script run
 			end
 		end
 	else
@@ -1109,8 +1124,6 @@ local undo = UNDO and not mrker_data and r.Undo_BeginBlock() -- placed here in c
 	end
 
 do return r.defer(no_undo) end
-
-
 
 
 
