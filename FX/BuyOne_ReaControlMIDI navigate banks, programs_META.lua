@@ -317,8 +317,8 @@ local names_t, content = names_t
 				-- prevent creaton of 'Bank/Program Select' LSB navigation scripts in builds older than 7.16 due to bug
 				-- of FX_GetParam() function returning MSB value for LSB param https://forum.cockos.com/showthread.php?t=289639
 				-- ReaControlMIDI select next bank (LSB).lua
-				--	ReaControlMIDI select previous bank (LSB).lua
-				--	ReaControlMIDI cycle through banks (LSB) (mousewheel).lua
+				-- ReaControlMIDI select previous bank (LSB).lua
+				-- ReaControlMIDI cycle through banks (LSB) (mousewheel).lua
 				if old_build and (not scr_name:match('LSB') or scr_name:match('LSB') and scr_name:match('slider'))
 				or not old_build then
 				names_t[#names_t+1] = scr_name
