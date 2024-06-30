@@ -9,100 +9,100 @@ REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
 Provides: [main=main,midi_editor] .
 About: 	The script generates menu with the track list allowing toggling 
-			individual track visibility by clicking the track entry in the menu 
-			and changing visibility of visible selected or hidden tracks in 
-			a batch. It's similar to the native Track Manager but is probably
-			more convenient to use and offers some options the Track Manager 
-			does not.
-			
-			Hidden tracks are marked in the list with a symbol which can
-			be customized using HIDDEN_TRACK_INDICATOR setting in the USER SETTINGS.
-			
-			The visibility state of the tracks listed in the menu depends
-			on their visibility in the current context which can be either Arrange
-			when the Mixer window is closed, or Mixer when it's open. Likewise
-			changing visibility status of individual track (by clicking its entry
-			in the menu) only applies to its status in the current context.
-			
-			The track menu respects track folder structure and indents children
-			tracks inside folders. The amount of indentation and its indicator
-			type can be customized in the USER SETTINGS.
-			
-			The name of a collapsed folder parent track is preceded in the menu with 
-			vertical double arrow ↕ and in Arrange context its children tracks aren't 
-			listed in the menu regardless of their visibility status.  	
-			In the Mixer context the name of a collapsed folder parent track is only 
-			preceded with vertical double arrow ↕ indicator when at least one child 
-			track is not hidden. If all are hidden the indicator doesn't appear and 
-			all hidden children tracks are listed in the menu preceded by the hidden
-			track indicator. So basically in the Mixer a folder is only considered 
-			collapsed if there're visible children in it. This is due to limitations 
-			of ReaScript API which could be overcome but the solution would be 
-			unnecessarily taxable on the computer resources for such trivial task.
-			
-			Change in visibility status of individual track which is a folder parent 
-			track can apply to all its descendants (children and grand ... children) 
-			and in visibility status of a folder child track - to its relatives 
-			(immediate parent track and siblings) provided the options 1 and 2 in
-			the OPTIONS: submenu are enabled. The options 1 and 2 affect all 
-			track visibility status changes effected with the script.
-			
-			Items 1 and 2 of the main menu allow hiding all selected tracks either
-			in the current context or in both contexts respectively. When the option 
-			5 in the OPTIONS: menu is enabled these items work in reverse - instead 
-			of hiding the selected tracks they leave selected tracks visible while 
-			hiding the rest. However in the Mixer the Master track isn't hidden
-			along with other non-selected tracks.
-			
-			Items 3 and 4 of the main menu allow unhiding tracks in the current 
-			context or in both contexts respectively. Item 4 is only available if 
-			there're hidden tracks in both Arrange and Mixer contexts, but not 
-			necessarily the same tracks. If option 4 in the OPTIONS: submenu is 
-			enabled these items only unhide tracks hidden with this script without 
-			affecting tracks hidden by other means.
-						
-			When the option 3 of the OPTIONS: submenu is enabled the track menu 
-			starts from the topmost/leftmost track (depending on the current context) 
-			regardless of its visibility status while the tracks beyond the topmost/leftmost 
-			scroll position are ignored, also regardless of their visibility status. 
-			Activation of this option is convenient in projects with large number 
-			of tracks because it provides access to hide/show actions for what's 
-			immediately within view in the current context which would otherwise 
-			neccesitate scrolling the menu down.  
-			The option doesn't apply to the Master track which always listed in the 
-			menu either visible or hidden.   
-			While the option is enabled, hiding the topmost/leftmost track (depending 
-			on the current context) hides it from the menu because the next one becomes 
-			the topmost/leftmost.  
-			When all tracks end up being hidden and there's no topmost/leftmost 
-			track, the option ceases to affect the menu and the entire track list 
-			re-appears.
-						
-			When an individual track is unhidden, if it ends up being completely 
-			or mainly out of sight in the Arrange context, it's scrolled into view 
-			at the top of the track list. This is what the extensions are 
-			recommended for. If installed, when the track just unhidden is sufficiently 
-			visible at the bottom it won't be scrolled into view at the top. In 
-			the Mixer context the unhidden track is scrolled to the lefmost position.
-			When tracks are (un)hidden in a batch the script attempts to preserve track 
-			scroll position.  
-			When the Master track is unhidden in Arrange context the entire tracklist 
-			is scrolled up, in the Mixer context no scrolling to the Master track 
-			is needed as it's not affected by the scroll position there.
-						
-			If option 4 of the OPTIONS: menu is enabled the menu only lists tracks
-			hidden with the script in the current context. The option doesn't apply 
-			to the Master track, its hidden status is indicated regardless of the
-			way it was hidden.
-			
-			All visibility status changes create an undo point.
-			
-			Option 6 of the OPTIONS: submenu if enabled makes the menu reload 
-			after each action run. Toggling any of the options always makes the 
-			menu reload.
-			
-			The digits preceding the menu items re designed be used as a quick 
-			access shortcuts to run menu actions from keyboard.
+	individual track visibility by clicking the track entry in the menu 
+	and changing visibility of visible selected or hidden tracks in 
+	a batch. It's similar to the native Track Manager but is probably
+	more convenient to use and offers some options the Track Manager 
+	does not.
+	
+	Hidden tracks are marked in the list with a symbol which can
+	be customized using HIDDEN_TRACK_INDICATOR setting in the USER SETTINGS.
+	
+	The visibility state of the tracks listed in the menu depends
+	on their visibility in the current context which can be either Arrange
+	when the Mixer window is closed, or Mixer when it's open. Likewise
+	changing visibility status of individual track (by clicking its entry
+	in the menu) only applies to its status in the current context.
+	
+	The track menu respects track folder structure and indents children
+	tracks inside folders. The amount of indentation and its indicator
+	type can be customized in the USER SETTINGS.
+	
+	The name of a collapsed folder parent track is preceded in the menu with 
+	vertical double arrow ↕ and in Arrange context its children tracks aren't 
+	listed in the menu regardless of their visibility status.  	
+	In the Mixer context the name of a collapsed folder parent track is only 
+	preceded with vertical double arrow ↕ indicator when at least one child 
+	track is not hidden. If all are hidden the indicator doesn't appear and 
+	all hidden children tracks are listed in the menu preceded by the hidden
+	track indicator. So basically in the Mixer a folder is only considered 
+	collapsed if there're visible children in it. This is due to limitations 
+	of ReaScript API which could be overcome but the solution would be 
+	unnecessarily taxable on the computer resources for such trivial task.
+	
+	Change in visibility status of individual track which is a folder parent 
+	track can apply to all its descendants (children and grand ... children) 
+	and in visibility status of a folder child track - to its relatives 
+	(immediate parent track and siblings) provided the options 1 and 2 in
+	the OPTIONS: submenu are enabled. The options 1 and 2 affect all 
+	track visibility status changes effected with the script.
+	
+	Items 1 and 2 of the main menu allow hiding all selected tracks either
+	in the current context or in both contexts respectively. When the option 
+	5 in the OPTIONS: menu is enabled these items work in reverse - instead 
+	of hiding the selected tracks they leave selected tracks visible while 
+	hiding the rest. However in the Mixer the Master track isn't hidden
+	along with other non-selected tracks.
+	
+	Items 3 and 4 of the main menu allow unhiding tracks in the current 
+	context or in both contexts respectively. Item 4 is only available if 
+	there're hidden tracks in both Arrange and Mixer contexts, but not 
+	necessarily the same tracks. If option 4 in the OPTIONS: submenu is 
+	enabled these items only unhide tracks hidden with this script without 
+	affecting tracks hidden by other means.
+				
+	When the option 3 of the OPTIONS: submenu is enabled the track menu 
+	starts from the topmost/leftmost track (depending on the current context) 
+	regardless of its visibility status while the tracks beyond the topmost/leftmost 
+	scroll position are ignored, also regardless of their visibility status. 
+	Activation of this option is convenient in projects with large number 
+	of tracks because it provides access to hide/show actions for what's 
+	immediately within view in the current context which would otherwise 
+	neccesitate scrolling the menu down.  
+	The option doesn't apply to the Master track which always listed in the 
+	menu either visible or hidden.   
+	While the option is enabled, hiding the topmost/leftmost track (depending 
+	on the current context) hides it from the menu because the next one becomes 
+	the topmost/leftmost.  
+	When all tracks end up being hidden and there's no topmost/leftmost 
+	track, the option ceases to affect the menu and the entire track list 
+	re-appears.
+				
+	When an individual track is unhidden, if it ends up being completely 
+	or mainly out of sight in the Arrange context, it's scrolled into view 
+	at the top of the track list. This is what the extensions are 
+	recommended for. If installed, when the track just unhidden is sufficiently 
+	visible at the bottom it won't be scrolled into view at the top. In 
+	the Mixer context the unhidden track is scrolled to the lefmost position.
+	When tracks are (un)hidden in a batch the script attempts to preserve track 
+	scroll position.  
+	When the Master track is unhidden in Arrange context the entire tracklist 
+	is scrolled up, in the Mixer context no scrolling to the Master track 
+	is needed as it's not affected by the scroll position there.
+				
+	If option 4 of the OPTIONS: menu is enabled the menu only lists tracks
+	hidden with the script in the current context. The option doesn't apply 
+	to the Master track, its hidden status is indicated regardless of the
+	way it was hidden.
+	
+	All visibility status changes create an undo point.
+	
+	Option 6 of the OPTIONS: submenu if enabled makes the menu reload 
+	after each action run. Toggling any of the options always makes the 
+	menu reload.
+	
+	The digits preceding the menu items re designed be used as a quick 
+	access shortcuts to run menu actions from keyboard.
 
 ]]
 
