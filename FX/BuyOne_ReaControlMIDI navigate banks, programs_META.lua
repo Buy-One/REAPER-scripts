@@ -2,8 +2,12 @@
 ReaScript name: BuyOne_ReaControlMIDI navigate banks, programs_META.lua (15 scripts since build 7.16, 12 otherwise)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog:	#Added Bank/Program select list LSB support for builds older than 7.15
+Version: 1.2
+Changelog: 1.2 #Allowed creation of LSB navigation scripts regardless of REAPER build,
+		which in builds older than 7.16 will now generate an error message because 
+		those contain a bug https://forum.cockos.com/showthread.php?t=289639
+		preventing these scripts from functioning properly
+	    1.1 #Added Bank/Program select list LSB support for builds older than 7.15
 		#Fixed .reabank file REABANK_FILE setting validation when its name doesn't contain spaces
 		#Improved program navigation readout tooltip
 		#Made tooltips more verbose
@@ -309,20 +313,10 @@ local names_t, content = names_t
 	content = this_script:read('*a')
 	this_script:close()
 	names_t, found = {}
-	local old_build = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.16
 		for line in content:gmatch('[^\n\r]+') do
 			if line and line:match('Provides:') then found = 1 end
 			if found and line:match('%.lua') then
-			local scr_name = line:match('.+[/](.+)') or line:match('BuyOne.+[%w]') -- in case the new script name line includes a subfolder path, the subfolder won't be created
-				-- prevent creaton of 'Bank/Program Select' LSB navigation scripts in builds older than 7.16 due to bug
-				-- of FX_GetParam() function returning MSB value for LSB param https://forum.cockos.com/showthread.php?t=289639
-				-- ReaControlMIDI select next bank (LSB).lua
-				-- ReaControlMIDI select previous bank (LSB).lua
-				-- ReaControlMIDI cycle through banks (LSB) (mousewheel).lua
-				if old_build and (not scr_name:match('LSB') or scr_name:match('LSB') and scr_name:match('slider'))
-				or not old_build then
-				names_t[#names_t+1] = scr_name
-				end
+			names_t[#names_t+1] = line:match('.+[/](.+)') or line:match('BuyOne.+[%w]') -- in case the new script name line includes a subfolder path, the subfolder won't be created
 			elseif found and #names_t > 0 then
 			break -- the list has ended
 			end
@@ -969,6 +963,19 @@ end
 local is_new_value, fullpath_init, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
 fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
 local scr_name = fullpath_init:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
+
+
+	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.16
+	and scr_name:match('LSB') and not scr_name:match('slider') then
+	-- prevent running of 'Bank/Program Select' LSB navigation scripts in builds older than 7.16 due to bug
+	-- of FX_GetParam() function returning MSB value for LSB param https://forum.cockos.com/showthread.php?t=289639
+	-- ReaControlMIDI select next bank (LSB).lua
+	-- ReaControlMIDI select previous bank (LSB).lua
+	-- ReaControlMIDI cycle through banks (LSB) (mousewheel).lua
+	Error_Tooltip('\n\n      this script only works \n\n in reaper builds 7.16 onwards \n\n', 1, 1, -200, 20) -- caps, spaced true, x2 -200, y2 20 // display the value placing the tooltip away from mouse cursor in case the script is run with a click otherwise tooltip blocks next mouse event
+	return r.defer(no_undo)
+	end
+
 
 	-- doesn't run in non-META scripts
 	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_ReaControlMIDI navigate banks, programs_META.lua', names_t) -- names_t is optional only if constructed outside of the function, otherwise names are collected from the list in the header
