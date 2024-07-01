@@ -964,19 +964,6 @@ local is_new_value, fullpath_init, sect_ID, cmd_ID, mode, resol, val, contextstr
 fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
 local scr_name = fullpath_init:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
 
-
-	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.16
-	and scr_name:match('LSB') and not scr_name:match('slider') then
-	-- prevent running of 'Bank/Program Select' LSB navigation scripts in builds older than 7.16 due to bug
-	-- of FX_GetParam() function returning MSB value for LSB param https://forum.cockos.com/showthread.php?t=289639
-	-- ReaControlMIDI select next bank (LSB).lua
-	-- ReaControlMIDI select previous bank (LSB).lua
-	-- ReaControlMIDI cycle through banks (LSB) (mousewheel).lua
-	Error_Tooltip('\n\n      this script only works \n\n in reaper builds 7.16 onwards \n\n', 1, 1, -200, 20) -- caps, spaced true, x2 -200, y2 20 // display the value placing the tooltip away from mouse cursor in case the script is run with a click otherwise tooltip blocks next mouse event
-	return r.defer(no_undo)
-	end
-
-
 	-- doesn't run in non-META scripts
 	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_ReaControlMIDI navigate banks, programs_META.lua', names_t) -- names_t is optional only if constructed outside of the function, otherwise names are collected from the list in the header
 	then return r.defer(no_undo) end -- abort if META script but continue if not
@@ -990,6 +977,18 @@ local scr_name = fullpath_init:match('[^\\/]+_(.+)%.%w+') -- without path, scrip
 --scr_name = 'next/previous bank select control change slider (LSB)'
 --scr_name = 'scroll through banks (MSB) (LSB) / programs (mousewheel)'
 --]]---------------------------------------
+
+
+	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.16
+	and scr_name:match('LSB') and not scr_name:match('slider') then
+	-- prevent running of 'Bank/Program Select' LSB navigation scripts in builds older than 7.16 due to bug
+	-- of FX_GetParam() function returning MSB value for LSB param https://forum.cockos.com/showthread.php?t=289639
+	-- ReaControlMIDI select next bank (LSB).lua
+	-- ReaControlMIDI select previous bank (LSB).lua
+	-- ReaControlMIDI cycle through banks (LSB) (mousewheel).lua
+	Error_Tooltip('\n\n      this script only works \n\n in reaper builds 7.16 onwards \n\n', 1, 1, -200, 20) -- caps, spaced true, x2 -200, y2 20 // display the value placing the tooltip away from mouse cursor in case the script is run with a click otherwise tooltip blocks next mouse event
+	return r.defer(no_undo)
+	end
 
 
 local elm1 = Invalid_Script_Name(scr_name, 'next','previous','cycle')
