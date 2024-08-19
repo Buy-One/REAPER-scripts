@@ -8,72 +8,72 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
 About:	The script is part of the Transcribing workflow set of scripts
-			alongside
-			BuyOne_Transcribing - Create and manage segments.lua  
-			BuyOne_Transcribing - Real time preview.lua  
-			BuyOne_Transcribing - Format converter.lua  
-			BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
-			BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
-			BuyOne_Transcribing - Go to segment marker.lua
-			BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
-			
-			It's purpose is to allow embedding transcript in a video file or
-			audio file.
-			
-			V I D E O
-			
-			If VIDEO option is chosen by the user in the pop-up menu the script
-			creates a new track named as specified in the RENDER_TRACK_NAME
-			setting and inserts on it items with Video processor plugin 
-			at markers which correspond to segments start and having segment 
-			transcript included in their take names in order to display 
-			the transcript within video context.  
-			The script deletes from the project all segment markers, i.e. 
-			those bearing in their name a time stamp in the format supported 
-			by the set Transcribing scripts, and then creates them from scratch
-			taking their positions from the transcript time stamps. Existing 
-			markers whose name don't conform to the format supported by the 
-			Transcribing scripts set are left intact.  
-			The items are only inserted for segments with text.  
-			All formatting markup is cleared except for the new line tag <n> 
-			supported by this set of scripts and the Video processor 
-			'Overlay: Text/Timecode' preset.
-			
-			The said render track must be placed above the track with the 
-			video item.  
+	alongside
+	BuyOne_Transcribing - Create and manage segments.lua  
+	BuyOne_Transcribing - Real time preview.lua  
+	BuyOne_Transcribing - Format converter.lua  
+	BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
+	BuyOne_Transcribing - Go to segment marker.lua
+	BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
+	
+	It's purpose is to allow embedding transcript in a video file or
+	audio file.
+	
+	V I D E O
+	
+	If VIDEO option is chosen by the user in the pop-up menu the script
+	creates a new track named as specified in the RENDER_TRACK_NAME
+	setting and inserts on it items with Video processor plugin 
+	at markers which correspond to segments start and having segment 
+	transcript included in their take names in order to display 
+	the transcript within video context.  
+	The script deletes from the project all segment markers, i.e. 
+	those bearing in their name a time stamp in the format supported 
+	by the set Transcribing scripts, and then creates them from scratch
+	taking their positions from the transcript time stamps. Existing 
+	markers whose name don't conform to the format supported by the 
+	Transcribing scripts set are left intact.  
+	The items are only inserted for segments with text.  
+	All formatting markup is cleared except for the new line tag <n> 
+	supported by this set of scripts and the Video processor 
+	'Overlay: Text/Timecode' preset.
+	
+	The said render track must be placed above the track with the 
+	video item.  
 
-			When the items are created they become locked so in order to manually
-			delete them they must be unlocked first. Or the render track itself
-			can be deleted without unlocking the items beforehand.  
-			
-			Once set up the video can be rendered out as normal.
-			
-			A U D I O
-			
-			If AUDIO option is selected the script deletes from the project all 
-			segment markers, i.e. those bearing in their name a time stamp in 
-			the format supported by the set Transcribing scripts, and then creates 
-			them from scratch taking their positions from the segment start time 
-			stamps of the transcript.  
-			
-			The transcript of each segment is added to the corresponding marker
-			name. All new line tags <n> supported by this set of scripts and 
-			all other formatting markup supported by the SRT or VTT formats is 
-			cleared.  
-			If 'With chapter tags' option is enabled before opting for AUDIO
-			option, in each segment marker the transcript will be preceded with
-			'CHAP' tag and will be recognized as a chapter by media players which 
-			support it. To have chapter tags embedded in the file the output format
-			must be mp3, flac, ogg or opus and 'Add new metadata' option must be 
-			enabled in the Render window.  
-			To embed the segment markers with the transcript inside files in formats 
-			which don't support 'CHAP' tag such as wav, instead of enabling the 
-			metadata select 'Markers only' option from the drop-down menu at the 
-			bottom of the Render window. Adding chapter tag in this case is 
-			unnecessary.
-			
-			The menu options can be triggered from keyboard by hitting the key
-			which corresponds to the first character of the menu item.
+	When the items are created they become locked so in order to manually
+	delete them they must be unlocked first. Or the render track itself
+	can be deleted without unlocking the items beforehand.  
+	
+	Once set up the video can be rendered out as normal.
+	
+	A U D I O
+	
+	If AUDIO option is selected the script deletes from the project all 
+	segment markers, i.e. those bearing in their name a time stamp in 
+	the format supported by the set Transcribing scripts, and then creates 
+	them from scratch taking their positions from the segment start time 
+	stamps of the transcript.  
+	
+	The transcript of each segment is added to the corresponding marker
+	name. All new line tags <n> supported by this set of scripts and 
+	all other formatting markup supported by the SRT or VTT formats is 
+	cleared.  
+	If 'With chapter tags' option is enabled before opting for AUDIO
+	option, in each segment marker the transcript will be preceded with
+	'CHAP' tag and will be recognized as a chapter by media players which 
+	support it. To have chapter tags embedded in the file the output format
+	must be mp3, flac, ogg or opus and 'Add new metadata' option must be 
+	enabled in the Render window.  
+	To embed the segment markers with the transcript inside files in formats 
+	which don't support 'CHAP' tag such as wav, instead of enabling the 
+	metadata select 'Markers only' option from the drop-down menu at the 
+	bottom of the Render window. Adding chapter tag in this case is 
+	unnecessary.
+	
+	The menu options can be triggered from keyboard by hitting the key
+	which corresponds to the first character of the menu item.
 ]]
 
 -----------------------------------------------------------------------------
