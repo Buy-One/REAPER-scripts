@@ -8,23 +8,23 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
 About:	The script is part of the Transcribing workflow set of scripts
-			alongside
-			BuyOne_Transcribing - Create and manage segments.lua  
-			BuyOne_Transcribing - Real time preview.lua  
-			BuyOne_Transcribing - Format converter.lua  
-			BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
-			BuyOne_Transcribing - Prepare transcript for rendering.lua  
-			BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua
-			BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
+	alongside
+	BuyOne_Transcribing - Create and manage segments.lua  
+	BuyOne_Transcribing - Real time preview.lua  
+	BuyOne_Transcribing - Format converter.lua  
+	BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing - Prepare transcript for rendering.lua  
+	BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua
+	BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
 
-			It's a kind of the opposite of the script  
-			'BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua'
-			
-			Select the time stamp in the track Notes (it can be double clicked),
-			copy it into the buffer with Ctrl/Cmd+C or from the right click
-			context menu and run the script.	
-			
-			The script doesn't create an undo point.
+	It's a kind of the opposite of the script  
+	'BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua'
+	
+	Select the time stamp in the track Notes (it can be double clicked),
+	copy it into the buffer with Ctrl/Cmd+C or from the right click
+	context menu and run the script.	
+	
+	The script doesn't create an undo point.
 ]]
 
 
