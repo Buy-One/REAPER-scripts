@@ -8,47 +8,47 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
 About:	The script is part of the Transcribing workflow set of scripts
-			alongside  
-			BuyOne_Transcribing - Create and manage segments.lua  
-			BuyOne_Transcribing - Real time preview.lua  
-			BuyOne_Transcribing - Format converter.lua  
-			BuyOne_Transcribing - Prepare transcript for rendering.lua 
-			BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
-			BuyOne_Transcribing - Go to segment marker.lua
-			BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
-			
-			It allows import of SRT and VTT code from .srt. .vtt or .txt 
-			files and converts it into markers and track Notes ready for 
-			editing with 'BuyOne_Transcribing - Create and manage segments.lua'
-			script.
-			
-			Before converting the SRT/VTT time stamps into markers the 
-			script deletes from the project all segment markers, i.e. those 
-			bearing in their name the time stamp in the format supported 
-			by the Transcribing scripts. Existing markers whose name don't 
-			conform to the format supported by the Transcribing scripts 
-			are left intact.	
+	alongside  
+	BuyOne_Transcribing - Create and manage segments.lua  
+	BuyOne_Transcribing - Real time preview.lua  
+	BuyOne_Transcribing - Format converter.lua  
+	BuyOne_Transcribing - Prepare transcript for rendering.lua 
+	BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
+	BuyOne_Transcribing - Go to segment marker.lua
+	BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
+	
+	It allows import of SRT and VTT code from .srt. .vtt or .txt 
+	files and converts it into markers and track Notes ready for 
+	editing with 'BuyOne_Transcribing - Create and manage segments.lua'
+	script.
+	
+	Before converting the SRT/VTT time stamps into markers the 
+	script deletes from the project all segment markers, i.e. those 
+	bearing in their name the time stamp in the format supported 
+	by the Transcribing scripts. Existing markers whose name don't 
+	conform to the format supported by the Transcribing scripts 
+	are left intact.	
 
-			SWS Notes limit per object is 65,535 bytes, therefore the 
-			entire SRT/VTT transcript may not fit within a single track 
-			Notes. In this script however the limit has been set to 
-			16,383 bytes per track to accommodate for edits after the 
-			import so running into the Notes limit within one track becomes 
-			less likely. Therefore for every 16,383 bytes of converted 
-			SRT/VTT code a new track is created with the name defined in 
-			NOTES_TRACK_NAME setting preceded with an ordinal number, i.e. 
-			the very first track will be numbered 1 and so on.  
-			All such tracks are put in a folder for ease of management.
-			
-			Since the transcript format supported by the set of scripts 
-			mentioned above is very basic, all metadata such as text 
-			position/coordinates which follow the time stamps on the same 
-			line will be ignored. Only the text meant to be displayed on 
-			the screen and its inline formatting markup will be preserved. 
-			In .VTT code, metadata between cues (cue = time code followed 
-			by text without intervening empty lines) can be optionally 
-			preserved. Lines in multi-line captions are delimited with the 
-			new line tag <n> supported by this set of scripts.
+	SWS Notes limit per object is 65,535 bytes, therefore the 
+	entire SRT/VTT transcript may not fit within a single track 
+	Notes. In this script however the limit has been set to 
+	16,383 bytes per track to accommodate for edits after the 
+	import so running into the Notes limit within one track becomes 
+	less likely. Therefore for every 16,383 bytes of converted 
+	SRT/VTT code a new track is created with the name defined in 
+	NOTES_TRACK_NAME setting preceded with an ordinal number, i.e. 
+	the very first track will be numbered 1 and so on.  
+	All such tracks are put in a folder for ease of management.
+	
+	Since the transcript format supported by the set of scripts 
+	mentioned above is very basic, all metadata such as text 
+	position/coordinates which follow the time stamps on the same 
+	line will be ignored. Only the text meant to be displayed on 
+	the screen and its inline formatting markup will be preserved. 
+	In .VTT code, metadata between cues (cue = time code followed 
+	by text without intervening empty lines) can be optionally 
+	preserved. Lines in multi-line captions are delimited with the 
+	new line tag <n> supported by this set of scripts.
 			
 ]]
 
