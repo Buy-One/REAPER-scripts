@@ -8,36 +8,36 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
 About:	The script is part of the Transcribing workflow set of scripts
-			alongside
-			BuyOne_Transcribing - Create and manage segments.lua  
-			BuyOne_Transcribing - Real time preview.lua  
-			BuyOne_Transcribing - Format converter.lua  
-			BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
-			BuyOne_Transcribing - Prepare transcript for rendering.lua  
-			BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua			
+	alongside
+	BuyOne_Transcribing - Create and manage segments.lua  
+	BuyOne_Transcribing - Real time preview.lua  
+	BuyOne_Transcribing - Format converter.lua  
+	BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing - Prepare transcript for rendering.lua  
+	BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua			
 
-			The script generates a ReaperMenu file for a toolbar 
-			to which all scripts and custom actions included in this 
-			script set are linked, except this script. So that if
-			the user would like have one they wouldn't have to create
-			one from scratch.   
-			After that the generated file named   
-			'Transcribing workflow toolbar.ReaperMenu'  
-			and placed in the MenuSets folder in the REAPER resource
-			directory need to be imported into the Menu/Toolbar editor.
-			
-			While generating the user is prompted for the number of the 
-			target toolbar because REAPER can only import menu sets for
-			a specific toolbar. The toolbar number can be input from
-			the keyboard while the prompt menu is open or by clicking
-			the digits in the menu. To create the file hit T key on the
-			keyboard or click the 'TOOLBAR #:' line in the menu. The 
-			wrong input can be corrected with the < character.
-			
-			When the toolbar menu set file is generated for the first time
-			the script also loads an image of the toolbar layout to help
-			the user find their way around it provided such image was
-			downloaded with the set of scripts.
+	The script generates a ReaperMenu file for a toolbar 
+	to which all scripts and custom actions included in this 
+	script set are linked, except this script. So that if
+	the user would like have one they wouldn't have to create
+	one from scratch.   
+	After that the generated file named   
+	'Transcribing workflow toolbar.ReaperMenu'  
+	and placed in the MenuSets folder in the REAPER resource
+	directory need to be imported into the Menu/Toolbar editor.
+	
+	While generating the user is prompted for the number of the 
+	target toolbar because REAPER can only import menu sets for
+	a specific toolbar. The toolbar number can be input from
+	the keyboard while the prompt menu is open or by clicking
+	the digits in the menu. To create the file hit T key on the
+	keyboard or click the 'TOOLBAR #:' line in the menu. The 
+	wrong input can be corrected with the < character.
+	
+	When the toolbar menu set file is generated for the first time
+	the script also loads an image of the toolbar layout to help
+	the user find their way around it provided such image was
+	downloaded with the set of scripts.
 
 ]]
 
