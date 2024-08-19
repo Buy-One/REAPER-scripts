@@ -8,36 +8,36 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
 About:	The script is part of the Transcribing workflow set of scripts
-			alongside
-			BuyOne_Transcribing - Create and manage segments.lua  
-			BuyOne_Transcribing - Real time preview.lua  
-			BuyOne_Transcribing - Format converter.lua  
-			BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
-			BuyOne_Transcribing - Prepare transcript for rendering.lua  
-			BuyOne_Transcribing - Go to segment marker.lua
-			BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
-			
-			It's a kind of the opposit of the script  
-			'BuyOne_Transcribing - Go to segment marker.lua'
-			
-			Since the transcript can be divided between several tracks
-			due to SWS Notes size limit per object, this script allows
-			selecting the Notes track in which the time stamp of the
-			marker closest to the edit cursor on the left or currently 
-			at the edit cursor is found which simplifies the workflow.
-			
-			When REAPER is in play mode the reference position is taken
-			from the play cursor, otherwise from the edit cursor.
-			
-			If you find it more convenient to point at a marker or a space
-			between them with the mouse cursor, the following custom action
-			can be used being mapped to a shortcut:
-			
-			Custom: Transcribing - Select Notes track based on marker at edit cursor  
-				View: Move edit cursor to mouse cursor  
-				BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua
-				
-			The script doesn't create an undo point.
+	alongside
+	BuyOne_Transcribing - Create and manage segments.lua  
+	BuyOne_Transcribing - Real time preview.lua  
+	BuyOne_Transcribing - Format converter.lua  
+	BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing - Prepare transcript for rendering.lua  
+	BuyOne_Transcribing - Go to segment marker.lua
+	BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
+	
+	It's a kind of the opposit of the script  
+	'BuyOne_Transcribing - Go to segment marker.lua'
+	
+	Since the transcript can be divided between several tracks
+	due to SWS Notes size limit per object, this script allows
+	selecting the Notes track in which the time stamp of the
+	marker closest to the edit cursor on the left or currently 
+	at the edit cursor is found which simplifies the workflow.
+	
+	When REAPER is in play mode the reference position is taken
+	from the play cursor, otherwise from the edit cursor.
+	
+	If you find it more convenient to point at a marker or a space
+	between them with the mouse cursor, the following custom action
+	can be used being mapped to a shortcut:
+	
+	Custom: Transcribing - Select Notes track based on marker at edit cursor  
+		View: Move edit cursor to mouse cursor  
+		BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua
+		
+	The script doesn't create an undo point.
 
 ]]
 
