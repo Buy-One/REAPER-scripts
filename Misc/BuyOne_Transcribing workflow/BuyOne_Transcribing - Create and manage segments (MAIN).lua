@@ -8,355 +8,355 @@ Licence: WTFPL
 REAPER: at least v6.37
 Extensions: SWS/S&M
 About:	The script is part of the Transcribing workflow set of scripts
-			alongside  
-			BuyOne_Transcribing - Real time preview.lua  
-			BuyOne_Transcribing - Format converter.lua  
-			BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
-			BuyOne_Transcribing - Prepare transcript for rendering.lua   
-			BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
-			BuyOne_Transcribing - Go to segment marker.lua
-			BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
+	alongside  
+	BuyOne_Transcribing - Real time preview.lua  
+	BuyOne_Transcribing - Format converter.lua  
+	BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing - Prepare transcript for rendering.lua   
+	BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
+	BuyOne_Transcribing - Go to segment marker.lua
+	BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
 
-			This is the main script os the set geared towards segment 
-			manipulation: creation, boundaries change, split, merger.
-			
-			
-			THE MEDIA ITEM WHOSE CONTENT NEEDS TO BE TRANSCRIBED MUST 
-			BE LOCATED AT THE VERY PROJECT START FOR THE SEGMENT TIME STAMPS 
-			TO BE ACCURATE BECAUSE TIME IS COUNTED FROM THE PROJECT START
-			RATHER THAN FROM THE VIDEO ITEM START.
-			
-			If your aim is to transcribe for .SRT/.VTT formats be aware that
-			their support by this set of scripts is very basic. When the
-			transcript is converted into these formats with the script
-			'BuyOne_Transcribing - Format converter.lua' all textual 
-			data which follow the time stamps are moved to the next line, 
-			regardless of their nature as if all of them where meant to be 
-			displayed on the screen. For .VTT format, data between segment
-			lines can be retained at conversion which is useful for keeping
-			comments, region data etc., if any, but garbage as well because 
-			the conversion script doesn't analyze such data.
-			
-			
-			► OPERATIONS PEFRORMED BY THE SCRIPT 
+	This is the main script os the set geared towards segment 
+	manipulation: creation, boundaries change, split, merger.
+	
+	
+	THE MEDIA ITEM WHOSE CONTENT NEEDS TO BE TRANSCRIBED MUST 
+	BE LOCATED AT THE VERY PROJECT START FOR THE SEGMENT TIME STAMPS 
+	TO BE ACCURATE BECAUSE TIME IS COUNTED FROM THE PROJECT START
+	RATHER THAN FROM THE VIDEO ITEM START.
+	
+	If your aim is to transcribe for .SRT/.VTT formats be aware that
+	their support by this set of scripts is very basic. When the
+	transcript is converted into these formats with the script
+	'BuyOne_Transcribing - Format converter.lua' all textual 
+	data which follow the time stamps are moved to the next line, 
+	regardless of their nature as if all of them where meant to be 
+	displayed on the screen. For .VTT format, data between segment
+	lines can be retained at conversion which is useful for keeping
+	comments, region data etc., if any, but garbage as well because 
+	the conversion script doesn't analyze such data.
+	
+	
+	► OPERATIONS PEFRORMED BY THE SCRIPT 
 
-			● A. Segment creation
+	● A. Segment creation
+	
+	1. Manually set loop points over the audio segment to be transcribed.  
+	2. Run the script to add segment time stamp(s) to the Notes of the 
+	Notes track, whose name specified in NOTES_TRACK_NAME setting.
+	To see the added notes keep the Notes track selected and SWS Notes
+	window open with Track notes section active.  
+	3. Tanscribe opposite of the time stamp(s) in the Notes window.
 			
-			1. Manually set loop points over the audio segment to be transcribed.  
-			2. Run the script to add segment time stamp(s) to the Notes of the 
-			Notes track, whose name specified in NOTES_TRACK_NAME setting.
-			To see the added notes keep the Notes track selected and SWS Notes
-			window open with Track notes section active.  
-			3. Tanscribe opposite of the time stamp(s) in the Notes window.
-					
-			The script also inserts project markers with time stamp in the name
-			at loop points so the user can go back to previous segments and 
-			modify their properties such as bounds. If there's already a segment
-			marker at a loop point, new marker will not be inserted. A 'segment
-			marker' is a marker with time stamp in its name in the format supported
-			by the script.
-			
-			The transcribing project will include several Notes tracks if the 
-			transcript length exceeds the set limit per track. Such tracks are 
-			added automatically by the script as necessary.  
-			These tracks all bear the name specified in the NOTES_TRACK_NAME 
-			setting prefixed by sequential numbers. See more details further
-			below.
-			
-			To create next segment, the following custom action may be used
-			(included with the script set in the file 
-			'Transcribing workflow custom actions.ReaperKeyMap' )  
-			while the loop points are set to the previous segment bounds:
-			
-			Custom: Shift loop right by the loop length (loop points must already exist)  
-			  Time selection: Copy loop points to time selection  
-			  Time selection: Shift right (by time selection length)  
-			  Time selection: Copy time selection to loop points  
-			  Time selection: Remove (unselect) time selection  
-			  
-			then manually adjust loop start/end points as needed and run 
-			the script again, and so on.
-			
-			Watch demo '1. Segment creation.mp4' which comes with the 
-			set of scripts
+	The script also inserts project markers with time stamp in the name
+	at loop points so the user can go back to previous segments and 
+	modify their properties such as bounds. If there's already a segment
+	marker at a loop point, new marker will not be inserted. A 'segment
+	marker' is a marker with time stamp in its name in the format supported
+	by the script.
+	
+	The transcribing project will include several Notes tracks if the 
+	transcript length exceeds the set limit per track. Such tracks are 
+	added automatically by the script as necessary.  
+	These tracks all bear the name specified in the NOTES_TRACK_NAME 
+	setting prefixed by sequential numbers. See more details further
+	below.
+	
+	To create next segment, the following custom action may be used
+	(included with the script set in the file 
+	'Transcribing workflow custom actions.ReaperKeyMap' )  
+	while the loop points are set to the previous segment bounds:
+	
+	Custom: Shift loop right by the loop length (loop points must already exist)  
+	  Time selection: Copy loop points to time selection  
+	  Time selection: Shift right (by time selection length)  
+	  Time selection: Copy time selection to loop points  
+	  Time selection: Remove (unselect) time selection  
+	  
+	then manually adjust loop start/end points as needed and run 
+	the script again, and so on.
+	
+	Watch demo '1. Segment creation.mp4' which comes with the 
+	set of scripts
 
-			
-			● B. Segment bounds adjustment
-			
-			Position of segment markers created previously can be changed, 
-			in which case to have the relevant time stamps updated in the 
-			marker names and in the Notes entries, after manually changing 
-			marker position(s) perform the following sequence:
-			
-			1. Place the edit cursor within the segment bounds and run 
-			the following custom action (included with the script set 
-			in the file 'Transcribing workflow custom actions.ReaperKeyMap' )
-			
-			Custom: Create loop points between adjacent project markers (place edit cursor between markers or at the left one)  
-			  Time selection: Remove (unselect) time selection and loop points  
-			  View: Move cursor right 8 pixels  
-			  Markers: Go to previous marker/project start  
-			  Loop points: Set start point  
-			  Markers: Go to next marker/project end  
-			  Loop points: Set end point  
-			  Markers: Go to previous marker/project start
-			  
-		   OR
-		  
-		   Double click the Ruler between two adjacent markers 
-		   to create loop points between them (default double-click mouse 
-		   modifier action of the Ruler context).
-			
-			2. Run this script.
-			
-			Watch demo '2. Segment bounds adjustment.mp4' which comes with 
-			the set of scripts
-			
-			
-			● C. Adding segment within an existing one
-			
-			New segments can be delimited with project markers within 
-			existing ones for this:
-			
-			1. Manually set loop points between two ADJACENT segment markers
-			so that no loop point coincides with such segment markers, otherwise
-			'Segment bounds adjustment' operation will be activated.
-			2. Run this script.
-			
-			As a result of the operation two new segment entries will be added
-			to the track Notes following the one whose start time stamp matches
-			that of the marker immediately preceding the loop start point. If 
-			one of these new segments turns out to be redundant because there's 
-			no content to transcribe within its bounds its entry can be safely 
-			deleted from the Notes.
-			
-			The script doesn't allow creating new segments when loop points
-			are set across existing segments.
-			
-			Watch demo '3. Adding segment within an existing one.mp4' which 
-			comes with the set of scripts
+	
+	● B. Segment bounds adjustment
+	
+	Position of segment markers created previously can be changed, 
+	in which case to have the relevant time stamps updated in the 
+	marker names and in the Notes entries, after manually changing 
+	marker position(s) perform the following sequence:
+	
+	1. Place the edit cursor within the segment bounds and run 
+	the following custom action (included with the script set 
+	in the file 'Transcribing workflow custom actions.ReaperKeyMap' )
+	
+	Custom: Create loop points between adjacent project markers (place edit cursor between markers or at the left one)  
+	  Time selection: Remove (unselect) time selection and loop points  
+	  View: Move cursor right 8 pixels  
+	  Markers: Go to previous marker/project start  
+	  Loop points: Set start point  
+	  Markers: Go to next marker/project end  
+	  Loop points: Set end point  
+	  Markers: Go to previous marker/project start
+	  
+   OR
+  
+   Double click the Ruler between two adjacent markers 
+   to create loop points between them (default double-click mouse 
+   modifier action of the Ruler context).
+	
+	2. Run this script.
+	
+	Watch demo '2. Segment bounds adjustment.mp4' which comes with 
+	the set of scripts
+	
+	
+	● C. Adding segment within an existing one
+	
+	New segments can be delimited with project markers within 
+	existing ones for this:
+	
+	1. Manually set loop points between two ADJACENT segment markers
+	so that no loop point coincides with such segment markers, otherwise
+	'Segment bounds adjustment' operation will be activated.
+	2. Run this script.
+	
+	As a result of the operation two new segment entries will be added
+	to the track Notes following the one whose start time stamp matches
+	that of the marker immediately preceding the loop start point. If 
+	one of these new segments turns out to be redundant because there's 
+	no content to transcribe within its bounds its entry can be safely 
+	deleted from the Notes.
+	
+	The script doesn't allow creating new segments when loop points
+	are set across existing segments.
+	
+	Watch demo '3. Adding segment within an existing one.mp4' which 
+	comes with the set of scripts
 
-			
-			● D. Splitting segments
-			
-			Existing segments can be split, for this purpose:
-			
-			1. Run the custom action from step 1 of par. B. above. 	
-			2. Manually adjust either start or end point of the loop moving it 
-			right or left respectively (the stationary loop point must remain 
-			coinciding with one of the existing segment markers, because if both 
-			loop points are located within the segment, two new segments will be 
-			created as per par. C above instead of the current one being split 
-			which only results in creation of one new segment).  
-			3. Run this script.
+	
+	● D. Splitting segments
+	
+	Existing segments can be split, for this purpose:
+	
+	1. Run the custom action from step 1 of par. B. above. 	
+	2. Manually adjust either start or end point of the loop moving it 
+	right or left respectively (the stationary loop point must remain 
+	coinciding with one of the existing segment markers, because if both 
+	loop points are located within the segment, two new segments will be 
+	created as per par. C above instead of the current one being split 
+	which only results in creation of one new segment).  
+	3. Run this script.
 
-			Watch demo '4. Splitting segments.mp4' which comes with the set 
-			of scripts
+	Watch demo '4. Splitting segments.mp4' which comes with the set 
+	of scripts
 
-			
-			● E. Merging segments
-			
-			Existing segments can be merged, for this purpose manually delete 
-			segment markers. IF THERE'S GAP BETWEEN TWO SEGMENTS, TO MERGE THEM 
-			THE END MARKER OF THE FIRST AND THE START MARKER OF THE SECOND WILL 
-			HAVE TO BE DELETED. If there's no gap only the segment marker 
-			separating the two will need to be deleted.   
-			Once deleted do the following:
-			
-			1. Run the custom action from step 1 of par. B. above.  
-			2. Run this script.
-			
-			The deleted segments transcript (if any) will be merged into the Notes 
-			entry of the segment which starts at the segment marker immediately
-			preceding the first of the deleted segment markers.  
-			Any non-segment data which precedes the segments being merged will be 
-			deleted unless it's a segment into which others are merged.
+	
+	● E. Merging segments
+	
+	Existing segments can be merged, for this purpose manually delete 
+	segment markers. IF THERE'S GAP BETWEEN TWO SEGMENTS, TO MERGE THEM 
+	THE END MARKER OF THE FIRST AND THE START MARKER OF THE SECOND WILL 
+	HAVE TO BE DELETED. If there's no gap only the segment marker 
+	separating the two will need to be deleted.   
+	Once deleted do the following:
+	
+	1. Run the custom action from step 1 of par. B. above.  
+	2. Run this script.
+	
+	The deleted segments transcript (if any) will be merged into the Notes 
+	entry of the segment which starts at the segment marker immediately
+	preceding the first of the deleted segment markers.  
+	Any non-segment data which precedes the segments being merged will be 
+	deleted unless it's a segment into which others are merged.
 
-			
-			When several segment markers are deleted from the end or from the start
-			such that as a result another segment marker becomes the last or the first
-			the segments for which the deleted markers function as start points 
-			get deleted from the Notes.  
-			This is different from merging segments because in that case there's no 
-			change in the first/last marker.
-			
-			Watch demo '5. Merging segments.mp4' which comes with the set of scripts
-			
+	
+	When several segment markers are deleted from the end or from the start
+	such that as a result another segment marker becomes the last or the first
+	the segments for which the deleted markers function as start points 
+	get deleted from the Notes.  
+	This is different from merging segments because in that case there's no 
+	change in the first/last marker.
+	
+	Watch demo '5. Merging segments.mp4' which comes with the set of scripts
+	
 
-			● F. Batch segment update
-			
-			Normally it's recommended to run the script after each segment marker
-			properties or segment marker count change to update the segment data 
-			in the track Notes.  
-			If however for any reason you failed to update the Notes after several 
-			segment marker changes, it's possible to batch update the Notes. 
-			For this:  
-			
-			1. Clear loop points.  
-			(native action 'Loop points: Remove (unselect) loop point selection'), 
-			2. Run this script and assent to the prompt which will pop up.
-			
-			Batch segment update function carries out in one go the following
-			operations in one go:  
-			1. Segment marker and segment Notes entries time stamp update.  
-			2. Segment transcript merger in the track Notes.  
-			3. Marker array update if it was reduced by deletion of markers from
-			the start and/or from the end, in which case the track Notes will
-			be truncated by as many segment entries as the number of segment
-			start markers deleted from the start/end of the marker array.
+	● F. Batch segment update
+	
+	Normally it's recommended to run the script after each segment marker
+	properties or segment marker count change to update the segment data 
+	in the track Notes.  
+	If however for any reason you failed to update the Notes after several 
+	segment marker changes, it's possible to batch update the Notes. 
+	For this:  
+	
+	1. Clear loop points.  
+	(native action 'Loop points: Remove (unselect) loop point selection'), 
+	2. Run this script and assent to the prompt which will pop up.
+	
+	Batch segment update function carries out in one go the following
+	operations in one go:  
+	1. Segment marker and segment Notes entries time stamp update.  
+	2. Segment transcript merger in the track Notes.  
+	3. Marker array update if it was reduced by deletion of markers from
+	the start and/or from the end, in which case the track Notes will
+	be truncated by as many segment entries as the number of segment
+	start markers deleted from the start/end of the marker array.
 
-			------------------------------------------
-			
-			► RULES OF THUMB
-			
-			1. When there're no markers at loop points, they're created and a new 
-			Notes entry is added.  
-			2. When there're segment markers at loop points, either their time stamps 
-			are updated if different from their actual positions OR sequential entries 
-			with no matching segment markers are deleted from the Notes and text 
-			associated with them (transcript) is merged with the entry immediately 
-			preceding the orphan entries which all amounts to operation of segment 
-			merging.  
-			3. When there's a marker at one loop point only, new marker is created 
-			at the non-enganged loop point and a new Note entry is added.
-			
-			-----------------------------------------
-			
-			A valid segment is always delimited by 2 markers indicating its
-			beginning and end.  
-			The very last marker is never associated with a segment start. If 
-			INCLUDE_END_TIME setting is enabled its time stamp may appear as a 
-			segment end, likewise the first marker is never associated with a 
-			segment end.
-			
-			► NOTES SIZE LIMIT
-			
-			As already mentioned above, there's limit to the SWS Notes. SWS Notes 
-			native limit per object is 65,535 bytes, therefore the entire transcript 
-			may not fit within a single track Notes.  
-			In the script however the limit has been set to 16,383 bytes to make 
-			running into the Notes limit within one track less likely in cases where 
-			segments are created first and only then the transcript is added to them, 
-			because if segment time stamp data hit the Notes native limit of 65,535 
-			bytes no further text will be allowed to be added to the Notes and the 
-			actual segments transcript will be impossible to add.  
-			When in a single track the transcript exceeds 16,383 bytes, additional
-			track is automatically created with the name defined in NOTES_TRACK_NAME 
-			setting preceded with an ordinal number, i.e. the very first track 
-			will be numbered 1 and for each additional track the last number will
-			be incremented by 1.	
-			
-			
-			► NEW LINE TAG
-			
-			The trascript supports new line tag <n> to effect creation of a new
-			line for the text which follows the tag during transcript preview 
-			within video context with the script
-			'BuyOne_Transcribing - Real time preview.lua'.
-			and during its conversion into SRT format with the script 
-			'BuyOne_Transcribing - Import SRT or VTT file as markers and Notes.lua'
-			the tag is supported for SRT and VTT output formats. During conversion 
-			into AS IS format the tag will be deleted if present. The tag can be 
-			preceded and followed by spaces which will be trimmed at conversion.
-			
-			
-			► SAVING
-			
-			Don't forget to save the project often since SWS Notes are stored
-			inside the project file. 
-			While hitting save shortcut make sure that REAPER program window 
-			is the last clicked, because if the Notes window is the last clicked
-			it will intercept the shortcut and saving won't be performed.
-			
-			BE AWARE THAT SWS NOTES CHANGES WHICH IMMEDIATELY PRECEDE OR FOLLOW 
-			REAPER STATE CHANGE WILL GET UNDONE IF SUCH REAPER STATE CHANGE IS 
-			UNDONE.  
-			This has been reported to the SWS team  
-			https://github.com/reaper-oss/sws/issues/1880  
-			https://github.com/reaper-oss/sws/issues/1812  
-			https://github.com/reaper-oss/sws/issues/1743  
-			THEREFORE SAVING OFTEN IS SO MUCH MORE IMPORTANT BEACAUSE IT WILL
-			ALLOW RESTORATION OF NOTES CHANGES LOST AFTER UNDO BY MEANS OF PROJECT 
-			RELOAD. ALTERNATIVELY, IF PREVIOUS STATE CAN BE RESTORED WITHOUT 
-			RESORTING TO UNDO IT'S ADVISED TO OPT FOR THIS METHOD. 
-			
-			To ensure saving you can enable SAVE_PROJECT_EVERY_SCRIPT_RUN 
-			setting in this script or use the script as part of the following
-			custiom action:
-			
-			Custom: BuyOne_Transcribing - Create and manage segments + Save  
-			 BuyOne_Transcribing - Create and manage segments.lua  
-			 File: Save project
-			
- 
-			► ADDITIONAL WORKFLOW AIDS
-			
-			Disable 'Snap to grid' to be able to mark out a segment with 
-			loop points with greater precision. Or hold Ctrl/Cmd when
-			creating loop points to temporarily disable snapping.
-			
-			Custom actions (included with the script set in the file 
-			'Transcribing workflow custom actions.ReaperKeyMap' )
-			
-			Custom: Move loop points to next segment (loop points must already be set)  
-			  Time selection: Remove (unselect) time selection  
-			  Go to start of loop  
-			  Markers: Go to next marker/project end  
-			  Loop points: Set start point  
-			  Markers: Go to next marker/project end  
-			  Loop points: Set end point  
-			  Go to start of loop
+	------------------------------------------
+	
+	► RULES OF THUMB
+	
+	1. When there're no markers at loop points, they're created and a new 
+	Notes entry is added.  
+	2. When there're segment markers at loop points, either their time stamps 
+	are updated if different from their actual positions OR sequential entries 
+	with no matching segment markers are deleted from the Notes and text 
+	associated with them (transcript) is merged with the entry immediately 
+	preceding the orphan entries which all amounts to operation of segment 
+	merging.  
+	3. When there's a marker at one loop point only, new marker is created 
+	at the non-enganged loop point and a new Note entry is added.
+	
+	-----------------------------------------
+	
+	A valid segment is always delimited by 2 markers indicating its
+	beginning and end.  
+	The very last marker is never associated with a segment start. If 
+	INCLUDE_END_TIME setting is enabled its time stamp may appear as a 
+	segment end, likewise the first marker is never associated with a 
+	segment end.
+	
+	► NOTES SIZE LIMIT
+	
+	As already mentioned above, there's limit to the SWS Notes. SWS Notes 
+	native limit per object is 65,535 bytes, therefore the entire transcript 
+	may not fit within a single track Notes.  
+	In the script however the limit has been set to 16,383 bytes to make 
+	running into the Notes limit within one track less likely in cases where 
+	segments are created first and only then the transcript is added to them, 
+	because if segment time stamp data hit the Notes native limit of 65,535 
+	bytes no further text will be allowed to be added to the Notes and the 
+	actual segments transcript will be impossible to add.  
+	When in a single track the transcript exceeds 16,383 bytes, additional
+	track is automatically created with the name defined in NOTES_TRACK_NAME 
+	setting preceded with an ordinal number, i.e. the very first track 
+	will be numbered 1 and for each additional track the last number will
+	be incremented by 1.	
+	
+	
+	► NEW LINE TAG
+	
+	The trascript supports new line tag <n> to effect creation of a new
+	line for the text which follows the tag during transcript preview 
+	within video context with the script
+	'BuyOne_Transcribing - Real time preview.lua'.
+	and during its conversion into SRT format with the script 
+	'BuyOne_Transcribing - Import SRT or VTT file as markers and Notes.lua'
+	the tag is supported for SRT and VTT output formats. During conversion 
+	into AS IS format the tag will be deleted if present. The tag can be 
+	preceded and followed by spaces which will be trimmed at conversion.
+	
+	
+	► SAVING
+	
+	Don't forget to save the project often since SWS Notes are stored
+	inside the project file. 
+	While hitting save shortcut make sure that REAPER program window 
+	is the last clicked, because if the Notes window is the last clicked
+	it will intercept the shortcut and saving won't be performed.
+	
+	BE AWARE THAT SWS NOTES CHANGES WHICH IMMEDIATELY PRECEDE OR FOLLOW 
+	REAPER STATE CHANGE WILL GET UNDONE IF SUCH REAPER STATE CHANGE IS 
+	UNDONE.  
+	This has been reported to the SWS team  
+	https://github.com/reaper-oss/sws/issues/1880  
+	https://github.com/reaper-oss/sws/issues/1812  
+	https://github.com/reaper-oss/sws/issues/1743  
+	THEREFORE SAVING OFTEN IS SO MUCH MORE IMPORTANT BEACAUSE IT WILL
+	ALLOW RESTORATION OF NOTES CHANGES LOST AFTER UNDO BY MEANS OF PROJECT 
+	RELOAD. ALTERNATIVELY, IF PREVIOUS STATE CAN BE RESTORED WITHOUT 
+	RESORTING TO UNDO IT'S ADVISED TO OPT FOR THIS METHOD. 
+	
+	To ensure saving you can enable SAVE_PROJECT_EVERY_SCRIPT_RUN 
+	setting in this script or use the script as part of the following
+	custiom action:
+	
+	Custom: BuyOne_Transcribing - Create and manage segments + Save  
+	 BuyOne_Transcribing - Create and manage segments.lua  
+	 File: Save project
+	
 
-			Custom: Move loop points to previous segment (loop points must already be set)  
-			  Time selection: Remove (unselect) time selection  
-			  Go to start of loop  
-			  Markers: Go to previous marker/project start  
-			  Loop points: Set start point  
-			  Markers: Go to next marker/project end  
-			  Loop points: Set end point  
-			  Go to start of loop
-			  
-			To jump to a segment marker
-			
-			A. Either use the native functionality:  
-			
-			1. Select segment start/end time stamp in the Notes (can be 
-			double clicked) and copy it
-			2. Double click the Transport or run Ctrl+J shortcut (default)  
-			3. Paste the copied time stamp into the dialogue field  
-			4. Click OK or hit Enter  
-			
-			OR
-			
-			B. Use the script 'BuyOne_Transcribing - Go to segment marker.lua'
-			
-			C. (Less convenient)
-			
-			1. Have the Ruler time unit set to Minutes:Seconds  
-			2. Copy the time stamp from the segment data  
-			3. Open the Region/Marker manager  
-			4. Make sure the manager setting 'Seek playback when selecting a marker or region'
-				is enabled  
-			5. Paste the time stamp into the filter field of the manager
-			6. Click the marker entry in the manager		
-			
-			
-			To focus on auditioning a segment:  
-			
-			1. Enable the following actions:  
-			Transport: Toggle stop playback at end of loop if repeat is disabled (available since build 4.30)  
-			OR  
-			Xenakios/SWS: [Deprecated] Toggle stop playback at end of loop  
-			2. Set loop points to the segment using the custom action from step 1 of par. B above.  
-			3. Hit Play to audition, at the end of the loop the play cursor will  
-			return to the original position  
+	► ADDITIONAL WORKFLOW AIDS
+	
+	Disable 'Snap to grid' to be able to mark out a segment with 
+	loop points with greater precision. Or hold Ctrl/Cmd when
+	creating loop points to temporarily disable snapping.
+	
+	Custom actions (included with the script set in the file 
+	'Transcribing workflow custom actions.ReaperKeyMap' )
+	
+	Custom: Move loop points to next segment (loop points must already be set)  
+	  Time selection: Remove (unselect) time selection  
+	  Go to start of loop  
+	  Markers: Go to next marker/project end  
+	  Loop points: Set start point  
+	  Markers: Go to next marker/project end  
+	  Loop points: Set end point  
+	  Go to start of loop
 
-			To stop playback in the middle of the segment use  
-			
-			EITHER  
-			Transport: Play/pause  
-			OR  
-			Transport: Pause	
+	Custom: Move loop points to previous segment (loop points must already be set)  
+	  Time selection: Remove (unselect) time selection  
+	  Go to start of loop  
+	  Markers: Go to previous marker/project start  
+	  Loop points: Set start point  
+	  Markers: Go to next marker/project end  
+	  Loop points: Set end point  
+	  Go to start of loop
+	  
+	To jump to a segment marker
+	
+	A. Either use the native functionality:  
+	
+	1. Select segment start/end time stamp in the Notes (can be 
+	double clicked) and copy it
+	2. Double click the Transport or run Ctrl+J shortcut (default)  
+	3. Paste the copied time stamp into the dialogue field  
+	4. Click OK or hit Enter  
+	
+	OR
+	
+	B. Use the script 'BuyOne_Transcribing - Go to segment marker.lua'
+	
+	C. (Less convenient)
+	
+	1. Have the Ruler time unit set to Minutes:Seconds  
+	2. Copy the time stamp from the segment data  
+	3. Open the Region/Marker manager  
+	4. Make sure the manager setting 'Seek playback when selecting a marker or region'
+		is enabled  
+	5. Paste the time stamp into the filter field of the manager
+	6. Click the marker entry in the manager		
+	
+	
+	To focus on auditioning a segment:  
+	
+	1. Enable the following actions:  
+	Transport: Toggle stop playback at end of loop if repeat is disabled (available since build 4.30)  
+	OR  
+	Xenakios/SWS: [Deprecated] Toggle stop playback at end of loop  
+	2. Set loop points to the segment using the custom action from step 1 of par. B above.  
+	3. Hit Play to audition, at the end of the loop the play cursor will  
+	return to the original position  
+
+	To stop playback in the middle of the segment use  
+	
+	EITHER  
+	Transport: Play/pause
+	OR  
+	Transport: Pause
 			
 ]]
 
