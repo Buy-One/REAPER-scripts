@@ -8,103 +8,103 @@ Licence: WTFPL
 REAPER: at least v6.37
 Extensions: SWS/S&M
 About:	The script is part of the Transcribing workflow set of scripts
-			alongside 
-			BuyOne_Transcribing - Create and manage segments.lua  
-			BuyOne_Transcribing - Format converter.lua  
-			BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
-			BuyOne_Transcribing - Prepare transcript for rendering.lua  
-			BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
-			BuyOne_Transcribing - Go to segment marker.lua
-			BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
-			
-			meant to display the transcript segment by segment in real time
-			while REAPER is in play mode or when the edit cursor is located
-			within segment markers.			
-		
-			The original transcript is retrieved from the Notes of tracks
-			whose name is defined in the NOTES_TRACK_NAME setting and is 
-			reproduced segment by segment in the Notes of a track defined 
-			in the PREVIEW_TRACK_NAME setting. 
-			
-			Besides that, if INSERT_PREVIEW_ITEMS setting is enabled, on the 
-			preview track an empty item is placed with an instance of
-			the Video processor plugin inserted in its FX chain with the preset
-			defined in the OVERLAY_PRESET setting activated to be able
-			to preview the transcript segment by segment within video context
-			when Video window is open. The segment text is fed into the item
-			name.
-			To have text displayed within the Video window the preview track 
-			must be located above the track with a video item.
-			The preview items are added dynamically to accommodate segment
-			next to the currently active segment which is determined by the 
-			location of the edit or play cursor relative to the segment start 
-			marker. Therefore in order to insert a preview item for a particular 
-			segment without waiting until it'll be added in the course of the
-			playback, move the edit cursor to the location immediately preceding 
-			the segment start marker. 
-			This mechanism has been devised to overcome Video processor 
-			limitation which prevents it from processing changes in track/take 
-			names as soon as the change occurs so it must be allowed to process
-			the content in advance.  
-			If everything functions properly there could be no more than 2 preview 
-			items on the prevew track at any given in time, the for the current 
-			and for the next segment. There'll be only 1 when the last segment
-			is being played and when the cursor is located to the left of the very
-			first segment marker.			
-			
-			The script relies on markers location to display segment text.
-			If the marker time stamp contained in the marker's name doesn't 
-			match its actual position on the time line, a message stating the 
-			fact will be displayed in the preview track Notes instead of the 
-			actual segment text, if any.  
-			Preview items for such segments and for segments with no segment
-			text are not created.  
-			If you're not sure whether all current project markers match the 
-			transcript time stamps, run  
-			BuyOne_Transcribing - Prepare transcript for rendering.lua script
-			to re-create the marker array. Then the render track created by
-			that script can be deleted.
-			
-			The script must run in the background which it will after the 
-			initial launch. To terminate it, launch it again and click 
-			'Terminate instances' button in the ReaScript task control dialogue 
-			which will pop up. Before doing this it's recommended to checkmark 
-			'Remember my answer for this script option' so from then on the 
-			script is terminated automatically.
-			
-			While the script runs a toolbar button linked to it is lit and 
-			a menu item is ticked.
-			
-			The script only works under the project tab it's originally been
-			launched under. To use it in another project tab terminate it 
-			and re-launch under it.  
-			
-			For preview another script can be used, which is
-			'BuyOne_Transcribing - Prepare transcript for rendering.lua'
-			however it's not as flexible as this one, because it recreates
-			all segment markers from scratch based on the Notes content
-			and ignores segments with no transcript. If segments have been
-			updated it will have to be run again to recreate markers based
-			on the updated Notes data.
-			
-			
-			IMPORTANT
-			
-			BE AWARE THAT SWS NOTES CHANGES WHICH IMMEDIATELY PRECEDE
-			OR FOLLOW REAPER STATE CHANGE WILL GET UNDONE IF SUCH REAPER 
-			STATE CHANGE IS UNDONE.
-			This has been reported to the SWS team
-			https://github.com/reaper-oss/sws/issues/1880
-			https://github.com/reaper-oss/sws/issues/1812
-			https://github.com/reaper-oss/sws/issues/1743
-			THEREFORE SAVING OFTEN IS SO MUCH MORE IMPORTANT BEACAUSE IT WILL
-			ALLOW RESTORATION OF NOTES CHANGES LOST AFTER UNDO, BY MEANS 
-			OF PROJECT RELOAD.
-			ALTERNATIVELY, IF PREVIOUS STATE CAN BE RESTORED WITHOUT RESORTING
-			TO UNDO IT'S ADVISED TO OPT FOR THIS METHOD.
-			
-			Watch demo '6. Real time preview.mp4' which comes with the set 
-			of scripts
+	alongside 
+	BuyOne_Transcribing - Create and manage segments.lua  
+	BuyOne_Transcribing - Format converter.lua  
+	BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing - Prepare transcript for rendering.lua  
+	BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
+	BuyOne_Transcribing - Go to segment marker.lua
+	BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
+	
+	meant to display the transcript segment by segment in real time
+	while REAPER is in play mode or when the edit cursor is located
+	within segment markers.			
+
+	The original transcript is retrieved from the Notes of tracks
+	whose name is defined in the NOTES_TRACK_NAME setting and is 
+	reproduced segment by segment in the Notes of a track defined 
+	in the PREVIEW_TRACK_NAME setting. 
+	
+	Besides that, if INSERT_PREVIEW_ITEMS setting is enabled, on the 
+	preview track an empty item is placed with an instance of
+	the Video processor plugin inserted in its FX chain with the preset
+	defined in the OVERLAY_PRESET setting activated to be able
+	to preview the transcript segment by segment within video context
+	when Video window is open. The segment text is fed into the item
+	name.
+	To have text displayed within the Video window the preview track 
+	must be located above the track with a video item.
+	The preview items are added dynamically to accommodate segment
+	next to the currently active segment which is determined by the 
+	location of the edit or play cursor relative to the segment start 
+	marker. Therefore in order to insert a preview item for a particular 
+	segment without waiting until it'll be added in the course of the
+	playback, move the edit cursor to the location immediately preceding 
+	the segment start marker. 
+	This mechanism has been devised to overcome Video processor 
+	limitation which prevents it from processing changes in track/take 
+	names as soon as the change occurs so it must be allowed to process
+	the content in advance.  
+	If everything functions properly there could be no more than 2 preview 
+	items on the prevew track at any given in time, the for the current 
+	and for the next segment. There'll be only 1 when the last segment
+	is being played and when the cursor is located to the left of the very
+	first segment marker.			
+	
+	The script relies on markers location to display segment text.
+	If the marker time stamp contained in the marker's name doesn't 
+	match its actual position on the time line, a message stating the 
+	fact will be displayed in the preview track Notes instead of the 
+	actual segment text, if any.  
+	Preview items for such segments and for segments with no segment
+	text are not created.  
+	If you're not sure whether all current project markers match the 
+	transcript time stamps, run  
+	BuyOne_Transcribing - Prepare transcript for rendering.lua script
+	to re-create the marker array. Then the render track created by
+	that script can be deleted.
+	
+	The script must run in the background which it will after the 
+	initial launch. To terminate it, launch it again and click 
+	'Terminate instances' button in the ReaScript task control dialogue 
+	which will pop up. Before doing this it's recommended to checkmark 
+	'Remember my answer for this script option' so from then on the 
+	script is terminated automatically.
+	
+	While the script runs a toolbar button linked to it is lit and 
+	a menu item is ticked.
+	
+	The script only works under the project tab it's originally been
+	launched under. To use it in another project tab terminate it 
+	and re-launch under it.  
+	
+	For preview another script can be used, which is
+	'BuyOne_Transcribing - Prepare transcript for rendering.lua'
+	however it's not as flexible as this one, because it recreates
+	all segment markers from scratch based on the Notes content
+	and ignores segments with no transcript. If segments have been
+	updated it will have to be run again to recreate markers based
+	on the updated Notes data.
+	
+	
+	IMPORTANT
+	
+	BE AWARE THAT SWS NOTES CHANGES WHICH IMMEDIATELY PRECEDE
+	OR FOLLOW REAPER STATE CHANGE WILL GET UNDONE IF SUCH REAPER 
+	STATE CHANGE IS UNDONE.
+	This has been reported to the SWS team
+	https://github.com/reaper-oss/sws/issues/1880
+	https://github.com/reaper-oss/sws/issues/1812
+	https://github.com/reaper-oss/sws/issues/1743
+	THEREFORE SAVING OFTEN IS SO MUCH MORE IMPORTANT BEACAUSE IT WILL
+	ALLOW RESTORATION OF NOTES CHANGES LOST AFTER UNDO, BY MEANS 
+	OF PROJECT RELOAD.
+	ALTERNATIVELY, IF PREVIOUS STATE CAN BE RESTORED WITHOUT RESORTING
+	TO UNDO IT'S ADVISED TO OPT FOR THIS METHOD.
+	
+	Watch demo '6. Real time preview.mp4' which comes with the set 
+	of scripts
 
 ]]
 
