@@ -8,43 +8,43 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
 About:	The script is part of the Transcribing workflow set of scripts
-			alongside  
-			BuyOne_Transcribing - Create and manage segments.lua  
-			BuyOne_Transcribing - Real time preview.lua  
-			BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
-			BuyOne_Transcribing - Prepare transcript for rendering.lua  
-			BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
-			BuyOne_Transcribing - Go to segment marker.lua
-			BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
-			
-			meant to format a transcript created with the script 
-			BuyOne_Transcribing - Create and manage segments.lua
-			and display the result in the SWS/S&M Notes
-			
-			The formatted version of the original transcript retrieved from 
-			the Notes tracks named according to the NOTES_TRACK_NAME setting 
-			is displayed as Notes of a new track enserted at the end of the 
-			tracklist.
-			
-			.SRT and .VTT formats conversion is very basic. All textual data
-			which follow the time stamps are moved to the next line, regardless
-			of their nature as if all of them where meant to be displayed
-			on the screen. Conversion into the .VTT allows keeping metadata 
-			between cue lines, such as comments, region data, provided 
-			such were included in the Notes between segment lines.  	
-				
-			Since SWS Notes length limit is set to 65535 bytes (65.5 kb)
-			if transcript length exceeds the limit, the formatted transcript
-			rathen than being displayed in a new track Notes will be dumped 
-			to a .srt, .vtt or .txt file named after the project file which 
-			will be placed in the project directory. The dialogue will guide 
-			you through the process. The dialogue options respond to keyboard
-			input, options 1 through 4 to keys 1 - 4, .SRT - S, .VTT - V, and
-			AS IS - A.  
-			If the converted transcript doesn't exceed the limit, the resulting 
-			code is displayed in track Notes named after the selected format. 
-			The track is reused in subsequent conversions as long as its name
-			and the format remain the same.
+	alongside  
+	BuyOne_Transcribing - Create and manage segments.lua  
+	BuyOne_Transcribing - Real time preview.lua  
+	BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing - Prepare transcript for rendering.lua  
+	BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
+	BuyOne_Transcribing - Go to segment marker.lua
+	BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
+	
+	meant to format a transcript created with the script 
+	BuyOne_Transcribing - Create and manage segments.lua
+	and display the result in the SWS/S&M Notes
+	
+	The formatted version of the original transcript retrieved from 
+	the Notes tracks named according to the NOTES_TRACK_NAME setting 
+	is displayed as Notes of a new track enserted at the end of the 
+	tracklist.
+	
+	.SRT and .VTT formats conversion is very basic. All textual data
+	which follow the time stamps are moved to the next line, regardless
+	of their nature as if all of them where meant to be displayed
+	on the screen. Conversion into the .VTT allows keeping metadata 
+	between cue lines, such as comments, region data, provided 
+	such were included in the Notes between segment lines.  	
+		
+	Since SWS Notes length limit is set to 65535 bytes (65.5 kb)
+	if transcript length exceeds the limit, the formatted transcript
+	rathen than being displayed in a new track Notes will be dumped 
+	to a .srt, .vtt or .txt file named after the project file which 
+	will be placed in the project directory. The dialogue will guide 
+	you through the process. The dialogue options respond to keyboard
+	input, options 1 through 4 to keys 1 - 4, .SRT - S, .VTT - V, and
+	AS IS - A.  
+	If the converted transcript doesn't exceed the limit, the resulting 
+	code is displayed in track Notes named after the selected format. 
+	The track is reused in subsequent conversions as long as its name
+	and the format remain the same.
 
 ]]
 
