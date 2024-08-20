@@ -387,10 +387,10 @@ local absent = ''
 
 Error_Tooltip('') -- clear the 'analyzing' tooltip, because it sticks for some excessive time
 
-	if cntr < 11 then
-	r.MB(space(8)..'Not all resources were found in the action list.\n\n'
+	if #absent > 0 then
+	r.MB('Not all toolbar resources were found in the action list.\n\n'
 	..space(14)..'Be sure to import there all scripts AND\n\n"Transcribing workflow custom actions.ReaperKeyMap"\n\n\t'
-	..space(11)..'file included in the set.', 'ERROR', 0)
+	..space(11)..'file included in the set.\n\nMissing resources:\n\n'..absent, 'ERROR', 0)
 	return r.defer(no_undo) end
 
 
