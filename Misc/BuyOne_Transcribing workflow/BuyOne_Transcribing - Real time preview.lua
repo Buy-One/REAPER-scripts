@@ -768,12 +768,12 @@ preview_tr = Get_Or_Create_Preview_Track(PREVIEW_TRACK_NAME)
 INSERT_PREVIEW_ITEMS = #INSERT_PREVIEW_ITEMS:gsub(' ','') > 0
 
 	if INSERT_PREVIEW_ITEMS then
-	src_tr = Insert_Video_Proc_Src_Track(OVERLAY_PRESET)
+	src_tr = Insert_Video_Proc_Src_Track(OVERLAY_PRESET)	
 		if not src_tr then
 		Error_Tooltip('\n\n the overlay preset wasn\'t found \n\n', 1, 1) -- caps, spaced true
+		end
+		if not src_tr or type(src_tr) == 'boolean' then -- src_tr is returned as 'true' when the overlay preset was found in builds 7.20 and later, but the src_tr isn't needed because the preset can be applied without opening the Video proc UI
 		r.Undo_EndBlock(r.Undo_CanUndo2(0) or '', -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
-		return r.defer(no_undo) 
-		elseif src_tr and type(src_tr) == 'boolean' then -- returned when the overlay preset was found in builds 7.20 and later, but the src_tr isn't needed because the preset can be applied without opening the Video proc UI
 		return r.defer(no_undo)
 		end
 	else
