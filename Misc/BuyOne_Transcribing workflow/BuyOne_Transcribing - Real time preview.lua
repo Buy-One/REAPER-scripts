@@ -3,7 +3,7 @@ ReaScript name: BuyOne_Transcribing - Real time preview.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
-Changelog: 1.1 #Added overlay preset presence evaluation in builds 7.20 and newer
+Changelog: 1.1 #Added overlay preset availability evaluation in builds 7.20 and newer
 	       #Optimized undo point creation in cases where overlay preset isn't found
 Changelog: #Initial release
 Licence: WTFPL
