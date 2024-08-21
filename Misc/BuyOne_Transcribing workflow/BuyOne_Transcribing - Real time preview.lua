@@ -47,10 +47,10 @@ About:	The script is part of the Transcribing workflow set of scripts
 	names as soon as the change occurs so it must be allowed to process
 	the content in advance.  
 	If everything functions properly there could be no more than 2 preview 
-	items on the prevew track at any given in time, the for the current 
-	and for the next segment. There'll be only 1 when the last segment
-	is being played and when the cursor is located to the left of the very
-	first segment marker.			
+	items on the prevew track at any given in time, one for the current 
+	and another for the next segment. There'll be only 1 when the last 
+	segment is being played and when the cursor is located to the left 
+	of the very first segment marker.  		
 	
 	The script relies on markers location to display segment text.
 	If the marker time stamp contained in the marker's name doesn't 
