@@ -26,13 +26,16 @@ About:	The script is part of the Transcribing workflow set of scripts
 	reproduced segment by segment in the Notes of a track defined 
 	in the PREVIEW_TRACK_NAME setting. 
 	
-	Besides that, if INSERT_PREVIEW_ITEMS setting is enabled, on the 
-	preview track an empty item is placed with an instance of
-	the Video processor plugin inserted in its FX chain with the preset
-	defined in the OVERLAY_PRESET setting activated to be able
-	to preview the transcript segment by segment within video context
-	when Video window is open. The segment text is fed into the item
-	name.
+	When the script is launched the SWS Notes window is auto-opened
+	being focused on the preview track unless it's already open and
+	unless INSERT_PREVIEW_ITEMS setting is enabled.
+	
+	If INSERT_PREVIEW_ITEMS setting is enabled, on the preview track 
+	an empty item is placed with an instance of the Video processor 
+	plugin inserted in its FX chain with the preset defined in the 
+	OVERLAY_PRESET setting activated to be able to preview the transcript 
+	segment by segment within video context when Video window is open. 
+	The segment text is fed into the item name.  
 	To have text displayed within the Video window the preview track 
 	must be located above the track with a video item.
 	The preview items are added dynamically to accommodate segment
@@ -50,7 +53,7 @@ About:	The script is part of the Transcribing workflow set of scripts
 	items on the prevew track at any given in time, one for the current 
 	and another for the next segment. There'll be only 1 when the last 
 	segment is being played and when the cursor is located to the left 
-	of the very first segment marker.  		
+	of the very first segment marker.		
 	
 	The script relies on markers location to display segment text.
 	If the marker time stamp contained in the marker's name doesn't 
@@ -309,9 +312,10 @@ function Insert_Video_Proc_Src_Track(OVERLAY_PRESET)
 -- because the parameter values shift downwards between parameters
 -- while 'text height' param ends up at 0 so the text becomes invisible
 -- bug report https://forum.cockos.com/showthread.php?t=293212
--- source track is used in earlie builds to copy Video proc instance
+-- hidden source track is used in earlier builds to copy Video proc instance
 -- from it to preview items so that there's no need to open and close
--- the plugin UI each time when inserting it on a preview item
+-- the plugin UI each time when inserting it on directly a preview item
+-- with Insert_Delete_Preview_Items() function which will produce flickering
 
 r.PreventUIRefresh(1)
 
@@ -350,10 +354,13 @@ local retval, fx_name = r.TrackFX_GetNamedConfigParm(tr, 0x1000000, 'fx_name')
 	if not retval or fx_name ~= 'Video processor' then
 	r.TrackFX_AddByName(tr, 'Video processor', true, -1000-0x1000000) -- recFX true, instantiate -1000 first fx chain slot
 	end
+local newer_build = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 7.20
 local ret, preset = r.TrackFX_GetPreset(tr, 0x1000000, '') -- fx 0
 	if preset ~= OVERLAY_PRESET then -- apply
 	local ok = apply_overlay_preset(tr)
-		if not ok then r.DeleteTrack(tr) return end -- overlay preset not found
+		if not ok or ok and newer_build then -- deleting track if not found in any build and if found in newer builds because in this case the track was only needed to check availability of the preset
+		r.DeleteTrack(tr)
+		return ok and newer_build end -- in newer builds returning true if found to prevent triggering error message outside, in older builds the return value will always be false which will trigger the error message
 	end
 r.GetSetMediaTrackInfo_String(tr, 'P_NAME','Video processor source',true) -- setNewValue true
 r.GetSetMediaTrackInfo_String(tr, 'P_EXT:SRC VIDEO PROC','1',true) -- setNewValue true
@@ -759,22 +766,10 @@ preview_tr = Get_Or_Create_Preview_Track(PREVIEW_TRACK_NAME)
 INSERT_PREVIEW_ITEMS = #INSERT_PREVIEW_ITEMS:gsub(' ','') > 0
 
 	if INSERT_PREVIEW_ITEMS then
-		if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.20 then
-		-- 'Overlay: Text/Timecode' preset doesn't work if applied via the API
-		-- without opening the Video processor beforehand
-		-- because the parameter values shift downwards between parameters
-		-- while 'text height' param ends up at 0 so the text becomes invisible
-		-- bug report https://forum.cockos.com/showthread.php?t=293212
-		-- fixed in build 7.20
-		-- so in previous builds in order to prevent constant flickering
-		-- of the Video proc UI when inserting its instances on the preview items
-		-- with Insert_Delete_Preview_Items() function, use invisible track
-		-- to paste Video proc instances to the them from
-		src_tr = Insert_Video_Proc_Src_Track(OVERLAY_PRESET)
-			if not src_tr then
-			Error_Tooltip('\n\n the overlay preset wasn\'t found \n\n', 1, 1) -- caps, spaced true
-			return r.defer(no_undo) end
-		end
+	src_tr = Insert_Video_Proc_Src_Track(OVERLAY_PRESET)
+		if not src_tr then
+		Error_Tooltip('\n\n the overlay preset wasn\'t found \n\n', 1, 1) -- caps, spaced true
+		return r.defer(no_undo) end
 	else
 	r.SetOnlyTrackSelected(preview_tr)
 	Show_SWS_Notes_Window()
