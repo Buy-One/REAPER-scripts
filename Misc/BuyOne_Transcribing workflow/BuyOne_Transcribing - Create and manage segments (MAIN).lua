@@ -17,7 +17,7 @@ About:	The script is part of the Transcribing workflow set of scripts
 	BuyOne_Transcribing - Go to segment marker.lua
 	BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
 
-	This is the main script os the set geared towards segment 
+	This is the main script of the set geared towards segment 
 	manipulation: creation, boundaries change, split, merger.
 	
 	
