@@ -751,7 +751,6 @@ or not Segment_Markers_Exist() and 'no segment markers'
 	return r.defer(no_undo) end
 
 local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
-local scr_path = scr_name:match('.+[\\/]')
 
 r.Undo_BeginBlock()
 
