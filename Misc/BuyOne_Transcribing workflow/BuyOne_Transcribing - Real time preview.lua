@@ -2,11 +2,12 @@
 ReaScript name: BuyOne_Transcribing - Real time preview.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: 1.1 #Added overlay preset availability evaluation in builds 7.20 and newer
+Version: 1.2
+Changelog: 1.2 #Included explicit undo point creation mechanism when a new preview item is placed on the preview track
+	       #Updated About text
+	   1.1 #Added overlay preset availability evaluation in builds 7.20 and newer
 	       #Optimized undo point creation in cases where overlay preset isn't found
 	       #Fixed error when the preview track is deleted manually before the script is terminated
-Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
@@ -91,7 +92,12 @@ About:	The script is part of the Transcribing workflow set of scripts
 	all segment markers from scratch based on the Notes content
 	and ignores segments with no transcript. If segments have been
 	updated it will have to be run again to recreate markers based
-	on the updated Notes data.
+	on the updated Notes data.  
+	On the other hand this script creates redundant undo points each
+	time a new preview item is inserted which cannot be prevented 
+	and which increase and lengthen the undo history unnecessarily. 
+	So it may be a good idea to use it in a project copy rathen than 
+	directly in the main project. 
 	
 	
 	IMPORTANT
@@ -417,6 +423,10 @@ next_pos = first_mrkr_pos or next_pos
 
 -- Insert next preview item at the next marker
 
+-- Create explicit undo point because TakeFX_AddByName, TakeFX_SetPreset and Item properties: Loop item source
+-- create them anyway and 3 rather than 1
+r.Undo_BeginBlock()
+
 local act = r.Main_OnCommand
 --local item = r.GetTrackMediaItem(rend_tr,0) -- select 1st item on the track
 --local take = item and r.GetActiveTake(item)
@@ -479,6 +489,8 @@ local len = mrkr_t[next_pos] and mrkr_t[next_pos]-next_pos -- if next_pos is the
 	end
 
 r.PreventUIRefresh(-1)
+
+r.Undo_EndBlock('Transcribing: Insert preview item',-1)
 
 return take -- return next preview item take
 
