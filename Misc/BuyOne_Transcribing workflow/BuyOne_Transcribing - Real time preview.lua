@@ -249,7 +249,7 @@ r.SetToggleCommandState(sect_ID, cmd_ID, toggle_state)
 r.RefreshToolbar(cmd_ID)
 	if toggle_state == 0 and CLEANUP then
 	local clear = tr and r.ValidatePtr(tr, 'MediaTrack*') and r.NF_SetSWSTrackNotes(tr, '') -- clearing preview track notes when exiting the script // pointer validation is used in case the script is terminated under different project tab where the track is absent
-		if tr and r.ValidatePtr(tr, 'MediaTrack*') -- delete preview items // validate to prevent error if preview track is deleted before the script is terminated
+		if tr and r.ValidatePtr(tr, 'MediaTrack*') then -- delete preview items // validate to prevent error if preview track is deleted before the script is terminated
 			for i=r.CountTrackMediaItems(tr)-1,0,-1 do
 			r.DeleteTrackMediaItem(tr,r.GetTrackMediaItem(tr,i))
 			end
