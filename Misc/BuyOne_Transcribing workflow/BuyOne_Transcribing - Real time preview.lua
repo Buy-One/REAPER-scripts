@@ -6,6 +6,7 @@ Version: 1.2
 Changelog: 1.2 #Included explicit undo point creation mechanism when a new preview item is placed on the preview track
 	       #Fixed error when the project is reloaded while the script is running
 	       #Optimized Video processor source track creation function for builds older than 7.20
+	       #Added OVERLAY_PRESET setting validation
 	       #Updated About text
 	   1.1 #Added overlay preset availability evaluation in builds 7.20 and newer
 	       #Optimized undo point creation in cases where overlay preset isn't found
@@ -773,6 +774,7 @@ PREVIEW_TRACK_NAME = #PREVIEW_TRACK_NAME:gsub(' ','') > 0 and PREVIEW_TRACK_NAME
 local err = not r.NF_SetSWSTrackNotes and 'SWS extension isn\'t installed'
 or not NOTES_TRACK_NAME and 'NOTES_TRACK_NAME \n\n   setting is empty'
 or not PREVIEW_TRACK_NAME and 'PREVIEW_TRACK_NAME \n\n   setting is empty'
+or #OVERLAY_PRESET:gsub('[%s%c]','') == 0 and 'OVERLAY_PRESET setting is empty'
 
 	if err then
 	Error_Tooltip("\n\n "..err.." \n\n", 1, 1) -- caps, spaced true
