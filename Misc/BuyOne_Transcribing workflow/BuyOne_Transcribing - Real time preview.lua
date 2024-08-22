@@ -428,9 +428,9 @@ next_pos = first_mrkr_pos or next_pos
 r.Undo_BeginBlock()
 
 local act = r.Main_OnCommand
---local item = r.GetTrackMediaItem(rend_tr,0) -- select 1st item on the track
---local take = item and r.GetActiveTake(item)
 --[[ WORKS
+r.SetOnlyTrackSelected(preview_tr)
+--r.SetEditCurPos(next_pos, false, false) -- moveview, seekplay false
 act(40214, 0) -- Insert new MIDI item...
 item = r.GetSelectedMediaItem(0,0) -- newly inserted item is exclusively selected
 take = r.GetActiveTake(item)
