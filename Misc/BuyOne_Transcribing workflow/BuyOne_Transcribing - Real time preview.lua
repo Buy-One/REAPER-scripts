@@ -5,6 +5,7 @@ Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-
 Version: 1.1
 Changelog: 1.1 #Added overlay preset availability evaluation in builds 7.20 and newer
 	       #Optimized undo point creation in cases where overlay preset isn't found
+	       #Fixed error when the preview track is deleted manually before the script is terminated
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
@@ -248,7 +249,7 @@ r.SetToggleCommandState(sect_ID, cmd_ID, toggle_state)
 r.RefreshToolbar(cmd_ID)
 	if toggle_state == 0 and CLEANUP then
 	local clear = tr and r.ValidatePtr(tr, 'MediaTrack*') and r.NF_SetSWSTrackNotes(tr, '') -- clearing preview track notes when exiting the script // pointer validation is used in case the script is terminated under different project tab where the track is absent
-		if tr then -- delete preview items
+		if tr and r.ValidatePtr(tr, 'MediaTrack*') -- delete preview items // validate to prevent error if preview track is deleted before the script is terminated
 			for i=r.CountTrackMediaItems(tr)-1,0,-1 do
 			r.DeleteTrackMediaItem(tr,r.GetTrackMediaItem(tr,i))
 			end
@@ -652,7 +653,7 @@ local proj, projfn = r.EnumProjects(-1)
 				Insert_Delete_Preview_Items(preview_tr) -- pos nil will trigger deletion of all preview items
 				local pos, segment_txt = Get_Next_Segment_Pos_And_Text(0, notes_init) -- start_idx is 0 // get first marker pos and 1st segment transcript to add to the first segment preview item
 					if segment_txt and #segment_txt:gsub('[%s%c]','') > 0 then
-					first_preview_take = Insert_Delete_Preview_Items(preview_tr, -1, mrkr_t, src_tr, pos) -- insert 1st segment, pos is equal to mrkr_t.first_marker_pos
+					first_preview_take = Insert_Delete_Preview_Items(preview_tr, -1, mrkr_t, src_tr, pos) -- insert 1st segment preview item, -1 is pos argument to trigger creation of a preview item at pos which is first_mrkr_pos arg equal to mrkr_t.first_marker_pos rather than at mrkr_t[pos]
 					local insert = first_preview_take and r.ValidatePtr(first_preview_take, 'MediaItem_Take*') and r.GetSetMediaItemTakeInfo_String(first_preview_take, 'P_NAME', segment_txt:match('%S.+'):gsub('%s*<n>%s*','\n'), true) -- setNewValue true // trimming leading spaces and converting new line tag into the new line control character
 					end
 				end
@@ -682,7 +683,7 @@ local proj, projfn = r.EnumProjects(-1)
 						if INSERT_PREVIEW_ITEMS then
 						local pos, segment_txt_next = Get_Next_Segment_Pos_And_Text(mrkr_idx+1, notes_init) -- start_idx is mrkr_idx+1 // get next marker pos and next segment transcript to insert next segment preview item
 							if segment_txt_next and #segment_txt_next:gsub('[%s%c]','') > 0 then
-							local preview_take = Insert_Delete_Preview_Items(preview_tr, -1, mrkr_t, src_tr, pos)
+							local preview_take = Insert_Delete_Preview_Items(preview_tr, -1, mrkr_t, src_tr, pos) -- insert preview item after an invalid marker, -1 is pos argument to trigger creation of the preview item at pos which is first_mrkr_pos arg rather than at mrkr_t[pos]
 							local insert = preview_take and r.ValidatePtr(preview_take, 'MediaItem_Take*') and r.GetSetMediaItemTakeInfo_String(preview_take, 'P_NAME', segment_txt_next:match('%S.+'):gsub('%s*<n>%s*','\n'), true) -- setNewValue true // trimming leading spaces and converting new line tag into the new line control character
 							end
 						end
@@ -703,7 +704,7 @@ local proj, projfn = r.EnumProjects(-1)
 				end
 
 			-- manage preview items
-			Insert_Delete_Preview_Items(preview_tr, pos) -- mrkr_t arg is nil to trigger deletion of previous preview item INCLUDING the penulimate when the last segment is being played AND the last when the cursor has moved past last marker, which won't occur if the deletion is conditioned by segment_txt_next below because in this case segment_txt_next will be nil due to absense of the next segment and the function won't run AND INCLUDING item previous to invalid marker
+			Insert_Delete_Preview_Items(preview_tr, pos) -- mrkr_t arg is nil to trigger deletion of previous preview item INCLUDING the penulimate when the last segment is being played AND the last when the cursor has moved past last marker, which won't occur if the deletion is conditioned by segment_txt_next below because in this case segment_txt_next will be nil due to absense of the next segment and the function won't run AND INCLUDING item previous to invalid marker // after deletion the function exits due to lack of other arguments
 
 			-- shorten current preview item if it's followed by an invalid marker
 			-- so it only extends until such invalid marker,
@@ -721,7 +722,7 @@ local proj, projfn = r.EnumProjects(-1)
 				end
 				-- add segment transcript to the next preview item
 				if segment_txt_next and #segment_txt_next:gsub('[%s%c]','') > 0 then
-				local preview_take = Insert_Delete_Preview_Items(preview_tr, -1, mrkr_t, src_tr, pos_next)
+				local preview_take = Insert_Delete_Preview_Items(preview_tr, -1, mrkr_t, src_tr, pos_next) -- insert next preview item, -1 is pos argument to trigger creation of the preview item at pos_next which is first_mrkr_pos arg rather than at mrkr_t[pos]
 				local insert = preview_take and r.ValidatePtr(preview_take, 'MediaItem_Take*') and r.GetSetMediaItemTakeInfo_String(preview_take, 'P_NAME', segment_txt_next:match('%S.+'):gsub('%s*<n>%s*','\n'), true) -- setNewValue true // trimming leading spaces and converting new line tag into the new line control character
 				end
 
@@ -770,7 +771,8 @@ INSERT_PREVIEW_ITEMS = #INSERT_PREVIEW_ITEMS:gsub(' ','') > 0
 	if INSERT_PREVIEW_ITEMS then
 	src_tr = Insert_Video_Proc_Src_Track(OVERLAY_PRESET)	
 		if not src_tr then
-		Error_Tooltip('\n\n the overlay preset wasn\'t found \n\n', 1, 1) -- caps, spaced true		
+		Error_Tooltip('\n\n the overlay preset wasn\'t found \n\n', 1, 1) -- caps, spaced true
+		r.DeleteTrack(preview_tr)
 		r.Undo_EndBlock(r.Undo_CanUndo2(0) or '', -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
 		return r.defer(no_undo)
 		end
@@ -779,6 +781,7 @@ INSERT_PREVIEW_ITEMS = #INSERT_PREVIEW_ITEMS:gsub(' ','') > 0
 	r.SetOnlyTrackSelected(preview_tr)
 	Show_SWS_Notes_Window()
 	end
+
 
 r.Undo_EndBlock('Transcribing: Create preview track', -1)
 
