@@ -4,12 +4,14 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
 Changelog: 1.2 #Included explicit undo point creation mechanism when a new preview item is placed on the preview track
+	       #Fixed error when the project is reloaded while the script is running
+	       #Optimized Video processor source track creation function for builds older than 7.20
 	       #Updated About text
 	   1.1 #Added overlay preset availability evaluation in builds 7.20 and newer
 	       #Optimized undo point creation in cases where overlay preset isn't found
 	       #Fixed error when the preview track is deleted manually before the script is terminated
 Licence: WTFPL
-REAPER: at least v5.962
+REAPER: at least v6.37
 Extensions: SWS/S&M
 About:	The script is part of the Transcribing workflow set of scripts
 	alongside 
@@ -329,41 +331,54 @@ function Insert_Video_Proc_Src_Track(OVERLAY_PRESET)
 r.PreventUIRefresh(1)
 
 	local function apply_overlay_preset(tr)
-	r.TrackFX_Show(tr, 0x1000000, 3) -- showFlag 3 show floating window
+	r.TrackFX_Show(tr, 0x1000000, 3) -- showFlag 3 show floating window // in builds older than 7.20 in order to successfully apply Video proc preset the plugin UI must be opened
 	local ok = r.TrackFX_SetPreset(tr, 0x1000000, OVERLAY_PRESET) -- fx 0
 		if not ok then return end -- overlay reset not found
 		for parm_idx, val in pairs({[6] = 0, [7] = 1, [8] = 1}) do -- 6 - bg bright, 7 - bg alpha, 8 - fit bg to text
 		r.TrackFX_SetParam(tr, 0x1000000, parm_idx, val)
 		end
-	r.TrackFX_Show(tr, 0x1000000, 2) -- showFlag 3 show floating window
+	r.TrackFX_Show(tr, 0x1000000, 2) -- showFlag 2 hide floating window
 	return true -- if not reached this point, the overlay preset wasn't found
 	end
 
-	for i=0, r.GetNumTracks()-1 do
-	local tr = r.GetTrack(0,i)
-	local retval, fx_name = r.TrackFX_GetNamedConfigParm(tr, 0x1000000, 'fx_name')
-	local vid_proc = fx_name == 'Video processor'
-	local ret, preset = r.TrackFX_GetPreset(tr, 0x1000000, '') -- fx 0
-	local overlay = preset == OVERLAY_PRESET
-	local ret, ext_state = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:SRC VIDEO PROC','',false) -- setNewValue false
-		if #ext_state > 0 then
-			if vid_proc and overlay then
-			elseif vid_proc and not overlay then
-			apply_overlay_preset(tr)
+local newer_build = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 7.20	
+
+	if not newer_build then -- search for Video proc source track and apply overlay preset if not applied
+		for i=0, r.GetNumTracks()-1 do
+		local tr = r.GetTrack(0,i)
+		local retval, fx_name = r.TrackFX_GetNamedConfigParm(tr, 0x1000000, 'fx_name') -- fx index 0 in the input fx chain // the function is the reason for minimal build being 6.37
+		local vid_proc = fx_name == 'Video processor'
+		local ret, preset = r.TrackFX_GetPreset(tr, 0x1000000, '') -- fx indxe 0 in the input fx chain 
+		local overlay = preset == OVERLAY_PRESET
+		local ret, ext_state = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:SRC VIDEO PROC','',false) -- setNewValue false
+			if #ext_state > 0 then
+				if vid_proc then
+					if overlay then return tr
+					else
+					local ok = apply_overlay_preset(tr)
+						if not ok then return 
+						else return tr
+						end
+					end
+				else
+				r.TrackFX_AddByName(tr, 'Video processor', true, -1000-0x1000000) -- recFX true, instantiate -1000 first fx slot in the input fx chain
+				local ok = apply_overlay_preset(tr)
+					if not ok then return 
+					else return tr
+					end
+				end
 			end
-		return tr
 		end
 	end
 
--- if tr wasn't found above
+-- if tr wasn't found above, create one
 local tr = insert_new_track('')
 r.SetMediaTrackInfo_Value(tr, 'B_SHOWINMIXER', 0) -- hide in mixer
 r.SetMediaTrackInfo_Value(tr, 'B_SHOWINTCP', 0) -- hide in TCP
 local retval, fx_name = r.TrackFX_GetNamedConfigParm(tr, 0x1000000, 'fx_name')
 	if not retval or fx_name ~= 'Video processor' then
-	r.TrackFX_AddByName(tr, 'Video processor', true, -1000-0x1000000) -- recFX true, instantiate -1000 first fx chain slot
+	r.TrackFX_AddByName(tr, 'Video processor', true, -1000-0x1000000) -- recFX true, instantiate -1000 first fx slot in the input fx chain
 	end
-local newer_build = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 7.20
 local ret, preset = r.TrackFX_GetPreset(tr, 0x1000000, '') -- fx 0
 	if preset ~= OVERLAY_PRESET then -- apply
 	local ok = apply_overlay_preset(tr)
@@ -387,6 +402,10 @@ function Insert_Delete_Preview_Items(preview_tr, pos, mrkr_t, src_tr, first_mrkr
 -- when pos is nil all preview items are deleted and the function is exited
 -- when pos is -1 it must be accompanied with valid first_mrkr_pos arg
 -- in which case the preview item is created at first_mrkr_pos rather than next valid
+
+	-- prevent error message when the project is reloaded while the script is running
+	if not r.ValidatePtr(preview_tr, 'MediaTrack*') then return end
+	
 
 r.PreventUIRefresh(1)
 
