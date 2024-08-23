@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Transcribing - Format converter.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
+Version: 1.2
+Changelog: 1.2 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
+	   1.1 #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
@@ -216,7 +217,7 @@ end
 function format_time_stamp(pos) -- format by adding leading zeros because r.format_timestr() ommits them
 local name = r.format_timestr(pos, '')
 return pos/3600 >= 1 and (pos/3600 < 10 and '0'..name or name) -- with hours
-or pos/60 >= 1 and (pos/60 < 10 and '00:0'..name or name) -- without hours
+or pos/60 >= 1 and (pos/60 < 10 and '00:0'..name or '00:'..name) -- without hours
 or '00:0'..name -- without hours and minutes
 end
 
