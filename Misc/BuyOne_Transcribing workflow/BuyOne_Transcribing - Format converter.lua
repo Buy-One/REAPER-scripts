@@ -39,10 +39,10 @@ About:	The script is part of the Transcribing workflow set of scripts
 	if transcript length exceeds the limit, the formatted transcript
 	rathen than being displayed in a new track Notes will be dumped 
 	to a .srt, .vtt or .txt file named after the project file which 
-	will be placed in the project directory. The dialogue will guide 
-	you through the process. The dialogue options respond to keyboard
-	input, options 1 through 4 to keys 1 - 4, .SRT - S, .VTT - V, and
-	AS IS - A.  
+	will be placed in the project directory or replaced if one was 
+	exported earlier. The dialogue will guide you through the process. 
+	The dialogue options respond to keyboard input, options 1 through 
+	4 to keys 1 - 4, .SRT - S, .VTT - V, and AS IS - A.  
 	If the converted transcript doesn't exceed the limit, the resulting 
 	code is displayed in track Notes named after the selected format. 
 	The track is reused in subsequent conversions as long as its name
