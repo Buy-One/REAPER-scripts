@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Transcribing - Real time preview.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: 1.2 #Included explicit undo point creation mechanism when a new preview item is placed on the preview track
+Version: 1.3
+Changelog: 1.3 #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
+	   1.2 #Included explicit undo point creation mechanism when a new preview item is placed on the preview track
 	       #Fixed error when the project is reloaded while the script is running
 	       #Optimized Video processor source track creation function
 	       #Added OVERLAY_PRESET setting validation
@@ -200,6 +201,13 @@ do return end
 end
 
 
+function Esc(str)
+	if not str then return end -- prevents error
+-- isolating the 1st return value so that if vars are initialized in a row outside of the function the next var isn't assigned the 2nd return value
+local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
+return str
+end
+
 
 function Error_Tooltip(text, caps, spaced, x2, y2, want_color, want_blink)
 -- the tooltip sticks under the mouse within Arrange
@@ -305,7 +313,7 @@ function Get_Or_Create_Preview_Track(name_setting)
 	for i = 0, r.CountTracks(0)-1 do
 	local tr = r.GetTrack(0,i)
 	local retval, name = r.GetTrackName(tr)
-		if name:match('^%s*'..name_setting..'%s*$') then
+		if name:match('^%s*'..Esc(name_setting)..'%s*$') then
 		return tr
 		end
 	end
@@ -583,7 +591,7 @@ local tr_t = {}
 	local retval, name = r.GetTrackName(tr)
 	local ret, data = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:'..NOTES_TRACK_NAME, '', false) -- setNewValue false
 	local index = data:match('^%d+')
-		if name:match('^%s*%d+ '..NOTES_TRACK_NAME..'%s*$') and tonumber(index) then
+		if name:match('^%s*%d+ '..Esc(NOTES_TRACK_NAME)..'%s*$') and tonumber(index) then
 		tr_t[#tr_t+1] = {tr=tr, name=name, idx=index}
 		end
 	end
