@@ -25,6 +25,20 @@ About:	The script is part of the Transcribing workflow set of scripts
 	context menu and run the script.	
 	
 	The script doesn't create an undo point.
+
+	If the script is followed by the custom action:
+	
+	Custom: Create loop points between adjacent project markers (place edit cursor between markers or at the left one)  
+	  Time selection: Remove (unselect) time selection and loop points  
+	  View: Move cursor right 8 pixels  
+	  Markers: Go to previous marker/project start  
+	  Loop points: Set start point  
+	  Markers: Go to next marker/project end  
+	  Loop points: Set end point  
+	  Markers: Go to previous marker/project start
+	  
+	within another custom action then in addition to jumping 
+	to marker, loop points can be set to the relevant segment.
 ]]
 
 
