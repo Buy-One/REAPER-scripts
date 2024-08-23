@@ -5,7 +5,7 @@ Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-
 Version: 1.2
 Changelog: 1.2 #Included explicit undo point creation mechanism when a new preview item is placed on the preview track
 	       #Fixed error when the project is reloaded while the script is running
-	       #Optimized Video processor source track creation function for builds older than 7.20
+	       #Optimized Video processor source track creation function
 	       #Added OVERLAY_PRESET setting validation
 	       #Updated About text
 	   1.1 #Added overlay preset availability evaluation in builds 7.20 and newer
@@ -57,7 +57,7 @@ About:	The script is part of the Transcribing workflow set of scripts
 	names as soon as the change occurs so it must be allowed to process
 	the content in advance.  
 	If everything functions properly there could be no more than 2 preview 
-	items on the prevew track at any given in time, one for the current 
+	items on the prevew track at any given moment, one for the current 
 	and another for the next segment. There'll be only 1 when the last 
 	segment is being played and when the cursor is located to the left 
 	of the very first segment marker.		
