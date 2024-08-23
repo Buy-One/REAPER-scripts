@@ -329,6 +329,11 @@ About:	The script is part of the Transcribing workflow set of scripts
 	OR
 	
 	B. Use the script 'BuyOne_Transcribing - Go to segment marker.lua'
+	included in this set of scripts.  
+	If the script is followed by the custom action from par. B above
+	namely 'Create loop points between adjacent project markers' within
+	another custom action, then in addition to jumping to marker, loop 
+	points can be set to the relevant segment.
 	
 	C. (Less convenient)
 	
