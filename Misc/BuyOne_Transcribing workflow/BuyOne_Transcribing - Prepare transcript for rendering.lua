@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Transcribing - Prepare transcript for rendering.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
@@ -123,6 +123,13 @@ function no_undo()
 do return end
 end
 
+
+function Esc(str)
+	if not str then return end -- prevents error
+-- isolating the 1st return value so that if vars are initialized in a row outside of the function the next var isn't assigned the 2nd return value
+local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
+return str
+end
 
 
 function Error_Tooltip(text, caps, spaced, x2, y2, want_color, want_blink)
@@ -272,7 +279,7 @@ local tr_t = {}
 	local retval, name = r.GetTrackName(tr)
 	local ret, data = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:'..NOTES_TRACK_NAME, '', false) -- setNewValue false
 	local index = data:match('^%d+')
-		if name:match('^%s*%d+ '..NOTES_TRACK_NAME..'%s*$') and tonumber(index) then
+		if name:match('^%s*%d+ '..Esc(NOTES_TRACK_NAME)..'%s*$') and tonumber(index) then
 		tr_t[#tr_t+1] = {tr=tr, name=name, idx=index}
 		end
 	end
@@ -423,7 +430,7 @@ function Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRE
 		for i = 0, r.GetNumTracks()-1 do
 		local tr = r.GetTrack(0,i)
 		local retval, name = r.GetTrackName(tr)
-			if name:match('^%s*1 '..NOTES_TRACK_NAME..'%s*$') then
+			if name:match('^%s*1 '..Esc(NOTES_TRACK_NAME)..'%s*$') then
 			notes_tr = tr
 			end
 		end
