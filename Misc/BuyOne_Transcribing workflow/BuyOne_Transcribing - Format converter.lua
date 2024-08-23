@@ -432,7 +432,7 @@ local undo, notes_form, tr_name = 'Transcribing: '
 		then -- SWS Notes limit is 65,535 bytes per object, excess will prevent fitting the string within one Notes window
 		local resp = r.MB(space(8)..'The transcript length prevents it\n\n  from fitting within a single Notes window.\n\n'
 		..space(10)..'Click OK to dump it into a file\n\nwhich will be placed in the project directory\n\n'
-		..space(11)..'named after the project file.','PROMPT',1)
+		..space(11)..'named after the project file\n\n   or replaced if one was exported earlier.','PROMPT',1)
 			if resp == 1 then -- assented
 			local ret, path = r.EnumProjects(-1)
 				if #path == 0 then -- very unlikely but just in case
