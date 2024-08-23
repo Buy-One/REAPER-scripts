@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Transcribing - Format converter.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
@@ -194,7 +194,7 @@ local tr_t = {}
 	local retval, name = r.GetTrackName(tr)
 	local ret, data = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:'..NOTES_TRACK_NAME, '', false) -- setNewValue false
 	local index = data:match('^%d+')
-		if name:match('^%s*%d+ '..NOTES_TRACK_NAME..'%s*$') and tonumber(index) then
+		if name:match('^%s*%d+ '..Esc(NOTES_TRACK_NAME)..'%s*$') and tonumber(index) then
 		tr_t[#tr_t+1] = {tr=tr, name=name, idx=index}
 		end
 	end
