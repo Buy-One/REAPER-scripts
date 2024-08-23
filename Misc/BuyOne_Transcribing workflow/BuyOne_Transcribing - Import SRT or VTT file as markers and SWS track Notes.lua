@@ -254,7 +254,7 @@ local prev_stamp, first_mrkr_pos
 	for k, line in ipairs(t) do
 	local st, fin = line:match('^(%d+:%d+:%d+%.%d+) (%d+:%d+:%d+%.%d+)') -- non-greedy operator for fin capture because it may be absent in which case st capture won't be affected
 		if st then
-		first_mrkr_pos = not first_mrkr_pos and parse(st) or first_mrkr_pos
+		first_mrkr_pos = first_mrkr_pos or parse(st)
 			if st ~= prev_stamp then -- only if current start time stamp and prev end time stamp are different
 			r.AddProjectMarker(0, false, parse(st), 0, st, -1) -- isrgn false, rgnend 0, wantidx -1 auto-assignment of index
 			end
