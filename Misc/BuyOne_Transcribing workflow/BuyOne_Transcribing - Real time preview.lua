@@ -331,14 +331,14 @@ function Insert_Video_Proc_Src_Track(OVERLAY_PRESET)
 
 r.PreventUIRefresh(1)
 
-	local function apply_overlay_preset(tr)
-	r.TrackFX_Show(tr, 0x1000000, 3) -- showFlag 3 show floating window // in builds older than 7.20 in order to successfully apply Video proc preset the plugin UI must be opened
+	local function apply_overlay_preset(tr, newer_build)
+	local show = not newer_build and r.TrackFX_Show(tr, 0x1000000, 3) -- showFlag 3 show floating window // in builds older than 7.20 in order to successfully apply Video proc preset the plugin UI must be opened
 	local ok = r.TrackFX_SetPreset(tr, 0x1000000, OVERLAY_PRESET) -- fx 0
 		if not ok then return end -- overlay reset not found
 		for parm_idx, val in pairs({[6] = 0, [7] = 1, [8] = 1}) do -- 6 - bg bright, 7 - bg alpha, 8 - fit bg to text
 		r.TrackFX_SetParam(tr, 0x1000000, parm_idx, val)
 		end
-	r.TrackFX_Show(tr, 0x1000000, 2) -- showFlag 2 hide floating window
+	local hide = not newer_build and r.TrackFX_Show(tr, 0x1000000, 2) -- showFlag 2 hide floating window
 	return true -- if not reached this point, the overlay preset wasn't found
 	end
 
@@ -356,14 +356,14 @@ local newer_build = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 7.20
 				if vid_proc then
 					if overlay then return tr
 					else
-					local ok = apply_overlay_preset(tr)
+					local ok = apply_overlay_preset(tr, newer_build)
 						if not ok then return 
 						else return tr
 						end
 					end
 				else
 				r.TrackFX_AddByName(tr, 'Video processor', true, -1000-0x1000000) -- recFX true, instantiate -1000 first fx slot in the input fx chain
-				local ok = apply_overlay_preset(tr)
+				local ok = apply_overlay_preset(tr, newer_build)
 					if not ok then return 
 					else return tr
 					end
@@ -382,7 +382,7 @@ local retval, fx_name = r.TrackFX_GetNamedConfigParm(tr, 0x1000000, 'fx_name')
 	end
 local ret, preset = r.TrackFX_GetPreset(tr, 0x1000000, '') -- fx 0
 	if preset ~= OVERLAY_PRESET then -- apply
-	local ok = apply_overlay_preset(tr)
+	local ok = apply_overlay_preset(tr, newer_build)
 		if not ok or ok and newer_build then -- deleting track if not found in any build and if found in newer builds because in this case the track was only needed to check availability of the preset
 		r.DeleteTrack(tr)
 		return ok and newer_build end -- in newer builds returning true if found to prevent triggering error message outside, in older builds the return value will always be false which will trigger the error message
