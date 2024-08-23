@@ -4,6 +4,7 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
 Changelog: 1.2 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
+	       #Fixed extension type when exporting as an SRT format file, added .vtt extension support
 	   1.1 #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
 Licence: WTFPL
 REAPER: at least v5.962
@@ -437,7 +438,7 @@ local undo, notes_form, tr_name = 'Transcribing: '
 				if #path == 0 then -- very unlikely but just in case
 				r.MB("Project file wasn't found.\n\nPlease save project first.",'ERROR',0)
 				return r.defer(no_undo) end
-			local ext = choice == 7 and '.srt' or '.txt'
+			local ext = choice == 8 and '.srt' or choice == 9 and '.vtt' or '.txt'
 			local f = io.open(path:gsub('%.[Rr][Pp]+', ext),'w')
 			f:write(notes_form)
 			f:close()
