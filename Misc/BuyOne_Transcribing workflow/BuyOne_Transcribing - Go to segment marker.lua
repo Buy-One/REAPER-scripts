@@ -26,7 +26,9 @@ About:	The script is part of the Transcribing workflow set of scripts
 	
 	The script doesn't create an undo point.
 
-	If the script is followed by the custom action:
+	If the script is followed by the custom action 
+	(included with the script set in the file 
+	'Transcribing workflow custom actions.ReaperKeyMap' ):
 	
 	Custom: Create loop points between adjacent project markers (place edit cursor between markers or at the left one)  
 	  Time selection: Remove (unselect) time selection and loop points  
