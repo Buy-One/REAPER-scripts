@@ -391,7 +391,7 @@ function Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRE
 				end
 			end
 
-		local hide = old and r.TakeFX_Show(take, 0, 2) -- showFlag 3 show floating window
+		local hide = old and r.TakeFX_Show(take, 0, 2) -- showFlag 2 hide floating window
 		else -- if present, copy and paste at edit cursor which has been moved to marker
 		r.SelectAllMediaItems(0, false) -- deselect all
 		r.SetMediaItemSelected(item, true) -- selected true
