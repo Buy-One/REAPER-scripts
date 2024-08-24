@@ -257,6 +257,7 @@ end
 
 function Remove_Markers(want_all)
 -- they will be recreated based on the transcript in Insert_Items_At_Markers()
+-- and Insert_Markers_For_Audio()
 -- want_all is boolean to delete all markers in preparation for audio render
 -- so that irrelevant markers don't get embedded in the media
 
