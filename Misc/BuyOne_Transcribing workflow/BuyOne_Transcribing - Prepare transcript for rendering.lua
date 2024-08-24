@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Transcribing - Prepare transcript for rendering.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
-Changelog: 1.3 #Added character escaping to RENDER_TRACK_NAME setting evaluation
+Version: 1.4
+Changelog: 1.4 #Fixed bug of not respecting gaps between segments in preparation for video rendering
+	   1.3 #Added character escaping to RENDER_TRACK_NAME setting evaluation
 	   to prevent errors caused unascaped characters
 	   1.2 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
 	   1.1 #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
