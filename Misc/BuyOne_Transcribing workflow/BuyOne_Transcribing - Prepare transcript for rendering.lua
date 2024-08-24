@@ -386,7 +386,7 @@ function Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRE
 		local show = old and r.TakeFX_Show(take, 0, 3) -- showFlag 3 show floating window
 		local ok = r.TakeFX_SetPreset(take, 0, OVERLAY_PRESET) -- fx 0
 
-			if not ok then r.DeleteTrackItem(rend_tr, item) return end -- preset wasn't found
+			if not ok then return end -- preset wasn't found
 
 			-- only set parameters if the preset is default because in the user version
 			-- everything will be set within the preset itself
