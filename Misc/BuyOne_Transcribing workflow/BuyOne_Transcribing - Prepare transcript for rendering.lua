@@ -4,6 +4,8 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.4
 Changelog: 1.4 #Fixed bug of not respecting gaps between segments in preparation for video rendering
+	       #Ensured that when preparing for audio rendering only segment markers are left on the timeline
+	       #Updated About text
 	   1.3 #Added character escaping to RENDER_TRACK_NAME setting evaluation
 	   to prevent errors caused unascaped characters
 	   1.2 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
@@ -55,10 +57,8 @@ About:	The script is part of the Transcribing workflow set of scripts
 	A U D I O
 	
 	If AUDIO option is selected the script deletes from the project all 
-	segment markers, i.e. those bearing in their name a time stamp in 
-	the format supported by the set Transcribing scripts, and then creates 
-	them from scratch taking their positions from the segment start time 
-	stamps of the transcript.  
+	markers and then creates segment markers from scratch taking their 
+	positions from the segment start time stamps of the transcript. 
 	
 	The transcript of each segment is added to the corresponding marker
 	name. All new line tags <n> supported by this set of scripts and 
@@ -255,8 +255,10 @@ end
 
 
 
-function Remove_All_Segment_Markers()
+function Remove_Markers(want_all)
 -- they will be recreated based on the transcript in Insert_Items_At_Markers()
+-- want_all is boolean to delete all markers in preparation for audio render
+-- so that irrelevant markers don't get embedded in the media
 
 local parse = r.parse_timestr
 
@@ -265,7 +267,7 @@ local retval, mrkr_cnt = r.CountProjectMarkers(0)
 local i = mrkr_cnt-1
 	repeat
 	local retval, isrgn, pos, rgnend, name, markr_idx = r.EnumProjectMarkers(i)
-		if retval > 0 and not isrgn and (parse(name) ~= 0 or name == '00:00:00.000') then
+		if retval > 0 and not isrgn and (want_all or (parse(name) ~= 0 or name == '00:00:00.000')) then
 		r.DeleteProjectMarkerByIndex(0, i)
 		end
 	i = i-1
@@ -348,7 +350,7 @@ end
 function Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRESET, mrkr_t)
 -- only at markers to which there're matching segments
 -- in the Notes with transcription, ignoring empty segments
--- mrkr_t arg is obsolete because Get_Segment_Markers() has been superceded with Remove_All_Segment_Markers()
+-- mrkr_t arg is obsolete because Get_Segment_Markers() has been superceded with Remove_Markers()
 -- so markers are re-created based on the transcript
 
 	function insert_item(rend_tr, pos, len, transcr, OVERLAY_PRESET)
@@ -588,7 +590,7 @@ Error_Tooltip("\n\n the process is underway... \n\n", 1, 1) -- caps, spaced true
 			return r.defer(no_undo) end
 		end
 
-	Remove_All_Segment_Markers() --do return end
+	Remove_Markers() --do return end
 
 	r.PreventUIRefresh(1)
 
@@ -604,7 +606,7 @@ Error_Tooltip("\n\n the process is underway... \n\n", 1, 1) -- caps, spaced true
 
 	elseif audio then
 
-	Remove_All_Segment_Markers()
+	Remove_Markers(1) -- want_all true
 
 	Insert_Markers_For_Audio(notes_t, #chapt_tags > 0)
 
