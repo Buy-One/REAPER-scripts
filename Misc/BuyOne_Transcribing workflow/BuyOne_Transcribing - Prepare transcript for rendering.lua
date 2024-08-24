@@ -401,7 +401,7 @@ function Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRE
 		r.SelectAllMediaItems(0, false) -- deselect all
 		r.SetMediaItemSelected(item, true) -- selected true
 		act(40698,0) -- Edit: Copy items
-		act(42398,0) -- Item: Paste items/tracks
+		act(42398,0) -- Item: Paste items/tracks // the item is pasted at the edit cursor but it's immaterial because its position and other properties will be adjusted in the loop below
 		item = r.GetSelectedMediaItem(0,0) -- newly inserted item is exclusively selected action
 		take = r.GetActiveTake(item)
 		end
