@@ -5,6 +5,7 @@ Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-
 Version: 1.4
 Changelog: 1.4 #Fixed bug of not respecting gaps between segments in preparation for video rendering
 	       #Ensured that when preparing for audio rendering only segment markers are left on the timeline
+	       #Added OVERLAY_PRESET setting validation
 	       #Updated About text
 	   1.3 #Added character escaping to RENDER_TRACK_NAME setting evaluation
 	   to prevent errors caused unascaped characters
@@ -573,11 +574,15 @@ local video, audio = output == 2, output == 3
 	end
 
 
-r.Undo_BeginBlock()
-
 Error_Tooltip("\n\n the process is underway... \n\n", 1, 1) -- caps, spaced true
 
 	if video then
+
+		if #OVERLAY_PRESET:gsub('[%s%c]','') == 0 then
+		Error_Tooltip("\n\n overlay_preset setting is empty \n\n", 1, 1) -- caps, spaced true
+		return r.defer(no_undo) end
+
+	r.Undo_BeginBlock()
 
 	local rend_tr = Get_Track(RENDER_TRACK_NAME)
 	local itm_cnt = r.CountTrackMediaItems(rend_tr)
@@ -605,6 +610,8 @@ Error_Tooltip("\n\n the process is underway... \n\n", 1, 1) -- caps, spaced true
 	r.PreventUIRefresh(-1)
 
 	elseif audio then
+
+	r.Undo_BeginBlock()
 
 	Remove_Markers(1) -- want_all true
 
