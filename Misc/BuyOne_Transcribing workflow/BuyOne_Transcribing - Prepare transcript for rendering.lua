@@ -448,13 +448,12 @@ function Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRE
 
 local parse, first_mrkr_pos = r.parse_timestr
 local parse, first_mrkr_pos, prev_fin = r.parse_timestr
---local mrkr_t = mrkr_t or {}
 local mrkr_t = {}
 
 	for k, segm in ipairs(notes_t) do
-	r.SetOnlyTrackSelected(rend_tr)
-	local st, fin, transcr = segm:match('^%s*(%d+:%d+:%d+%.%d+)%s*([:%d%.]*)(.*)') -- non-greedy operator for fin capture because it may be absent in which case st capture won't be affected
-		if st then -- could be nil if VTT non-segment content is present
+	r.SetOnlyTrackSelected(rend_tr) -- must be selected because with action items are pasted to the selected track
+	local st, fin, transcr = segm:match('^%s*(%d+:%d+:%d+%.%d+)%s*([:%d%.]*)(.*)') -- non-greedy operator for fin capture because it may be absent in which case st capture won't be affected // if no transcript the capture will return either empty string or string with spaces regardless of end time stamp presence; not completely failproof in case only segment start time stamp is listed and the actual transcript also starts with a time stamp, because then transcr val will still be empty while the actual transcript will be returned as fin val, all of which nevertheless isn't very likely
+		if st and #transcr:gsub('[%s%c]','') > 0 then -- st could be nil if VTT non-segment content is present
 			if k == #notes_t then -- last segment, get last marker pos from the segment end time stamp if any
 			local last_mrkr_pos = fin and #fin > 0 and fin or get_last_mrkr_pos(NOTES_TRACK_NAME)
 				if last_mrkr_pos then -- insert last marker at the found time stamp
