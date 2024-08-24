@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Transcribing - Prepare transcript for rendering.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: 1.2 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
+Version: 1.3
+Changelog: 1.3 #Added character escaping to RENDER_TRACK_NAME setting evaluation
+	   to prevent errors caused unascaped characters
+	   1.2 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
 	   1.1 #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
 Licence: WTFPL
 REAPER: at least v5.962
@@ -239,7 +241,7 @@ function Get_Track(name_setting)
 	for i = 0, r.CountTracks(0)-1 do
 	local tr = r.GetTrack(0,i)
 	local retval, name = r.GetTrackName(tr)
-		if name:match('^%s*'..name_setting..'%s*$') then
+		if name:match('^%s*'..Esc(name_setting)..'%s*$') then
 		return tr
 		end
 	end
