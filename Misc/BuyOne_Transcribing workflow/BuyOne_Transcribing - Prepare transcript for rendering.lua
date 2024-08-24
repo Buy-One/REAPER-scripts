@@ -232,6 +232,7 @@ function insert_new_track(tr_name)
 r.InsertTrackAtIndex(r.CountTracks(0), true) -- wantDefaults true
 local tr = r.GetTrack(0,r.CountTracks(0)-1)
 r.GetSetMediaTrackInfo_String(tr, 'P_NAME', tr_name, true) -- setNewValue true
+r.TrackList_AdjustWindows(false) -- isMinor false i.e. in both TCP and MCP, otherwise name isn't updated until the script has run through and if the track is up for deletion due to unavailability of overlay preset in video render preparation the name won't be displayed as long as the Message Box is shown
 return tr
 end
 
@@ -328,7 +329,7 @@ local notes = ''
 local notes_t = {}
 local time_stamp_exists
 	for line in notes:gmatch('(.-)\n') do
-		if line and #line:gsub('[%s%c]','') > 0 then -- ignoring empty segments
+		if line and #line:gsub('[%s%c]','') > 0 then -- ignoring empty lines
 		notes_t[#notes_t+1] = clear_markup(line)
 		time_stamp_exists = time_stamp_exists or line:match('^%s*(%d+:%d+:%d+%.%d+)')
 		end
@@ -420,9 +421,9 @@ function Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRE
 	-- is shortened
 	act(40636, 0) -- Item properties: Loop item source // re-sable
 	act(40636, 0) -- Item properties: Loop item source // disnable
-	local transcr = transcr:match('^%s*(.-)%s*$'):gsub('%s*<n>%s*','\n') -- stripping trailing spaced and converting new line tag into new line char
+	local transcr = transcr:match('^%s*(.-)%s*$'):gsub('%s*<n>%s*','\n') -- stripping trailing spaces and converting new line tag into new line char
 	r.GetSetMediaItemTakeInfo_String(take, 'P_NAME', transcr, true) -- setNewValue true
-	return true -- if not reached this point, the overlay preset wasn't found
+	return item -- if not reached this point, the overlay preset wasn't found
 	end
 
 
@@ -438,45 +439,57 @@ function Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRE
 			end
 		end
 	local ret, last_mrkr_stamp = r.GetSetMediaTrackInfo_String(notes_tr, 'P_EXT:LASTMARKERPOS', '', false) -- setNewValue false // stored inside PROCESS_SEGMENTS() function of 'BuyOne_Transcribing - Create and manage segments.lua' script
-	return r.parse_timestr(last_mrkr_stamp)
+	return ret and last_mrkr_stamp
 	end
 
 local parse, first_mrkr_pos = r.parse_timestr
-local mrkr_t = mrkr_t or {}
+local parse, first_mrkr_pos, prev_fin = r.parse_timestr
+--local mrkr_t = mrkr_t or {}
+local mrkr_t = {}
 
 	for k, segm in ipairs(notes_t) do
 	r.SetOnlyTrackSelected(rend_tr)
 	local st, fin, transcr = segm:match('^%s*(%d+:%d+:%d+%.%d+)%s*([:%d%.]*)(.*)') -- non-greedy operator for fin capture because it may be absent in which case st capture won't be affected
-		if st then -- could be nil if non-segment content is present
+		if st then -- could be nil if VTT non-segment content is present
 			if k == #notes_t then -- last segment, get last marker pos from the segment end time stamp if any
-			local last_mrkr_pos = fin and #fin > 0 and parse(fin) or get_last_mrkr_pos(NOTES_TRACK_NAME)
+			local last_mrkr_pos = fin and #fin > 0 and fin or get_last_mrkr_pos(NOTES_TRACK_NAME)
 				if last_mrkr_pos then -- insert last marker at the found time stamp
-				r.AddProjectMarker(0, false, last_mrkr_pos, 0, format_time_stamp(last_mrkr_pos), -1) -- isrgn false, rgnend 0, wantidx -1 auto-assignment of index
-				mrkr_t.last_mrkr = last_mrkr_pos
+				r.AddProjectMarker(0, false, parse(last_mrkr_pos), 0, last_mrkr_pos, -1) -- isrgn false, rgnend 0, wantidx -1 auto-assignment of index
+				mrkr_t.last_mrkr = last_mrkr_pos -- stored as string
 				end
 			end
 		local pos = parse(st)
-		local mrkr_idx
-			if not mrkr_t[st] then -- insert marker if absent
-			mrkr_idx = r.AddProjectMarker(0, false, pos, 0, st, -1) -- isrgn false, rgnend 0, wantidx -1 auto-assignment of index
-			-- look for the next segment marker to add distance between it and the newly inserted one to the field of the latter in the table
+		local st_mrkr_idx, fin_mrkr_idx
+			if st ~= prev_fin then -- prevent inserting segment start marker if its pos is equal to the prev segment end time stamp, i.e. there's no gap between segments
+			st_mrkr_idx = r.AddProjectMarker(0, false, pos, 0, st, -1) -- isrgn false, rgnend 0, wantidx -1 auto-assignment of index
+			end				
+			if not fin or #fin == 0 then -- if no segment fin time stamp, search for the next segm start time stamp to create a segment closing marker and to add distance between it and the segment start marker to the field of the latter in the table to be used as item length value
+			fin = nil -- to simplify evaluation after the following loop
+			-- look for the next segment start time stamp
 				for i = k+1, #notes_t do -- starting from the next segment
 				local segm = notes_t[i]
-				local st_next, fin_next = segm:match('^%s*(%d+:%d+:%d+%.%d+)%s*([:%d%.]*)') -- non-greedy operator for fin capture because it may be absent in which case st capture won't be affected
-					if st_next then -- next marker found, store distance to it for the current segment
-					mrkr_t[st] = {pos=pos, len=parse(st_next)-pos}
+				local st_next = segm:match('^%s*%d+:%d+:%d+%.%d+')
+					if st_next then -- next segment found
+					fin = st_next
 					break end
 				end
-				if not mrkr_t[st] then -- the newly inserted marker data wasn't included above because next marker wasn't found
-				mrkr_t[st] = {pos=pos, len = fin and #fin > 0 and parse(fin)-pos or mrkr_t.last_mrkr and mrkr_t.last_mrkr-pos or r.GetProjectLength()-pos} -- store either distance to the last marker if listed as the last segment end time stamp or to the last marker stored in the table (in fact the last time stamp would be also stored in the table above) or to the project end
-				end
-			end
+			fin = fin or mrkr_t.last_mrkr or format_time_stamp(r.GetProjectLength()) -- if not fin time stamp and not next segment start time stamp it's either the last segment end time stamp, if any, or the project end
+			end			
+		fin_mrkr_idx = r.AddProjectMarker(0, false, parse(fin), 0, fin, -1) -- isrgn false, rgnend 0, wantidx -1 auto-assignment of index
+		prev_fin = fin -- update for the next cycle
+		mrkr_t[st] = {pos=pos, len=parse(fin)-pos}
 
-			if mrkr_t[st] and #transcr:gsub('[%s%c]','') > 0 then -- there's marker whose pos matches segment start time stamp, only insert if there's segment text
-			local ok = insert_item(rend_tr, mrkr_t[st].pos, mrkr_t[st].len, transcr, OVERLAY_PRESET)
-				if not ok then r.DeleteProjectMarker(0, mrkr_idx, false) return end -- isrgn false
-			first_mrkr_pos = first_mrkr_pos or mrkr_t[st].pos
-			end
+		local item = insert_item(rend_tr, mrkr_t[st].pos, mrkr_t[st].len, transcr, OVERLAY_PRESET)
+			if not item then
+			r.DeleteProjectMarker(0, st_mrkr_idx, false) -- isrgn false
+			r.DeleteProjectMarker(0, fin_mrkr_idx, false) -- isrgn false
+				if r.CountTrackMediaItems(rend_tr) == 1 then
+				r.DeleteTrack(rend_tr)
+				else
+				r.DeleteTrackMediaItem(r.GetMediaItemTrack(item), item)
+				end
+			return end
+		first_mrkr_pos = first_mrkr_pos or mrkr_t[st].pos -- stored as float
 		end
 	end
 
@@ -579,7 +592,7 @@ Error_Tooltip("\n\n the process is underway... \n\n", 1, 1) -- caps, spaced true
 	r.PreventUIRefresh(1)
 
 		if not Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRESET) then
-		Error_Tooltip('\n\n the overlay preset wasn\'t found \n\n', 1, 1) -- caps, spaced true
+		r.MB('\tThe overlay preset\n\n"'..OVERLAY_PRESET..'" wasn\'t found', 'ERROR', 0)
 		r.Undo_EndBlock(r.Undo_CanUndo2(0) or '', -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
 		return r.defer(no_undo) end
 
