@@ -508,8 +508,8 @@ function Insert_Markers_For_Audio(notes_t, chapters)
 local first_mrkr_idx
 
 	for k, segm in ipairs(notes_t) do
-	local st, fin, transcr = segm:match('^%s*(%d+:%d+:%d+%.%d+)%s*([:%d%.]*)(.*)') -- non-greedy operator for fin capture because it may be absent in which case st capture won't be affected
-		if transcr and #transcr:gsub('[%s%c]','') > 0 then
+	local st, fin, transcr = segm:match('^%s*(%d+:%d+:%d+%.%d+)%s*([:%d%.]*)(.*)') -- non-greedy operator for fin capture because it may be absent in which case st capture won't be affected // if no transcript the capture will return either empty string or string with spaces regardless of end time stamp presence; not completely failproof in case only segment start time stamp is listed and the actual transcript also starts with a time stamp, because then transcr val will still be empty while the actual transcript will be returned as fin val, all of which nevertheless isn't very likely
+		if #transcr:gsub('[%s%c]','') > 0 then
 		transcr = chapters and 'CHAP='..transcr or transcr
 		transcr = transcr:match('^%s*(.-)%s*$'):gsub('%s*<n>%s*',' ') -- stripping trailing spaces, replacing new line tag and surrounding spaces with a single space
 		local pos = r.parse_timestr(st)
