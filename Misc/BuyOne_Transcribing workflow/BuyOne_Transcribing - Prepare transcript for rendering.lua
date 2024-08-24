@@ -496,7 +496,7 @@ local mrkr_t = {}
 		end
 	end
 
-local move = first_mrkr_pos and r.SetEditCurPos(first_mrkr_pos, true, false) -- moveview true, seekplay false // restore
+local move = first_mrkr_pos and r.SetEditCurPos(first_mrkr_pos, true, false) -- moveview true, seekplay false
 
 return true -- if not reached this point, the overlay preset wasn't found
 
@@ -513,12 +513,12 @@ local first_mrkr_idx
 		transcr = chapters and 'CHAP='..transcr or transcr
 		transcr = transcr:match('^%s*(.-)%s*$'):gsub('%s*<n>%s*',' ') -- stripping trailing spaces, replacing new line tag and surrounding spaces with a single space
 		local pos = r.parse_timestr(st)
-		local index = r.AddProjectMarker(0, false, pos, 0, transcr, -1) -- isrgn false, rgnend 0, wantidx -1 auto-assignment of index, trimming leading space if any
+		r.AddProjectMarker(0, false, pos, 0, transcr, -1) -- isrgn false, rgnend 0, wantidx -1 auto-assignment of index, trimming leading space if any
 		first_mrkr_pos = first_mrkr_pos or pos
 		end
 	end
 
-local move = first_mrkr_pos and r.SetEditCurPos(first_mrkr_pos, true, false) -- moveview true, seekplay false // restore
+local move = first_mrkr_pos and r.SetEditCurPos(first_mrkr_pos, true, false) -- moveview true, seekplay false
 
 end
 
