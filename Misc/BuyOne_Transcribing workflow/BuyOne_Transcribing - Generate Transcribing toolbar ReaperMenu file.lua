@@ -5,6 +5,7 @@ Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-
 Version: 1.1
 Changelog: #Fixed resources search while generating the toolbar code
 	   #Disabled user prompt for the target toolbar number in builds newer than 7.21
+	   #Updated About text
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is part of the Transcribing workflow set of scripts
