@@ -330,7 +330,7 @@ icon_11=text_wide
 
 local toolbar2 = [[
 item_0= MAIN
-item_1= Create loop
+item_1= Loop segment
 item_2=40634 Clear loop points
 item_3= Shift loop right >>
 item_4= Loop to >> segment
