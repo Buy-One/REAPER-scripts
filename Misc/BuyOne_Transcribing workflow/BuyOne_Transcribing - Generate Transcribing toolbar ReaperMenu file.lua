@@ -5,6 +5,7 @@ Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-
 Version: 1.1
 Changelog: #Fixed resources search while generating the toolbar code
 	   #Disabled user prompt for the target toolbar number in builds newer than 7.21
+	   #Fixed a toolbar button name
 	   #Updated About text
 Licence: WTFPL
 REAPER: at least v5.962
@@ -331,7 +332,7 @@ local toolbar2 = [[
 item_0= MAIN
 item_1= Create loop
 item_2=40634 Clear loop points
-item_3= loop right >>
+item_3= Shift loop right >>
 item_4= Loop to >> segment
 item_5= Loop to << segment
 item_6= Live PEVIEW
