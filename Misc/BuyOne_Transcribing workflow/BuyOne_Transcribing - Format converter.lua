@@ -37,7 +37,7 @@ About:	The script is part of the Transcribing workflow set of scripts
 		
 	Since SWS Notes length limit is set to 65535 bytes (65.5 kb)
 	if transcript length exceeds the limit, the formatted transcript
-	rathen than being displayed in a new track Notes will be dumped 
+	rather than being displayed in a new track Notes will be dumped 
 	to a .srt, .vtt or .txt file named after the project file which 
 	will be placed in the project directory or replaced if one was 
 	exported earlier. The dialogue will guide you through the process. 
