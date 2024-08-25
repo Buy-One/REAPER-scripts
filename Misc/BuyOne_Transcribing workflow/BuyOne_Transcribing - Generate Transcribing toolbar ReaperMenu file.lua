@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Fixed resources search while generating the toolbar code
+	   #Disabled user prompt for the target toolbar number in builds newer than 7.21
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
@@ -356,11 +357,6 @@ local ref_t = {'BuyOne_Transcribing - Create and manage segments',
 
 Error_Tooltip('\n\n analyzing the action list \n\n', 1,1) -- caps, spaced true
 
-function space(int) return (' '):rep(int) end
-
-local sep = r.GetResourcePath():match('[\\/]')
-local path = r.GetResourcePath()..sep
-
 -- construct button links code table
 local toolbar2_t = {}
 	for line in toolbar2:gmatch('[^\n]+') do
@@ -369,96 +365,117 @@ local toolbar2_t = {}
 		end
 	end
 
-
 -- update command IDs in the button link entries
-local absent = ''
+local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
+local author = scr_name:match('.+[\\/](.-)_')
+local sep = r.GetResourcePath():match('[\\/]')
+local path = r.GetResourcePath()..sep
+local cntr = 0
 
 	for line in io.lines(path..'reaper-kb.ini') do -- parse action list contents
-		for k, item in ipairs(toolbar2_t) do
-			if k ~= 3 and line:match(Esc(ref_t[k])) then -- ignoring 40634 Clear loop points menu item which is 3d item
+		for k, item in ipairs(ref_t) do
+		local item = Esc(item)
+			if k ~= 3 -- ignoring 40634 Clear loop points menu item which is 3d item and doesn't require command ID update
+			and (line:match(item..'%.lua') -- script
+			or not line:match(author..'_.-%.lua') and line:match(item)) -- custom action
+			then
 			local cmdID = line:match('%u+ %d+ %d+ "?(.-)"? ') -- script command IDs aren't enclosed within quotes
-			toolbar2_t[k] = item:gsub('=', '=_'..cmdID)
-			elseif k ~= 3 then
-			absent = absent..(#absent > 0 and '\n' or '')..ref_t[k]
-			end
+			toolbar2_t[k] = toolbar2_t[k]:gsub('=', '=_'..cmdID)
+			cntr = cntr+1
+			break end
 		end
 		if cntr == 11 then break end -- all entries have been found
 	end
 
+local absent = ''
+	for k, item in ipairs(toolbar2_t) do
+		if k ~= 3 and not item:match('=_') then -- command ID wasn't added in the loop above
+		absent = absent..'\n'..ref_t[k]
+		end
+	end
+
 Error_Tooltip('') -- clear the 'analyzing' tooltip, because it sticks for some excessive time
 
-	if #absent > 0 then
+function space(int) return (' '):rep(int) end
+
+	if cntr < 11 then -- or #absent > 0
 	r.MB('Not all toolbar resources were found in the action list.\n\n'
 	..space(14)..'Be sure to import there all scripts AND\n\n"Transcribing workflow custom actions.ReaperKeyMap"\n\n\t'
-	..space(11)..'file included in the set.\n\nMissing resources:\n\n'..absent, 'ERROR', 0)
+	..space(11)..'file included in the set.\n\nMissing resources:\n'..absent, 'ERROR', 0)
 	return r.defer(no_undo) end
 
 
-::RELOAD::
+local build = tonumber(r.GetAppVersion():match('[%d%.]+')) 
+local tb_No
 
-local shade = ('▓'):rep(23)
-local digits = {'1','2','3','4','5','6','7','8','9','0','<'}
-local menu = {'&1','&2','&3','4','5','&6','&7','8','9','0','&< (backspace)'} -- ampersand only at certain digits to disambiguate because these appear in the menu title earlier
-line = line or ''
-menu = shade..'|ON THE KEYBOARD TYPE THE NUMBER|'..space(7)..'OF THE TOOLBAR TO IMPORT|'
-..space(9)..'THE ReaperMenu FILE INTO|'..space(6)..'(1 — 16 or 1 — 32 in REAPER 7)|'
-..space(12)..'AND HIT THE " T " KEY|'..shade..'|'..table.concat(menu,'|')
-..'||&'..('toolbar'):upper():gsub('.','%0 ')..'#: '..line..'||'
-local output = Reload_Menu_at_Same_Pos(menu, true) -- keep_menu_open true, left_edge_dist false
+	if build < 7.22 then -- since build 7.22 numbers of the source and target toolbars don't have to match at import of .ReaperMenu file so no need to prompt user for the number on order to update it in the code
 
-	if output == 0 then return r.defer(no_undo)
-	elseif output < 7 then goto RELOAD -- title lines
-	end
+	::RELOAD::
 
-	if output > 7 and output < 19 then
-	output = output-7 -- offset by the number of title lines
-	local input = digits[output]
-	line = line..input
-	line = input == '<' and line:sub(1,-3) or line
-	goto RELOAD
-	elseif output == 19 then
-	local tb_No = line:match('%d+')
-	tb_No = tonumber(tb_No)
-	local reaper7 = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 7
-	local err = not tb_No and '   toolbar number \n\n hasn\'t been typed in'
-	or (tb_No == 0 or reaper7 and tb_No > 32 or not reaper7 and tb_No > 16) and 'invalid toolbar number'
+	local shade = ('▓'):rep(23)
+	local digits = {'1','2','3','4','5','6','7','8','9','0','<'}
+	local menu = {'&1','&2','&3','4','5','&6','&7','8','9','0','&< (backspace)'} -- ampersand only at certain digits to disambiguate because these appear in the menu title earlier
+	line = line or ''
+	--Msg(line)
+	menu = shade..'|ON THE KEYBOARD TYPE THE NUMBER|'..space(7)..'OF THE TOOLBAR TO IMPORT|'
+	..space(9)..'THE ReaperMenu FILE INTO|'..space(6)..'(1 — 16 or 1 — 32 in REAPER 7)|'
+	..space(12)..'AND HIT THE " T " KEY|'..shade..'|'..table.concat(menu,'|')
+	..'||&'..('toolbar'):upper():gsub('.','%0 ')..'#: '..line..'||'
+	local output = Reload_Menu_at_Same_Pos(menu, true) -- keep_menu_open true, left_edge_dist false
 
-		if err then
-		Error_Tooltip('\n\n '..err..' \n\n', 1,1, -400) -- caps, spaced true, x2 -400 to move the tooltip away from the menu otherwie it gets covered by it when the menu is reloaded
+		if output == 0 then return r.defer(no_undo)
+		elseif output < 7 then goto RELOAD -- title lines
+		end
+
+		if output > 7 and output < 19 then
+		output = output-7 -- offset by the number of title lines
+		local input = digits[output]
+		line = line..input
+		line = input == '<' and line:sub(1,-3) or line
 		goto RELOAD
+		elseif output == 19 then
+		tb_No = line:match('%d+')
+		tb_No = tonumber(tb_No)
+		local reaper7 = build >= 7
+		local err = not tb_No and '   toolbar number \n\n hasn\'t been typed in'
+		or (tb_No == 0 or reaper7 and tb_No > 32 or not reaper7 and tb_No > 16) and 'invalid toolbar number'
+			if err then
+			Error_Tooltip('\n\n '..err..' \n\n', 1,1, -400) -- caps, spaced true, x2 -400 to move the tooltip away from the menu otherwie it gets covered by it when the menu is reloaded
+			goto RELOAD
+			end
 		end
-
-	-- use MenuSets folder as a more reliable and stable location, scripts folder can be overwritten,
-	-- placing in the project folder doesn't make sense since the file isn't project specific
-	local reamenu_path = path..'MenuSets'..sep..'Transcribe workflow toolbar.ReaperMenu'
-	local exists
-
-		if r.file_exists(reamenu_path) then
-		exists = 1
-			if r.MB('File "Transcribe workflow toolbar.ReaperMenu"'
-			..'\n\n     already exists in the "MenuSets" folder.\n\n\t     Wish to overwrite it?',
-			'PROMPT', 4) == 7 then -- No
-			return r.defer(no_undo) end
-		end
-
-	local insert_img = not exists and Insert_Image() -- only when generating the ReaperMenu file for the first time
-	toolbar1 = toolbar1:gsub('Floating toolbar %d+', 'Floating toolbar '..tb_No)
-	local toolbar = toolbar1..table.concat(toolbar2_t,'\n')
-		if not exists and not Dir_Exists(reamenu_path:match('.+[\\/]')) then -- create MenuSets folder if absent
-		r.RecursiveCreateDirectory(reamenu_path:match('.+[\\/]'), 1) -- ignored 1 whose meaning isn't clear
-		end
-	local f = io.open(reamenu_path,'w')
-	f:write(toolbar)
-	f:close()
-	local result = exists and 'updated' or 'created'
-	local go = r.MB('A file named "Transcribe workflow toolbar.ReaperMenu"\n\n'
-	..space(10)..'has been '..result..' in the "MenuSets" folder\n\n\t'
-	..space(5)..'of REAPER resource directory\n\n'
-	..space(14)..'Import it into the Menu/toolbar editor.\n\n'
-	..space(10)..'Wish to open the resource directory now?','PROMPT',4) == 6
-	and r.Main_OnCommand(40027,0) -- Show REAPER resource path in explorer
-
+		
 	end
+
+-- use MenuSets folder as a more reliable and stable location, scripts folder can be overwritten,
+-- placing in the project folder doesn't make sense since the file isn't project specific
+local reamenu_path = path..'MenuSets'..sep..'Transcribe workflow toolbar.ReaperMenu'
+local exists
+
+	if r.file_exists(reamenu_path) then
+	exists = 1
+		if r.MB('File "Transcribe workflow toolbar.ReaperMenu"'
+		..'\n\n     already exists in the "MenuSets" folder.\n\n\t     Wish to overwrite it?',
+		'PROMPT', 4) == 7 then -- No
+		return r.defer(no_undo) end
+	end
+
+toolbar1 = build >= 7.22 and toolbar1 or toolbar1:gsub('Floating toolbar %d+', 'Floating toolbar '..tb_No)
+local toolbar = toolbar1..table.concat(toolbar2_t,'\n')
+	if not exists and not Dir_Exists(reamenu_path:match('.+[\\/]')) then -- create MenuSets folder if absent
+	r.RecursiveCreateDirectory(reamenu_path:match('.+[\\/]'), 1) -- ignored 1 whose meaning isn't clear
+	end
+local f = io.open(reamenu_path,'w')
+f:write(toolbar)
+f:close()
+local insert_img = not exists and Insert_Image() -- only when generating the ReaperMenu file for the first time
+local result = exists and 'updated' or 'created'
+local go = r.MB('A file named "Transcribe workflow toolbar.ReaperMenu"\n\n'
+..space(10)..'has been '..result..' in the "MenuSets" folder\n\n\t'
+..space(5)..'of REAPER resource directory\n\n'
+..space(14)..'Import it into the Menu/toolbar editor.\n\n'
+..space(10)..'Wish to open the resource directory now?','PROMPT',4) == 6
+and r.Main_OnCommand(40027,0) -- Show REAPER resource path in explorer
 
 
 do return r.defer(no_undo) end
