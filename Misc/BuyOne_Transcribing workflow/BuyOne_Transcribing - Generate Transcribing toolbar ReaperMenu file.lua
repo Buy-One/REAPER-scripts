@@ -11,7 +11,7 @@ Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is part of the Transcribing workflow set of scripts
 	alongside
-	BuyOne_Transcribing - Create and manage segments.lua  
+	BuyOne_Transcribing - Create and manage segments (MAIN).lua  
 	BuyOne_Transcribing - Real time preview.lua  
 	BuyOne_Transcribing - Format converter.lua  
 	BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
