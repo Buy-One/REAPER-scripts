@@ -32,11 +32,19 @@ About:	The script is part of the Transcribing workflow set of scripts
 	transcript is converted into these formats with the script
 	'BuyOne_Transcribing - Format converter.lua' all textual 
 	data which follow the time stamps are moved to the next line, 
-	regardless of their nature as if all of them where meant to be 
+	regardless of their nature as if all of them were meant to be 
 	displayed on the screen. For .VTT format, data between segment
 	lines can be retained at conversion which is useful for keeping
-	comments, region data etc., if any, but garbage as well because 
-	the conversion script doesn't analyze such data.
+	comments, region metadata etc., if any, but garbage as well 
+	because the conversion script doesn't analyze such data.  
+
+	The transcription is meant to be managed in the SWS Track notes.
+	Between segment lines, which include the time code and the segment 
+	transcript, it may contain other content. Whether such other 
+	content is retained depends on the export format of 
+	'BuyOne_Transcribing - Format converter.lua' script, however
+	it's discarded entirely by the script 
+	'BuyOne_Transcribing - Prepare transcript for rendering.lua'.
 	
 	
 	► OPERATIONS PEFRORMED BY THE SCRIPT 
