@@ -7,7 +7,6 @@ Changelog: #Fixed resources search while generating the toolbar code
 	   #Disabled user prompt for the target toolbar number in builds newer than 7.21
 Licence: WTFPL
 REAPER: at least v5.962
-Extensions: SWS/S&M
 About:	The script is part of the Transcribing workflow set of scripts
 	alongside
 	BuyOne_Transcribing - Create and manage segments.lua  
