@@ -14,7 +14,8 @@ About:	The script is part of the Transcribing workflow set of scripts
 	BuyOne_Transcribing - Format converter.lua  
 	BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
 	BuyOne_Transcribing - Prepare transcript for rendering.lua  
-	BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua			
+	BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
+	BuyOne_Transcribing - Go to segment marker.lua
 
 	The script generates a ReaperMenu file for a toolbar 
 	to which all scripts and custom actions included in this 
