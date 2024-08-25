@@ -18,7 +18,7 @@ REAPER: at least v6.37
 Extensions: SWS/S&M
 About:	The script is part of the Transcribing workflow set of scripts
 	alongside 
-	BuyOne_Transcribing - Create and manage segments.lua  
+	BuyOne_Transcribing - Create and manage segments (MAIN).lua  
 	BuyOne_Transcribing - Format converter.lua  
 	BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
 	BuyOne_Transcribing - Prepare transcript for rendering.lua  
