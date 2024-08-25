@@ -32,13 +32,13 @@ About:	The script is part of the Transcribing workflow set of scripts
 	Users of REAPER builds older than 7.22 are prompted for 
 	the number of the target toolbar because in older REAPER 
 	builds exported toolbar content can only be imported into
-	toolbars with the same number. The toolbar number 	can be 
+	toolbars with the same number. The toolbar number can be 
 	input from the keyboard while the prompt menu is open or 
 	by clicking the digits in the menu. To create the file hit 
 	T key on the keyboard or click the 'TOOLBAR #:' line in the 
 	menu. The wrong input can be corrected with the < character.
 	
-	When the toolbar menu set file is generated for the first time
+	When the toolbar file is generated for the first time
 	the script also loads an image of the toolbar layout to help
 	the user find their way around it provided such image was
 	downloaded with the set of scripts.
