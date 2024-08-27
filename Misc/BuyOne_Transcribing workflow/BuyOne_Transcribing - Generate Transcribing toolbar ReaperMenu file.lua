@@ -4,7 +4,7 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
 Changelog: #Fixed resources search while generating the toolbar code
-	   #Disabled user prompt for the target toolbar number in builds newer than 7.21
+	   #Disabled user prompt for the target toolbar number in builds newer than 7.22
 	   #Fixed a toolbar button name
 	   #Updated About text
 Licence: WTFPL
@@ -29,7 +29,7 @@ About:	The script is part of the Transcribing workflow set of scripts
 	and placed in the MenuSets folder in the REAPER resource
 	directory need to be imported into the Menu/Toolbar editor.
 	
-	Users of REAPER builds older than 7.22 are prompted for 
+	Users of REAPER builds older than 7.23 are prompted for 
 	the number of the target toolbar because in older REAPER 
 	builds exported toolbar content can only be imported into
 	toolbars with the same number. The toolbar number can be 
@@ -411,7 +411,7 @@ function space(int) return (' '):rep(int) end
 local build = tonumber(r.GetAppVersion():match('[%d%.]+')) 
 local tb_No
 
-	if build < 7.22 then -- since build 7.22 numbers of the source and target toolbars don't have to match at import of .ReaperMenu file so no need to prompt user for the number on order to update it in the code
+	if build < 7.23 then -- since build 7.23 numbers of the source and target toolbars don't have to match at import of .ReaperMenu file so no need to prompt user for the number on order to update it in the code
 
 	::RELOAD::
 
@@ -463,7 +463,7 @@ local exists
 		return r.defer(no_undo) end
 	end
 
-toolbar1 = build >= 7.22 and toolbar1 or toolbar1:gsub('Floating toolbar %d+', 'Floating toolbar '..tb_No)
+toolbar1 = build >= 7.23 and toolbar1 or toolbar1:gsub('Floating toolbar %d+', 'Floating toolbar '..tb_No)
 local toolbar = toolbar1..table.concat(toolbar2_t,'\n')
 	if not exists and not Dir_Exists(reamenu_path:match('.+[\\/]')) then -- create MenuSets folder if absent
 	r.RecursiveCreateDirectory(reamenu_path:match('.+[\\/]'), 1) -- ignored 1 whose meaning isn't clear
