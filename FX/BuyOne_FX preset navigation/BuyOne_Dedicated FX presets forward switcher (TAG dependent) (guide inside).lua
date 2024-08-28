@@ -1,21 +1,24 @@
 --[[
-
 * ReaScript name: BuyOne_Dedicated FX presets forward switcher (TAG dependent) (guide inside).lua
 * Author: BuyOne
-* Author URL: https://forum.cockos.com/member.php?u=134058
+* Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 * Licence: WTFPL
-* Version: 1.3
-* Forum Thread:
-* Demo:
-* REAPER: at least v5.962
+* Version: 1.4
 * Changelog:
+	+ v1.4	Disabled the script for REAPER builds 7.09 - 7.20 due to ReaScript bug
+		which prevents its proper functionality;
+		Added ability to disable custom preset list without removing it completely
 	+ v1.3	Fixed action marker name format to disambiguate
 		preset index from an action command ID;
 		Updated GUIDE
-	+ v1.2	Tag evaluation has been made more reliable
+	+ v1.2	Tag evaluation has been made more reliable;
 		Multi-word tag has been allowed
 	+ v1.1	Added option for using custom preset lists for selective cycling
 	+ v1.0 	Initial release
+* Forum Thread:
+* Demo:
+* REAPER: at least v5.962
+* About:
 
 --############################## G U I D E #####################################
 
@@ -49,9 +52,10 @@ accessible from the main menu panel or via action 'View: Show undo history windo
 
 If, when you apply the script to a focused FX with the TAG, the presets don't change
 there's an earlier (with a smaller project wide index) track or take with the same TAG 
-which IS affected by the script.
+which IS affected by the script. In short the script looks for the first tagged FX 
+instance in the project and gets locked onto it.
 
-In REAPER builds prior to 7.09 if in the preset list, either full or custom, there're 
+In REAPER builds prior to 7.21 if in the preset list, either full or custom, there're 
 presets with identical names the script will glitch due to REAPER API bug 
 https://forum.cockos.com/showthread.php?t=270990 and won't allow cycling through all 
 presets in the list
@@ -131,7 +135,7 @@ TAG = [[PC]]
 -- numbers featured in the custom list,
 -- BUT creating new presets for the original plugin may throw 
 -- off the configured preset sequence if the plugin preset list is re-ordered;
--- conversely, if not enabled the custom preset list will 
+-- conversely, if not enabled, the custom preset list will 
 -- be pretty much tied to a single plugin whose preset names 
 -- will match it and creating new presets won't affect the functionality;
 -- to enable place any alphanumeric character between the quotation marks
@@ -154,7 +158,12 @@ INDEX_BASED_PRESET_SWITCH = ""
 -- is linked to the script or wrap the script in a custom action
 -- having included the plugin data in the custom action name,
 -- in the latter case the custom action command ID can be used
--- in action markers to trigger the script
+-- in action markers to trigger the script;
+-- to be able to keep the list for future use but disable it
+-- in order to switch the script to standard operation, add the word
+-- DISABLED on the very first line of the preset list next to the
+-- opening double square brackets, i.e. [[DISABLED ,
+-- which can be preceded with spaces, the character case doesn't matter
 CUSTOM_PRESET_LIST =
 [[
 
@@ -171,6 +180,11 @@ reaper.ShowConsoleMsg(tostring(param)..'\n')
 end
 
 local r = reaper
+
+function no_undo()
+do return end
+end
+
 
 local _,scr_name, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
 local scr_name = scr_name:match('([^\\/]+)%.%w+')
@@ -191,6 +205,7 @@ function Construct_Custom_Preset_Array(CUSTOM_PRESET_LIST, INDEX_BASED_PRESET_SW
 -- t[#t+1] = {idx-1, line:match('%d (.+)')}
 -- to be then evaluated against the currently or next selected preset inside Switch_FX_Preset() function
 -- eventually was emplemented differently
+	if CUSTOM_PRESET_LIST:lower():match('^%s*disabled') then return end
 local t = {}
 	for line in CUSTOM_PRESET_LIST:gmatch('[^\n]+') do
 		if line and line:match('^%s*%+') then
@@ -340,6 +355,19 @@ function NavigateTakeFXPresets(TAG, preset, cust_pres_list_t, INDEX_BASED_PRESET
 end
 
 
+local build = tonumber(r.GetAppVersion():match('[%d%.]+'))
+local space = function(int) return (' '):rep(int) end
+local emoji = [[
+	_(ツ)_
+	\_/|\_/
+]]
+	if build > 7.08 and build < 7.21 then
+	r.MB('Unfortunately, due to bug [t=293952] in ReaScript API\n\n\t      in REAPER builds 7.09 — 7.20\n\n'
+	..'\tthe script cannot function properly.\n\n\tPlease use it with a compatible build. '
+	..emoji:gsub('\n','%0\t\t\t\t'), 'BUILD COMPATIBILITY ERROR', 0)
+	return r.defer(no_undo) end
+
+
 local preset = GetPreset(cmd_ID)
 
 local INDEX_BASED_PRESET_SWITCH = INDEX_BASED_PRESET_SWITCH:gsub('[%s]','') ~= ''
@@ -365,14 +393,14 @@ local cust_pres_list_t = Construct_Custom_Preset_Array(CUSTOM_PRESET_LIST, INDEX
 	tag, take_name, fx_name, take_cnt, take_num, pres_name = NavigateTakeFXPresets(TAG, preset, cust_pres_list_t, INDEX_BASED_PRESET_SWITCH)
 	end
 
-	if not tag then r.MB('Either there\'s no FX tagged with 【'..TAG..'】\n\n      or there\'re no FX in the project.', 'ERROR', 0) r.defer(function() end) return end
+	if not tag then r.MB('Either there\'s no FX tagged with 【'..TAG..'】\n\n      or there\'re no FX in the project.', 'ERROR', 0) return r.defer(no_undo) end
 
 	-- Concatenate undo caption
 	local src_name = (fx_num and fx_num >= 16777216 and tr_name == 'MASTER') and 'in Monitor FX chain' or (take_cnt and take_cnt > 1 and 'in take '..tostring(take_num+1)..' of item \''..take_name..'\'' or (take_cnt and take_cnt == 1 and 'in item \''..take_name..'\'' or ((tr_name and tr_name == 'MASTER') and 'on Master track' or (tr_name and 'on '..tr_name))))
 	local fx_name = fx_name:match(':%s(.*)%s.-%(') or fx_name -- strip out plugin type prefix and dev name in parentheses in any
 
 	-- when aborted inside the function due to lack of presets
-	if tag == 'no presets' then resp = r.MB(fx_name..' '..src_name..' has no presets.','ERROR',0) r.defer(function() end) return end
+	if tag == 'no presets' then resp = r.MB(fx_name..' '..src_name..' has no presets.','ERROR',0) return r.defer(no_undo) end
 
 	r.Undo_BeginBlock() -- placed here to prevent 'ReaScript:Run' message in the Undo menu bar at return on script error, which doesn't impede the actual undo point creation since it's created by Track/TakeFX_NavigatePresets() anyway
 	r.Undo_EndBlock('Set '..fx_name..' preset to: \''..pres_name..'\' '..src_name,-1) -- Track/TakeFX_NavigatePresets() function creates an undo point by design which can't be avoided, for Monitor FX no undo point can be created
