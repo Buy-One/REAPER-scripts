@@ -831,8 +831,6 @@ local space = (' '):rep(15)
 
 	local input = gfx.showmenu(table.concat(menu_t))
 
-	Msg('MENU INPUT = '..tostring(input))
-
 		if input > 0 then
 		local select_pres = obj_type == 0 and r.TrackFX_SetPresetByIndex(obj, action_t[1][input], action_t[2][input]) or obj_type == 1 and r.TakeFX_SetPresetByIndex(take, action_t[1][input], action_t[2][input])
 			if KEEP_MENU_OPEN then goto KEEP_MENU_OPEN end
