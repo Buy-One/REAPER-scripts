@@ -10,7 +10,7 @@
 * REAPER: at least v5.962
 * Changelog:
 	+ v1.0 	Initial release
-	+ v1.1 	Added a list of presets to the presets info displayed in ReaConsole
+	+ v1.1 	Added a list of presets to the presets info displayed in ReaScript console
 		Worked around a REAPER API problem of not differentiating between identically named user and built-in presets
 =========================================================================
 
@@ -29,7 +29,7 @@ preset_count::current_preset_number::current_preset_name
 preset_number preset_name
 /////////////////////////////////////////////////////////
 
-The data is displayed in the ReaConsole. If all the data can't fit within 
+The data is displayed in the ReaScript console. If all the data can't fit within 
 the Console due to the long preset list, it will be displayed in an empty
 item notes on a new track inserted at the end of the current track list.
 
