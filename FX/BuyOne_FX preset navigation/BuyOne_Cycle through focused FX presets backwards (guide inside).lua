@@ -4,14 +4,14 @@
 * Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 * Licence: WTFPL
 * Version: 1.2
-* Forum Thread:
-* Demo:
-* REAPER: at least v5.962; NOT RECOMMENDED 7.09 - 7.20 due to ReaScript API bug in these builds
 * Changelog:
 	+ v1.2	Disabled the script for REAPER builds 7.09 - 7.20 due to ReaScript bug
 		which prevents its proper functionality;
 		Added ability to disable custom preset list without removing it completely
 	+ v1.1	Added option for using custom preset lists for selective cycling
+* Forum Thread:
+* Demo:
+* REAPER: at least v5.962
 * About:
 
 --############################## G U I D E #####################################
