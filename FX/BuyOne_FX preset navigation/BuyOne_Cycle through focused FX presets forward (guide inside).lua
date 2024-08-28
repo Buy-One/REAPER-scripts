@@ -1,16 +1,18 @@
 --[[
-
 * ReaScript name: BuyOne_Cycle through focused FX presets forward (guide inside).lua
 * Author: BuyOne
-* Author URL: https://forum.cockos.com/member.php?u=134058
+* Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 * Licence: WTFPL
-* Version: 1.1
+* Version: 1.2
 * Forum Thread:
 * Demo:
-* REAPER: at least v5.962
+* REAPER: at least v5.962; NOT RECOMMENDED 7.09 - 7.20 due to ReaScript API bug in these builds
 * Changelog:
-	+ v1.0 	Initial release
+	+ v1.2	Disabled the script for REAPER builds 7.09 - 7.20 due to ReaScript bug
+		which prevents its proper functionality;
+		Added ability to disable custom preset list without removing it completely
 	+ v1.1	Added option for using custom preset lists for selective cycling
+* About:
 
 --############################## G U I D E #####################################
 
@@ -46,10 +48,12 @@ If after closing the FX UI you happened to forget which FX it was, you can look 
 its details in the undo point its preset change creates in the REAPER Undo log
 accessible from the main menu panel or via action 'View: Show undo history window'.
 
-In REAPER builds prior to 7.09 if in the preset list, either full or custom, there're 
+In REAPER builds prior to 7.21 if in the preset list, either full or custom, there're 
 presets with identical names the script will glitch due to REAPER API bug 
 https://forum.cockos.com/showthread.php?t=270990 and won't allow cycling through all 
 presets in the list
+
+Video processor preset menu is supported from REAPER build 6.26 onwards.
 
 ]]
 
@@ -76,7 +80,7 @@ SWITCH_BY_OBJ_SEL = ""
 -- numbers featured in the custom list,
 -- BUT creating new presets for the original plugin may throw 
 -- off the configured preset sequence if the plugin preset list is re-ordered;
--- conversely, if not enabled the custom preset list will 
+-- conversely, if not enabled, the custom preset list will 
 -- be pretty much tied to a single plugin whose preset names 
 -- will match it and creating new presets won't affect the functionality
 INDEX_BASED_PRESET_SWITCH = ""
@@ -97,7 +101,12 @@ INDEX_BASED_PRESET_SWITCH = ""
 -- originally belongs to, let me know;
 -- it's a good idea to write down what plugin the list belongs to
 -- or wrap the script in a custom action having included the plugin
--- name in the custom action name
+-- name in the custom action name;
+-- to be able to keep the list for future use but disable it
+-- in order to switch the script to standard operation, add the word
+-- DISABLED on the very first line of the preset list next to the
+-- opening double square brackets, i.e. [[DISABLED ,
+-- which can be preceded with spaces, the character case doesn't matter
 CUSTOM_PRESET_LIST =
 [[
 
@@ -116,6 +125,12 @@ reaper.ShowConsoleMsg(cap..tostring(param)..'\n')
 end
 
 local r = reaper
+
+
+function no_undo()
+do return end
+end
+
 
 local _,scr_name, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
 local scr_name = scr_name:match('([^\\/]+)%.%w+')
@@ -143,6 +158,7 @@ function Construct_Custom_Preset_Array(CUSTOM_PRESET_LIST, INDEX_BASED_PRESET_SW
 -- t[#t+1] = {idx-1, line:match('%d (.+)')}
 -- to be then evaluated against the currently or next selected preset inside Switch_FX_Preset() function
 -- eventually was emplemented differently
+	if CUSTOM_PRESET_LIST:lower():match('^%s*disabled') then return end
 local t = {}
 	for line in CUSTOM_PRESET_LIST:gmatch('[^\n]+') do
 		if line and line:match('^%s*%+') then
@@ -208,6 +224,19 @@ local retval, cur_pres_name = get_pres_name(obj, fx_idx, '')
 end
 
 
+local build = tonumber(r.GetAppVersion():match('[%d%.]+'))
+local space = function(int) return (' '):rep(int) end
+local emoji = [[
+	_(ツ)_
+	\_/|\_/
+]]
+	if build > 7.08 and build < 7.21 then
+	r.MB('Unfortunately, due to bug [t=293952] in ReaScript API\n\n\t      in REAPER builds 7.09 — 7.20\n\n'
+	..'\tthe script cannot function properly.\n\n\tPlease use it with a compatible build. '
+	..emoji:gsub('\n','%0\t\t\t\t'), 'BUILD COMPATIBILITY ERROR', 0)
+	return r.defer(no_undo) end
+
+
 local SWITCH_BY_OBJ_SEL = SWITCH_BY_OBJ_SEL:gsub('[%s]','') ~= ''
 local INDEX_BASED_PRESET_SWITCH = INDEX_BASED_PRESET_SWITCH:gsub('[%s]','') ~= ''
 
@@ -215,7 +244,9 @@ local retval, track_num, item_num, fx_num = r.GetFocusedFX()
 local src_mon_fx_idx = GetMonFXProps() -- get Monitor FX
 local state = r.GetExtState(scr_name, cmd_ID)
 
-	if retval == 0 and src_mon_fx_idx < 0 and state == '' then r.MB('     No FX is in focus.','ERROR',0) r.defer(function() end) return end -- on the very 1st run in a session, when no focused fx and no data has been stored
+	if retval == 0 and src_mon_fx_idx < 0 and state == '' then 
+	r.MB('     No FX is in focus.','ERROR',0)
+	return r.defer(no_undo) end -- on the very 1st run in a session, when no focused fx and no data has been stored
 
 local tr = r.GetTrack(0,track_num-1) or r.GetMasterTrack()
 local item = r.GetTrackMediaItem(tr, item_num)
@@ -224,7 +255,7 @@ local no_focused_fx = retval == 0 and src_mon_fx_idx < 0
 
 
 	if state == '' and no_focused_fx then
-	r.MB('     No FX is in focus.','ERROR',0) r.defer(function() end) return
+	r.MB('     No FX is in focus.','ERROR',0) return r.defer(no_undo)
 	elseif state == '' or state ~= table.concat({r.GetFocusedFX()},';')..';'..tostring(src_mon_fx_idx)
 	and not no_focused_fx -- update ext state if return values change, ignoring state when no fx chain is in focus to keep the last saved values and cycle through presets with last focused fx closed
 	and ((SWITCH_BY_OBJ_SEL and ((retval == 1 or mon_fx) and r.IsTrackSelected(tr)) or (retval == 2 and r.IsMediaItemSelected(item))) or not SWITCH_BY_OBJ_SEL)
@@ -253,7 +284,7 @@ local t = (retval == 1 or mon_fx) and {r.TrackFX_GetPresetIndex(tr, fx_num)} or 
 -- unpack doesn't work directly inside the ternary expression
 local ret, pres_cnt = table.unpack(t)
 
-	if pres_cnt == 0 then r.MB('No presets in the last focused FX.','ERROR',0) r.defer(function() end) return end
+	if pres_cnt == 0 then r.MB('No presets in the last focused FX.','ERROR',0) return r.defer(no_undo) end
 
 	if pres_cnt > 0 then
 
