@@ -4,7 +4,7 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
 Version: 2.1
 Changelog: 2.1 #Fixed absence of VST3 default preset in the displayed preset list
-	       #Tried to somewat ameliorate the effect of preset navigation ReaScript function bug in builds 7.09 - 7.21 [t=293952]
+	       #Tried to somewat ameliorate the effect of preset navigation ReaScript function bug in builds 7.09 - 7.20 [t=293952]
 	       #Thoroughly refactored the code to make preset retrieval hopefully faster
 	       #Added a workaround for ampersand in present names to replace it with '+' 
 	       for display in the menu, otherwise it won't be visible
@@ -35,7 +35,7 @@ Changelog: 2.1 #Fixed absence of VST3 default preset in the displayed preset lis
 		#Updated the Guide
 Provides: [main] .
 Licence: WTFPL
-REAPER: at least v5.962; NOT RECOMMENDED 7.09 - 7.21 due to ReaScript API bug in these builds
+REAPER: at least v5.962; NOT RECOMMENDED 7.09 - 7.20 due to ReaScript API bug in these builds
 About:
 	#### G U I D E
 
@@ -87,6 +87,8 @@ About:
 	in REAPER or pres Esc keyboard key.
 	
 	- Video processor preset menu is supported from REAPER build 6.26 onwards.
+
+	- The script doesn't support FX containters and may malfunction if they're present.
 
 ]]
 
