@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Made sure that all old Notes tracks are deleted on import
+	   #Changed the behavior so that all project markers are deleted on import, not just old segment markers
+	   #Made content update more visually consistent when a user prompt is displayed on VTT file import
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
@@ -23,11 +25,8 @@ About:	The script is part of the Transcribing workflow set of scripts
 	script.
 	
 	Before converting the SRT/VTT time stamps into markers the 
-	script deletes from the project all segment markers, i.e. those 
-	bearing in their name the time stamp in the format supported 
-	by the Transcribing scripts. Existing markers whose name don't 
-	conform to the format supported by the Transcribing scripts 
-	are left intact.	
+	script deletes from the project all project markers, if any. 
+	It also deletes all old Notes tracks, if any.
 
 	SWS Notes limit per object is 65,535 bytes, therefore the 
 	entire SRT/VTT transcript may not fit within a single track 
@@ -49,7 +48,7 @@ About:	The script is part of the Transcribing workflow set of scripts
 	by text without intervening empty lines) can be optionally 
 	preserved. Lines in multi-line captions are delimited with the 
 	new line tag <n> supported by this set of scripts.
-			
+	
 ]]
 
 -----------------------------------------------------------------------------
@@ -86,6 +85,15 @@ end
 
 function no_undo()
 do return end
+end
+
+
+
+function Esc(str)
+	if not str then return end -- prevents error
+-- isolating the 1st return value so that if vars are initialized in a row outside of the function the next var isn't assigned the 2nd return value
+local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
+return str
 end
 
 
@@ -162,18 +170,8 @@ r.SetMediaTrackInfo_Value(t[#t], 'I_FOLDERDEPTH', -1) -- close the folder at the
 end
 
 
-function Get_Track(name_setting)
-	for i = 0, r.CountTracks(0)-1 do
-	local tr = r.GetTrack(0,i)
-	local retval, name = r.GetTrackName(tr)
-		if name:match('^%s*'..name_setting..'%s*$') then
-		return tr
-		end
-	end
-end
 
-
-function Remove_All_Segment_Markers()
+function Remove_All_Markers_And_Notes_Tracks(name_setting) -- used inside Process_SRT_VTT_Code
 
 local parse = r.parse_timestr
 
@@ -182,11 +180,19 @@ local retval, mrkr_cnt = r.CountProjectMarkers(0)
 local i = mrkr_cnt-1
 	repeat
 	local retval, isrgn, pos, rgnend, name, markr_idx = r.EnumProjectMarkers(i)
-		if retval > 0 and not isrgn and (parse(name) ~= 0 or name == '00:00:00.000') then
+		if retval > 0 and not isrgn then
 		r.DeleteProjectMarkerByIndex(0, i)
 		end
 	i = i-1
 	until retval == 0
+	
+	for i=r.GetNumTracks()-1,0,-1 do
+	local tr = r.GetTrack(0,i)
+	local ret, tr_name = r.GetTrackName(tr)
+		if tr_name:match('^%s*%d+ '..Esc(name_setting)..'%s*$') then
+		r.DeleteTrack(tr)
+		end
+	end
 
 end
 
@@ -211,6 +217,10 @@ function Process_SRT_VTT_Code(code, tr_name)
 local VTT = code:match('^WEBVTT')
 local VT_metadata = VTT and r.MB('Wish to import VTT metadata, if any, as well?'
 ..'\n\n  (cue position metadata will still be ignored)', 'PROMPT', 4) == 6
+
+
+Remove_All_Markers_And_Notes_Tracks(tr_name) -- placed in here so that when the above message is displayed the old content is still intact which wouldn't be the case it this function preceded Process_SRT_VTT_Code() in the main routine
+
 
 local t = {}
 local found
@@ -361,7 +371,7 @@ file:close()
 	Error_Tooltip('\n\n the file is empty \n\n', 1, 1) -- caps, spaced true
 	return r.defer(no_undo) end
 
-Remove_All_Segment_Markers()
+
 Process_SRT_VTT_Code(code, NOTES_TRACK_NAME)
 
 
