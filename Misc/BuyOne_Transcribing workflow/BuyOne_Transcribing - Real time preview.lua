@@ -3,7 +3,7 @@ ReaScript name: BuyOne_Transcribing - Real time preview.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.5
-Changelog:  1.5 #Fixed duplication of preview items when there're gaps between segments					
+Changelog: 1.5 	#Fixed duplication of preview items when there're gaps between segments					
 		#Made the script ignore non-segment markers following segment markers
 		#Segments with no transcript no longer affect timing of preview item creation
 		#Changed the location of preview items when the transport is stopped
