@@ -2,17 +2,24 @@
 ReaScript name: BuyOne_Transcribing - Real time preview.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.4
-Changelog: 1.4 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
-	   1.3 #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
-	   1.2 #Included explicit undo point creation mechanism when a new preview item is placed on the preview track
-	       #Fixed error when the project is reloaded while the script is running
-	       #Optimized Video processor source track creation function
-	       #Added OVERLAY_PRESET setting validation
-	       #Updated About text
-	   1.1 #Added overlay preset availability evaluation in builds 7.20 and newer
-	       #Optimized undo point creation in cases where overlay preset isn't found
-	       #Fixed error when the preview track is deleted manually before the script is terminated
+Version: 1.5
+Changelog:  1.5 #Fixed duplication of preview items when there're gaps between segments					
+		#Made the script ignore non-segment markers following segment markers
+		#Segments with no transcript no longer affect timing of preview item creation
+		#Changed the location of preview items when the transport is stopped
+		so that they're created for the segment immediately at the edit cursor rather than the next one
+		#Made preview item creation more consistent with the original concept
+		#Updated 'About' text
+ 	  1.4 	#Fixed time stamp formatting as hours:minutes:seconds.milliseconds
+	  1.3 	#Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
+	  1.2 	#Included explicit undo point creation mechanism when a new preview item is placed on the preview track
+		#Fixed error when the project is reloaded while the script is running
+		#Optimized Video processor source track creation function
+		#Added OVERLAY_PRESET setting validation
+		#Updated About text
+	  1.1 	#Added overlay preset availability evaluation in builds 7.20 and newer
+		#Optimized undo point creation in cases where overlay preset isn't found
+		#Fixed error when the preview track is deleted manually before the script is terminated
 Licence: WTFPL
 REAPER: at least v6.37
 Extensions: SWS/S&M
@@ -46,36 +53,66 @@ About:	The script is part of the Transcribing workflow set of scripts
 	segment by segment within video context when Video window is open. 
 	The segment text is fed into the item name.  
 	To have text displayed within the Video window the preview track 
-	must be located above the track with a video item.
+	must be located above the track with a video item.  
 	The preview items are added dynamically to accommodate segment
-	next to the currently active segment which is determined by the 
+	which follows the currently active segment determined by the 
 	location of the edit or play cursor relative to the segment start 
-	marker. Therefore in order to insert a preview item for a particular 
-	segment without waiting until it'll be added in the course of the
-	playback, move the edit cursor to the location immediately preceding 
-	the segment start marker. 
-	This mechanism has been devised to overcome Video processor 
-	limitation which prevents it from processing changes in track/take 
-	names as soon as the change occurs so it must be allowed to process
-	the content in advance.  
-	If everything functions properly there could be no more than 2 preview 
-	items on the prevew track at any given moment, one for the current 
-	and another for the next segment. There'll be only 1 when the last 
-	segment is being played and when the cursor is located to the left 
-	of the very first segment marker.		
+	marker. Therefore while the transport is in play mode, in order to 
+	insert a preview item for a particular segment without waiting until 
+	it'll be added in the course of the playback, move the edit cursor 
+	to the location immediately preceding the segment start marker.  
+	This mechanism of proactive preview item creation has been devised 
+	to overcome Video processor limitation which prevents it from 
+	processing changes in track/take names as soon as the change occurs 
+	so it must be allowed to process the content in advance. They're
+	created dynamically to be able to reflect any changes made to the
+	transcript in real time.  
+	If everything functions properly, during playback there should be 
+	no more than 2 preview items on the prevew track at any given moment, 
+	one for the current and another for the next segment. There'll be 
+	only 1 when the last segment is being played and when the cursor 
+	is located to the left of the very first segment marker.	 
+	When the transport is stopped, in order to have a preview item 
+	created for a particular segment place the edit cursor directly 
+	within the bounds of the relevant segment region, i.e. at its start
+	marker or between its start and end markers.
 	
 	The script relies on markers location to display segment text.
-	If the marker time stamp contained in the marker's name doesn't 
-	match its actual position on the time line, a message stating the 
-	fact will be displayed in the preview track Notes instead of the 
-	actual segment text, if any.  
+	If segment start marker time stamp contained in the marker's name 
+	doesn't match its actual position on the time line, a message 
+	stating the fact will be displayed in the preview track Notes 
+	instead of the actual segment transcript, if any.  
 	Preview items for such segments and for segments with no segment
-	text are not created.  
-	If you're not sure whether all current project markers match the 
-	transcript time stamps, run  
-	BuyOne_Transcribing - Prepare transcript for rendering.lua script
+	transcript are not created.  
+	The length of the preview items is determined by the distance 
+	between current segment start marker and the next valid marker.			
+	If segment end marker time stamp contained in the marker's name
+	doesn't match its actual position, the preview item will still be
+	created but its length will be limited by such marker regardless
+	of the end time stamp listed in the segment data in the Notes, 
+	if any. When such marker is passed by the play or edit cursor 
+	the message stating its position and time stamp mismatch will 
+	be displayed in the preview track Notes.  
+	If there's no explicit segment end marker, the preview item will
+	extend to the start marker of the next valid segment.  
+	Non-segment markers (those which don't contain in their name 
+	a time stamp in the format supported by Transcribing set of scripts) 
+	are ignored.  
+	The duration of a segment transcript display in the Notes 
+	of the preview track is independent of the preview items length
+	and of gaps between segments and lasts until the next segment
+	start marker comes along. For this reason viewing transcript
+	in the preview track Notes isn't very suitable for working with 
+	video where timely going out of captions may be important.  
+	If you're not sure whether all current segment markers positions
+	match time stamps in the transcript or their own time stamps 
+	included in their names, run the script
+	'BuyOne_Transcribing - Prepare transcript for rendering.lua'
 	to re-create the marker array. Then the render track created by
-	that script can be deleted.
+	that script can be deleted. Or use the script
+	'BuyOne_Transcribing - Create and manage segments (MAIN).lua'
+	in 'Batch segment update' mode described in par. F of its 'About' 
+	text. 
 	
 	The script must run in the background which it will after the 
 	initial launch. To terminate it, launch it again and click 
@@ -159,7 +196,7 @@ PREVIEW_TRACK_NAME = "PREVIEW"
 -- for the transcript to be displayed in the Video window
 -- the preview track must precede the track with the video
 -- item in the track list
-INSERT_PREVIEW_ITEMS = ""
+INSERT_PREVIEW_ITEMS = "1"
 
 
 -- Only relevant if INSERT_PREVIEW_ITEMS setting is enabled;
@@ -196,7 +233,6 @@ local cap = cap and type(cap) == 'string' and #cap > 0 and cap..' = ' or ''
 end
 
 
-
 function no_undo()
 do return end
 end
@@ -208,6 +244,7 @@ function Esc(str)
 local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
 return str
 end
+
 
 
 function Error_Tooltip(text, caps, spaced, x2, y2, want_color, want_blink)
@@ -274,6 +311,7 @@ r.RefreshToolbar(cmd_ID)
 		end
 	local del = src_tr and r.ValidatePtr(src_tr, 'MediaTrack*') and r.DeleteTrack(src_tr) -- deleting Video proc source track in build older than 7.20
 	r.UpdateArrange()
+--	clear = take and r.ValidatePtr(take, 'MediaItem_Take*') and r.GetSetMediaItemTakeInfo_String(take, 'P_NAME', '', true) -- setNewValue true // re: pointer validation see comment above
 	end
 end
 
@@ -415,7 +453,6 @@ function Insert_Delete_Preview_Items(preview_tr, pos, mrkr_t, src_tr, first_mrkr
 
 	-- prevent error message when the project is reloaded while the script is running
 	if not r.ValidatePtr(preview_tr, 'MediaTrack*') then return end
-	
 
 r.PreventUIRefresh(1)
 
@@ -445,12 +482,13 @@ r.PreventUIRefresh(1)
 	end
 
 
-local next_pos = pos > -1 and mrkr_t and mrkr_t[pos] -- pos arg is -1 when first_mrkr_pos arg is included to insert 1st preview item when cursor is to the left of the 1st marker, in which case next_pos must be the first marker position itself, see expression below,  rather than next marker position as designed to be by the table structure in Get_Segment_Markers()
+local next_pos = pos > -1 and mrkr_t and mrkr_t[pos] -- pos arg is -1 when first_mrkr_pos arg is included to insert 1st preview item when cursor is to the left of the 1st marker, in which case next_pos must be the first marker position itself, see expression below, rather than next marker position as designed to be by the table structure in Get_Segment_Markers()
+
 next_pos = first_mrkr_pos or next_pos
 
 	if not next_pos then return end -- no next marker data has been found, likely the last marker or not a segment marker
-
--- Insert next preview item at the next marker
+	
+-- Insert next preview item at the next marker	
 
 -- Create explicit undo point because TakeFX_AddByName, TakeFX_SetPreset and Item properties: Loop item source
 -- create them anyway and 3 rather than 1
@@ -482,6 +520,8 @@ local take = r.AddTakeToMediaItem(item)
 	r.TrackFX_CopyToTake(src_tr, 0x1000000, take, 0, false) -- ismove false
 	else -- directly, which is supported since 7.20 where there's no need to open Video proc UI to apply preset correctly
 	r.TakeFX_AddByName(take, 'Video processor', -1000) -- instantiate -1000 first fx chain slot
+--	local old = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.20
+--	r.TakeFX_Show(take, 0, 3) -- showFlag 3 show floating window
 	r.TakeFX_SetPreset(take, 0, OVERLAY_PRESET) -- fx 0
 	end
 		-- only set parameters if the preset is default because in the user version
@@ -574,8 +614,10 @@ local i = start_idx
 	repeat
 	local retval, isrgn, pos, rgnend, name, markr_idx = r.EnumProjectMarkers(i)
 		if retval > 0 and not isrgn and (r.parse_timestr(name) ~= 0 or name == '00:00:00.000') then
-		local segment_txt = Get_Current_Segment_From_Track_Notes(notes_init, name)
-			if segment_txt then return pos, segment_txt end
+	--	local segment_txt = Get_Current_Segment_From_Track_Notes(notes_init, name) -- wrong because takes time stamp from marker name which may not match its actual position
+		local segment_txt = Get_Current_Segment_From_Track_Notes(notes_init, format_time_stamp(pos)) -- only if marker pos and segment start time stamp match
+		--	if segment_txt then return pos, segment_txt end
+			if segment_txt and #segment_txt:gsub('[%s%c]','') > 0 then return pos, segment_txt end -- ensures that segments with no transcript are ignored and in play mode next segment preview item is created when current valid segment is playing rather than the next segment which has no transcript
 		end
 	i = i+1
 	until retval == 0
@@ -609,7 +651,6 @@ local notes = ''
 return tr_t, notes
 
 end
-
 
 
 function Get_Current_Segment_From_Track_Notes(notes, mrkr_name)
@@ -656,7 +697,7 @@ local proj, projfn = r.EnumProjects(-1)
 
 	local tr_t, notes = Get_Notes_Tracks_And_Their_Notes(NOTES_TRACK_NAME)
 	local mrkr_t = Get_Segment_Markers()
-	local plays = r.GetPlayState()&1 == 1
+	local plays = r.GetPlayState()&1 == 1 -- false is stopped or paused
 
 		if src_tr and not r.ValidatePtr(src_tr, 'MediaTrack*') then
 		-- recreate Video proc src track if was deleted after initial creation
@@ -674,8 +715,9 @@ local proj, projfn = r.EnumProjects(-1)
 			end
 
 		-- update active segment in response to play or edit cursor position
-		local mrkr_idx = plays and r.GetLastMarkerAndCurRegion(0, r.GetPlayPosition()) -- playing
-		or r.GetLastMarkerAndCurRegion(0, r.GetCursorPosition()) -- returns -1 if not preceded by any marker contrary to the API doc
+		local cur_pos = plays and r.GetPlayPosition() or r.GetCursorPosition()
+		local mrkr_idx = plays and r.GetLastMarkerAndCurRegion(0, cur_pos) -- playing
+		or r.GetLastMarkerAndCurRegion(0, cur_pos) -- returns -1 if not preceded by any marker contrary to the API doc
 
 		local retval, isrgn, pos, rgnend, name, index = r.EnumProjectMarkers(mrkr_idx) -- get first marker name to find 1st segment transcript to add to the first segment preview item
 
@@ -684,14 +726,16 @@ local proj, projfn = r.EnumProjects(-1)
 			or not isrgn and pos == mrkr_t.last_mrkr_pos -- cursor is to the right of the last segment marker (which will be last segment end marker)
 			then -- clear notes and insert 1st segment preview item when the playhead is to the left of the very first marker or to the right of the very last, the latter is meant to accommodate cases where the very 1st segment marker is located at the very beginning of the project in which case there'll be no other way to insert 1st segment preview item in advance
 
-				if pos < mrkr_t.first_mrkr_pos -- mrkr_idx == -1  cond isn't used because it's covered by this one
-				or pos == mrkr_t.last_mrkr_pos
-				then -- clear Notes from preview track
+				if pos < mrkr_t.first_mrkr_pos or pos == mrkr_t.last_mrkr_pos then -- clear Notes from preview track
 				local clear = preview_tr and r.ValidatePtr(preview_tr, 'MediaTrack*') and r.NF_SetSWSTrackNotes(preview_tr, '')  -- pointer validation is used in case the track is deleted manually while the script runs
 				end
-
-				if INSERT_PREVIEW_ITEMS and not first_preview_take then -- first_preview_take cond ensures that the function runs only once when the cursor has moved to the left of the very 1st marker, otherwise the first segment preview item will keep being created and deleted here
+				
+				if INSERT_PREVIEW_ITEMS and not plays and pos == mrkr_t.last_mrkr_pos then -- ensures that last segment preview item is deleted when not playing and the edit cursor is to the right of the last marker
 				Insert_Delete_Preview_Items(preview_tr) -- pos nil will trigger deletion of all preview items
+				end
+						
+				if INSERT_PREVIEW_ITEMS and not first_preview_take and plays then -- first_preview_take cond ensures that the function runs only once when the cursor has moved to the left of the very 1st marker, otherwise the first segment preview item will keep being created and deleted here // doesn't apply when the transport is stopped because in this case preview items aren't created in advance				
+				Insert_Delete_Preview_Items(preview_tr) -- pos nil will trigger deletion of all preview items					
 				local pos, segment_txt = Get_Next_Segment_Pos_And_Text(0, notes_init) -- start_idx is 0 // get first marker pos and 1st segment transcript to add to the first segment preview item
 					if segment_txt and #segment_txt:gsub('[%s%c]','') > 0 then
 					first_preview_take = Insert_Delete_Preview_Items(preview_tr, -1, mrkr_t, src_tr, pos) -- insert 1st segment preview item, -1 is pos argument to trigger creation of a preview item at pos which is first_mrkr_pos arg equal to mrkr_t.first_marker_pos rather than at mrkr_t[pos]
@@ -699,13 +743,15 @@ local proj, projfn = r.EnumProjects(-1)
 					end
 				end
 
-			last_playpos = 0 -- initialize, used as a condition to allow updating preview track notes and triggering later preview items deletion when cursor has been moved left past the 1st marker; also prevents deletion of the 1st segment preview item inserted above while the cursor is to the left of the 1st marker because of last_playpos being nil
+			last_playpos = 0 --plays and r.GetPlayPosition() or r.GetCursorPosition() -- initialize, used as a condition to allow updating preview track notes and triggering later preview items deletion when cursor has been moved left past the 1st marker; also prevents deletion of the 1st segment preview item inserted above while the cursor is to the left of the 1st marker because of last_playpos being nil
+			
+			mrkr_idx_init, pos_next_init = mrkr_idx, nil -- ensures that when stopped and the very 1st segment preview item has been created due to the edit cursor being located right of the very last marker as provided by the condition above, the last segment preview item can be created when the cursor is moved to within the last segment bounds; when in play mode this update makes no difference; this is kind of parallel to 'first_preview_take = nil' statement in the next block
 
 			elseif mrkr_idx ~= mrkr_idx_init then -- new marker has come along during playback or as a result of cursor movement
 
 			first_preview_take = nil -- reset once 1st segment marker has been reached so that when the loop comes around or cursor is moved left of the very first marker the first segment preview item creation condition could be true again
 
-			mrkr_idx_init = mrkr_idx -- prevents the routine from running until new marker comes along
+			mrkr_idx_init = mrkr_idx -- prevents the routine from running until new marker comes along			
 
 			last_playpos = plays and r.GetPlayPosition() or r.GetCursorPosition() -- update, used as a condition to allow updating preview track notes and triggering later preview items deletion when cursor has been moved left
 
@@ -713,28 +759,43 @@ local proj, projfn = r.EnumProjects(-1)
 
 			local segment_txt, segment_txt_next, pos_next
 
-				if not isrgn then
-
+				if not isrgn then 
 					if format_time_stamp(pos) ~= name then -- not a segment marker or not a valid one
 					segment_txt = r.parse_timestr(name) ~= 0 and name ~= '00:00:00.000'
 					and '< MARKER TIME STAMP DOESN\'T MATCH ITS POSITION >'
-					or '< NOT A SEGMENT MARKER >' -- marker doesn't contain time stamp
+					or '< NOT A SEGMENT START MARKER >' -- marker doesn't contain time stamp
 					--------------------------------------------
 					-- insert preview item for the segment which follows the invalid marker if its own marker is valid
-						if INSERT_PREVIEW_ITEMS then
+						if INSERT_PREVIEW_ITEMS and plays then -- plays var ensures that when stopped/paused and the edit cursor is at the invalid marker, preview item isn't created in advance at the next valid marker because according to the design when not playing they're meant to be created at the valid marker at the edit cursor
 						local pos, segment_txt_next = Get_Next_Segment_Pos_And_Text(mrkr_idx+1, notes_init) -- start_idx is mrkr_idx+1 // get next marker pos and next segment transcript to insert next segment preview item
-							if segment_txt_next and #segment_txt_next:gsub('[%s%c]','') > 0 then
+							if segment_txt_next and #segment_txt_next:gsub('[%s%c]','') > 0 and pos ~= pos_next_init then -- pos_next_init evaluation ensures here that after invalid marker following valid segment, the next segment preview item isn't duplicated after it's been created when the cursor passed the last valid segment start marker, because in this case pos will still be equal to pos_next_init as location of the upcoming valid segment marker
 							local preview_take = Insert_Delete_Preview_Items(preview_tr, -1, mrkr_t, src_tr, pos) -- insert preview item after an invalid marker, -1 is pos argument to trigger creation of the preview item at pos which is first_mrkr_pos arg rather than at mrkr_t[pos]
 							local insert = preview_take and r.ValidatePtr(preview_take, 'MediaItem_Take*') and r.GetSetMediaItemTakeInfo_String(preview_take, 'P_NAME', segment_txt_next:match('%S.+'):gsub('%s*<n>%s*','\n'), true) -- setNewValue true // trimming leading spaces and converting new line tag into the new line control character
+							pos_next_init = pos
 							end
 						end
 					----------------------------------------------
 					else -- valid segment marker, only if actual position matches the time stamp in its name
 					segment_txt = Get_Current_Segment_From_Track_Notes(notes_init, name) -- get current segment transcript for display in track Notes
-						if INSERT_PREVIEW_ITEMS then
-						pos_next, segment_txt_next = Get_Next_Segment_Pos_And_Text(mrkr_idx+1, notes_init) -- start_idx is mrkr_idx+1 // get next segment marker pos and next segment transcript to insert next segment preview item
+						if INSERT_PREVIEW_ITEMS then						
+						-- when stopped/paused, use current segment start marker rather than the next,
+						-- this ensures that when not playing/paused, prevew items are placed at the segment 
+						-- at the edit cursor because in this scenario timely change of transcript in the video 
+						-- context isn't necessary and placing cursor ahead of the segment start marker for item 
+						-- creation creates an inconvenience of text not being updated in the video window right 
+						-- away because the edit cursor is outside of the preview item, so you have to additionally 
+						-- move the cursor to within the next segment where prevew item has been created to see the new text
+							if not plays then -- use marker at edit cursor
+							pos_next = pos
+							segment_txt_next = Get_Current_Segment_From_Track_Notes(notes_init, format_time_stamp(pos)) -- only if marker pos and segment start time stamp match
+							else -- look for the mext valid marker to place preview item in advance
+							pos_next, segment_txt_next = Get_Next_Segment_Pos_And_Text(mrkr_idx+1, notes_init) -- start_idx is mrkr_idx+1 // get next segment marker pos and next segment transcript to insert next segment preview item
+							end
+							
 						end
+
 					end
+
 				end -- not isrgn cond end
 
 				if segment_txt then -- this will be true always
@@ -744,32 +805,24 @@ local proj, projfn = r.EnumProjects(-1)
 				local insert = preview_tr and r.ValidatePtr(preview_tr, 'MediaTrack*') and r.NF_SetSWSTrackNotes(preview_tr, segment_txt) -- validation is used in case the object becomes unavailable while the script runs
 				end
 
-			-- manage preview items
-			Insert_Delete_Preview_Items(preview_tr, pos) -- mrkr_t arg is nil to trigger deletion of previous preview item INCLUDING the penulimate when the last segment is being played AND the last when the cursor has moved past last marker, which won't occur if the deletion is conditioned by segment_txt_next below because in this case segment_txt_next will be nil due to absense of the next segment and the function won't run AND INCLUDING item previous to invalid marker // after deletion the function exits due to lack of other arguments
-
-			-- shorten current preview item if it's followed by an invalid marker
-			-- so it only extends until such invalid marker,
-			-- because originally it will extend to the next valid marker
-			-- (due to the mrkr_t table content which only includes valid markers)
-			-- spanning the segment starting with the invalid marker, where transcript
-			-- isn't supposed to be displayed;
-			-- even though such item is deleted with Insert_Delete_Preview_Items() above
-			-- as soon as the invalid marker comes along, if it's not shortened in advance
-			-- its content will linger in the Video window
-			local retval, isrgn, next_mrkr_pos, rgnend, name, index = r.EnumProjectMarkers(mrkr_idx+1)
-				if retval > 0 and not isrgn and r.parse_timestr(name) == 0 then
-				local item = r.GetTrackMediaItem(preview_tr,0)
-				local extend = item and r.SetMediaItemInfo_Value(item, 'D_LENGTH', next_mrkr_pos-pos)
+				-- manage preview items			
+				if mrkr_t[pos] then -- ensures that deletion only occurs when pos is a valid marker position ignoring invalid markers so that deletion doesn't occur ahead of time; segment end markers whose time stamp doesn't match their actual position are considered valid
+				Insert_Delete_Preview_Items(preview_tr, pos) -- mrkr_t arg is nil to trigger deletion of previous preview item INCLUDING the penulimate when the last segment is being played // after deletion the function exits due to lack of other arguments
 				end
+
 				-- add segment transcript to the next preview item
-				if segment_txt_next and #segment_txt_next:gsub('[%s%c]','') > 0 then
+				-- evaluation of empty segment here is only relevant when not playing because when playing
+				-- it's evaluated inside Get_Next_Segment_Pos_And_Text() to ensure that next preview item
+				-- is created when a valid segment is being played
+				if segment_txt_next and #segment_txt_next:gsub('[%s%c]','') > 0 and pos_next ~= pos_next_init then -- pos_next_init comparison with the currently next pos ensures that when there're gaps between segments, i.e. previous segment end marker is not the same as the next segment start marker, and there's change in current marker index detected with GetLastMarkerAndCurRegion() above because the cursor has passed the latest segment end marker which is followed by a gap, the next segment preview item isn't duplicated after if was already created when the latest segment start marker had been passed, basically ensures that the next segment preview item is only created when previous segment start marker has been passed ignoring pevious segment end marker
 				local preview_take = Insert_Delete_Preview_Items(preview_tr, -1, mrkr_t, src_tr, pos_next) -- insert next preview item, -1 is pos argument to trigger creation of the preview item at pos_next which is first_mrkr_pos arg rather than at mrkr_t[pos]
-				local insert = preview_take and r.ValidatePtr(preview_take, 'MediaItem_Take*') and r.GetSetMediaItemTakeInfo_String(preview_take, 'P_NAME', segment_txt_next:match('%S.+'):gsub('%s*<n>%s*','\n'), true) -- setNewValue true // trimming leading spaces and converting new line tag into the new line control character
+				local insert = preview_take and r.ValidatePtr(preview_take, 'MediaItem_Take*') and r.GetSetMediaItemTakeInfo_String(preview_take, 'P_NAME', segment_txt_next:match('%S.+'):gsub('%s*<n>%s*','\n'), true) -- setNewValue true // trimming leading spaces and converting new line tag into the new line control character				
+				pos_next_init = pos_next
 				end
 
 		end -- elseif mrkr_idx ~= mrkr_idx_init cond end
 
-	end
+	end -- projfn == projfn_init cond end
 
 r.defer(RUN_PREVIEW)
 
@@ -790,7 +843,16 @@ or #OVERLAY_PRESET:gsub('[%s%c]','') == 0 and 'OVERLAY_PRESET setting is empty'
 	return r.defer(no_undo) end
 
 
+-- targ_tr = Get_Or_Create_Preview_Track(NOTES_TRACK_NAME) -- OLD
 local tr_t, notes = Get_Notes_Tracks_And_Their_Notes(NOTES_TRACK_NAME)
+
+--[[ -- OLD
+local err = not (targ_tr or preview_tr) and 'Track named "'
+..(not targ_tr and NOTES_TRACK_NAME or not preview_tr and PREVIEW_TRACK_NAME)..'" \n\n wasn\'t found'
+]]
+
+--local err = #tr_t == 0 and 'Tracks named "'..NOTES_TRACK_NAME or not preview_tr and 'Track named "'..PREVIEW_TRACK_NAME
+--err = err and err..'" \n\n wasn\'t found'
 
 local err = 'tracks named "" \n\n weren\'t found'
 err = #tr_t == 0 and err:gsub('""', '"'..NOTES_TRACK_NAME..'"')
@@ -803,10 +865,27 @@ or not Segment_Markers_Exist() and 'no segment markers'
 	return r.defer(no_undo) end
 
 local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
+--local scr_path = scr_name:match('.+[\\/]')
 
 r.Undo_BeginBlock()
 
 preview_tr = Get_Or_Create_Preview_Track(PREVIEW_TRACK_NAME)
+
+--[=[
+	if #INSERT_PREVIEW_ITEMS:gsub(' ','') > 0 then
+--	src_tr = Insert_Video_Proc_Src_Track()
+--	preview_take = Insert_New_Preview_Item(preview_tr)
+--[-[
+	preview_take = Insert_And_Or_Get_Preview_Item(preview_tr, scr_path, OVERLAY_PRESET)
+		if not preview_take then
+		r.Undo_EndBlock(r.Undo_CanUndo2(0) or '', -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following  Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
+		return r.defer(no_undo) end
+	--]]
+	end
+]=]
+
+--Msg(preview_take)
+--do return end
 
 INSERT_PREVIEW_ITEMS = #INSERT_PREVIEW_ITEMS:gsub(' ','') > 0
 
@@ -815,7 +894,7 @@ INSERT_PREVIEW_ITEMS = #INSERT_PREVIEW_ITEMS:gsub(' ','') > 0
 		if not src_tr then
 		Error_Tooltip('\n\n the overlay preset wasn\'t found \n\n', 1, 1) -- caps, spaced true
 		r.DeleteTrack(preview_tr)
-		r.Undo_EndBlock(r.Undo_CanUndo2(0) or '', -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
+		r.Undo_EndBlock(r.Undo_CanUndo2(0) or '', -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar		
 		return r.defer(no_undo)
 		end
 	src_tr = type(src_tr) ~= 'boolean' and src_tr -- src_tr is returned as 'true' when the overlay preset was found in builds 7.20 and later, but the src_tr isn't needed because the preset can be applied without opening the Video proc UI, hence turned into false
@@ -823,9 +902,10 @@ INSERT_PREVIEW_ITEMS = #INSERT_PREVIEW_ITEMS:gsub(' ','') > 0
 	r.SetOnlyTrackSelected(preview_tr)
 	Show_SWS_Notes_Window()
 	end
-
-
+	
 r.Undo_EndBlock('Transcribing: Create preview track', -1)
+
+--do return end
 
 
 CLEANUP = #CLEANUP:gsub(' ','') > 0
@@ -839,11 +919,6 @@ proj_init, projfn_init = r.EnumProjects(-1)
 RUN_PREVIEW()
 
 r.atexit(Wrapper(Re_Set_Toggle_State, sect_ID, cmd_ID, 0, preview_tr, src_tr))
-
-
-
-
-
 
 
 
