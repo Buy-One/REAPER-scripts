@@ -22,7 +22,7 @@ To download an individual script:
 
 Scripts from the **MIDI** folder go to the **MIDI Editor** section of the Action list  
 
-If you don't use `BuyOne_Script updater and installer.lua` to transfer user settings to newer versions of script, the before manually updating scripts which include USER SETTINGS, in order to retain them overwrite the entire USER SETTINGS section in the newer version of the script with the one from the old one and only then overwrite the actual file.
+If you don't use `BuyOne_Script updater and installer.lua` to transfer user settings to newer versions of scripts, the before manually updating scripts which include USER SETTINGS, in order to retain them overwrite the entire USER SETTINGS section in the newer version of the script with the one from the old one and only then overwrite the actual file.
 
 **Since this repo isn't compatible with ReaPack, if you have a Gihub account you can subscribe to the repo under the *Watch* button to be able to receive updates. To only get updates regarding new scripts and newer versions, under *Custom* submenu of the *Watch* menu enable only options *Pull requests* and *Releases*.** 
   
