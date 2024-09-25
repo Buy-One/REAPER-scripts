@@ -8,40 +8,40 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: js_ReaScriptAPI preferable, or SWS/S&M
 About:	The script is part of the Transcribing B workflow set of scripts
-			alongside  
-			BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
-			BuyOne_Transcribing B - Real time preview.lua  
-			BuyOne_Transcribing B - Format converter.lua  
-			BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
-			BuyOne_Transcribing B - Prepare transcript for rendering.lua  
-			BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
-			BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
-			
-			If js_ReaScriptAPI extension is installed the script either scrolls 
-			'Region/Marker Manager' to the entry of region currently selected in Arrange 
-			(since REAPER build 7.16). If the build you're using is older or no region 
-			is selected the script scrolls to the entry of a region at the edit or mouse 
-			(if the setting AT_MOUSE_CURSOR is enabled) cursor provided the region name 
-			field isn't empty.  
-			If only SWS/S&M extension is installed, REAPER build is immeterial. The script 
-			searches for region at the edit or mouse (if the setting AT_MOUSE_CURSOR is 
-			enabled) cursor, and if the found region's name isn't empty or if ANCHOR_STRING
-			setting is enabled the script places its name into the Manager's filter field 
-			thereby isolating its entry in the Manager's list.	
-			
-			If the Region/Marker Manager is closed the script will open it.
-			
-			The script was tested on Windows only.
-			
-			To point at a region place the edit or point the mouse cursor at its start 
-			or place within its bounds.	
-			
-			Another way of targeting a region with the mouse cursor other than by enabling 
-			AT_MOUSE_CURSOR setting, is using the following custom action bound to a shortcut:
-			
-			Custom: Transcribing - Show entry of region at mouse cursor in Region-Marker Manager  
-				View: Move edit cursor to mouse cursor  
-				BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua			
+	alongside  
+	BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
+	BuyOne_Transcribing B - Real time preview.lua  
+	BuyOne_Transcribing B - Format converter.lua  
+	BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
+	BuyOne_Transcribing B - Prepare transcript for rendering.lua  
+	BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
+	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
+	
+	If js_ReaScriptAPI extension is installed the script either scrolls 
+	'Region/Marker Manager' to the entry of region currently selected in Arrange 
+	(since REAPER build 7.16). If the build you're using is older or no region 
+	is selected the script scrolls to the entry of a region at the edit or mouse 
+	(if the setting AT_MOUSE_CURSOR is enabled) cursor provided the region name 
+	field isn't empty.  
+	If only SWS/S&M extension is installed, REAPER build is immeterial. The script 
+	searches for region at the edit or mouse (if the setting AT_MOUSE_CURSOR is 
+	enabled) cursor, and if the found region's name isn't empty or if ANCHOR_STRING
+	setting is enabled the script places its name into the Manager's filter field 
+	thereby isolating its entry in the Manager's list.	
+	
+	If the Region/Marker Manager is closed the script will open it.
+	
+	The script was tested on Windows only.
+	
+	To point at a region place the edit or point the mouse cursor at its start 
+	or place within its bounds.	
+	
+	Another way of targeting a region with the mouse cursor other than by enabling 
+	AT_MOUSE_CURSOR setting, is using the following custom action bound to a shortcut:
+	
+	Custom: Transcribing - Show entry of region at mouse cursor in Region-Marker Manager  
+		View: Move edit cursor to mouse cursor  
+		BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua			
 
 ]]
 
