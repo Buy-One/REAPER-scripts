@@ -2,27 +2,32 @@
 ReaScript name: BuyOne_Transcribing A - Prepare transcript for rendering.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.4
-Changelog: 1.4 #Fixed bug of not respecting gaps between segments in preparation for video rendering
+Version: 1.5
+Changelog: 1.5 #Remade the options menu
+	       #Added TEXT_WITH_SHADOW setting
+	       #Fixed error message when RENDER_TRACK_NAME setting is empty for video rendering
+	       #Updated script name
+	   1.4 #Fixed bug of not respecting gaps between segments in preparation for video rendering
 	       #Ensured that when preparing for audio rendering only segment markers are left on the timeline
 	       #Added OVERLAY_PRESET setting validation
 	       #Updated About text
 	   1.3 #Added character escaping to RENDER_TRACK_NAME setting evaluation
-	   to prevent errors caused unascaped characters
+	       to prevent errors caused unascaped characters
 	   1.2 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
-	   1.1 #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
+	   1.1 #Added character escaping to NOTES_TRACK_NAME setting evaluation 
+	       to prevent errors caused unascaped characters
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
-About:	The script is part of the Transcribing workflow set of scripts
+About:	The script is part of the Transcribing A workflow set of scripts
 	alongside
-	BuyOne_Transcribing - Create and manage segments (MAIN).lua  
-	BuyOne_Transcribing - Real time preview.lua  
-	BuyOne_Transcribing - Format converter.lua  
-	BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
-	BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
-	BuyOne_Transcribing - Go to segment marker.lua
-	BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
+	BuyOne_Transcribing A - Create and manage segments (MAIN).lua  
+	BuyOne_Transcribing A - Real time preview.lua  
+	BuyOne_Transcribing A - Format converter.lua  
+	BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua  
+	BuyOne_Transcribing A - Go to segment marker.lua
+	BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua
 	
 	It's purpose is to allow embedding transcript in a video file or
 	audio file.
@@ -59,7 +64,7 @@ About:	The script is part of the Transcribing workflow set of scripts
 	
 	If AUDIO option is selected the script deletes from the project all 
 	markers and then creates segment markers from scratch taking their 
-	positions from the segment start time stamps of the transcript. 
+	positions from the segment start time stamps of the transcript.  
 	
 	The transcript of each segment is added to the corresponding marker
 	name. All new line tags <n> supported by this set of scripts and 
@@ -79,6 +84,11 @@ About:	The script is part of the Transcribing workflow set of scripts
 	
 	The menu options can be triggered from keyboard by hitting the key
 	which corresponds to the first character of the menu item.
+	
+	This script along with  
+	'BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua'
+	can be used to embed 3d party SRT/VTT subtitles in a video/audio 
+	file.
 ]]
 
 -----------------------------------------------------------------------------
@@ -88,7 +98,7 @@ About:	The script is part of the Transcribing workflow set of scripts
 -- Between the quotes insert the name of track(s)
 -- where Notes with the transcript are stored;
 -- must match the same setting in the script
--- 'BuyOne_Transcribing - Create and manage segments.lua';
+-- 'BuyOne_Transcribing A - Create and manage segments.lua';
 -- CHANGING THIS SETTING MIDPROJECT IS NOT RECOMMENDED
 -- BECAUSE SCRIPT ACCESS TO THE NOTES TRACKS WILL BE LOST
 NOTES_TRACK_NAME = "TRANSCRIPT"
@@ -101,12 +111,24 @@ NOTES_TRACK_NAME = "TRANSCRIPT"
 -- create it automatically
 RENDER_TRACK_NAME = "RENDER"
 
--- If you use the default "Overlay: Text/Timecode" preset
+-- The setting is only relevant if preparing for video
+-- rendering;
+-- if you use the default "Overlay: Text/Timecode" preset
 -- of the Video processor to preview transcript in video
 -- context, keep this setting as is;
 -- if you use a customized version of this preset, specify
--- its name in this setting between the quotes
+-- its name in this setting between the quotes,
+-- it's advised that the customized preset name be different
+-- from the default one, otherwise its settings may get
+-- affected by the script
 OVERLAY_PRESET = "Overlay: Text/Timecode"
+
+-- Enable by inserting any alphanumeric character between
+-- the quotes,
+-- only relevant if video rendering is selected from in
+-- options menu and OVERLAY_PRESET setting is the default
+-- "Overlay: Text/Timecode" preset
+TEXT_WITH_SHADOW = ""
 
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
@@ -199,18 +221,18 @@ left_edge_dist = left_edge_dist and left_edge_dist > 0 and math.floor(left_edge_
 local x, y = r.GetMousePosition()
 
 	if left_edge_dist and x <= left_edge_dist or not left_edge_dist then -- 100 px within the screen left edge
--- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
--- https://forum.cockos.com/showthread.php?t=280658#25
--- https://forum.cockos.com/showthread.php?t=280658&page=2#44
--- BUT LACK OF gfx WINDOW DOESN'T ALLOW RE-OPENING THE MENU AT THE SAME POSITION via ::RELOAD::
--- therefore enabled with keep_menu_open is valid
-local old = tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82
--- screen reader used by blind users with OSARA extension may be affected
--- by the absence if the gfx window therefore only disable it in builds
--- newer than 6.82 if OSARA extension isn't installed
--- ref: https://github.com/Buy-One/REAPER-scripts/issues/8#issuecomment-1992859534
-local OSARA = r.GetToggleCommandState(r.NamedCommandLookup('_OSARA_CONFIG_reportFx')) >= 0 -- OSARA extension is installed
-local init = (old or OSARA or not old and not OSARA and keep_menu_open) and gfx.init('', 0, 0)
+	-- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
+	-- https://forum.cockos.com/showthread.php?t=280658#25
+	-- https://forum.cockos.com/showthread.php?t=280658&page=2#44
+	-- BUT LACK OF gfx WINDOW DOESN'T ALLOW RE-OPENING THE MENU AT THE SAME POSITION via ::RELOAD::
+	-- therefore enabled with keep_menu_open is valid
+	local old = tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82
+	-- screen reader used by blind users with OSARA extension may be affected
+	-- by the absence if the gfx window therefore only disable it in builds
+	-- newer than 6.82 if OSARA extension isn't installed
+	-- ref: https://github.com/Buy-One/REAPER-scripts/issues/8#issuecomment-1992859534
+	local OSARA = r.GetToggleCommandState(r.NamedCommandLookup('_OSARA_CONFIG_reportFx')) >= 0 -- OSARA extension is installed
+	local init = (old or OSARA or not old and not OSARA and keep_menu_open) and gfx.init('', 0, 0)
 	-- open menu at the mouse cursor, after reloading the menu doesn't change its position based on the mouse pos after a menu item was clicked, it firmly stays at its initial position
 		-- ensure that if keep_menu_open is enabled the menu opens every time at the same spot
 		if keep_menu_open and not coord_t then -- keep_menu_open is the one which enables menu reload
@@ -349,13 +371,13 @@ return notes_t
 end
 
 
-function Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRESET, mrkr_t)
+function Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRESET, TEXT_WITH_SHADOW, mrkr_t)
 -- only at markers to which there're matching segments
 -- in the Notes with transcription, ignoring empty segments
 -- mrkr_t arg is obsolete because Get_Segment_Markers() has been superceded with Remove_Markers()
 -- so markers are re-created based on the transcript
 
-	function insert_item(rend_tr, pos, len, transcr, OVERLAY_PRESET)
+	function insert_item(rend_tr, pos, len, transcr, OVERLAY_PRESET, TEXT_WITH_SHADOW)
 --[[	these are only relevant if inserting with action
 	r.SetOnlyTrackSelected(rend_tr)
 	r.SetEditCurPos(pos, false, false) -- moveview, seekplay false
@@ -391,9 +413,23 @@ function Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRE
 
 			-- only set parameters if the preset is default because in the user version
 			-- everything will be set within the preset itself
-			if OVERLAY_PRESET == 'Overlay: Text/Timecode' then
-				for parm_idx, val in pairs({[6] = 0, [7] = 1, [8] = 1}) do -- 6 - bg bright, 7 - bg alpha, 8 - fit bg to text
-				r.TakeFX_SetParam(take, 0, parm_idx, val)
+			if OVERLAY_PRESET == 'Overlay: Text/Timecode' then	
+				if TEXT_WITH_SHADOW then
+				r.TakeFX_CopyToTake(take, 0, take, 1, false) -- ismove false // add another instance
+				-- table for overlay version with shadow which requires two Video proc instances
+				-- the shadow is provided by the 2nd instance
+				-- only values different from the default 'Overlay: Text/Timecode' preset are included
+				-- 1 - y pos, 2 - x pos, 4 - text bright, 5 - text alpha, 6 - bg bright, 7 - bg alpha, 8 - fit bg to text
+				local t = {[0] = {[6]=0, [7]=1, [8]=1}, [1] = {[1]=0.953, [2]=0.504, [4]=0.6, [5]=0.5, [6]=0, [7]=0}}
+					for fx_idx, vals_t in pairs(t) do
+						for parm_idx, val in pairs(vals_t) do
+						r.TakeFX_SetParam(take, fx_idx, parm_idx, val)
+						end
+					end
+				else
+					for parm_idx, val in pairs({[6] = 0, [7] = 1, [8] = 1}) do -- 6 - bg bright, 7 - bg alpha, 8 - fit bg to text
+					r.TakeFX_SetParam(take, 0, parm_idx, val)
+					end
 				end
 			end
 
@@ -443,7 +479,7 @@ function Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRE
 			notes_tr = tr
 			end
 		end
-	local ret, last_mrkr_stamp = r.GetSetMediaTrackInfo_String(notes_tr, 'P_EXT:LASTMARKERPOS', '', false) -- setNewValue false // stored inside PROCESS_SEGMENTS() function of 'BuyOne_Transcribing - Create and manage segments.lua' script
+	local ret, last_mrkr_stamp = r.GetSetMediaTrackInfo_String(notes_tr, 'P_EXT:LASTMARKERPOS', '', false) -- setNewValue false // stored inside PROCESS_SEGMENTS() function of 'BuyOne_Transcribing A - Create and manage segments.lua' script
 	return ret and last_mrkr_stamp
 	end
 
@@ -478,12 +514,13 @@ local mrkr_t = {}
 					break end
 				end
 			fin = fin or mrkr_t.last_mrkr or format_time_stamp(r.GetProjectLength()) -- if not fin time stamp and not next segment start time stamp it's either the last segment end time stamp, if any, or the project end
-			end			
+			end
+		-- add segment marker, because all markers are deleted before this function is executed
 		fin_mrkr_idx = r.AddProjectMarker(0, false, parse(fin), 0, fin, -1) -- isrgn false, rgnend 0, wantidx -1 auto-assignment of index
 		prev_fin = fin -- update for the next cycle
 		mrkr_t[st] = {pos=pos, len=parse(fin)-pos}
 
-		local item = insert_item(rend_tr, mrkr_t[st].pos, mrkr_t[st].len, transcr, OVERLAY_PRESET)
+		local item = insert_item(rend_tr, mrkr_t[st].pos, mrkr_t[st].len, transcr, OVERLAY_PRESET, TEXT_WITH_SHADOW)
 			if not item then
 			r.DeleteProjectMarker(0, st_mrkr_idx, false) -- isrgn false
 			r.DeleteProjectMarker(0, fin_mrkr_idx, false) -- isrgn false
@@ -502,6 +539,7 @@ local move = first_mrkr_pos and r.SetEditCurPos(first_mrkr_pos, true, false) -- 
 return true -- if not reached this point, the overlay preset wasn't found
 
 end
+
 
 
 function Insert_Markers_For_Audio(notes_t, chapters)
@@ -539,10 +577,10 @@ end
 
 NOTES_TRACK_NAME = #NOTES_TRACK_NAME:gsub(' ','') > 0 and NOTES_TRACK_NAME
 RENDER_TRACK_NAME = #RENDER_TRACK_NAME:gsub(' ','') > 0 and RENDER_TRACK_NAME
+TEXT_WITH_SHADOW = OVERLAY_PRESET == "Overlay: Text/Timecode" and #TEXT_WITH_SHADOW:gsub(' ','') > 0
 
-local err = 'NOTES_TRACK_NAME \n\n   setting is empty'
-err = not r.NF_SetSWSTrackNotes and 'SWS extension isn\'t installed'
-or not NOTES_TRACK_NAME and err or not RENDER_TRACK_NAME and err:gsub('TARGET', 'RENDER')
+local err = not r.NF_GetSWSTrackNotes and 'SWS extension isn\'t installed'
+or not NOTES_TRACK_NAME and 'NOTES_TRACK_NAME \n\n   setting is empty'
 
 	if err then
 	Error_Tooltip("\n\n "..err.." \n\n", 1, 1) -- caps, spaced true
@@ -563,11 +601,11 @@ local menu = '|'..pad..space(' VIDEO ')..pad..'|||'..pad..space(' AUDIO ')..pad
 ..'||'..chapt_tags..s(8)..'With chapter tags|'..s(7)..'(toggle, audio only)'
 local output = Reload_Menu_at_Same_Pos(menu, 1) -- keep_menu_open true
 
-	if output == 0 or output == 1 or output == 6 then return r.defer(no_undo) end
+	if output == 0 or output == 4 then return r.defer(no_undo) end
 
-local video, audio = output == 2, output == 3
+local video, audio = output == 1, output == 2
 
-	if output == 4 then
+	if output == 3 then
 	chapt_tags = #chapt_tags > 0 and '' or '!'
 	r.SetExtState(named_ID, 'CHAPTERS', chapt_tags, false) -- persist false
 	goto RELOAD
@@ -577,11 +615,15 @@ local video, audio = output == 2, output == 3
 Error_Tooltip("\n\n the process is underway... \n\n", 1, 1) -- caps, spaced true
 
 	if video then
-
-		if #OVERLAY_PRESET:gsub('[%s%c]','') == 0 then
-		Error_Tooltip("\n\n overlay_preset setting is empty \n\n", 1, 1) -- caps, spaced true
+	
+	err =  '\n\n   setting is empty'
+	err = not RENDER_TRACK_NAME and 'render_track_name '..err
+	or #OVERLAY_PRESET:gsub('[%s%c]','') == 0 and 'overlay_preset '..err:match('sett.+')
+	
+		if err then
+		Error_Tooltip("\n\n "..err.." \n\n", 1, 1) -- caps, spaced true
 		return r.defer(no_undo) end
-
+		
 	r.Undo_BeginBlock()
 
 	local rend_tr = Get_Track(RENDER_TRACK_NAME)
@@ -599,7 +641,7 @@ Error_Tooltip("\n\n the process is underway... \n\n", 1, 1) -- caps, spaced true
 
 	r.PreventUIRefresh(1)
 
-		if not Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRESET) then
+		if not Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRESET, TEXT_WITH_SHADOW) then
 		r.MB('\tThe overlay preset\n\n"'..OVERLAY_PRESET..'" wasn\'t found', 'ERROR', 0)
 		r.Undo_EndBlock(r.Undo_CanUndo2(0) or '', -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
 		return r.defer(no_undo) end
@@ -610,7 +652,7 @@ Error_Tooltip("\n\n the process is underway... \n\n", 1, 1) -- caps, spaced true
 	r.PreventUIRefresh(-1)
 
 	elseif audio then
-
+	
 	r.Undo_BeginBlock()
 
 	Remove_Markers(1) -- want_all true
@@ -621,7 +663,7 @@ Error_Tooltip("\n\n the process is underway... \n\n", 1, 1) -- caps, spaced true
 
 Error_Tooltip('')	-- undo the 'process underway' tooltip
 
-r.Undo_EndBlock('Transcribing: Prepare transcript for rendering', -1)
+r.Undo_EndBlock('Transcribing A: Prepare transcript for rendering', -1)
 
 
 
