@@ -2,10 +2,13 @@
 ReaScript name: BuyOne_Musical interval length prompter.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: v1.1 #Added options to display ReaDelay Length (musical)
-		and Parameter modulation LFO Tempo sync Speed values
-		#Updated About text
+Version: 1.2
+Changelog:   1.2 #Excluded trailing decimal zero from integers
+		 #Corrected the title of values dialogue 
+		 #Updated About text
+	     1.1 #Added options to display ReaDelay Length (musical)
+		 and Parameter modulation LFO Tempo sync Speed values
+		 #Updated About text
 Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main=main,midi_editor] .
@@ -19,6 +22,8 @@ About:	Displays length of musical divisions in seconds, samples or frames
 	keyboard shortcut. Unless the option 'Send all keyboard input to plug-in'
 	is enabled under the FX chain FX menu when the plugin is selected, which
 	will allow inserting values with Ctrl/Cmd+V.
+	
+	The script stores last selected unit per project.
 
 ]]
 
@@ -51,18 +56,18 @@ left_edge_dist = left_edge_dist and left_edge_dist > 0 and math.floor(left_edge_
 local x, y = r.GetMousePosition()
 
 	if left_edge_dist and x <= left_edge_dist or not left_edge_dist then -- 100 px within the screen left edge
--- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
--- https://forum.cockos.com/showthread.php?t=280658#25
--- https://forum.cockos.com/showthread.php?t=280658&page=2#44
--- BUT LACK OF gfx WINDOW DOESN'T ALLOW RE-OPENING THE MENU AT THE SAME POSITION via ::RELOAD::
--- therefore enabled with keep_menu_open is valid
-local old = tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82
--- screen reader used by blind users with OSARA extension may be affected 
--- by the absence if the gfx window herefore only disable it in builds 
--- newer than 6.82 if OSARA extension isn't installed
--- ref: https://github.com/Buy-One/REAPER-scripts/issues/8#issuecomment-1992859534
-local OSARA = r.GetToggleCommandState(r.NamedCommandLookup('_OSARA_CONFIG_reportFx')) >= 0 -- OSARA extension is installed
-local init = (old or OSARA or not old and not OSARA and keep_menu_open) and gfx.init('', 0, 0)
+	-- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
+	-- https://forum.cockos.com/showthread.php?t=280658#25
+	-- https://forum.cockos.com/showthread.php?t=280658&page=2#44
+	-- BUT LACK OF gfx WINDOW DOESN'T ALLOW RE-OPENING THE MENU AT THE SAME POSITION via ::RELOAD::
+	-- therefore enabled with keep_menu_open is valid
+	local old = tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82
+	-- screen reader used by blind users with OSARA extension may be affected 
+	-- by the absence if the gfx window herefore only disable it in builds 
+	-- newer than 6.82 if OSARA extension isn't installed
+	-- ref: https://github.com/Buy-One/REAPER-scripts/issues/8#issuecomment-1992859534
+	local OSARA = r.GetToggleCommandState(r.NamedCommandLookup('_OSARA_CONFIG_reportFx')) >= 0 -- OSARA extension is installed
+	local init = (old or OSARA or not old and not OSARA and keep_menu_open) and gfx.init('', 0, 0)
 	-- open menu at the mouse cursor, after reloading the menu doesn't change its position based on the mouse pos after a menu item was clicked, it firmly stays at its initial position
 		-- ensure that if keep_menu_open is enabled the menu opens every time at the same spot
 		if keep_menu_open and not coord_t then -- keep_menu_open is the one which enables menu reload
@@ -89,8 +94,12 @@ end
 
 
 function truncate(num, places)
-local val = num > 0 and 0.5 or 0.05
-return math.floor(num*(10^places)+val)/10^places
+return math.floor(num*(10^places)+0.5)/10^places
+end
+
+
+function trim_trail_zero(num)
+return math.floor(num) == num and math.floor(num) or num
 end
 
 
@@ -100,8 +109,7 @@ local dec_places = val_type:match('ES') and 0 -- ES is only present in the words
 or val_type == 'SECONDS' and 3 or 4 -- seconds are rounded down to 3 decimal places because that's minimal ms resolution, readelay and param mod values are rounded down to 4 decimal places for precision even though by default the readout values in readelay only display 2 and keep 2 after plugin re-opening
 	for k, v in ipairs(t) do
 	local div = k == 2 and i > 1 and t2[k]..' [1/'..math.floor(i+i/2)..']' or t2[k] -- format triplet readout
-	v = truncate(v, dec_places)
-	v = dec_places == 0 and math.floor(v) or v -- remove trailing decimal zero from sample and frame vals
+	v = trim_trail_zero(truncate(v, dec_places)) -- trimming trailing decimal zero
 	t[k] = div..' — '..v
 	end
 return table.concat(t, '  ●  ')
@@ -141,8 +149,8 @@ end
 
 local unit_selector = 'S E L E C T  U N I T :|'..check(val_type == 'SECONDS')..'S E C O N D S (rounded down to 3 decimal places)|'
 ..check(samples)..'S A M P L E S (rounded off)|'..check(frames)..'F R A M E S (rounded off)|'
-..check(readelay)..'R E A D E L A Y (length musical)|'
-..check(parm_mod)..'PARAMETER MODULATION (LFO Tempo sync Speed)'
+..check(readelay)..'R E A D E L A Y [ Length (musical): ]|'
+..check(parm_mod)..'PARAMETER MODULATION [ LFO -> Tempo sync -> Speed ]'
 menu = ' |'..menu..'| ||'..unit_selector..'||Legend: S — straight  ●  T — triplet  ●  D — dotted||Click menu item to access values'
 
 ::RELOAD_2::
@@ -179,7 +187,7 @@ local output = Reload_Menu_at_Same_Pos(menu, 1) -- keep_menu_open true
 	local tripl = vals:match('%[.-%]') or '' -- empty if 1 bar division
 	vals = {vals:match('— ([%.%d]+,).- — ([%.%d]+,).- — ([%.%d]+)')}
 	local title = '1/'..math.floor(2^(output-2))..' in '..val_type..' (click OK to return to the list)' -- offset 1 since the readout starts from menu item 2, and 1 more to accurately calculate note notation
-	local ret, output = r.GetUserInputs(title, 3, 'Straight,Triplet '..tripl..',Dotted,extrawidth=50', table.concat(vals))
+	local ret, output = r.GetUserInputs(title, 3, 'Straight,Triplet '..tripl..',Dotted,extrawidth=70', table.concat(vals))
 		if not ret then return r.defer(no_undo)
 		else goto RELOAD_2
 		end
