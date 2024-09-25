@@ -1,5 +1,5 @@
 --[[
-ReaScript name: BuyOne_Transcribing - Format converter.lua
+ReaScript name: BuyOne_Transcribing A - Format converter.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
