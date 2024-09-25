@@ -1,5 +1,5 @@
 --[[
-ReaScript name: BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua
+ReaScript name: BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
