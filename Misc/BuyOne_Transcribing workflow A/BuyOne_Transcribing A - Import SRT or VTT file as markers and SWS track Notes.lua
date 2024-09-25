@@ -2,26 +2,27 @@
 ReaScript name: BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #Made sure that all old Notes tracks are deleted on import
-	   #Changed the behavior so that all project markers are deleted on import, not just old segment markers
-	   #Made content update more visually consistent when a user prompt is displayed on VTT file import
+Version: 1.2
+Changelog: 1.2 #Updated script name and 'About' text
+	   1.1 #Made sure that all old Notes tracks are deleted on import
+	       #Changed the behavior so that all project markers are deleted on import, not just old segment markers
+	       #Made content update more visually consistent when a user prompt is displayed on VTT file import
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
-About:	The script is part of the Transcribing workflow set of scripts
+About:	The script is part of the Transcribing A workflow set of scripts
 	alongside  
-	BuyOne_Transcribing - Create and manage segments (MAIN).lua  
-	BuyOne_Transcribing - Real time preview.lua  
-	BuyOne_Transcribing - Format converter.lua  
-	BuyOne_Transcribing - Prepare transcript for rendering.lua 
-	BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
-	BuyOne_Transcribing - Go to segment marker.lua
-	BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
+	BuyOne_Transcribing A - Create and manage segments (MAIN).lua  
+	BuyOne_Transcribing A - Real time preview.lua  
+	BuyOne_Transcribing A - Format converter.lua  
+	BuyOne_Transcribing A - Prepare transcript for rendering.lua 
+	BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua  
+	BuyOne_Transcribing A - Go to segment marker.lua
+	BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua
 	
 	It allows import of SRT and VTT code from .srt. .vtt or .txt 
 	files and converts it into markers and track Notes ready for 
-	editing with 'BuyOne_Transcribing - Create and manage segments.lua'
+	editing with 'BuyOne_Transcribing A - Create and manage segments.lua'
 	script.
 	
 	Before converting the SRT/VTT time stamps into markers the 
@@ -49,6 +50,23 @@ About:	The script is part of the Transcribing workflow set of scripts
 	preserved. Lines in multi-line captions are delimited with the 
 	new line tag <n> supported by this set of scripts.
 	
+	Multi-line captions are imported as one line in which the 
+	original lines are separated by the new line tag <n>. These
+	are converted back to multi-line captions when previewed 
+	in video mode with  
+	'BuyOne_Transcribing A - Real time preview.lua',  
+	when exported in SRT/VTT format with  
+	'BuyOne_Transcribing A - Format converter.lua',  
+	and when the transcript is set up for video rendering with  
+	'BuyOne_Transcribing A - Prepare transcript for rendering.lua'
+	scripts. For audio rendering with the latter script the tag
+	is removed.
+	
+	This script along with  
+	'BuyOne_Transcribing A - Prepare transcript for rendering.lua'
+	can be used to embed 3d party SRT/VTT subtitles in a video/audio 
+	file.
+	
 ]]
 
 -----------------------------------------------------------------------------
@@ -62,7 +80,7 @@ About:	The script is part of the Transcribing workflow set of scripts
 -- limit per object, several tracks with this name will be created
 -- to accommodate all of the SRT/VTT code, and numbered sequentially;
 -- either this setting must match the same setting in the script
--- 'BuyOne_Transcribing - Create and manage segments.lua'
+-- 'BuyOne_Transcribing A - Create and manage segments.lua'
 -- or you can change it in the said and other scripts to match
 -- this script
 NOTES_TRACK_NAME = "TRANSCRIPT"
@@ -288,16 +306,16 @@ r.SetEditCurPos(first_mrkr_pos, true, false) -- moveview true, seekplay false //
 	-- store Notes start and end time stamps per Notes track
 	-- to use them as a reference for selecting the Notes track
 	-- depending on the name of the marker at the edit cursor with script
-	-- BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua
+	-- BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua
 	-- index is stored to use for sorting inside folder with Create_And_Maintain_Folder_For_Note_Tracks()
-	local st_stamp, end_stamp = notes:match('(%d+:%d+:%d+%.%d+) '), notes:match('.*(%d%d:%d+:%d+%.%d+).*$') -- end_stamp will capture either last segment end time stamp, if any, or its start time stamp, %d%d is used because otherwise only the second digit if hours is captured // start character ^ has been removed from st_stamp pattern to accommodate VTT files which may start with data other than time code
+	local st_stamp, end_stamp = notes:match('(%d+:%d+:%d+%.%d+) '), notes:match('.*(%d%d:%d+:%d+%.%d+).*$') -- end_stamp will capture either last segment end time stamp, if any, or its start time stamp, %d%d is used because otherwise only the second digit if hours is captured // start anchor ^ has been removed from st_stamp pattern to accommodate non-segment content preceding the first segment entry
 	r.GetSetMediaTrackInfo_String(tr, 'P_EXT:'..NOTES_TRACK_NAME, cntr..' '..st_stamp..' '..end_stamp, true) -- setNewValue true
 	end
 
 local notes, cnt, tr_t, tr = '', 0, {}
 
 	for k, line in ipairs(t) do
-		if #(notes..'\n'..line) > 16383 then -- dump what has been accrued so far, using 16383 (previously 40928) instead of 65535 as a limit to provide for possible edits and translation into other languages, whose alphabet characters are multi-byte, after the import which otheriwise would likely be prevented by the limit; no point in using value different than the one used in BuyOne_Transcribing - Create and manage segments.lua to begin with because once that script is run the number of Notes tracks will increase anyway
+		if #(notes..'\n'..line) > 16383 then -- dump what has been accrued so far, using 16383 (previously 40928) instead of 65535 as a limit to provide for possible edits and translation into other languages, whose alphabet characters are multi-byte, after the import which otheriwise would likely be prevented by the limit; no point in using value different than the one used in BuyOne_Transcribing A - Create and manage segments.lua to begin with because once that script is run the number of Notes tracks will increase anyway
 		cnt = cnt+1
 		tr = insert_new_track(cnt..' '..tr_name)
 		tr_t[#tr_t+1] = tr
@@ -335,7 +353,7 @@ act(cmd_ID,0) -- toggle
 	end
 
 local typ = VTT and 'VTT' or 'SRT'
-r.Undo_EndBlock('Transcribing: Import '..typ..' file as markers and Notes', -1)
+r.Undo_EndBlock('Transcribing A: Import '..typ..' file as markers and Notes', -1)
 
 end
 
