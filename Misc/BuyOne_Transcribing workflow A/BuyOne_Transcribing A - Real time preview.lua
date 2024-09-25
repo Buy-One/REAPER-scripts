@@ -1,5 +1,5 @@
 --[[
-ReaScript name: BuyOne_Transcribing - Real time preview.lua
+ReaScript name: BuyOne_Transcribing A - Real time preview.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.5
