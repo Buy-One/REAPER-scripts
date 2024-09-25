@@ -22,7 +22,8 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua  
 	BuyOne_Transcribing A - Prepare transcript for rendering.lua  
 	BuyOne_Transcribing A - Go to segment marker.lua
-	BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua
+	BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua  
+	BuyOne_Transcribing A - Offset position of markers in time selection by specified amount.lua
 	
 	It's a kind of the opposite of the script  
 	'BuyOne_Transcribing A - Go to segment marker.lua'
