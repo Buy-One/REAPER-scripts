@@ -81,7 +81,7 @@ About:	The script is part of the Transcribing A workflow set of scripts
 -- limit per object, several tracks with this name will be created
 -- to accommodate all of the SRT/VTT code, and numbered sequentially;
 -- either this setting must match the same setting in the script
--- 'BuyOne_Transcribing A - Create and manage segments.lua'
+-- 'BuyOne_Transcribing A - Create and manage segments (MAIN).lua';
 -- or you can change it in the said and other scripts to match
 -- this script
 NOTES_TRACK_NAME = "TRANSCRIPT"
