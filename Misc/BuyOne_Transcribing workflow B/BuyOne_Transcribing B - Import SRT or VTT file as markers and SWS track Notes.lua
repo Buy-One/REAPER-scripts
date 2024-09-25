@@ -7,50 +7,50 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is part of the Transcribing B workflow set of scripts
-			alongside  
-			BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
-			BuyOne_Transcribing B - Real time preview.lua  
-			BuyOne_Transcribing B - Format converter.lua  
-			BuyOne_Transcribing B - Prepare transcript for rendering.lua 
-			BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
-			BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
-			BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
-			
-			It allows import of SRT and VTT code from .srt. .vtt or .txt 
-			files and converts it into regions ready for editing with 
-			'BuyOne_Transcribing B - Create and manage segments.lua'
-			script.
-			
-			Before converting the SRT/VTT time stamps into regions the 
-			script deletes from the project all segment regions, i.e. 
-			those colored as defined in the SEGMENT_REGION_COLOR setting. 
-			Existing regions colored differently are left intact.	
+	alongside  
+	BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
+	BuyOne_Transcribing B - Real time preview.lua  
+	BuyOne_Transcribing B - Format converter.lua  
+	BuyOne_Transcribing B - Prepare transcript for rendering.lua 
+	BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
+	BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
+	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
+	
+	It allows import of SRT and VTT code from .srt. .vtt or .txt 
+	files and converts it into regions ready for editing with 
+	'BuyOne_Transcribing B - Create and manage segments.lua'
+	script.
+	
+	Before converting the SRT/VTT time stamps into regions the 
+	script deletes from the project all segment regions, i.e. 
+	those colored as defined in the SEGMENT_REGION_COLOR setting. 
+	Existing regions colored differently are left intact.	
 
-			Since the transcript format supported by the set of scripts 
-			mentioned above is very basic, all metadata such as text 
-			position/coordinates which follow the time stamps on the same 
-			line, metadata located between cues in VTT files such as regions,
-			chapter names, comments	will be ignored. Only the text meant 
-			to be displayed on the screen and its inline formatting markup 
-			will be preserved. Lines in multi-line captions are delimited 
-			with the new line tag <n> supported by this set of scripts.
-			
-			Multi-line captions are imported as one line in which the 
-			original lines are separated by the new line tag <n>. These
-			are converted back to multi-line captions when previewed 
-			in video mode with  
-			'BuyOne_Transcribing B - Real time preview.lua',  
-			when exported in SRT/VTT format with  
-			'BuyOne_Transcribing B - Format converter.lua',  
-			and when the transcript is set up for video rendering with  
-			'BuyOne_Transcribing B - Prepare transcript for rendering.lua'
-			scripts. For audio rendering with the latter script the tag
-			is removed.
+	Since the transcript format supported by the set of scripts 
+	mentioned above is very basic, all metadata such as text 
+	position/coordinates which follow the time stamps on the same 
+	line, metadata located between cues in VTT files such as regions,
+	chapter names, comments	will be ignored. Only the text meant 
+	to be displayed on the screen and its inline formatting markup 
+	will be preserved. Lines in multi-line captions are delimited 
+	with the new line tag <n> supported by this set of scripts.
+	
+	Multi-line captions are imported as one line in which the 
+	original lines are separated by the new line tag <n>. These
+	are converted back to multi-line captions when previewed 
+	in video mode with  
+	'BuyOne_Transcribing B - Real time preview.lua',  
+	when exported in SRT/VTT format with  
+	'BuyOne_Transcribing B - Format converter.lua',  
+	and when the transcript is set up for video rendering with  
+	'BuyOne_Transcribing B - Prepare transcript for rendering.lua'
+	scripts. For audio rendering with the latter script the tag
+	is removed.
 
-			This script along with  
-			'BuyOne_Transcribing B - Prepare transcript for rendering.lua'
-			can be used to embed 3d party SRT/VTT subtitles in a video/audio 
-			file.
+	This script along with  
+	'BuyOne_Transcribing B - Prepare transcript for rendering.lua'
+	can be used to embed 3d party SRT/VTT subtitles in a video/audio 
+	file.
 
 ]]
 
