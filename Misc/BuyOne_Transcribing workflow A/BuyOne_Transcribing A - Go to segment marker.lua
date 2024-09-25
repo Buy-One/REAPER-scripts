@@ -2,30 +2,30 @@
 ReaScript name: BuyOne_Transcribing A - Go to segment marker.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 1.1 #Updated script name
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
-About:	The script is part of the Transcribing workflow set of scripts
+About:	The script is part of the Transcribing A workflow set of scripts
 	alongside
-	BuyOne_Transcribing - Create and manage segments (MAIN).lua  
-	BuyOne_Transcribing - Real time preview.lua  
-	BuyOne_Transcribing - Format converter.lua  
-	BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
-	BuyOne_Transcribing - Prepare transcript for rendering.lua  
-	BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua
-	BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
+	BuyOne_Transcribing A - Create and manage segments (MAIN).lua  
+	BuyOne_Transcribing A - Real time preview.lua  
+	BuyOne_Transcribing A - Format converter.lua  
+	BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing A - Prepare transcript for rendering.lua  
+	BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua
+	BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua
 
 	It's a kind of the opposite of the script  
-	'BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua'
+	'BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua'
 	
 	Select the time stamp in the track Notes (it can be double clicked),
 	copy it into the buffer with Ctrl/Cmd+C or from the right click
 	context menu and run the script.	
 	
 	The script doesn't create an undo point.
-
+	
 	If the script is followed by the custom action 
 	(included with the script set in the file 
 	'Transcribing workflow custom actions.ReaperKeyMap' ):
