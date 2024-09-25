@@ -1,5 +1,5 @@
 --[[
-ReaScript name: BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
+ReaScript name: BuyOne_Transcribing A - Generate Transcribing toolbar ReaperMenu file.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
