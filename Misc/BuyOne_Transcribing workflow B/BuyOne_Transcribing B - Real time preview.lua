@@ -7,90 +7,90 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v6.37
 About:	The script is part of the Transcribing B workflow set of scripts
-			alongside  
-			BuyOne_Transcribing B - Create and manage segments (MAIN).lua
-			BuyOne_Transcribing B - Format converter.lua  
-			BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
-			BuyOne_Transcribing B - Prepare transcript for rendering.lua  
-			BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
-			BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
-			BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
-			
-			meant to display the transcript segment by segment in real time
-			while REAPER is in play mode or when the edit cursor is located
-			within segment regions.			
-		
-			The transcript is retrieved from the segment region names which 
-			are defined by the SEGMENT_REGION_COLOR setting of the USER SETTINGS 
-			and is displayed in the Video window segment by segment through 
-			empty items which have an instance of the Video processor plugin 
-			inserted in their FX chain with the preset defined in the OVERLAY_PRESET 
-			setting. The segment transcript is fed into the preview item names.
-			
-			To have the transcript displayed within the Video window the 
-			preview track must be located above the track with a video item.
-			The preview items are added dynamically to accommodate segment
-			next to the currently active segment which is determined by the 
-			location of the edit or play cursor relative to the segment region. 
-			Therefore while the transport is in play mode, in order to insert 
-			a preview item for a particular segment without waiting until it'll 
-			be added in the course of the playback, move the edit cursor to the 
-			location immediately preceding the segment region.  
-			This mechanism has been devised to overcome Video processor 
-			limitation which prevents it from processing changes in track/take 
-			names as soon as the change occurs so it must be allowed to process
-			the content in advance.  
-			If everything functions properly, during playback there should be no 
-			more than 2 preview items on the prevew track at any given moment, 
-			one for the current and another for the next segment. There'll be 
-			only 1 when the last segment is being played and when the cursor is 
-			located to the left of the very	first segment region.  
-			When the transport is stopped, in order to have a preview item 
-			created for a particular segment place the edit cursor directly 
-			within the bounds (start and before the end) of the relevant segment 
-			region. In this scenario it's possible to prevew the transcript within 
-			video context simply by repeatedly running the custom actions 
-			'Custom: Transcribing - Move loop points to next/previous segment'
-			(included with the script set 
-			in the file 'Transcribing workflow custom actions.ReaperKeyMap' )
-			for instance by clicking the buttons linked to them on the 
-			'Transcribing B toolbar' whose ReaperMenu file can be generated
-			with  
-			'BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua'
-			script.
-			
-			For non-segment regions, i.e. regions whose color differs from 
-			the one defined in the SEGMENT_REGION_COLOR setting, and segment 
-			regions with no transcript preview items are not created.
-			
-			The script must run in the background which it will after the 
-			initial launch. To terminate it, launch it again and click 
-			'Terminate instances' button in the ReaScript task control dialogue 
-			which will pop up. Before doing this it's recommended to checkmark 
-			'Remember my answer for this script option' so from then on the 
-			script is terminated automatically.
-			
-			While the script runs a toolbar button linked to it is lit and 
-			a menu item is ticked.
-			
-			The script only works under the project tab it's originally been
-			launched under. To use it in another project tab terminate it 
-			and re-launch under it.  
-			
-			For preview another script can be used, which is
-			'BuyOne_Transcribing B - Prepare transcript for rendering.lua'
-			however it's not as flexible as this one, because the preview
-			items it creates are static and if segments have been updated 
-			it will have to be run again to recreate the static preview items. 
-			
-			On the other hand this script creates redundant undo points each
-			time a new preview item is inserted which cannot be prevented 
-			and which increase and lengthen the undo history unnecessarily. 
-			So it may be a good idea to use it in a project copy rathen than 
-			directly in the main project. 
-			
-			Watch demo 'Transcribing B - 5. Real time preview.mp4' which comes 
-			with the set of scripts
+	alongside  
+	BuyOne_Transcribing B - Create and manage segments (MAIN).lua
+	BuyOne_Transcribing B - Format converter.lua  
+	BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
+	BuyOne_Transcribing B - Prepare transcript for rendering.lua  
+	BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
+	BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
+	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
+	
+	meant to display the transcript segment by segment in real time
+	while REAPER is in play mode or when the edit cursor is located
+	within segment regions.			
+
+	The transcript is retrieved from the segment region names which 
+	are defined by the SEGMENT_REGION_COLOR setting of the USER SETTINGS 
+	and is displayed in the Video window segment by segment through 
+	empty items which have an instance of the Video processor plugin 
+	inserted in their FX chain with the preset defined in the OVERLAY_PRESET 
+	setting. The segment transcript is fed into the preview item names.
+	
+	To have the transcript displayed within the Video window the 
+	preview track must be located above the track with a video item.
+	The preview items are added dynamically to accommodate segment
+	next to the currently active segment which is determined by the 
+	location of the edit or play cursor relative to the segment region. 
+	Therefore while the transport is in play mode, in order to insert 
+	a preview item for a particular segment without waiting until it'll 
+	be added in the course of the playback, move the edit cursor to the 
+	location immediately preceding the segment region.  
+	This mechanism has been devised to overcome Video processor 
+	limitation which prevents it from processing changes in track/take 
+	names as soon as the change occurs so it must be allowed to process
+	the content in advance.  
+	If everything functions properly, during playback there should be no 
+	more than 2 preview items on the prevew track at any given moment, 
+	one for the current and another for the next segment. There'll be 
+	only 1 when the last segment is being played and when the cursor is 
+	located to the left of the very	first segment region.  
+	When the transport is stopped, in order to have a preview item 
+	created for a particular segment place the edit cursor directly 
+	within the bounds (start and before the end) of the relevant segment 
+	region. In this scenario it's possible to prevew the transcript within 
+	video context simply by repeatedly running the custom actions 
+	'Custom: Transcribing - Move loop points to next/previous segment'
+	(included with the script set 
+	in the file 'Transcribing workflow custom actions.ReaperKeyMap' )
+	for instance by clicking the buttons linked to them on the 
+	'Transcribing B toolbar' whose ReaperMenu file can be generated
+	with  
+	'BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua'
+	script.
+	
+	For non-segment regions, i.e. regions whose color differs from 
+	the one defined in the SEGMENT_REGION_COLOR setting, and segment 
+	regions with no transcript preview items are not created.
+	
+	The script must run in the background which it will after the 
+	initial launch. To terminate it, launch it again and click 
+	'Terminate instances' button in the ReaScript task control dialogue 
+	which will pop up. Before doing this it's recommended to checkmark 
+	'Remember my answer for this script option' so from then on the 
+	script is terminated automatically.
+	
+	While the script runs a toolbar button linked to it is lit and 
+	a menu item is ticked.
+	
+	The script only works under the project tab it's originally been
+	launched under. To use it in another project tab terminate it 
+	and re-launch under it.  
+	
+	For preview another script can be used, which is
+	'BuyOne_Transcribing B - Prepare transcript for rendering.lua'
+	however it's not as flexible as this one, because the preview
+	items it creates are static and if segments have been updated 
+	it will have to be run again to recreate the static preview items. 
+	
+	On the other hand this script creates redundant undo points each
+	time a new preview item is inserted which cannot be prevented 
+	and which increase and lengthen the undo history unnecessarily. 
+	So it may be a good idea to use it in a project copy rathen than 
+	directly in the main project. 
+	
+	Watch demo 'Transcribing B - 5. Real time preview.mp4' which comes 
+	with the set of scripts
 
 ]]
 
