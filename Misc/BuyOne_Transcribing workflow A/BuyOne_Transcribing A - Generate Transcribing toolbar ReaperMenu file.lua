@@ -1,23 +1,27 @@
 --[[
-ReaScript name: BuyOne_Transcribing A - Generate Transcribing toolbar ReaperMenu file.lua
+ReaScript name: BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #Fixed resources search while generating the toolbar code
-	   #Disabled user prompt for the target toolbar number in builds newer than 7.22
-	   #Fixed a toolbar button name
-	   #Updated About text
+Version: 1.2
+Changelog: 1.2 #Fixed the toolbar name everywhere it's mentioned
+	       #Included toolbar name in the code for the exported file
+	       #Set toolbar buttons tooltip to display the linked action
+	       #Updated script name
+	   1.1 #Fixed resources search while generating the toolbar code
+	       #Disabled user prompt for the target toolbar number in builds newer than 7.21
+	       #Fixed a toolbar button name
+	       #Updated About text
 Licence: WTFPL
 REAPER: at least v5.962
-About:	The script is part of the Transcribing workflow set of scripts
+About:	The script is part of the Transcribing A workflow set of scripts
 	alongside
-	BuyOne_Transcribing - Create and manage segments (MAIN).lua  
-	BuyOne_Transcribing - Real time preview.lua  
-	BuyOne_Transcribing - Format converter.lua  
-	BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
-	BuyOne_Transcribing - Prepare transcript for rendering.lua  
-	BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
-	BuyOne_Transcribing - Go to segment marker.lua
+	BuyOne_Transcribing A - Create and manage segments (MAIN).lua  
+	BuyOne_Transcribing A - Real time preview.lua  
+	BuyOne_Transcribing A - Format converter.lua  
+	BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing A - Prepare transcript for rendering.lua  
+	BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua  
+	BuyOne_Transcribing A - Go to segment marker.lua
 
 	The script generates a ReaperMenu file for a toolbar 
 	to which all scripts and custom actions included in this 
@@ -211,7 +215,7 @@ MUTE 0 0
 SEL 1
 IGUID {3E42B32C-B52E-4644-A494-DFDBCFB163B9}
 IID 1
-RESOURCEFN "F:\Program Files\REAPER (x64)\Scripts\MY\my_Transcribing\Transcribing toolbar layout.png"
+RESOURCEFN "Transcribing A toolbar layout.png"
 IMGRESOURCEFLAGS 5
 NOTESWND 197 95 1198 659
 >
@@ -221,7 +225,7 @@ r.Undo_BeginBlock()
 -- the function will faulter here if it's already used outside of the function
 -- in which case scr_name will have to be passed as an argument
 local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
-local img_name = 'Transcribing toolbar layout.png'
+local img_name = 'Transcribing A toolbar layout.png'
 local path = scr_name:match('.+[\\/]')..img_name
 	if r.file_exists(path) then
 	local GetSet = r.GetSetMediaTrackInfo_String
@@ -247,7 +251,7 @@ local path = scr_name:match('.+[\\/]')..img_name
 		img_tr = r.GetTrack(0,r.GetNumTracks()-1)
 		end
 	local item = r.AddMediaItemToTrack(img_tr)
-	GetSet(img_tr, 'P_NAME', 'Transcribing toolbar layout', true) -- setNewValue true
+	GetSet(img_tr, 'P_NAME', 'Transcribing A toolbar layout', true) -- setNewValue true
 	GetSet(img_tr, 'P_EXT:'..img_name, '1', true) -- setNewValue true
 	chunk = chunk:gsub('RESOURCEFN.-\n', 'RESOURCEFN "'..path..'"\n')
 	r.SetItemStateChunk(item, chunk, false) -- isundo false
@@ -261,7 +265,7 @@ local path = scr_name:match('.+[\\/]')..img_name
 	r.CSurf_OnScroll(-400,0) -- scroll horizontally left, 1 scroll unit is 16 px so scroll 6400 px which should be enough to reach the project start
 	GetSet_Track_Zoom_100_Perc(img_tr)
 	end
-r.Undo_EndBlock('Insert Transcribing toolbar layout image', -1)
+r.Undo_EndBlock('Insert Transcribing A toolbar layout image', -1)
 
 end
 
@@ -314,18 +318,19 @@ end
 
 local toolbar1 = [[
 [Floating toolbar 2]
-icon_0=text_wide
-icon_1=text_wide
-icon_2=text_wide
-icon_3=text_wide
-icon_4=text_wide
-icon_5=text_wide
-icon_6=text_wide
-icon_7=text_wide
-icon_8=text_wide
-icon_9=text_wide
-icon_10=text_wide
-icon_11=text_wide
+title=Transcribing A toolbar
+icon_0=text_wide_tt
+icon_1=text_wide_tt
+icon_2=text_wide_tt
+icon_3=text_wide_tt
+icon_4=text_wide_tt
+icon_5=text_wide_tt
+icon_6=text_wide_tt
+icon_7=text_wide_tt
+icon_8=text_wide_tt
+icon_9=text_wide_tt
+icon_10=text_wide_tt
+icon_11=text_wide_tt
 ]]
 
 local toolbar2 = [[
@@ -343,18 +348,18 @@ item_10= Prepare for rendering
 item_11= Import SRT/VTT/TXT
 ]]
 
-local ref_t = {'BuyOne_Transcribing - Create and manage segments',
+local ref_t = {'BuyOne_Transcribing A - Create and manage segments (MAIN)',
 'Create loop points between adjacent project markers',
-'', -- line to match menu item item_2=40634 which doesn't need command ID update
+'', -- line to match menu item item_2=40634 which doesn't need command ID update because it's a native action
 'Transcribing - Shift loop right by the loop length',
 'Transcribing - Move loop points to next segment',
 'Transcribing - Move loop points to previous segment',
-'BuyOne_Transcribing - Real time preview',
-'BuyOne_Transcribing - Format converter',
-'BuyOne_Transcribing - Select Notes track based on marker at edit cursor',
-'BuyOne_Transcribing - Go to segment marker',
-'BuyOne_Transcribing - Prepare transcript for rendering',
-'BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes'
+'BuyOne_Transcribing A - Real time preview',
+'BuyOne_Transcribing A - Format converter',
+'BuyOne_Transcribing A - Select Notes track based on marker at edit cursor',
+'BuyOne_Transcribing A - Go to segment marker',
+'BuyOne_Transcribing A - Prepare transcript for rendering',
+'BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes'
 }
 
 
@@ -411,59 +416,55 @@ function space(int) return (' '):rep(int) end
 local build = tonumber(r.GetAppVersion():match('[%d%.]+')) 
 local tb_No
 
-	if build < 7.23 then -- since build 7.23 numbers of the source and target toolbars don't have to match at import of .ReaperMenu file so no need to prompt user for the number on order to update it in the code
+::RELOAD::
 
-	::RELOAD::
+local shade = ('▓'):rep(23)
+local digits = {'1','2','3','4','5','6','7','8','9','0','<'}
+local menu = {'&1','&2','&3','4','5','&6','&7','8','9','0','&< (backspace)'} -- ampersand only at certain digits to disambiguate because these appear in the menu title earlier
+line = line or ''
+--Msg(line)
+menu = shade..'|ON THE KEYBOARD TYPE THE NUMBER|'..space(7)..'OF THE TOOLBAR TO IMPORT|'
+..space(9)..'THE ReaperMenu FILE INTO|'..space(6)..'(1 — 16 or 1 — 32 in REAPER 7)|'
+..space(12)..'AND HIT THE " T " KEY|'..shade..'|'..table.concat(menu,'|')
+..'||&'..('toolbar'):upper():gsub('.','%0 ')..'#: '..line..'||'
+local output = Reload_Menu_at_Same_Pos(menu, true) -- keep_menu_open true, left_edge_dist false
 
-	local shade = ('▓'):rep(23)
-	local digits = {'1','2','3','4','5','6','7','8','9','0','<'}
-	local menu = {'&1','&2','&3','4','5','&6','&7','8','9','0','&< (backspace)'} -- ampersand only at certain digits to disambiguate because these appear in the menu title earlier
-	line = line or ''
-	--Msg(line)
-	menu = shade..'|ON THE KEYBOARD TYPE THE NUMBER|'..space(7)..'OF THE TOOLBAR TO IMPORT|'
-	..space(9)..'THE ReaperMenu FILE INTO|'..space(6)..'(1 — 16 or 1 — 32 in REAPER 7)|'
-	..space(12)..'AND HIT THE " T " KEY|'..shade..'|'..table.concat(menu,'|')
-	..'||&'..('toolbar'):upper():gsub('.','%0 ')..'#: '..line..'||'
-	local output = Reload_Menu_at_Same_Pos(menu, true) -- keep_menu_open true, left_edge_dist false
-
-		if output == 0 then return r.defer(no_undo)
-		elseif output < 7 then goto RELOAD -- title lines
-		end
-
-		if output > 7 and output < 19 then
-		output = output-7 -- offset by the number of title lines
-		local input = digits[output]
-		line = line..input
-		line = input == '<' and line:sub(1,-3) or line
-		goto RELOAD
-		elseif output == 19 then
-		tb_No = line:match('%d+')
-		tb_No = tonumber(tb_No)
-		local reaper7 = build >= 7
-		local err = not tb_No and '   toolbar number \n\n hasn\'t been typed in'
-		or (tb_No == 0 or reaper7 and tb_No > 32 or not reaper7 and tb_No > 16) and 'invalid toolbar number'
-			if err then
-			Error_Tooltip('\n\n '..err..' \n\n', 1,1, -400) -- caps, spaced true, x2 -400 to move the tooltip away from the menu otherwie it gets covered by it when the menu is reloaded
-			goto RELOAD
-			end
-		end
-		
+	if output == 0 then return r.defer(no_undo)
+	elseif output < 7 then goto RELOAD -- title lines
 	end
 
+	if output > 7 and output < 19 then
+	output = output-7 -- offset by the number of title lines
+	local input = digits[output]
+	line = line..input
+	line = input == '<' and line:sub(1,-3) or line
+	goto RELOAD
+	elseif output == 19 then
+	tb_No = line:match('%d+')
+	tb_No = tonumber(tb_No)
+	local reaper7 = build >= 7
+	local err = not tb_No and '   toolbar number \n\n hasn\'t been typed in'
+	or (tb_No == 0 or reaper7 and tb_No > 32 or not reaper7 and tb_No > 16) and 'invalid toolbar number'
+		if err then
+		Error_Tooltip('\n\n '..err..' \n\n', 1,1, -400) -- caps, spaced true, x2 -400 to move the tooltip away from the menu otherwie it gets covered by it when the menu is reloaded
+		goto RELOAD
+		end
+	end
+	
 -- use MenuSets folder as a more reliable and stable location, scripts folder can be overwritten,
 -- placing in the project folder doesn't make sense since the file isn't project specific
-local reamenu_path = path..'MenuSets'..sep..'Transcribe workflow toolbar.ReaperMenu'
+local reamenu_path = path..'MenuSets'..sep..'Transcribing A workflow toolbar.ReaperMenu'
 local exists
 
 	if r.file_exists(reamenu_path) then
 	exists = 1
-		if r.MB('File "Transcribe workflow toolbar.ReaperMenu"'
-		..'\n\n     already exists in the "MenuSets" folder.\n\n\t     Wish to overwrite it?',
+		if r.MB('File "Transcribing A workflow toolbar.ReaperMenu"'
+		..'\n\n'..space(9)..'already exists in the "MenuSets" folder.\n\n\t'..space(8)..'Wish to overwrite it?',
 		'PROMPT', 4) == 7 then -- No
 		return r.defer(no_undo) end
 	end
 
-toolbar1 = build >= 7.23 and toolbar1 or toolbar1:gsub('Floating toolbar %d+', 'Floating toolbar '..tb_No)
+toolbar1 = toolbar1:gsub('Floating toolbar %d+', 'Floating toolbar '..tb_No)
 local toolbar = toolbar1..table.concat(toolbar2_t,'\n')
 	if not exists and not Dir_Exists(reamenu_path:match('.+[\\/]')) then -- create MenuSets folder if absent
 	r.RecursiveCreateDirectory(reamenu_path:match('.+[\\/]'), 1) -- ignored 1 whose meaning isn't clear
@@ -473,7 +474,7 @@ f:write(toolbar)
 f:close()
 local insert_img = not exists and Insert_Image() -- only when generating the ReaperMenu file for the first time
 local result = exists and 'updated' or 'created'
-local go = r.MB('A file named "Transcribe workflow toolbar.ReaperMenu"\n\n'
+local go = r.MB('A file named "Transcribing A workflow toolbar.ReaperMenu"\n\n'
 ..space(10)..'has been '..result..' in the "MenuSets" folder\n\n\t'
 ..space(5)..'of REAPER resource directory\n\n'
 ..space(14)..'Import it into the Menu/toolbar editor.\n\n'
