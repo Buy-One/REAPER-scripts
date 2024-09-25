@@ -7,27 +7,27 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is part of the Transcribing B workflow set of scripts
-			alongside  
-			BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
-			BuyOne_Transcribing B - Real time preview.lua  
-			BuyOne_Transcribing B - Import SRT or VTT file as markers and SWS track Notes.lua  
-			BuyOne_Transcribing B - Prepare transcript for rendering.lua  
-			BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
-			BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
-			BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
-			
-			meant to format and export a transcript created with the script 
-			BuyOne_Transcribing B - Create and manage segments.lua			
-			
-			SRT and VTT formats conversion is very basic. Conversion into
-			the VTT format is more basic than possible with Transcription 1
-			script set, meaning that no metadata is supported.  	
-				
-			The formatted transcript is dumped to a .srt, .vtt or .txt file 
-			named after the project file which will be placed in the project 
-			directory. The dialogue will guide you through the process. The 
-			dialogue options respond to keyboard input, options 1 through 3 
-			to keys 1 - 3, .SRT - S, .VTT - V, and AS IS - A. 
+	alongside  
+	BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
+	BuyOne_Transcribing B - Real time preview.lua  
+	BuyOne_Transcribing B - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing B - Prepare transcript for rendering.lua  
+	BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
+	BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
+	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
+	
+	meant to format and export a transcript created with the script 
+	BuyOne_Transcribing B - Create and manage segments.lua			
+	
+	SRT and VTT formats conversion is very basic. Conversion into
+	the VTT format is more basic than possible with Transcription 1
+	script set, meaning that no metadata is supported.  	
+		
+	The formatted transcript is dumped to a .srt, .vtt or .txt file 
+	named after the project file which will be placed in the project 
+	directory. The dialogue will guide you through the process. The 
+	dialogue options respond to keyboard input, options 1 through 3 
+	to keys 1 - 3, .SRT - S, .VTT - V, and AS IS - A. 
 			
 ]]
 
