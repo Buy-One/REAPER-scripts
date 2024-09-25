@@ -2,36 +2,38 @@
 ReaScript name: BuyOne_Transcribing A - Real time preview.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.5
-Changelog: 1.5 	#Fixed duplication of preview items when there're gaps between segments					
-		#Made the script ignore non-segment markers following segment markers
-		#Segments with no transcript no longer affect timing of preview item creation
-		#Changed the location of preview items when the transport is stopped
-		so that they're created for the segment immediately at the edit cursor rather than the next one
-		#Made preview item creation more consistent with the original concept
-		#Updated 'About' text
- 	  1.4 	#Fixed time stamp formatting as hours:minutes:seconds.milliseconds
-	  1.3 	#Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
-	  1.2 	#Included explicit undo point creation mechanism when a new preview item is placed on the preview track
-		#Fixed error when the project is reloaded while the script is running
-		#Optimized Video processor source track creation function
-		#Added OVERLAY_PRESET setting validation
-		#Updated About text
-	  1.1 	#Added overlay preset availability evaluation in builds 7.20 and newer
-		#Optimized undo point creation in cases where overlay preset isn't found
-		#Fixed error when the preview track is deleted manually before the script is terminated
+Version: 1.6
+Changelog: 1.6 #Added TEXT_WITH_SHADOW setting
+	      #Updated script name
+  	  1.5 #Fixed duplication of preview items when there're gaps between segments					
+	      #Made the script ignore non-segment markers following segment markers
+	      #Segments with no transcript no longer affect timing of preview item creation
+	      #Changed the location of preview items when the transport is stopped
+	      so that they're created for the segment immediately at the edit cursor rather than the next one
+	      #Made preview item creation more consistent with the original concept
+	      #Updated 'About' text
+	  1.4 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
+	  1.3 #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
+	  1.2 #Included explicit undo point creation mechanism when a new preview item is placed on the preview track
+	      #Fixed error when the project is reloaded while the script is running
+	      #Optimized Video processor source track creation function
+	      #Added OVERLAY_PRESET setting validation
+	      #Updated About text
+  	  1.1 #Added overlay preset availability evaluation in builds 7.20 and newer
+	      #Optimized undo point creation in cases where overlay preset isn't found
+	      #Fixed error when the preview track is deleted manually before the script is terminated
 Licence: WTFPL
 REAPER: at least v6.37
 Extensions: SWS/S&M
-About:	The script is part of the Transcribing workflow set of scripts
+About:	The script is part of the Transcribing A workflow set of scripts
 	alongside 
-	BuyOne_Transcribing - Create and manage segments (MAIN).lua  
-	BuyOne_Transcribing - Format converter.lua  
-	BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
-	BuyOne_Transcribing - Prepare transcript for rendering.lua  
-	BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
-	BuyOne_Transcribing - Go to segment marker.lua
-	BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
+	BuyOne_Transcribing A - Create and manage segments (MAIN).lua  
+	BuyOne_Transcribing A - Format converter.lua  
+	BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing A - Prepare transcript for rendering.lua  
+	BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua  
+	BuyOne_Transcribing A - Go to segment marker.lua
+	BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua
 	
 	meant to display the transcript segment by segment in real time
 	while REAPER is in play mode or when the edit cursor is located
@@ -75,7 +77,17 @@ About:	The script is part of the Transcribing workflow set of scripts
 	When the transport is stopped, in order to have a preview item 
 	created for a particular segment place the edit cursor directly 
 	within the bounds of the relevant segment region, i.e. at its start
-	marker or between its start and end markers.
+	marker or between its start and end markers. In this scenario it's
+	possible to prevew the transcript within video context simply by 
+	repeatedly running the custom actions  
+	'Custom: Transcribing - Move loop points to next/previous segment'
+	(included with the script set 
+	in the file 'Transcribing workflow custom actions.ReaperKeyMap' )
+	for instance by clicking the buttons linked to them on the 
+	'Transcribing A toolbar' whose ReaperMenu file can be generated
+	with  
+	'BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua'
+	script.
 	
 	The script relies on markers location to display segment text.
 	If segment start marker time stamp contained in the marker's name 
@@ -107,10 +119,10 @@ About:	The script is part of the Transcribing workflow set of scripts
 	If you're not sure whether all current segment markers positions
 	match time stamps in the transcript or their own time stamps 
 	included in their names, run the script
-	'BuyOne_Transcribing - Prepare transcript for rendering.lua'
+	'BuyOne_Transcribing A - Prepare transcript for rendering.lua'
 	to re-create the marker array. Then the render track created by
 	that script can be deleted. Or use the script
-	'BuyOne_Transcribing - Create and manage segments (MAIN).lua'
+	'BuyOne_Transcribing A - Create and manage segments (MAIN).lua'
 	in 'Batch segment update' mode described in par. F of its 'About' 
 	text. 
 	
@@ -129,7 +141,7 @@ About:	The script is part of the Transcribing workflow set of scripts
 	and re-launch under it.  
 	
 	For preview another script can be used, which is
-	'BuyOne_Transcribing - Prepare transcript for rendering.lua'
+	'BuyOne_Transcribing A - Prepare transcript for rendering.lua'
 	however it's not as flexible as this one, because it recreates
 	all segment markers from scratch based on the Notes content
 	and ignores segments with no transcript. If segments have been
@@ -157,8 +169,8 @@ About:	The script is part of the Transcribing workflow set of scripts
 	ALTERNATIVELY, IF PREVIOUS STATE CAN BE RESTORED WITHOUT RESORTING
 	TO UNDO IT'S ADVISED TO OPT FOR THIS METHOD.
 	
-	Watch demo '6. Real time preview.mp4' which comes with the set 
-	of scripts
+	Watch demo 'Transcribing B - 6. Real time preview.mp4' which comes 
+	with the set of scripts
 
 ]]
 
@@ -169,7 +181,7 @@ About:	The script is part of the Transcribing workflow set of scripts
 -- Between the quotes insert the name of track(s)
 -- where Notes with the transcript are stored;
 -- must match the same setting in the script
--- 'BuyOne_Transcribing - Create and manage segments.lua';
+-- 'BuyOne_Transcribing A - Create and manage segments.lua';
 -- CHANGING THIS SETTING MIDPROJECT IS NOT RECOMMENDED
 -- BECAUSE SCRIPT ACCESS TO THE NOTES TRACKS WILL BE LOST
 NOTES_TRACK_NAME = "TRANSCRIPT"
@@ -204,8 +216,18 @@ INSERT_PREVIEW_ITEMS = "1"
 -- of the Video processor to preview transcript in video
 -- context, keep this setting as is;
 -- if you use a customized version of this preset, specify
--- its name in this setting between the quotes
+-- its name in this setting between the quotes,
+-- it's advised that the customized preset name be different
+-- from the default one, otherwise its settings may get
+-- affected by the script
 OVERLAY_PRESET = "Overlay: Text/Timecode"
+
+
+-- Enable by inserting any alphanumeric character between
+-- the quotes;
+-- only relevant if OVERLAY_PRESET setting is the default
+-- "Overlay: Text/Timecode" preset
+TEXT_WITH_SHADOW = ""
 
 
 -- Enable by inserting any alphanumeric character between
@@ -311,7 +333,6 @@ r.RefreshToolbar(cmd_ID)
 		end
 	local del = src_tr and r.ValidatePtr(src_tr, 'MediaTrack*') and r.DeleteTrack(src_tr) -- deleting Video proc source track in build older than 7.20
 	r.UpdateArrange()
---	clear = take and r.ValidatePtr(take, 'MediaItem_Take*') and r.GetSetMediaItemTakeInfo_String(take, 'P_NAME', '', true) -- setNewValue true // re: pointer validation see comment above
 	end
 end
 
@@ -363,8 +384,34 @@ return insert_new_track(name_setting)
 end
 
 
+function Aplly_Video_Proc_Settings(obj, OVERLAY_PRESET, TEXT_WITH_SHADOW)
+local track, take = r.ValidatePtr(obj,'MediaTrack*'), r.ValidatePtr(obj,'MediaItem_Take*')
+local SetParam = track and r.TrackFX_SetParam or take and r.TakeFX_SetParam
+local input_fx_idx = track and 0x1000000 or 0
+-- only set parameters if the preset is default because in the user version
+-- everything will be set within the preset itself
+	if OVERLAY_PRESET == 'Overlay: Text/Timecode' then		
+		if TEXT_WITH_SHADOW then
+		-- table for overlay version with shadow which requires two Video proc instances
+		-- the shadow is provided by the 2nd instance
+		-- only values different from the default 'Overlay: Text/Timecode' preset are included
+		-- 1 - y pos, 2 - x pos, 4 - text bright, 5 - text alpha, 6 - bg bright, 7 - bg alpha, 8 - fit bg to text
+		local t = {[0] = {[6]=0, [7]=1, [8]=1}, [1] = {[1]=0.953, [2]=0.504, [4]=0.6, [5]=0.5, [6]=0, [7]=0}}
+			for fx_idx, vals_t in pairs(t) do
+				for parm_idx, val in pairs(vals_t) do
+				SetParam(obj, fx_idx+input_fx_idx, parm_idx, val)
+				end
+			end
+		else
+			for parm_idx, val in pairs({[6] = 0, [7] = 1, [8] = 1}) do -- 6 - bg bright, 7 - bg alpha, 8 - fit bg to text
+			SetParam(obj, input_fx_idx, parm_idx, val)
+			end
+		end
+	end
+end
 
-function Insert_Video_Proc_Src_Track(OVERLAY_PRESET)
+
+function Insert_Video_Proc_Src_Track(OVERLAY_PRESET, TEXT_WITH_SHADOW)
 
 -- in builds older than 7.20 'Overlay: Text/Timecode' preset doesn't work if applied via the API
 -- without opening the Video processor beforehand
@@ -382,10 +429,18 @@ r.PreventUIRefresh(1)
 	local show = not newer_build and r.TrackFX_Show(tr, 0x1000000, 3) -- showFlag 3 show floating window // in builds older than 7.20 in order to successfully apply Video proc preset the plugin UI must be opened
 	local ok = r.TrackFX_SetPreset(tr, 0x1000000, OVERLAY_PRESET) -- fx 0
 		if not ok then return end -- overlay reset not found
-		for parm_idx, val in pairs({[6] = 0, [7] = 1, [8] = 1}) do -- 6 - bg bright, 7 - bg alpha, 8 - fit bg to text
-		r.TrackFX_SetParam(tr, 0x1000000, parm_idx, val)
+		
+		-- only set parameters if build isn't newer because only in this case the video proc source track 
+		-- will be used as a source of video proc instances for preview items 
+		-- in order to avoid opening and closing its windows if applying directly
+		-- as required in the buggy old builds;
+		-- in newer builds video proc instances are inserted directly in the preview items
+		if not newer_build then
+		-- only runs if OVERLAY_PRESET is the default overlay preset
+		Aplly_Video_Proc_Settings(tr, OVERLAY_PRESET, TEXT_WITH_SHADOW)
+		r.TrackFX_Show(tr, 0x1000000, 2) -- showFlag 2 hide floating window opened above // only needed in older builds
 		end
-	local hide = not newer_build and r.TrackFX_Show(tr, 0x1000000, 2) -- showFlag 2 hide floating window
+	
 	return true -- if not reached this point, the overlay preset wasn't found
 	end
 
@@ -432,7 +487,7 @@ local ret, preset = r.TrackFX_GetPreset(tr, 0x1000000, '') -- fx 0
 	local ok = apply_overlay_preset(tr, newer_build)
 		if not ok or ok and newer_build then -- deleting track if not found in any build and if found in newer builds because in this case the track was only needed to check availability of the preset
 		r.DeleteTrack(tr)
-		return ok and newer_build end -- in newer builds returning true if found to prevent triggering error message outside, in older builds the return value will always be false which will trigger the error message
+		return ok and newer_build end -- in newer builds returning true if found to prevent triggering error message outside, in older builds the return value will always be false which will trigger the error message informing that the preset wasn't found
 	end
 r.GetSetMediaTrackInfo_String(tr, 'P_NAME','Video processor source',true) -- setNewValue true
 r.GetSetMediaTrackInfo_String(tr, 'P_EXT:SRC VIDEO PROC','1',true) -- setNewValue true
@@ -497,7 +552,7 @@ r.Undo_BeginBlock()
 local act = r.Main_OnCommand
 --[[ WORKS
 r.SetOnlyTrackSelected(preview_tr)
---r.SetEditCurPos(next_pos, false, false) -- moveview, seekplay false
+--r.SetEditCurPos(next_pos, false, false) -- moveview, seekplay false // not required because item pos will be set below anyway
 act(40214, 0) -- Insert new MIDI item...
 item = r.GetSelectedMediaItem(0,0) -- newly inserted item is exclusively selected
 take = r.GetActiveTake(item)
@@ -518,19 +573,18 @@ local take = r.AddTakeToMediaItem(item)
 	-- which is necessary due to bug in builds older than 7.20
 	-- bug report https://forum.cockos.com/showthread.php?t=293212
 	r.TrackFX_CopyToTake(src_tr, 0x1000000, take, 0, false) -- ismove false
+	-- if TEXT_WITH_SHADOW sett is enabled, two video proc instances are used
+	-- copy the second one
+	local copy = TEXT_WITH_SHADOW and r.TrackFX_CopyToTake(src_tr, 1+0x1000000, take, 1, false) -- ismove false
 	else -- directly, which is supported since 7.20 where there's no need to open Video proc UI to apply preset correctly
 	r.TakeFX_AddByName(take, 'Video processor', -1000) -- instantiate -1000 first fx chain slot
---	local old = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.20
---	r.TakeFX_Show(take, 0, 3) -- showFlag 3 show floating window
 	r.TakeFX_SetPreset(take, 0, OVERLAY_PRESET) -- fx 0
+	-- if TEXT_WITH_SHADOW sett is enabled two video proc instances are used
+	local copy = TEXT_WITH_SHADOW and r.TakeFX_CopyToTake(take, 0, take, 1, false) -- ismove false
 	end
-		-- only set parameters if the preset is default because in the user version
-		-- everything will be set within the preset itself
-		if OVERLAY_PRESET == 'Overlay: Text/Timecode' then
-			for parm_idx, val in pairs({[6] = 0, [7] = 1, [8] = 1}) do -- 6 - bg bright, 7 - bg alpha, 8 - fit bg to text
-			r.TakeFX_SetParam(take, 0, parm_idx, val)
-			end
-		end
+
+-- only runs if OVERLAY_PRESET is the default overlay preset
+Aplly_Video_Proc_Settings(take, OVERLAY_PRESET, TEXT_WITH_SHADOW)
 
 local len = mrkr_t[next_pos] and mrkr_t[next_pos]-next_pos -- if next_pos is the last marker position, mrkr_t[next_pos] will be invalid
 
@@ -559,7 +613,7 @@ local len = mrkr_t[next_pos] and mrkr_t[next_pos]-next_pos -- if next_pos is the
 
 r.PreventUIRefresh(-1)
 
-r.Undo_EndBlock('Transcribing: Insert preview item',-1)
+r.Undo_EndBlock('Transcribing A: Insert preview item',-1)
 
 return take -- return next preview item take
 
@@ -701,7 +755,7 @@ local proj, projfn = r.EnumProjects(-1)
 
 		if src_tr and not r.ValidatePtr(src_tr, 'MediaTrack*') then
 		-- recreate Video proc src track if was deleted after initial creation
-		src_tr = Insert_Video_Proc_Src_Track(OVERLAY_PRESET)
+		src_tr = Insert_Video_Proc_Src_Track(OVERLAY_PRESET, TEXT_WITH_SHADOW)
 		end
 
 		if not last_playpos or plays and r.GetPlayPosition() < last_playpos
@@ -843,20 +897,9 @@ or #OVERLAY_PRESET:gsub('[%s%c]','') == 0 and 'OVERLAY_PRESET setting is empty'
 	return r.defer(no_undo) end
 
 
--- targ_tr = Get_Or_Create_Preview_Track(NOTES_TRACK_NAME) -- OLD
 local tr_t, notes = Get_Notes_Tracks_And_Their_Notes(NOTES_TRACK_NAME)
-
---[[ -- OLD
-local err = not (targ_tr or preview_tr) and 'Track named "'
-..(not targ_tr and NOTES_TRACK_NAME or not preview_tr and PREVIEW_TRACK_NAME)..'" \n\n wasn\'t found'
-]]
-
---local err = #tr_t == 0 and 'Tracks named "'..NOTES_TRACK_NAME or not preview_tr and 'Track named "'..PREVIEW_TRACK_NAME
---err = err and err..'" \n\n wasn\'t found'
-
 local err = 'tracks named "" \n\n weren\'t found'
 err = #tr_t == 0 and err:gsub('""', '"'..NOTES_TRACK_NAME..'"')
---or not preview_tr and err:gsub('tracks','track'):gsub('were','was'):gsub('""','"'..PREVIEW_TRACK_NAME..'"')
 or #notes:gsub('[%s%c]','') == 0 and 'No Notes in the tracks'
 or not Segment_Markers_Exist() and 'no segment markers'
 
@@ -865,47 +908,29 @@ or not Segment_Markers_Exist() and 'no segment markers'
 	return r.defer(no_undo) end
 
 local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
---local scr_path = scr_name:match('.+[\\/]')
 
 r.Undo_BeginBlock()
 
 preview_tr = Get_Or_Create_Preview_Track(PREVIEW_TRACK_NAME)
 
---[=[
-	if #INSERT_PREVIEW_ITEMS:gsub(' ','') > 0 then
---	src_tr = Insert_Video_Proc_Src_Track()
---	preview_take = Insert_New_Preview_Item(preview_tr)
---[-[
-	preview_take = Insert_And_Or_Get_Preview_Item(preview_tr, scr_path, OVERLAY_PRESET)
-		if not preview_take then
-		r.Undo_EndBlock(r.Undo_CanUndo2(0) or '', -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following  Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
-		return r.defer(no_undo) end
-	--]]
-	end
-]=]
-
---Msg(preview_take)
---do return end
-
 INSERT_PREVIEW_ITEMS = #INSERT_PREVIEW_ITEMS:gsub(' ','') > 0
+TEXT_WITH_SHADOW = OVERLAY_PRESET == "Overlay: Text/Timecode" and #TEXT_WITH_SHADOW:gsub(' ','') > 0
 
 	if INSERT_PREVIEW_ITEMS then
-	src_tr = Insert_Video_Proc_Src_Track(OVERLAY_PRESET)	
+	src_tr = Insert_Video_Proc_Src_Track(OVERLAY_PRESET, TEXT_WITH_SHADOW)
 		if not src_tr then
 		Error_Tooltip('\n\n the overlay preset wasn\'t found \n\n', 1, 1) -- caps, spaced true
 		r.DeleteTrack(preview_tr)
 		r.Undo_EndBlock(r.Undo_CanUndo2(0) or '', -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar		
 		return r.defer(no_undo)
 		end
-	src_tr = type(src_tr) ~= 'boolean' and src_tr -- src_tr is returned as 'true' when the overlay preset was found in builds 7.20 and later, but the src_tr isn't needed because the preset can be applied without opening the Video proc UI, hence turned into false
+	src_tr = r.ValidatePtr(src_tr,'MediaTrack*') and src_tr -- src_tr is returned as 'true' when the overlay preset was found in builds 7.20 and later, but the src_tr itself isn't needed there because the preset can be applied without opening the Video proc UI, hence turned into false
 	else
 	r.SetOnlyTrackSelected(preview_tr)
 	Show_SWS_Notes_Window()
 	end
 	
-r.Undo_EndBlock('Transcribing: Create preview track', -1)
-
---do return end
+r.Undo_EndBlock('Transcribing A: Create preview track', -1)
 
 
 CLEANUP = #CLEANUP:gsub(' ','') > 0
@@ -919,6 +944,11 @@ proj_init, projfn_init = r.EnumProjects(-1)
 RUN_PREVIEW()
 
 r.atexit(Wrapper(Re_Set_Toggle_State, sect_ID, cmd_ID, 0, preview_tr, src_tr))
+
+
+
+
+
 
 
 
