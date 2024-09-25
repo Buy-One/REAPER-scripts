@@ -7,351 +7,351 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is part of the Transcribing B workflow set of scripts
-			alongside  
-			BuyOne_Transcribing B - Real time preview.lua  
-			BuyOne_Transcribing B - Format converter.lua  
-			BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
-			BuyOne_Transcribing B - Prepare transcript for rendering.lua  
-			BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
-			BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
-			BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
+	alongside  
+	BuyOne_Transcribing B - Real time preview.lua  
+	BuyOne_Transcribing B - Format converter.lua  
+	BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
+	BuyOne_Transcribing B - Prepare transcript for rendering.lua  
+	BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
+	BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
+	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
 
-			This is the main script of the set geared towards segment 
-			manipulation: creation, boundaries change, split, merger.
-			
-			This workflow implies that actual transcript will be created
-			inside 'Region/Marker Manager'. To set it up for the workflow
-			have the Ruler time unit set to Minutes:Seconds so that regions
-			time data shown in the Manager is denominated in  
-			hours:minutes:seconds.milliseconds.  
-			This will allow to quickly navigate between segments by simply 
-			clicking their region entries in the Manager. 	
-		
-			The script identifies segment regions by color defined in
-			the SEGMENT_REGION_COLOR setting of the USER SETTINGS. All
-			regions colored differently are ignored.  
-			Color coding allows turning segments off by changing color
-			of their region.  
-			To turn them back on the segment region designated color must 
-			be restored, see par. D in the chapter  
-			OPERATIONS PEFRORMED BY THE SCRIPT below.  
-			If you have regions colored differently in your project, in the
-			Region/Marker Manager the segment regions can be grouped together
-			by clicking the color column.			
-			
-			
-			THE MEDIA ITEM WHOSE CONTENT NEEDS TO BE TRANSCRIBED MUST 
-			BE LOCATED AT THE VERY PROJECT START FOR THE SEGMENT TIME STAMPS 
-			TO BE ACCURATE BECAUSE TIME IS COUNTED FROM THE PROJECT START
-			RATHER THAN FROM THE MEDIA ITEM START.  
-			PROJECT TIME BASE MUST BE SET TO TIME SO THAT THE MEDIA ITEM
-			AND REGIONS LENGTH AND LOCATION ARE INDEPENDENT OF PROJECT TEMPO.
-			
-			If your aim is to transcribe for SRT/VTT formats be aware that
-			their support by this set of scripts is very basic. When the
-			transcript is converted into these formats with the script
-			'BuyOne_Transcribing B - Format converter.lua' all textual 
-			data which follow the time stamps are moved to the next line, 
-			regardless of their nature as if all of them where meant to be 
-			displayed on the screen. For VTT format, data between segment
-			lines can be retained at conversion which is useful for keeping
-			comments, region data etc., if any, but garbage as well because 
-			the conversion script doesn't analyze such data.
-			
-			Every time the script is executed it resolves overlapping segment
-			regions, if any.
-			
-			
-			► OPERATIONS PEFRORMED BY THE SCRIPT 
+	This is the main script of the set geared towards segment 
+	manipulation: creation, boundaries change, split, merger.
+	
+	This workflow implies that actual transcript will be created
+	inside 'Region/Marker Manager'. To set it up for the workflow
+	have the Ruler time unit set to Minutes:Seconds so that regions
+	time data shown in the Manager is denominated in  
+	hours:minutes:seconds.milliseconds.  
+	This will allow to quickly navigate between segments by simply 
+	clicking their region entries in the Manager. 	
 
-			● A. Segment creation
-			
-			1. Manually set loop points over the audio segment to be transcribed.  
-			2. Run the script to create segment region.  
-			3. Tanscribe using Region/Marker manager to input text into relevan
-			region name field.
-			
-			To create next segment, in builds older than 7.19 the following 
-			custom action may be used (included with the script set in the 
-			file 'Transcribing workflow custom actions.ReaperKeyMap' )  
-			while the loop points are set to the previous segment bounds:
-			
-			Custom: Transcribing - Shift loop right by the loop length (loop points must already exist)  
-			  Time selection: Copy loop points to time selection  
-			  Time selection: Shift right (by time selection length)  
-			  Time selection: Copy time selection to loop points  
-			  Time selection: Remove (unselect) time selection  
-			  
-			or since build 7.19 the actions
-			'Loop points: Move start point to cursor (preserve length)'
-			'Loop points: Move end point to cursor (preserve length)'
-			then manually adjust loop start/end points as needed and run 
-			the script again, and so on.
-			
-			To set loop points to a region either double click the Ruler 
-			within region (default mouse modifier action of the Ruler context)
-			or double click the region bar, or run the action 
-			'Regions: Set loop points to current region' (since REAPER build 7.10) 
-			or run the following custom action which works for regions as well
-			(included with the script set in the file 
-			'Transcribing workflow custom actions.ReaperKeyMap' ):
-			
-			Custom: Transcribing - Create loop points between adjacent project markers (place edit cursor between markers or at the left one)
-			  Time selection: Remove (unselect) time selection and loop points  
-			  View: Move cursor right 8 pixels  
-			  Markers: Go to previous marker/project start  
-			  Loop points: Set start point  
-			  Markers: Go to next marker/project end  
-			  Loop points: Set end point  
-			  Markers: Go to previous marker/project start
-			
-			
-			Watch demo 'Transcribing B - 1. Segment creation.mp4' which 
-			comes with the set of scripts
-			
-			Rules:
-			New segment regions can be created outside of existing segment 
-			regions or between them. Loop points can coincide with segment
-			regions start/end as long as the loop line is not enclosed within
-			a region. New segment regions cannot be created within the existing 
-			segment regions or across them. During all operations this script
-			is designed to perform except coloring (see par. D below) non-segment 
-			regions are ignored as if they don't exist so the above rules don't 
-			apply to them.
+	The script identifies segment regions by color defined in
+	the SEGMENT_REGION_COLOR setting of the USER SETTINGS. All
+	regions colored differently are ignored.  
+	Color coding allows turning segments off by changing color
+	of their region.  
+	To turn them back on the segment region designated color must 
+	be restored, see par. D in the chapter  
+	OPERATIONS PEFRORMED BY THE SCRIPT below.  
+	If you have regions colored differently in your project, in the
+	Region/Marker Manager the segment regions can be grouped together
+	by clicking the color column.			
+	
+	
+	THE MEDIA ITEM WHOSE CONTENT NEEDS TO BE TRANSCRIBED MUST 
+	BE LOCATED AT THE VERY PROJECT START FOR THE SEGMENT TIME STAMPS 
+	TO BE ACCURATE BECAUSE TIME IS COUNTED FROM THE PROJECT START
+	RATHER THAN FROM THE MEDIA ITEM START.  
+	PROJECT TIME BASE MUST BE SET TO TIME SO THAT THE MEDIA ITEM
+	AND REGIONS LENGTH AND LOCATION ARE INDEPENDENT OF PROJECT TEMPO.
+	
+	If your aim is to transcribe for SRT/VTT formats be aware that
+	their support by this set of scripts is very basic. When the
+	transcript is converted into these formats with the script
+	'BuyOne_Transcribing B - Format converter.lua' all textual 
+	data which follow the time stamps are moved to the next line, 
+	regardless of their nature as if all of them where meant to be 
+	displayed on the screen. For VTT format, data between segment
+	lines can be retained at conversion which is useful for keeping
+	comments, region data etc., if any, but garbage as well because 
+	the conversion script doesn't analyze such data.
+	
+	Every time the script is executed it resolves overlapping segment
+	regions, if any.
+	
+	
+	► OPERATIONS PEFRORMED BY THE SCRIPT 
 
-			
-			● B. Splitting segments
-			
-			Existing segments can be split, for this purpose:
-			
-			1. Set loop points to a segment region using methods described in
-			the par. A above.
-			2. Manually adjust either start or end point of the loop moving it 
-			right or left respectively (the stationary loop point must remain 
-			coinciding with start/end of the segment region).
-			3. Run this script.
+	● A. Segment creation
+	
+	1. Manually set loop points over the audio segment to be transcribed.  
+	2. Run the script to create segment region.  
+	3. Tanscribe using Region/Marker manager to input text into relevan
+	region name field.
+	
+	To create next segment, in builds older than 7.19 the following 
+	custom action may be used (included with the script set in the 
+	file 'Transcribing workflow custom actions.ReaperKeyMap' )  
+	while the loop points are set to the previous segment bounds:
+	
+	Custom: Transcribing - Shift loop right by the loop length (loop points must already exist)  
+	  Time selection: Copy loop points to time selection  
+	  Time selection: Shift right (by time selection length)  
+	  Time selection: Copy time selection to loop points  
+	  Time selection: Remove (unselect) time selection  
+	  
+	or since build 7.19 the actions
+	'Loop points: Move start point to cursor (preserve length)'
+	'Loop points: Move end point to cursor (preserve length)'
+	then manually adjust loop start/end points as needed and run 
+	the script again, and so on.
+	
+	To set loop points to a region either double click the Ruler 
+	within region (default mouse modifier action of the Ruler context)
+	or double click the region bar, or run the action 
+	'Regions: Set loop points to current region' (since REAPER build 7.10) 
+	or run the following custom action which works for regions as well
+	(included with the script set in the file 
+	'Transcribing workflow custom actions.ReaperKeyMap' ):
+	
+	Custom: Transcribing - Create loop points between adjacent project markers (place edit cursor between markers or at the left one)
+	  Time selection: Remove (unselect) time selection and loop points  
+	  View: Move cursor right 8 pixels  
+	  Markers: Go to previous marker/project start  
+	  Loop points: Set start point  
+	  Markers: Go to next marker/project end  
+	  Loop points: Set end point  
+	  Markers: Go to previous marker/project start
+	
+	
+	Watch demo 'Transcribing B - 1. Segment creation.mp4' which 
+	comes with the set of scripts
+	
+	Rules:
+	New segment regions can be created outside of existing segment 
+	regions or between them. Loop points can coincide with segment
+	regions start/end as long as the loop line is not enclosed within
+	a region. New segment regions cannot be created within the existing 
+	segment regions or across them. During all operations this script
+	is designed to perform except coloring (see par. D below) non-segment 
+	regions are ignored as if they don't exist so the above rules don't 
+	apply to them.
 
-			As a result the time span which was previously covered by a single 
-			segment region will now be covered by two.
-			
-			Watch demo 'Transcribing B - 2. Splitting segments.mp4' which comes 
-			with the set of scripts
+	
+	● B. Splitting segments
+	
+	Existing segments can be split, for this purpose:
+	
+	1. Set loop points to a segment region using methods described in
+	the par. A above.
+	2. Manually adjust either start or end point of the loop moving it 
+	right or left respectively (the stationary loop point must remain 
+	coinciding with start/end of the segment region).
+	3. Run this script.
 
-			
-			● C. Merging segments
-			
-			Existing segments can be merged, for this purpose:
-			
-			1. Set loop points such that both are located within different
-			regions or coincide with their start/end.
-			2. Run this script.
-			
-			As s result all segment regions encompassed by the loop points 
-			except the very first will be deleted while the first one will 
-			be extended up to the end of the last deleted segment region.  
-			The transcript of the deleted segments (if any) will be merged 
-			with the transcript of the segment represented by the first 
-			region covered by the loop points.
-			
-			Watch demo 'Transcribing B - 3. Merging segments.mp4' which comes 
-			with the set of scripts
-			
-			
-			● D. Coloring non-segment region
-			
-			1. Set loop points to a non-segment region start/end.
-			2. Run the script.
-			
-			After coloring such region becomes a valid segment region and
-			will be recognized by this script.  
-			This functionality also allows turning on a segment region after
-			it was turned off by color change.
-			
-			If not both loop points are set to the non-segment region 
-			boundaries the script will create a new segment region instead.
-			
-			If the targeted non-segment region happens to be overlapped by 
-			a segment region the script will focus on the latter and either 
-			perform operations B and C or will display an error message.  		
-						
-			Watch demo 'Transcribing B - 4. Coloring non-segment region.mp4' 
-			which comes with the set of scripts
-			
-			
-			At each run the script resolves overlapping segment regions
-			if there're any.
-			
-			
-			● E. Displaying this text
-			
-			In order to display this 'About' text in the ReaScript console
-			for reference, place the edit cursor within a segment region,
-			clear the loop points and run the script.
-			
-			
-			------------------------------------------
-			
-			► NEW LINE TAG
-			
-			The trascript supports new line tag <n> to effect creation of a new
-			line for the text which follows the tag during transcript preview 
-			within video context with the script
-			'BuyOne_Transcribing B - Real time preview.lua'.
-			and during its conversion into SRT format with the script 
-			'BuyOne_Transcribing B - Import SRT or VTT file as markers and Notes.lua'
-			the tag is supported for SRT and VTT output formats. During conversion 
-			into AS IS format the tag will be deleted if present. The tag can be 
-			preceded and followed by spaces which will be trimmed at conversion.
+	As a result the time span which was previously covered by a single 
+	segment region will now be covered by two.
+	
+	Watch demo 'Transcribing B - 2. Splitting segments.mp4' which comes 
+	with the set of scripts
+
+	
+	● C. Merging segments
+	
+	Existing segments can be merged, for this purpose:
+	
+	1. Set loop points such that both are located within different
+	regions or coincide with their start/end.
+	2. Run this script.
+	
+	As s result all segment regions encompassed by the loop points 
+	except the very first will be deleted while the first one will 
+	be extended up to the end of the last deleted segment region.  
+	The transcript of the deleted segments (if any) will be merged 
+	with the transcript of the segment represented by the first 
+	region covered by the loop points.
+	
+	Watch demo 'Transcribing B - 3. Merging segments.mp4' which comes 
+	with the set of scripts
+	
+	
+	● D. Coloring non-segment region
+	
+	1. Set loop points to a non-segment region start/end.
+	2. Run the script.
+	
+	After coloring such region becomes a valid segment region and
+	will be recognized by this script.  
+	This functionality also allows turning on a segment region after
+	it was turned off by color change.
+	
+	If not both loop points are set to the non-segment region 
+	boundaries the script will create a new segment region instead.
+	
+	If the targeted non-segment region happens to be overlapped by 
+	a segment region the script will focus on the latter and either 
+	perform operations B and C or will display an error message.  		
 				
- 
-			► ADDITIONAL WORKFLOW AIDS
-			
-			Disable 'Snap to grid' to be able to mark out a segment with 
-			loop points or adjust a segment region bount with greater precision. 
-			Or hold Ctrl/Cmd when creating/adjusting loop points and Shift when 
-			adjusting region bounds to temporarily disable snapping.
-			
-			When creating/managing multiple segments back to back it's very 
-			convenient to set this script armed by right clicking the 
-			toolbar button it's linked to and simply click on the Arrange 
-			canvas to run the script.
-			
-			To focus on auditioning a segment:  
-			
-			1. Enable the following actions:  
-			Transport: Toggle stop playback at end of loop if repeat is disabled (available since build 4.30)  
-			OR  
-			Xenakios/SWS: [Deprecated] Toggle stop playback at end of loop  
-			2. Set loop points to a segment using methods described in par. A above.  
-			3. Hit Play to audition, at the end of the loop the play cursor will  
-			return to the original position.
-						
-			To stop playback in the middle of the segment use  
-			EITHER  
-			Transport: Play/pause  
-			OR  
-			Transport: Pause		
-			
-			To navigate between segment regions for auditioning or preview
-			within video context with 'BuyOne_Transcribing B - Real time preview.lua' 
-			script when the transport is stopped use the following custom 
-			actions which also work for regions (included with the script 
-			set in the file 'Transcribing workflow custom actions.ReaperKeyMap' ):
-			
-			Custom: Transcribing - Move loop points to next segment (loop points must already be set)  
-			  Time selection: Remove (unselect) time selection  
-			  Go to start of loop  
-			  Markers: Go to next marker/project end  
-			  Loop points: Set start point  
-			  Markers: Go to next marker/project end  
-			  Loop points: Set end point  
-			  Go to start of loop
+	Watch demo 'Transcribing B - 4. Coloring non-segment region.mp4' 
+	which comes with the set of scripts
+	
+	
+	At each run the script resolves overlapping segment regions
+	if there're any.
+	
+	
+	● E. Displaying this text
+	
+	In order to display this 'About' text in the ReaScript console
+	for reference, place the edit cursor within a segment region,
+	clear the loop points and run the script.
+	
+	
+	------------------------------------------
+	
+	► NEW LINE TAG
+	
+	The trascript supports new line tag <n> to effect creation of a new
+	line for the text which follows the tag during transcript preview 
+	within video context with the script
+	'BuyOne_Transcribing B - Real time preview.lua'.
+	and during its conversion into SRT format with the script 
+	'BuyOne_Transcribing B - Import SRT or VTT file as markers and Notes.lua'
+	the tag is supported for SRT and VTT output formats. During conversion 
+	into AS IS format the tag will be deleted if present. The tag can be 
+	preceded and followed by spaces which will be trimmed at conversion.
+		
 
-			Custom: Transcribing - Move loop points to previous segment (loop points must already be set)  
-			  Time selection: Remove (unselect) time selection  
-			  Go to start of loop  
-			  Markers: Go to previous marker/project start  
-			  Loop points: Set start point  
-			  Markers: Go to next marker/project end  
-			  Loop points: Set end point  
-			  Go to start of loop
-			
-			To navigate to a segment at a particular time displayed
-			in the Start and End columns of the Region/Marker Manager 
-			click the region entry of such segment in the Manager 
-			having its option 
-			'Seek playback when selecting a marker or region' enabled.			 
-			This can be followed by the action 
-			'Regions: Set loop points to current region' available since
-			REAPER 7.10 to set loop points to the selected region, and in 
-			earlier builds - by custom action from par. A above namely  
-			'Custom: Transcribing - Create loop points between adjacent project markers',
-			and in most builds by double clicking the Ruler within region 
-			or the region bar directly.  
-			Or more conveniently enable the option  
-			'Play region through then repeat or stop when selecting a region'.
-			so that loop points are set to the region and it starts playing 
-			automatically when selected in the Manager.
-			
-			To set the edit cursor to region start directly in Arrange 
-			if Snap is disabled run the action  
-			'Markers: Go to previous marker/project start'  
-			after placing the edit cursor within the target region 
-			to prime the edit cursor for the action. The action can be 
-			run with a shortcut or bound to a mouse modifier in context 
-			such as 'Ruler (double)click'. Alternatively, to obviate 
-			clicking, instead of the raw action use the following custom 
-			action running it with a shortcut:  
-			
-			Custom: Move edit cursor to marker left of the mouse cursor
-			  View: Move edit cursor to mouse cursor (no snapping)
-			  Markers: Go to previous marker/project start			  
-			
-			To find a particular segment region in the Region/Marker Manager
-			copy its transcript and paste into the Manager filter field
-			or use the scripts   
-			'BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua'
-			included in the script set which obviate manual copying
-			of the region transcript.
-			
-			To clear loop points run the action  
-			'Loop points: Remove (unselect) loop point selection'
-			or Ctrl+Alt/Cmd+Opt + click the Ruler (default mouse modifier).
-			That's unless the option 'Loop points linked to time selection'
-			is enabled (default) in which case the loop points can be cleared
-			along with the time selection using Esc (default shortcut).
-			
-			The segments transcript can be managed in the SWS Extension Notes 
-			utility rather than in the Region/Marker Manager. In the Notes 
-			utility drop down menu select 'Region names'. Place the edit
-			cursor within the segment region bounds so its text is displayed 
-			in the Notes. Adding or changing it in the notes is immediately 
-			reflected in the region bar in Arrange. The result of operations
-			such as segments splitting and merging is conveniently reflected 
-			in the Notes.
-			
-			
-			If after you started your project you need to move the transcript
-			media source later or earlier (after trimming from the beginning)
-			on the time line in order to lengthen/shorten the time between the 
-			media start and the transcribed content start within the media 
-			(remember, that transcript segments time stamp will only be 
-			accurate if the media starts at and is rendered from the project 
-			start) you can:
-			
-			A. 
-			1. Enable 'Ripple edit all tracks'.  
-			2. Ensure that the media item spans all segment regions otherwise 
-			the feature won't work.  
-			3. Change the position of the media item by dragging it and the 
-			regions will follow.
-			
-			B. After moving the media item take advantage of the script  
-			'BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua'
-			included in the script set.
-			
-			In both cases after regions positions have been changed run this 
-			script in Batch segment update mode (see par. F above) in order 
-			to update segment time stamps in the regions names and in track Notes.
-			
-			
-			
-			► CONVERSION BETWEEN PROJECTS
-			
-			To convert between Transcribing B and A workflow projects export 
-			the source project as an SRT or VTT file and import it back into 
-			REAPER using the scripts  
-			'BuyOne_Transcribing B - Format converter.lua' to export and
-			'BuyOne_Transcribing A - Import SRT or VTT file as regions.lua'
-			to import, or vice versa  
-			'BuyOne_Transcribing A - Format converter.lua'
-			'BuyOne_Transcribing B - Import SRT or VTT file as regions.lua'
-			depending on the direction of conversion.	 
-			If transcript of Transcribing A workflow source project contains 
-			metadata meant to be exported in VTT format, it will be lost as 
-			a result of import with 
-			'BuyOne_Transcribing B - Import SRT or VTT file as regions.lua'
-			script because Transcribing B workflow doesn't support metadata.
+	► ADDITIONAL WORKFLOW AIDS
+	
+	Disable 'Snap to grid' to be able to mark out a segment with 
+	loop points or adjust a segment region bount with greater precision. 
+	Or hold Ctrl/Cmd when creating/adjusting loop points and Shift when 
+	adjusting region bounds to temporarily disable snapping.
+	
+	When creating/managing multiple segments back to back it's very 
+	convenient to set this script armed by right clicking the 
+	toolbar button it's linked to and simply click on the Arrange 
+	canvas to run the script.
+	
+	To focus on auditioning a segment:  
+	
+	1. Enable the following actions:  
+	Transport: Toggle stop playback at end of loop if repeat is disabled (available since build 4.30)  
+	OR  
+	Xenakios/SWS: [Deprecated] Toggle stop playback at end of loop  
+	2. Set loop points to a segment using methods described in par. A above.  
+	3. Hit Play to audition, at the end of the loop the play cursor will  
+	return to the original position.
+				
+	To stop playback in the middle of the segment use  
+	EITHER  
+	Transport: Play/pause  
+	OR  
+	Transport: Pause		
+	
+	To navigate between segment regions for auditioning or preview
+	within video context with 'BuyOne_Transcribing B - Real time preview.lua' 
+	script when the transport is stopped use the following custom 
+	actions which also work for regions (included with the script 
+	set in the file 'Transcribing workflow custom actions.ReaperKeyMap' ):
+	
+	Custom: Transcribing - Move loop points to next segment (loop points must already be set)  
+	  Time selection: Remove (unselect) time selection  
+	  Go to start of loop  
+	  Markers: Go to next marker/project end  
+	  Loop points: Set start point  
+	  Markers: Go to next marker/project end  
+	  Loop points: Set end point  
+	  Go to start of loop
+
+	Custom: Transcribing - Move loop points to previous segment (loop points must already be set)  
+	  Time selection: Remove (unselect) time selection  
+	  Go to start of loop  
+	  Markers: Go to previous marker/project start  
+	  Loop points: Set start point  
+	  Markers: Go to next marker/project end  
+	  Loop points: Set end point  
+	  Go to start of loop
+	
+	To navigate to a segment at a particular time displayed
+	in the Start and End columns of the Region/Marker Manager 
+	click the region entry of such segment in the Manager 
+	having its option 
+	'Seek playback when selecting a marker or region' enabled.			 
+	This can be followed by the action 
+	'Regions: Set loop points to current region' available since
+	REAPER 7.10 to set loop points to the selected region, and in 
+	earlier builds - by custom action from par. A above namely  
+	'Custom: Transcribing - Create loop points between adjacent project markers',
+	and in most builds by double clicking the Ruler within region 
+	or the region bar directly.  
+	Or more conveniently enable the option  
+	'Play region through then repeat or stop when selecting a region'.
+	so that loop points are set to the region and it starts playing 
+	automatically when selected in the Manager.
+	
+	To set the edit cursor to region start directly in Arrange 
+	if Snap is disabled run the action  
+	'Markers: Go to previous marker/project start'  
+	after placing the edit cursor within the target region 
+	to prime the edit cursor for the action. The action can be 
+	run with a shortcut or bound to a mouse modifier in context 
+	such as 'Ruler (double)click'. Alternatively, to obviate 
+	clicking, instead of the raw action use the following custom 
+	action running it with a shortcut:  
+	
+	Custom: Move edit cursor to marker left of the mouse cursor
+	  View: Move edit cursor to mouse cursor (no snapping)
+	  Markers: Go to previous marker/project start			  
+	
+	To find a particular segment region in the Region/Marker Manager
+	copy its transcript and paste into the Manager filter field
+	or use the scripts   
+	'BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua'
+	included in the script set which obviate manual copying
+	of the region transcript.
+	
+	To clear loop points run the action  
+	'Loop points: Remove (unselect) loop point selection'
+	or Ctrl+Alt/Cmd+Opt + click the Ruler (default mouse modifier).
+	That's unless the option 'Loop points linked to time selection'
+	is enabled (default) in which case the loop points can be cleared
+	along with the time selection using Esc (default shortcut).
+	
+	The segments transcript can be managed in the SWS Extension Notes 
+	utility rather than in the Region/Marker Manager. In the Notes 
+	utility drop down menu select 'Region names'. Place the edit
+	cursor within the segment region bounds so its text is displayed 
+	in the Notes. Adding or changing it in the notes is immediately 
+	reflected in the region bar in Arrange. The result of operations
+	such as segments splitting and merging is conveniently reflected 
+	in the Notes.
+	
+	
+	If after you started your project you need to move the transcript
+	media source later or earlier (after trimming from the beginning)
+	on the time line in order to lengthen/shorten the time between the 
+	media start and the transcribed content start within the media 
+	(remember, that transcript segments time stamp will only be 
+	accurate if the media starts at and is rendered from the project 
+	start) you can:
+	
+	A. 
+	1. Enable 'Ripple edit all tracks'.  
+	2. Ensure that the media item spans all segment regions otherwise 
+	the feature won't work.  
+	3. Change the position of the media item by dragging it and the 
+	regions will follow.
+	
+	B. After moving the media item take advantage of the script  
+	'BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua'
+	included in the script set.
+	
+	In both cases after regions positions have been changed run this 
+	script in Batch segment update mode (see par. F above) in order 
+	to update segment time stamps in the regions names and in track Notes.
+	
+	
+	
+	► CONVERSION BETWEEN PROJECTS
+	
+	To convert between Transcribing B and A workflow projects export 
+	the source project as an SRT or VTT file and import it back into 
+	REAPER using the scripts  
+	'BuyOne_Transcribing B - Format converter.lua' to export and
+	'BuyOne_Transcribing A - Import SRT or VTT file as regions.lua'
+	to import, or vice versa  
+	'BuyOne_Transcribing A - Format converter.lua'
+	'BuyOne_Transcribing B - Import SRT or VTT file as regions.lua'
+	depending on the direction of conversion.	 
+	If transcript of Transcribing A workflow source project contains 
+	metadata meant to be exported in VTT format, it will be lost as 
+	a result of import with 
+	'BuyOne_Transcribing B - Import SRT or VTT file as regions.lua'
+	script because Transcribing B workflow doesn't support metadata.
 
 ]]
 
