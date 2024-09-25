@@ -7,32 +7,32 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is part of the Transcribing A workflow set of scripts
-			alongside  
-			BuyOne_Transcribing A - Create and manage segments (MAIN).lua  
-			BuyOne_Transcribing A - Real time preview.lua  
-			BuyOne_Transcribing A - Format converter.lua  
-			BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua  
-			BuyOne_Transcribing A - Prepare transcript for rendering.lua   
-			BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua  
-			BuyOne_Transcribing A - Go to segment marker.lua
-			BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua
+	alongside  
+	BuyOne_Transcribing A - Create and manage segments (MAIN).lua  
+	BuyOne_Transcribing A - Real time preview.lua  
+	BuyOne_Transcribing A - Format converter.lua  
+	BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing A - Prepare transcript for rendering.lua   
+	BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua  
+	BuyOne_Transcribing A - Go to segment marker.lua
+	BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua
 
-			The script can be used for general purposes because it
-			affects all markers in time selection, which is something
-			to be aware of if you're using it as part of Transcribing A 
-			workflow in cases where you only wish to offset segment 
-			markers and leave any other markers at their original positions.
-			In this scenario also be aware that the script doesn't update
-			segment markers time stamp included in their name. To do this
-			run 'BuyOne_Transcribing A - Create and manage segments (MAIN).lua'
-			script in 'Batch segment update' mode described in par. F of its
-			'About:' text. The time stamps will be updated both in segment
-			marker names and in the segment entries in the Notes.  
-			
-			In the offset amount dialogue which will pop up fields which 
-			aren't necessary can be left empty. In 'Direction' field enter
-			any character (to add negative sign to the offset amount) if 
-			markers must be moved left.
+	The script can be used for general purposes because it
+	affects all markers in time selection, which is something
+	to be aware of if you're using it as part of Transcribing A 
+	workflow in cases where you only wish to offset segment 
+	markers and leave any other markers at their original positions.
+	In this scenario also be aware that the script doesn't update
+	segment markers time stamp included in their name. To do this
+	run 'BuyOne_Transcribing A - Create and manage segments (MAIN).lua'
+	script in 'Batch segment update' mode described in par. F of its
+	'About:' text. The time stamps will be updated both in segment
+	marker names and in the segment entries in the Notes.  
+	
+	In the offset amount dialogue which will pop up fields which 
+	aren't necessary can be left empty. In 'Direction' field enter
+	any character (to add negative sign to the offset amount) if 
+	markers must be moved left.
 ]]
 
 
