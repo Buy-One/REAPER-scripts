@@ -1,0 +1,4 @@
+ACT 1 0 "d6bfa01f0785664bac5abb42b0035b9e" "Custom: Transcribing - Shift loop right by the loop length (loop points must already be set)" 40623 40038 40622 40635
+ACT 1 0 "88142361c8db9248a64b4fd96ece3d7a" "Custom: Transcribing - Create loop points between adjacent project markers (place edit cursor between markers or at the left one)" 40020 41667 40172 40222 40173 40223 40172
+ACT 1 0 "f816a688e2a8bb4e9699a69fc50bf074" "Custom: Transcribing - Move loop points to next segment (loop points must already be set)" 40635 40632 40173 40222 40173 40223 40632 41667
+ACT 1 0 "f7d6510bb5fcbc44a4ac331bf1264577" "Custom: Transcribing - Move loop points to previous segment (loop points must already be set)" 40635 40632 40172 40222 40173 40223 40632 41667
