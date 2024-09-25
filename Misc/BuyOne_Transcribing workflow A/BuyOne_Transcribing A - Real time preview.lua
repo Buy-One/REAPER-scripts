@@ -182,7 +182,7 @@ About:	The script is part of the Transcribing A workflow set of scripts
 -- Between the quotes insert the name of track(s)
 -- where Notes with the transcript are stored;
 -- must match the same setting in the script
--- 'BuyOne_Transcribing A - Create and manage segments.lua';
+-- 'BuyOne_Transcribing A - Create and manage segments (MAIN).lua';
 -- CHANGING THIS SETTING MIDPROJECT IS NOT RECOMMENDED
 -- BECAUSE SCRIPT ACCESS TO THE NOTES TRACKS WILL BE LOST
 NOTES_TRACK_NAME = "TRANSCRIPT"
