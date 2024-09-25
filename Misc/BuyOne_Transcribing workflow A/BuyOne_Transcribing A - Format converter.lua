@@ -2,25 +2,26 @@
 ReaScript name: BuyOne_Transcribing A - Format converter.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: 1.2 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
+Version: 1.3
+Changelog: 1.3 #Updated script name
+	   1.2 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
 	       #Fixed extension type when exporting as an SRT format file, added .vtt extension support
 	   1.1 #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
-About:	The script is part of the Transcribing workflow set of scripts
+About:	The script is part of the Transcribing A workflow set of scripts
 	alongside  
-	BuyOne_Transcribing - Create and manage segments (MAIN).lua  
-	BuyOne_Transcribing - Real time preview.lua  
-	BuyOne_Transcribing - Import SRT or VTT file as markers and SWS track Notes.lua  
-	BuyOne_Transcribing - Prepare transcript for rendering.lua  
-	BuyOne_Transcribing - Select Notes track based on marker at edit cursor.lua  
-	BuyOne_Transcribing - Go to segment marker.lua
-	BuyOne_Transcribing - Generate Transcribing toolbar ReaperMenu file.lua
+	BuyOne_Transcribing A - Create and manage segments (MAIN).lua  
+	BuyOne_Transcribing A - Real time preview.lua  
+	BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing A - Prepare transcript for rendering.lua  
+	BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua  
+	BuyOne_Transcribing A - Go to segment marker.lua
+	BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua
 	
 	meant to format a transcript created with the script 
-	BuyOne_Transcribing - Create and manage segments.lua
+	'BuyOne_Transcribing A - Create and manage segments.lua'
 	and display the result in the SWS/S&M Notes
 	
 	The formatted version of the original transcript retrieved from 
@@ -28,10 +29,10 @@ About:	The script is part of the Transcribing workflow set of scripts
 	is displayed as Notes of a new track enserted at the end of the 
 	tracklist.
 	
-	.SRT and .VTT formats conversion is very basic. All textual data
+	SRT and VTT formats conversion is very basic. All textual data
 	which follow the time stamps are moved to the next line, regardless
 	of their nature as if all of them where meant to be displayed
-	on the screen. Conversion into the .VTT allows keeping metadata 
+	on the screen. Conversion into the VTT allows keeping metadata 
 	between cue lines, such as comments, region data, provided 
 	such were included in the Notes between segment lines.  	
 		
@@ -46,8 +47,8 @@ About:	The script is part of the Transcribing workflow set of scripts
 	If the converted transcript doesn't exceed the limit, the resulting 
 	code is displayed in track Notes named after the selected format. 
 	The track is reused in subsequent conversions as long as its name
-	and the format remain the same.
-
+	and the format remain the same.  
+			
 ]]
 
 -----------------------------------------------------------------------------
@@ -57,7 +58,7 @@ About:	The script is part of the Transcribing workflow set of scripts
 -- Between the quotes insert the name of track(s)
 -- where Notes with the transcript are stored;
 -- must match the same setting in the script
--- 'BuyOne_Transcribing - Create and manage segments.lua';
+-- 'BuyOne_Transcribing A - Create and manage segments.lua';
 -- CHANGING THIS SETTING MIDPROJECT IS NOT RECOMMENDED
 -- BECAUSE SCRIPT ACCESS TO THE NOTES TRACKS WILL BE LOST
 NOTES_TRACK_NAME = "TRANSCRIPT"
@@ -157,18 +158,18 @@ left_edge_dist = left_edge_dist and left_edge_dist > 0 and math.floor(left_edge_
 local x, y = r.GetMousePosition()
 
 	if left_edge_dist and x <= left_edge_dist or not left_edge_dist then -- 100 px within the screen left edge
--- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
--- https://forum.cockos.com/showthread.php?t=280658#25
--- https://forum.cockos.com/showthread.php?t=280658&page=2#44
--- BUT LACK OF gfx WINDOW DOESN'T ALLOW RE-OPENING THE MENU AT THE SAME POSITION via ::RELOAD::
--- therefore enabled with keep_menu_open is valid
-local old = tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82
--- screen reader used by blind users with OSARA extension may be affected
--- by the absence if the gfx window therefore only disable it in builds
--- newer than 6.82 if OSARA extension isn't installed
--- ref: https://github.com/Buy-One/REAPER-scripts/issues/8#issuecomment-1992859534
-local OSARA = r.GetToggleCommandState(r.NamedCommandLookup('_OSARA_CONFIG_reportFx')) >= 0 -- OSARA extension is installed
-local init = (old or OSARA or not old and not OSARA and keep_menu_open) and gfx.init('', 0, 0)
+	-- before build 6.82 gfx.showmenu didn't work on Windows without gfx.init
+	-- https://forum.cockos.com/showthread.php?t=280658#25
+	-- https://forum.cockos.com/showthread.php?t=280658&page=2#44
+	-- BUT LACK OF gfx WINDOW DOESN'T ALLOW RE-OPENING THE MENU AT THE SAME POSITION via ::RELOAD::
+	-- therefore enabled with keep_menu_open is valid
+	local old = tonumber(r.GetAppVersion():match('[%d%.]+')) < 6.82
+	-- screen reader used by blind users with OSARA extension may be affected
+	-- by the absence if the gfx window therefore only disable it in builds
+	-- newer than 6.82 if OSARA extension isn't installed
+	-- ref: https://github.com/Buy-One/REAPER-scripts/issues/8#issuecomment-1992859534
+	local OSARA = r.GetToggleCommandState(r.NamedCommandLookup('_OSARA_CONFIG_reportFx')) >= 0 -- OSARA extension is installed
+	local init = (old or OSARA or not old and not OSARA and keep_menu_open) and gfx.init('', 0, 0)
 	-- open menu at the mouse cursor, after reloading the menu doesn't change its position based on the mouse pos after a menu item was clicked, it firmly stays at its initial position
 		-- ensure that if keep_menu_open is enabled the menu opens every time at the same spot
 		if keep_menu_open and not coord_t then -- keep_menu_open is the one which enables menu reload
@@ -286,7 +287,7 @@ local segm_idx = 0
 		segm_idx = segm_idx+1
 		local txt = #fin == 0 and line:match('^'..st..'(.*)') or txt -- re-capture to preserve leading spaces, if any, if end time stamp is empty because they're not included in the capture above
 		txt = txt and txt:match('%S.*') or '' -- trimming leading space from the text
-		local ret, last_mrkr_stamp = r.GetSetMediaTrackInfo_String(tr_t[1].tr, 'P_EXT:LASTMARKERPOS', '', false) -- setNewValue false // stored inside PROCESS_SEGMENTS() function of 'BuyOne_Transcribing - Create and manage segments.lua' script
+		local ret, last_mrkr_stamp = r.GetSetMediaTrackInfo_String(tr_t[1].tr, 'P_EXT:LASTMARKERPOS', '', false) -- setNewValue false // stored inside PROCESS_SEGMENTS() function of 'BuyOne_Transcribing A - Create and manage segments.lua' script
 		fin = #fin > 0 and fin or notes_t[k+1] and notes_t[k+1]:match('^%s*%d+:%d+:%d+%.%d+')
 		or #last_mrkr_stamp > 0 and last_mrkr_stamp --or format_time_stamp(itm_len)
 		or format_time_stamp(r.GetProjectLength(0))
@@ -403,7 +404,7 @@ local choice = Reload_Menu_at_Same_Pos(menu, 1) -- keep_menu_open is true
 	elseif choice < 2 or choice == 6 or choice == 7 or choice > 10 then goto RELOAD
 	end
 
-local undo, notes_form, tr_name = 'Transcribing: '
+local undo, notes_form, tr_name = 'Transcribing A: '
 
 	if choice > 1 and choice < 6 then
 	local options = (choice == 2 and (opt1 == '1' and '0' or '1') or opt1 or '0')
