@@ -129,11 +129,11 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	  Loop points: Set end point  
 	  Markers: Go to previous marker/project start
 	  
-   OR
-  
-   Double click the Ruler between two adjacent markers 
-   to create loop points between them (default double-click mouse 
-   modifier action of the Ruler context).
+	OR
+	
+	Double click the Ruler between two adjacent markers 
+	to create loop points between them (default double-click mouse 
+	modifier action of the Ruler context).
 	
 	2. Run this script.
 	
