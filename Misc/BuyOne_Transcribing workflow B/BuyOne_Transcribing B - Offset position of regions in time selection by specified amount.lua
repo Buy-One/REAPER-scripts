@@ -7,25 +7,25 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is part of the Transcribing B workflow set of scripts
-			alongside  
-			BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
-			BuyOne_Transcribing B - Real time preview.lua  
-			BuyOne_Transcribing B - Format converter.lua  
-			BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
-			BuyOne_Transcribing B - Prepare transcript for rendering.lua  
-			BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
-			BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua
+	alongside  
+	BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
+	BuyOne_Transcribing B - Real time preview.lua  
+	BuyOne_Transcribing B - Format converter.lua  
+	BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
+	BuyOne_Transcribing B - Prepare transcript for rendering.lua  
+	BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
+	BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua
 
-			The script can be used for general purposes because it
-			affects all regions in time selection, which is something
-			to be aware of if you're using it as part of Transcribing B 
-			workflow in cases where you only wish to offset segment 
-			regions and leave any other regions at their original positions.
-			
-			In the offset amount dialogue which will pop up fields which 
-			aren't necessary can be left empty. In 'Direction' field enter
-			any character (to add negative sign to the offset amount) if 
-			regions must be moved left.
+	The script can be used for general purposes because it
+	affects all regions in time selection, which is something
+	to be aware of if you're using it as part of Transcribing B 
+	workflow in cases where you only wish to offset segment 
+	regions and leave any other regions at their original positions.
+	
+	In the offset amount dialogue which will pop up fields which 
+	aren't necessary can be left empty. In 'Direction' field enter
+	any character (to add negative sign to the offset amount) if 
+	regions must be moved left.
 ]]
 
 
