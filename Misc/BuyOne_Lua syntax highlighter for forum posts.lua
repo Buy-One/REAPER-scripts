@@ -2,12 +2,15 @@
 ReaScript name: BuyOne_Lua syntax highlighter for forum posts.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog:	v1.2 #Fixed last line capture if the INPUT setting closure is located 
-		     on the last line of the string rather than on the next line
-		v1.1 #Fixed last line capture if the script is run from inside REAPER
-		     #Made sure that the item with the output is placed on the same track 
-		     as the item with the input when the script is run from inside REAPER
+Version: 1.3
+Changelog:  1.3 #Optimized preliminary evaluation of the input string
+		#Fixed formatting of nested REAPER and user fuctions
+		#Fixed some corner cases in user function formatting
+	    1.2 #Fixed last line capture if the INPUT setting closure is located 
+		on the last line of the string rather than on the next line
+	    1.1 #Fixed last line capture if the script is run from inside REAPER
+		#Made sure that the item with the output is placed on the same track 
+		as the item with the input when the script is run from inside REAPER
 Licence: WTFPL
 REAPER: at least v5.0
 Extensions: SWS/S&M recommended but not mandatory
@@ -63,6 +66,7 @@ About: 	The script formats Lua code with syntax highlighting for posting
 -- any default color scheme can be fully or partially 
 -- overriden with custom color scheme, see below
 DEFAULT_COLOR_SCHEME = ""
+
 
 -- To enable the following settings insert any alphanumeric
 -- character between the quotes
@@ -159,7 +163,7 @@ USER_FUNCTION = ""
 -- either with or without the final separator;
 -- !!!! only relevant if the script is run outside of REAPER,
 -- the output file name will be 'FORMATTED CODE.txt';
--- it this setting is empty the code will be output
+-- if this setting is empty the code will be output
 -- to the application console
 OUTPUT_FILE_PATH = [[ ]]
 
@@ -180,14 +184,14 @@ local r = reaper
 local Debug = ""
 function Msg(param, cap) -- caption second or none
 local cap = cap and type(cap) == 'string' and #cap > 0 and cap..' = ' or ''
-	if #Debug:gsub('[%s%c]','') > 0 then -- declared outside of the function, allows to only didplay output when true without the need to comment the function out when not needed, borrowed from spk77
+	if #Debug:gsub(' ','') > 0 then -- declared outside of the function, allows to only didplay output when true without the need to comment the function out when not needed, borrowed from spk77
 	reaper.ShowConsoleMsg(cap..tostring(param)..'\n')
 	end
 end
 
 
 function validate_sett(sett) -- validate setting, can be either a non-empty string or any number
-return type(sett) == 'string' and #sett:gsub('[%s%c]','') > 0 or type(sett) == 'number'
+return type(sett) == 'string' and #sett:gsub(' ','') > 0 or type(sett) == 'number'
 end
 
 function Esc(str)
@@ -753,14 +757,15 @@ local COLOR_REAPER_LIB = format_sett_t.color_reaper_lib
 	if COLOR_REAPER_LIB then
 
 		for w in str_form:gmatch('%w+') do
-			if w == 'reaper' or w == 'gfx' then -- gfx functions, gfx global vars are colored in the syntax_t loop below
-			local reaper_func = str_form:match(w..dot_form..'(.-)'..punct_form..'.-%(')
-				if reaper_func then
-				local reaper_form = '[color="'..color_t.reaper..'"]'
-				dot_form_repl = dot_form:gsub('%%', '') -- de-escape for replacement
-				str = str:gsub(w..dot_form..reaper_func, reaper_form..w..'[/color]'..dot_form_repl
-				..reaper_form..reaper_func..'[/color]')
-				end
+			if w == 'reaper' or w == 'gfx' then -- gfx functions, gfx global vars are colored in the syntax_t loop below			
+			local reaper_form = '[color="'..color_t.reaper..'"]'
+				for reaper_func in str_form:gmatch(w..dot_form..'(.-)'..punct_form..'.-%(') do
+					if reaper_func then
+					dot_form_repl = dot_form:gsub('%%', '') -- de-escape for replacement
+					str = str:gsub(w..dot_form..reaper_func, reaper_form..w..'[/color]'..dot_form_repl
+					..reaper_form..reaper_func..'[/color]')
+					end					
+				end			
 			end
 		end
 
@@ -908,9 +913,10 @@ function format_user_functions(str, syntax_t, color_t, format_sett_t)
 	local t = {...}
 		return function()
 		local st, fin, retval
-			for _, capt in ipairs(t) do -- the t contains capture patterns, traverse until one of them produces valid capture
+			for k, capt in ipairs(t) do -- the t contains capture patterns, traverse until one of them produces valid capture
 			st, fin, retval = str:find('('..capt..')',i)
-				if retval then break end
+				if retval and (k == 1 and not retval:sub(1,-2):match('%(') -- the 'not' condition weeds out false positives such as r.SetOnlyTrackSelected(r.GetTrack(0,0)) which match pattern2 (table index 1), because pattern2 is only meant to catch multi-level table.key sequences, e.g. table.key1.key2 etc.
+				or k == 2) then break end
 			end
 		i = fin and fin+1 or i+1 -- advance only after all capture patterns have been tried
 		return retval
@@ -924,12 +930,13 @@ function format_user_functions(str, syntax_t, color_t, format_sett_t)
 			if k ~= 'punct' and k ~= 'keywords' and k ~= 'gfx_vars' then -- ignoring punctuation marks, keywords and gfx globals, because only method names are targeted, gfx methods are addressed in the main function loop by additional condtition
 			local lib_name = tab[1]
 				for i, method in ipairs(tab) do
-				-- the following patterns are determined by the capture of the main function gmatch_alt() loop
-				-- which will always start with function name and end with a parenthesis either formatted or not
-					if str:match('^'..lib_name..punct_opening..'%.'..closure..method) -- only punctuaton is formatted
+					if (lib_name == 'debug' or method ~= lib_name) and -- excluding field 1 which contains library name, bar debug library which does include method debug.debug
+					-- the following patterns are determined by the capture of the main function gmatch_alt() loop
+					-- which will always start with function name and end with a parenthesis either formatted or not
+					( str:match('^'..lib_name..punct_opening..'%.'..closure..method) -- only punctuaton is formatted
 					or str:match('^'..lib_name..'%.'..method) -- neither punctiation nor lua lib is formatted
 					or str:match('^'..method..punct_opening) -- only punctuaton is formatted
-					or str:match('^'..method..'%(') -- neither punctiation nor lua lib is formatted
+					or str:match('^'..method..'%(') ) -- neither punctiation nor lua lib is formatted
 					then return true
 					end
 				end
@@ -953,7 +960,7 @@ function format_user_functions(str, syntax_t, color_t, format_sett_t)
 	-- and to accurately capture separator dot depending on COLOR_PUNCT_AND_OPERATORS setting
 	local pattern1 = '[%w_]+'..parenth -- regular variable as function name, e.g. my_function() or MyFunction()
 	local punct = COLOR_PUNCT_AND_OPERATORS and '%[%]="/' or ''
-	local pattern2 = '[%w_]+'..dot_form..'[%w_%.'..punct..']+'..strength..parenth -- the pattern captures multi-level table.key sequences, e.g. table.key1.key2 etc.
+	local pattern2 = '[%w_]+'..dot_form..'[%w_%.'..punct..']+'..strength..parenth -- the pattern captures multi-level table.key sequences, e.g. table.key1.key2 etc.; the pattern also captures strings such as r.SetOnlyTrackSelected(r.GetTrack(0,0)) which is false positive, these are prevented inside gmatch_alt()
 	local func_form = '[color="'..color_t.user_func..'"]'
 
 		for w in gmatch_alt(str_form, pattern2, pattern1) do -- in this order of patterns because pattern1 can be captured when the source matches pattern2
@@ -1363,6 +1370,7 @@ COLOR_default = scheme == 1 and COLOR_default_tomorrow or scheme == 2 and COLOR_
 	end
 
 
+-- 1st field after 'color = ' contains library name
 local SYNTAX = {}
 SYNTAX.keywords = {color = COLOR.keywords, 'and', 'break', 'do', 'else', 'elseif', 'end', 'false', 'for',
 'function', 'if', 'in', 'local', 'nil', 'not', 'or', 'repeat', 'return', 'then', 'true', 'until', 'while'}
@@ -1410,8 +1418,8 @@ local err2 = '\tthe input seems \n\n to be already formatted '
 -- in the split into lines loop below can capture the last line as well
 -- with the script INPUT setting this may happen if the closure is moved
 -- to the last line of the input code
-INPUT = not INPUT:match('.+\n%s*$') and INPUT..'\n' or INPUT
-
+INPUT = INPUT:sub(-1) ~= '\n' and INPUT..'\n' or INPUT
+	
 local is_formatted_code = select(2,INPUT:gsub('%[color=".-"%].-%[/color%]','%0'))
 local err = #INPUT:gsub('[%s%c]','') == 0 and err1 or is_formatted_code > 0 and err2
 local wait_mess = 'the input is being formatted. \n\n\t\tplease wait...'
@@ -1634,7 +1642,7 @@ local shared_color_list, shared_color_mess = '', ''
 		end
 	-- Undo the tooltip informing that the input is being formatted
 	-- generated before the main loop
-	Error_Tooltip('', 1, 1, -200, y2) -- caps, spaced true, x2 -200
+	Error_Tooltip('')
 	return r.defer(no_undo)
 
 	else -- run outside of REAPER
