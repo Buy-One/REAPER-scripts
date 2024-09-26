@@ -159,9 +159,11 @@ USER_FUNCTION = ""
 
 ------------------------------------------------------
 
+-- THE FOLLOWING SETTINGS ARE ONLY RELEVANT 
+-- IF THE SCRIPT IS RUN OUTSIDE OF REAPER
+
 -- Specify output file path between the double square brackets
 -- either with or without the final separator;
--- !!!! only relevant if the script is run outside of REAPER,
 -- the output file name will be 'FORMATTED CODE.txt';
 -- if this setting is empty the code will be output
 -- to the application console
