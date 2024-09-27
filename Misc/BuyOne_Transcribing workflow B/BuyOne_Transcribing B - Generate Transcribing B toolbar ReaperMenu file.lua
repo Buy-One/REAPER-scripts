@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 1.1 #Added button for the action View: Show region/marker manager window
+	       #Improved zooming of the track with 'Transcribing B toolbar layout.png' image
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is part of the Transcribing B workflow set of scripts
