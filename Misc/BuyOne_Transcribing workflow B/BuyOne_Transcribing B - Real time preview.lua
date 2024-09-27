@@ -27,8 +27,9 @@ About:	The script is part of the Transcribing B workflow set of scripts
 	inserted in their FX chain with the preset defined in the OVERLAY_PRESET 
 	setting. The segment transcript is fed into the preview item names.
 	
-	To have the transcript displayed within the Video window the 
-	preview track must be located above the track with a video item.
+	To have text displayed within the Video window the location of the 
+	preview track relative to the track with the video item must follow 
+	the 'Video item visibility' setting at Project settings -> Video tab.
 	The preview items are added dynamically to accommodate segment
 	next to the currently active segment which is determined by the 
 	location of the edit or play cursor relative to the segment region. 
