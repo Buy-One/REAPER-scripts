@@ -56,8 +56,8 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	segment by segment within video context when Video window is open. 
 	The segment text is fed into the item name.  
 	To have text displayed within the Video window the location of the 
-	preview track must follow the 'Video item visibility' setting 
-	at Project settings -> Video tab.  
+	preview track relative to the track with the video item must follow 
+	the 'Video item visibility' setting at Project settings -> Video tab.
 	The preview items are added dynamically to accommodate segment
 	which follows the currently active segment determined by the 
 	location of the edit or play cursor relative to the segment start 
