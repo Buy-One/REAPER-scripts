@@ -5,7 +5,7 @@ Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-
 Version: 1.3
 Changelog: 1.3 #Added button for the action SWS/S&M: Open/close Notes window (track notes)
 	       #Added error it SWS/S&M extension isn't installed to complement the new button addition
-	       #Improved zooming of the track with 'Transcribing B toolbar layout.png' image
+	       #Improved zooming of the track with 'Transcribing A toolbar layout.png' image
 	   1.2 #Fixed the toolbar name everywhere it's mentioned
 	       #Included toolbar name in the code for the exported file
 	       #Set toolbar buttons tooltip to display the linked action
