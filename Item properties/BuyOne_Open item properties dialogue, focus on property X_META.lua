@@ -247,6 +247,7 @@ end
 
 
 function Find_Item_Props_Window_SWS(wnd_name, want_main_children)
+-- based on Find_Window_SWS()
 -- finds main window children, their siblings, their grandchildren and their siblings, including docked ones, floating windows and probably their children as well
 -- want_main_children is boolean to search for internal or non-dockable main window children and for their children regardless of the dock being open, the dock condition in the routine is only useful for validating visibility of windows which can be docked
 
@@ -296,7 +297,7 @@ local tb_dock = r.GetToggleCommandStateEx(0, 41084) == 1 -- 'Toolbar: Show/hide 
 local dock = r.GetToggleCommandStateEx(0, 40279) == 1 -- 'View: Show docker'
 
 -- search for a floating docker with one attached window // toolbars can be attached to a regular floating docker and regular windows can be attached to a floating toolbar docker
-local docker = Find_Win('Item Properties (docked)') -- when a single window is attached to a floating docker its title is 'Name (docked)' with '(docked)' added regardless of whether this a regular docker or a toolbar docker
+local docker = Find_Win('Item Properties (docked)') -- when a single window is attached to a floating docker its title is 'Name (docked)' with '(docked)' added regardless of whether this a regular docker or a toolbar docker // with Item Properties window Find_Win(wnd_name..' (docked)') won't work because in a floating docker its name is 'Item Properties (docked)' rather than 'Media Item Properties (docked)' while wnd_name var contains 'Media Item Properties' string
 wnd = search_floating_docker(docker, dock, wnd_name)
 	if wnd and (r.JS_Window_IsVisible and r.JS_Window_IsVisible(wnd) or dock) then return wnd -- JS_Window_IsVisible() isn't suitable for multi-window dockers because it returns false when a window is inactive, but it works reliably when floating docker only has one attached window which cannot be inactive
 	end -- if not found the function will continue
