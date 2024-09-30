@@ -9,46 +9,46 @@ REAPER: at least v5.962
 Extensions: SWS/S&M
 Metapckage: true
 Provides: [main=main,midi_editor] .
-			. > BuyOne_Open item properties dialogue, focus on property 'Position'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Length'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Time unit'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Fade-in'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Fade-in curve strength'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Fade-in curve menu'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Fade-out'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Fade-out curve strength'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Fade-out curve menu'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Snap offset'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Time base'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Mix behavior'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Active take'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Start in source'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Pitch adjust'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Playback rate'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Volume'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Pan'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Pitch shift; time stretch mode'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Stretch markers fade size'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Stretch markers mode'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Section length'.lua
-			. > BuyOne_Open item properties dialogue, focus on property 'Section fade'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Position'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Length'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Time unit'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Fade-in'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Fade-in curve strength'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Fade-in curve menu'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Fade-out'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Fade-out curve strength'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Fade-out curve menu'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Snap offset'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Time base'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Mix behavior'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Active take'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Start in source'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Pitch adjust'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Playback rate'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Volume'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Pan'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Pitch shift; time stretch mode'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Stretch markers fade size'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Stretch markers mode'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Section length'.lua
+	. > BuyOne_Open item properties dialogue, focus on property 'Section fade'.lua
 
 About: 	If this script name is suffixed with META, when executed it will automatically spawn 
-			all individual scripts included in the package into the directory of the META script
-			and will import them into the Action list from that directory.  			
-			That's provided such scripts don't exist yet, if they do, then in order to recreate 
-			them they have to be deleted from the Action list and from the disk first.  
+	all individual scripts included in the package into the directory of the META script
+	and will import them into the Action list from that directory.  
+	That's provided such scripts don't exist yet, if they do, then in order to recreate 
+	them they have to be deleted from the Action list and from the disk first.  
 
-			If there's no META suffix in this script name, it will perfom the operation indicated 
-			in its name.
+	If there's no META suffix in this script name, it will perfom the operation indicated 
+	in its name.
 
-			The script puts into keyboard focus in the open Media Item Property dialogue a property
-			of selected item, indicated in the script name, so it's accessible for keyboard input. 
-			Text fields will be accessible for typing, drop-down and pop-up menus will be accessible 
-			for navigation with up/down arrow keys. If the dialogue is closed it will be opened by 
-			the script.
-			
-			The script is known to work on Windows.
+	The script puts into keyboard focus in the open Media Item Property dialogue a property
+	of selected item, indicated in the script name, so it's accessible for keyboard input. 
+	Text fields will be accessible for typing, drop-down and pop-up menus will be accessible 
+	for navigation with up/down arrow keys. If the dialogue is closed it will be opened by 
+	the script.
+	
+	The script is known to work on Windows.
 
 ]]
 
