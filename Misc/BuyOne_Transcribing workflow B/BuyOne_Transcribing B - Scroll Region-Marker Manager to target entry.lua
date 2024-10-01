@@ -328,12 +328,18 @@ local i = 1
 				for i=1,#txt do -- run Delete for each character
 				SendMsg(child, 0x0100, 0x2E, 0xE053) -- 0x2E VK_DELETE DEL key, DEL key 0xE053 scan code
 				end
-			--[[ OR
+			--[[ -- OR
 				for i=1,#txt do -- move cursor from line end left character by character deleting them
 				SendMsg(child, 0x0100, 0x25, 0xE04B) -- 0x25 LEFT ARROW key, 0xE04B scan code
 				SendMsg(child, 0x0100, 0x2E, 0xE053) -- 0x2E VK_DELETE DEL key, 0xE053 scan code
 				end
 			--]]
+			--[[ -- OR
+			-- https://learn.microsoft.com/en-us/windows/win32/controls/em-setsel
+			-- https://learn.microsoft.com/en-us/windows/win32/dataxchg/wm-clear
+			SendMsg(child, 0x00B1, 0, -1) -- EM_SETSEL 0x00B1, wParam start char index, lParam -1 to select all text or end char index
+			SendMsg(child, 0x0303, 0, 0) -- WM_CLEAR 0x0303
+			--]]			
 			end
 	--------------------------------------------------------------
 		r.CF_SetClipboard(str)
