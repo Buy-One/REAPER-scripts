@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Open item properties dialogue, focus on property X_META.lua (23)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 1.1 #Fixed text highlighting in fade curve strength (Curve:) field
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
@@ -387,7 +387,7 @@ Volume='Volume/', Pan='/pan:', Normalize='&Normalize', ['Channel mode']='Channel
 ['Invert phase']='&Invert phase', Section='Section:', Reverse='Reverse'}
 
 	local function checkbox_or_button(prop, want_checkboxes)
-	local t = { buttons={'curve', 'Set', 'Normalize', 'Channel mode', 'Take', -- 'Take' covers envelopes and FX
+	local t = { buttons={'curve menu', 'Set', 'Normalize', 'Channel mode', 'Take', -- 'Take' covers envelopes and FX
 	'stretch mode options', 'Properties', 'Nudge', 'file'},
 	checkboxes={'Loop source', 'Mute', 'Lock', 'No autofades', 'Play all takes',
 	'Preserve pitch when changing rate', 'Invert phase', 'Section', 'Reverse'} }
