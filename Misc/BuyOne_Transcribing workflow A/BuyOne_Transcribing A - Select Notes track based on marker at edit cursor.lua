@@ -2,20 +2,21 @@
 ReaScript name: BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: 1.2 #Added scrolling of the Notes window to the line contaning 
-	       the time stamp of the marker at the edit cursor
-	       #Improved accuracy of the error message when there's 
-	       no segment marker at the edit or play cursor
-	       #Improved detection of Notes track absence
-	       #Updated script name
-	   1.1 #Added character escaping to NOTES_TRACK_NAME setting evaluation 
-	       to prevent errors caused unascaped characters
+Version: 1.3
+Changelog: 1.3 	#Added HIGHLIGHT_SEGMENT_ENTRY settings
+	   1.2 	#Added scrolling of the Notes window to the line contaning 
+	       	the time stamp of the marker at the edit cursor
+		#Improved accuracy of the error message when there's 
+	 	no segment marker at the edit or play cursor
+	 	#Improved detection of Notes track absence
+		#Updated script name
+	    1.1 #Added character escaping to NOTES_TRACK_NAME setting evaluation 
+		to prevent errors caused unascaped characters
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M mandatory, js_ReaScriptAPI recommended
 About:	The script is part of the Transcribing A workflow set of scripts
-	alongside
+	alongside  
 	BuyOne_Transcribing A - Create and manage segments (MAIN).lua  
 	BuyOne_Transcribing A - Real time preview.lua  
 	BuyOne_Transcribing A - Format converter.lua  
@@ -66,6 +67,18 @@ About:	The script is part of the Transcribing A workflow set of scripts
 -- CHANGING THIS SETTING MIDPROJECT IS NOT RECOMMENDED
 -- BECAUSE SCRIPT ACCESS TO THE NOTES TRACKS WILL BE LOST
 NOTES_TRACK_NAME = "TRANSCRIPT"
+
+-- Enable by inserting any alphanumeric character
+-- between the quotes to have the segment entry in the Notes
+-- window highlighted when the Notes window is scrolled 
+-- to the entry containing segment marker time stamp
+-- so it stands out;
+-- THIS HOWEVER MAKES THE NOTES WINDOW FOCUSED FOR KEYBOARD INPUT
+-- therefore any keyboard shortcut you might use immediately
+-- afterwards will land inside the Notes window as text, unless
+-- it was set to be global in the action shortcut dialogue,
+-- and hitting Delete will delete the highlighted text
+HIGHLIGHT_SEGMENT_ENTRY = ""
 
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
@@ -271,9 +284,13 @@ local i, notes = 1
 
 	--	if string_exists(txt, str) then
 	if notes then
+	local SendMsg = r.BR_Win32_SendMessage
 	local line_cnt, notes = 0, notes:sub(-1) ~= '\n' and notes..'\n' or notes -- ensures that the last line is captured with gmatch search
+	local target_line
 		for line in notes:gmatch('(.-)\n') do	-- accounting for empty lines because all must be counted
-			if line:match(str) then break end -- stop counting because that's the line which should be reached by scrolling but not scrolled past; to cover all cases str must be escaped with Esc() function but here it's not necessary
+			if line:match(str) then 
+			target_line = line
+			break end -- stop counting because that's the line which should be reached by scrolling but not scrolled past; to cover all cases str must be escaped with Esc() function but here it's not necessary
 		line_cnt = line_cnt+1
 		end
 	--	r.PreventUIRefresh(1) doesn't affect windows
@@ -281,6 +298,15 @@ local i, notes = 1
 	r.BR_Win32_SendMessage(child, 0x0115, 6, 0) -- msg 0x0115 WM_VSCROLL, 6 SB_TOP, 7 SB_BOTTOM, 2 SB_PAGEUP, 3 SB_PAGEDOWN, 1 SB_LINEDOWN, 0 SB_LINEUP https://learn.microsoft.com/en-us/windows/win32/controls/wm-vscroll
 		for i=1, line_cnt do
 		r.BR_Win32_SendMessage(child, 0x0115, 1, 0) -- msg 0x0115 WM_VSCROLL, lParam 0, wParam 1 SB_LINEDOWN scrollbar moves down / 0 SB_LINEUP scrollbar moves up that's how it's supposed to be as per explanation at https://learn.microsoft.com/en-us/windows/win32/controls/wm-vscroll but in fact the message code must be passed here as lParam while wParam must be 0, same as at https://stackoverflow.com/questions/3278439/scrollbar-movement-setscrollpos-and-sendmessage
+		end
+		if HIGHLIGHT_SEGMENT_ENTRY then
+		r.BR_Win32_SetFocus(child) -- window must be focused for selection to work
+		notes = notes:gsub('[\128-\191]','') -- remove extra (continuation or trailing) bytes in case text is Unicode so string.find counts characters accurately
+		local line_st = notes:find(Esc('\n'..target_line)) or 0 -- if not the first line, new line char must be taken into account for start value to refer to the visible start of the line otherwise the start will be offset by 1
+		local line_len = #target_line:match('(.+:%d+.%d+)') -- in segment entry only heghlight the time stamp(s)
+		-- https://learn.microsoft.com/en-us/windows/win32/controls/em-setsel
+		SendMsg(child, 0x00B1, line_st, line_st+line_len) -- EM_SETSEL 0x00B1, wParam line_st, lParam line_st+line_len
+		--	r.BR_Win32_SetFocus(r.GetMainHwnd()) -- removing focus clears selection
 		end
 	end
 
@@ -423,10 +449,18 @@ Open_SWS_Notes_Window()
 
 local notes_wnd = Find_Window_SWS('Notes', want_main_children) -- want_main_children nil
 
+HIGHLIGHT_SEGMENT_ENTRY = #HIGHLIGHT_SEGMENT_ENTRY:gsub(' ','') > 0
+
 	if tr == sel_tr then -- same track, the window is already loaded so can respond to the scroll message
 	Scroll_SWS_Notes_Window(notes_wnd, mrkr_name, tr)
 	else -- track selection has changed
-	-- deferred function must be used to wait until the window is fully loaded because when changing track selection window update takes time and the script fails to make the window scroll due to running through faster
+	-- deferred function must be used to wait until the window is fully loaded
+	-- because when changing track selection window update takes time
+	-- and the script fails to make the window scroll due to running through faster
+	-- that's unlike in BuyOne_Transcribing A - Create and manage segments (MAIN).lua
+	-- where execution of Scroll_SWS_Notes_Window() doesn't need to be delayed with a defer loop
+	-- probably because that script runs longer giving enough time for the window to load
+	-- and be successfully affected by scroll position change
 	a, b, c, time_init = notes_wnd, mrkr_name, tr, r.time_precise() -- assign as globals to be used in SCROLL() function
 	SCROLL()
 	end
