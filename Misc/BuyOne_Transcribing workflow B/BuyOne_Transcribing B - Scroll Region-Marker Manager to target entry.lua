@@ -432,7 +432,7 @@ or sws and (not js and not old_build or old_build) and (region and rgn_cnt == 0 
 	end
 
 
-local highlighted_found = Scroll_Region_Mngr_To_Highlighted_Item(rgn_mngr_closed) -- supports selected markers as well // will also be false if there's selected object but the Manager list is filtered and it's not found there
+local highlighted_found = js and Scroll_Region_Mngr_To_Highlighted_Item(rgn_mngr_closed) -- supports selected markers as well // will also be false if there's selected object but the Manager list is filtered and it's not found there
 
 		if not highlighted_found or not js then -- this part depends on the scrpt name and targets either regions or markers
 
