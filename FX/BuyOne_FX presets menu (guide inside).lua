@@ -1,95 +1,106 @@
 --[[
 ReaScript name: BuyOne_FX presets menu (guide inside).lua
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058
-Version: 2.1
-Changelog: 2.1 #Fixed absence of VST3 default preset in the displayed preset list
-	       #Tried to somewat ameliorate the effect of preset navigation ReaScript function bug in builds 7.09 - 7.20 [t=293952]
-	       #Thoroughly refactored the code to make preset retrieval hopefully faster
-	       #Added a workaround for ampersand in present names to replace it with '+' 
-	       for display in the menu, otherwise it won't be visible
-	       #Made sure FX selection in the target chain is not affected by the script (except in Monitoring FX chain)
-	       #Added two new settings to ignore track main and input/Monitoring FX
-	       #Updated 'REAPER' tag in this header
-	       #Updated 'About' text in this header
-	   v2.0 #Added a setting to keep the menu open after clicking a menu item
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
+Version: 2.2
+Changelog: 2.2 	#Fixed checkmarking multiple presets as active preset if their names are similar
+		#Fixed script malfunction when FX containers are present in the chain
+		#Introduced support for FX container presets (but not FX inside containers) since REAPER build 7.23
+	   2.1 	#Fixed absence of VST3 default preset in the displayed preset list
+		#Tried to somewhat ameliorate the effect of preset navigation ReaScript function bug in builds 
+		7.09 - 7.20 [t=293952]
+		#Optimized retrieval of presets of identical FX in hopes to speed up the process
+		#Added a workaround for ampersand in present names to replace it with '+' 
+		for display in the menu, otherwise it won't be visible
+		#Made sure FX selection in the target chain is not affected by the script (except in Monitoring FX chain)
+		#Added two new settings to ignore track main and input/Monitoring FX
+		#Updated 'REAPER' tag in this header
+		#Updated 'About' text in this header
+	  2.0 	#Added a setting to keep the menu open after clicking a menu item
 		#Added an error message when there's no object under the mouse cursor
 		#Increased the size of error tooltips so they're more noticeable 
-	   v1.9 Fixed REAPER version evaluation
-	   v1.8 #Improved detection of the TCP under mouse when it's displayed on the right side of the Arrange
+	  1.9 	Fixed REAPER version evaluation
+	  1.8 	#Improved detection of the TCP under mouse when it's displayed on the right side of the Arrange
 		view at certain horizontal scroll position 
-	   v1.7 #Fixed logic of TCP detection under mouse
-	   v1.6 #Added support for TCP on the right side of the Arrange
-	   v1.5 #Fixed error on loading preset menu of plugins with embedded presets and no external preset file
-	   v1.4 #Fixed Arrange view movement when object under mouse is being detected while the edit cursor is out of sight
-	   v1.3 #Fixed losing item focus and unnecessary horizontal scroll for REAPER builds prior to 6.37
+	  1.7 	#Fixed logic of TCP detection under mouse
+	  1.6 	#Added support for TCP on the right side of the Arrange
+	  1.5 	#Fixed error on loading preset menu of plugins with embedded presets and no external preset file
+	  1.4 	#Fixed Arrange view movement when object under mouse is being detected while the edit cursor is out of sight
+	  1.3 	#Fixed losing item focus and unnecessary horizontal scroll for REAPER builds prior to 6.37
 		#Fixed transport stop when getting TCP under mouse cursor for REAPER builds prior to 6.37
 		#Added MCP support for REAPER builds 6.37 onward
 		#Minor code optimizations
 		#Updated the Guide
-	   v1.2.1 #Minor fix of relational operator
-	   v1.2 #Preset menu of FX in a focused take FX chain is now displayed reragdless of the take being active
-	 	#Added new option to lock FX chain focus
+	1.2.1 	#Minor fix of relational operator
+	 1.2 	#Preset menu of FX in a focused take FX chain is now displayed reragdless of the take being active
+		#Added new option to lock FX chain focus
 		#Updated the Guide
-	   v1.1 #Added support for displaying FX presets menu when FX chain is focused
+	 1.1 	#Added support for displaying FX presets menu when FX chain is focused
 		#Updated the Guide
 Provides: [main] .
 Licence: WTFPL
 REAPER: at least v5.962; NOT RECOMMENDED 7.09 - 7.20 due to ReaScript API bug in these builds
 About:
-	#### G U I D E
+#### G U I D E
 
-	- The script displays FX preset menu of the object (track or item/active take)
-	either currently found under the mouse cursor or the last selected if 
-	SEL_OBJ_IN_CURR_CONTEXT setting is enabled in the USER SETTINGS below, or of the 
-	currently or last focused FX chain window. With regard to track FX, for REAPER 
-	builds prior to 6.37 only TCP is supported.
+- The script displays FX preset menu of the object (track or item/active take)
+either currently found under the mouse cursor or the last selected if 
+SEL_OBJ_IN_CURR_CONTEXT setting is enabled in the USER SETTINGS below, or of the 
+currently or last focused FX chain window. With regard to track FX, for REAPER 
+builds prior to 6.37 only TCP is supported.
 
-	- It's only able to list presets available in REAPER plugin wrapper drop-down list
-	including imported .vstpreset files.
+- It's only able to list presets available in REAPER plugin wrapper drop-down list
+including imported .vstpreset files.
 
-	- Since in multi-take items the menu only lists active take FX presets, if you need
-	FX presets from a take other then the active simply click on it to have it activated.
+- Since in multi-take items the menu only lists active take FX presets, if you need
+FX presets from a take other then the active simply click on it to have it activated.
 
-	- Track preset menu is divided into two sections, main FX menu (upper) and 
-	input FX menu (lower) if both types of FX are present unless IGNORE_INPUT_FX setting
-	is enabled.   
-	In the Master track FX preset menu instead of the preset menu for input FX a menu 
-	for Monitor FX is displayed.
+- Track preset menu is divided into two sections, main FX menu (upper) and 
+input FX menu (lower) if both types of FX are present unless IGNORE_INPUT_FX setting
+is enabled.   
+In the Master track FX preset menu instead of the preset menu for input FX a menu 
+for Monitor FX is displayed.
 
-	- If there's active preset and plugin controls configuration matches the preset settings
-	the preset name in the menu is checkmarked.
+- If there's active preset and plugin controls configuration matches the preset settings
+the preset name in the menu is checkmarked.
 
-	- The script can be called in the following ways:  
-	1) by placing the mouse cursor over the object or its FX chain window and calling
-	the script with a shortcut assigned to it;  
-	2) by assigning it to a Track AND an Item mouse modifiers under *Preferences -> Mouse modifiers*
-	and actually clicking the object to call it;  
-	If SEL_OBJ_IN_CURR_CONTEXT setting is enabled in the USER SETTINGS below:  
-	3) from an object right click context menu (main menus are not reliable);  
-	4) from a toolbar, the toolbar must either float over the Arrange or be docked in the top
-	or bottom dockers; Main toolbar or other docker positions are not reliable;  
-	5) from the Action list (which is much less practicable)  
-	In cases 3)-5) the object must be selected as the mouse cursor is away from it.  
-	All five methods can work in parallel.  
-	Be aware that when SEL_OBJ_IN_CURR_CONTEXT setting is enabled and the script is run via 
-	a keyboard shortcut, the menu will be called even when the mouse cursor is outside of the TCP 
-	or Arrange and not over an FX chain window, like over the ruler, TCP bottom, empty Mixer area 
-	or any other focused window, in which case it will display a list of the last selected object 
-	FX presets.
+- The script can be called in the following ways:  
+1) by placing the mouse cursor over the object or its FX chain window and calling
+the script with a shortcut assigned to it;  
+2) by assigning it to a Track AND an Item mouse modifiers under *Preferences -> Mouse modifiers*
+and actually clicking the object to call it;  
+If SEL_OBJ_IN_CURR_CONTEXT setting is enabled in the USER SETTINGS below:  
+3) from an object right click context menu (main menus are not reliable);  
+4) from a toolbar, the toolbar must either float over the Arrange or be docked in the top
+or bottom dockers; Main toolbar or other docker positions are not reliable;  
+5) from the Action list (which is much less practicable)  
+In cases 3)-5) the object must be selected as the mouse cursor is away from it.  
+All five methods can work in parallel.  
+Be aware that when SEL_OBJ_IN_CURR_CONTEXT setting is enabled and the script is run via 
+a keyboard shortcut, the menu will be called even when the mouse cursor is outside of the TCP 
+or Arrange and not over an FX chain window, like over the ruler, TCP bottom, empty Mixer area 
+or any other focused window, in which case it will display a list of the last selected object 
+FX presets.
+
+- LOCK_FX_CHAIN_FOCUS setting in the USER SETTINGS allows displaying presets menu for FX of the last 
+focused open FX chain even when the mouse cursor is outside of the FX chain window and it itself isn't 
+in focus but still open, regardless of the last selected object in case SEL_OBJ_IN_CURR_CONTEXT 
+setting is enabled and regardless of the active take if the focus is locked on a take FX chain.
+
+- To close the menu after it's been called, without selecting any preset, either click elsewhere
+in REAPER or pres Esc keyboard key.
+
+- Video processor preset menu is supported from REAPER build 6.26 onwards.
+
+- The script doesn't support FX inside containers as a matter of design but does support FX container
+presets, when there're any, since REAPER build 7.23. If there're no FX container presets containers
+aren't listed in the presets menu. 
+
+- In builds older than 7.23 a single built-in preset in VST3 plugins will be named in the menu 'Default' 
+and if it's selected it won't be checkmarked as such because ReaScript API in those builds doesn't recognize 
+them and doesn't rertieve their name https://forum.cockos.com/showthread.php?t=294090 as if no preset were 
+selected. Yet they can be activated by clicking 'Default' item in the menu.
 	
-	- LOCK_FX_CHAIN_FOCUS setting in the USER SETTINGS allows displaying presets menu for FX of the last 
-	focused open FX chain even when the mouse cursor is outside of the FX chain window and it itself isn't 
-	in focus but still open, regardless of the last selected object in case SEL_OBJ_IN_CURR_CONTEXT 
-	setting is enabled and regardless of the active take if the focus is locked on a take FX chain.
-
-	- To close the menu after it's been called, without selecting any preset, either click elsewhere
-	in REAPER or pres Esc keyboard key.
-	
-	- Video processor preset menu is supported from REAPER build 6.26 onwards.
-
-	- The script doesn't support FX containters and may malfunction if they're present.
-
 ]]
 
 -----------------------------------------------------------------------------
@@ -136,6 +147,11 @@ local r = reaper
 
 function no_undo()
 do return end
+end
+
+
+function Esc(str)
+return str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
 end
 
 
@@ -195,6 +211,7 @@ r.PreventUIRefresh(-1)
 end
 
 
+
 local function GetObjChunk(obj)
 -- https://forum.cockos.com/showthread.php?t=193686
 -- https://raw.githubusercontent.com/EUGEN27771/ReaScripts_Test/master/Functions/FXChain
@@ -244,29 +261,91 @@ end
 
 
 
+-- OLD
+function FX_Chain_Chunk(chunk, path, sep, type, take_GUID) -- isolate object fx chain, for tracks exclude items, for items exclude takes other than the active one; type arg is set within the routine
+
+	if chunk and #chunk > 0 then
+		if take_GUID then -- take fx chain
+		fx_chunk = chunk:match(take_GUID..'.-(<TAKEFX.->)\nTAKE') or chunk:match(take_GUID..'.-(<TAKEFX.->)\n<ITEM') or chunk:match(take_GUID..'.-(<TAKEFX.*>)\n>')
+		else
+			if type == 0 then -- track main fx chain
+			fx_chunk = chunk:match('(<FXCHAIN.*>)\n<FXCHAIN_REC') or chunk:match('(<FXCHAIN.->)\n<ITEM') or chunk:match('(<FXCHAIN.*WAK.*>)\n>')
+			elseif type == 1 then -- track input fx chain
+				if chunk:match('<FXCHAIN_REC') then -- regular track input fx
+				fx_chunk = chunk:match('(<FXCHAIN_REC.->)\n<ITEM') or chunk:match('(<FXCHAIN_REC.*WAK.*>)\n>')
+				else -- monitor fx of the master track, extract fx chunk from reaper-hwoutfx.ini
+				local f = io.open(path..sep..'reaper-hwoutfx.ini', 'r')
+				fx_chunk = f:read('*a')
+				f:close()
+				end
+			end
+		end
+	end
+
+return fx_chunk
+end
+
+
 function FX_Chain_Chunk(chunk, path, sep) -- isolate object fx chain
 local fx_chunk
 	if chunk and #chunk > 0 then
-	fx_chunk = chunk:match('(<FXCHAIN.*>)\n<FXCHAIN_REC') or chunk:match('(<FXCHAIN.->)\n<ITEM') or chunk:match('(<FXCHAIN.*WAK.*>)\n>')
+	fx_chunk = chunk:match('(<FXCHAIN.*>)\n<FXCHAIN_REC')
+	or chunk:match('(<FXCHAIN.->)\n<ITEM') or chunk:match('(<FXCHAIN.*WAK.*>)\n>')
 	end
 return fx_chunk
 end
 
 
 
+function Exclude_Containers_From_Chunk(chunk)
+-- leaves behind last lines not enclosed within closures <>
+--[[
+FLOATPOS 0 0 0 0
+FXID {AEA25FBD-59F3-44A2-A727-28381E97FE24}
+WAK 0 0
+PARALLEL 1
+]]
+
+local opening_cnt, found = 0
+local chunk_t = {}
+	for line in chunk:gmatch('[^\n\r]+') do
+		if line:match('^<CONTAINER') then
+		found = 1
+		opening_cnt = opening_cnt+1
+		chunk_t[#chunk_t+1] = '<CONTAINER>' -- this is useful for accurate count of plugin indices via chunk with Collect_VideoProc_Instances() and Collect_VST3_Instances()
+		elseif found then
+		opening_cnt = line:match('^<') and opening_cnt+1 or line:match('^>$') and opening_cnt-1 or opening_cnt
+			if opening_cnt == 0 then found = nil end
+		else
+		chunk_t[#chunk_t+1] = line
+		end
+	end
+return table.concat(chunk_t, '\n')
+end
+
+
+
 function Collect_VideoProc_Instances(fx_chunk)
+-- only used in builds older than 6.37 where a feature of retrieval
+-- of original fx name displayed in the FX browser was introduced
+-- for FX_GetNamedConfigParm()
+
+local fx_chunk = Exclude_Containers_From_Chunk(fx_chunk)
 
 local video_proc_t = {} -- collect indices of video processor instances, because detection by fx name is unreliable as not all its preset names contain 'video processor' phrase due to length
 local counter = 0 -- to store indices of video processor instances
 
 	if fx_chunk and #fx_chunk > 0 then
 		for line in fx_chunk:gmatch('[^\n\r]*') do -- all fx must be taken into account for video proc indices to be accurate
-		local plug = line:match('<VST') or line:match('<AU') or line:match('<JS') or line:match('<DX') or line:match('<LV2') or line:match('<VIDEO_EFFECT')
+		local plug = line:match('<VST') or line:match('<AU')
+		or line:match('<JS') or line:match('<DX')
+		or line:match('<LV2') or line:match('<CLAP')
+		or line:match('<VIDEO_EFFECT') or line:match('<CONTAINER')
 			if plug then
 				if plug == '<VIDEO_EFFECT' then
 				video_proc_t[counter] = '' -- dummy value as we only need indices
 				end
-			counter = counter + 1
+			counter = counter + 1 -- counting all plugins so that the index is accurate
 			end
 		end
 	end
@@ -296,7 +375,7 @@ local st, fin = table.unpack(bug and {0, pres_cnt-1} or {1, pres_cnt})
 
 	for i = st, fin do
 		if bug then
-		r.TrackFX_SetPresetByIndex(temp_track, src_fx_idx, i) -- alternative in case in buggy builds passing index into FX_NavigatePresets() will glitch out, however it itelf doesn't work if no preset is selected
+		r.TrackFX_SetPresetByIndex(temp_track, src_fx_idx, i) -- alternative in case in buggy builds passing index into FX_NavigatePresets() will glitch out, however it itself doesn't work if no preset is selected
 		else
 		r.TrackFX_NavigatePresets(temp_track, src_fx_idx, 1)
 		end
@@ -343,21 +422,25 @@ local preset_name_t = {}
 end
 
 
+
 function Collect_VST3_Instances(fx_chunk) -- replicates Collect_VideoProc_Instances()
 
--- required to get hold of .vstpreset file names stored in the plugin dedicated folder and list those in the menu
+local fx_chunk = Exclude_Containers_From_Chunk(fx_chunk)
 
 local vst3_t = {} -- collect indices of vst3 plugins instances, because detection by fx name is unreliable as it can be changed by user in the FX browser
 local counter = 0 -- to store indices of vst3 plugin instances
 
 	if fx_chunk and #fx_chunk > 0 then
 		for line in fx_chunk:gmatch('[^\n\r]*') do -- all fx must be taken into account for vst3 plugin indices to be accurate
-		local plug = line:match('<VST') or line:match('<AU') or line:match('<JS') or line:match('<DX') or line:match('<LV2') or line:match('<VIDEO_EFFECT')
+		local plug = line:match('<VST') or line:match('<AU')
+		or line:match('<JS') or line:match('<DX')
+		or line:match('<LV2') or line:match('<CLAP')
+		or line:match('<VIDEO_EFFECT') or line:match('<CONTAINER')
 			if plug then
 				if line:match('VST3') then
 				vst3_t[counter] = '' -- dummy value as we only need indices
 				end
-			counter = counter + 1
+			counter = counter + 1 -- counting all plugins so that the index is accurate
 			end
 		end
 	end
@@ -372,7 +455,6 @@ function Collect_VST3_Preset_Names(temp_track, src_fx_cnt, src_fx_idx, pres_cnt)
 
 -- getting all preset names incuding .vstpreset file names in a roundabout way by travesring them in an instance on a temp track
 
-
 r.TrackFX_SetPresetByIndex(temp_track, src_fx_idx, pres_cnt-1) -- start from the last preset in case user has a default preset enabled and advance forward in the loop below
 local _, pres_cnt = r.TrackFX_GetPresetIndex(temp_track, src_fx_idx) -- actually redundant as pres_cnt is passed as argument
 
@@ -381,7 +463,10 @@ local preset_name_t = {}
 	for i = 1, pres_cnt do
 	r.TrackFX_NavigatePresets(temp_track, src_fx_idx, 1) -- forward
 	local _, pres_name = r.TrackFX_GetPreset(temp_track, src_fx_idx, '')
-	-- VST3 plugins may contain default preset whose name is returned as an empty string, so concatenate
+	-- VST3 plugins may contain default preset whose name is returned as an empty string and index as -1,
+	-- so replace with 'Default', because there's no way of knowing the exact default preset name although
+	-- often it's 'Program 1'
+	-- since build 7.23 such presets are ignored
 	pres_name = #pres_name:gsub(' ','') > 0 and pres_name or 'Default'
 	local pres_name = pres_name:match('.+[\\/](.+)%.vstpreset$') or pres_name
 	preset_name_t[i] = pres_name..'|'
@@ -399,8 +484,89 @@ local preset_name_t = {}
 end
 
 
-function Esc(str)
-return str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
+
+function Get_Presets_From_Earlier_Instance(temp_track, fx_idx, menu_t)
+-- to relieve load of traversing presets of each and every FX instance
+-- to Video proc only applies since build 6.37 where original fx name retrieval was made possible
+
+	local function get_fx_name(tr, fx_idx)
+	local build_6_37 = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.37
+	-- In theory two different plugins can have identical names set by the user in the FX browser
+	-- but in practice the odds are low
+	local GetFXName, parm = table.unpack(build_6_37 and {r.TrackFX_GetNamedConfigParm, 'original_name'} -- or 'fx_name' // returned with fx type prefix
+	or {r.TrackFX_GetFXName,''})
+	local fx_name = select(2, GetFXName(tr, fx_idx, parm))
+	return fx_name
+	end
+
+	local function is_same_fx(src_fx_name, targ_fx_name, src_fx_idx, targ_fx_idx, tr)
+	local build_6_37 = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.37
+		if src_fx_name == targ_fx_name then return true
+		elseif not build_6_37 then
+		local src_parm_cnt = r.TrackFX_GetNumParams(tr, src_fx_idx)
+		local targ_parm_cnt = r.TrackFX_GetNumParams(tr, targ_fx_idx)
+			if src_parm_cnt == targ_parm_cnt then
+			parm_t = {}
+			math.randomseed(math.floor(r.time_precise()*1000))
+			local count = src_parm_cnt > 5 and 6 or src_parm_cnt -- look for 6 param names as long as the param count allows that, 6 is more reliable than 3 or 4 because random number may repeat which will reduce the number of options
+				for i=1, count do
+				local rnd = math.random(1, src_parm_cnt)-1 -- math.random range must start from 1
+				local ret, parm_name = r.TrackFX_GetParamName(tr, src_fx_idx, rnd, '')
+				local stock = parm_name == 'Bypass' or parm_name == 'Wet' or build_6_37 and parm_name == 'Delta' -- excluding 3 stock parameters because they're not unique to a plugin
+					if parm_t[rnd] or stock then -- prevent storing the same param several times if math.random generates the same number and storing stock params
+						repeat
+						rnd = math.random(1, src_parm_cnt)-1
+						ret, parm_name = r.TrackFX_GetParamName(tr, src_fx_idx, rnd, '')
+						until not parm_t[rnd] and parm_name ~= 'Bypass' and parm_name ~= 'Wet'
+						and (not build_6_37 or parm_name ~= 'Delta')
+					end
+				parm_t[rnd] = parm_name
+				end
+				for parm_idx, name in pairs(parm_t) do
+				local retval, parm_name = r.TrackFX_GetParamName(tr, targ_fx_idx, parm_idx, '')
+					if name ~= parm_name then return end
+				end
+			return true
+			end
+		end
+	end
+
+	local function mark_active_preset(tr, fx_idx, submenu)
+	local submenu = submenu:gsub('!','') -- clear current checkmark, if any
+	local act, act_pres_name = r.TrackFX_GetPreset(tr, fx_idx, '')
+	local act_pres_idx, pres_cnt = r.TrackFX_GetPresetIndex(tr, fx_idx)
+		if act and act_pres_name ~= '' then -- act will always be true https://forum.cockos.com/showthread.php?t=270988, not 'No preset'
+		local act_pres_name_esc = '|'..Esc(act_pres_name)..'|' -- escape special chars just in case; adding pipes as menu line bounds markers to prevent similar captures from being affected by the replacement, e.g. '1/8', '1/8 dotted' and 'New 1/8' when the preset name is '1/8'; here pipes will always be present because the function only runs when there're more than 1 fx in the chain in which case presets are moved into a submenu
+		submenu = submenu:gsub(act_pres_name_esc, '|!'..act_pres_name..'|') -- add checkmark to indicate active preset in the menu
+		end
+	return submenu
+	end
+
+local src_fx_name = get_fx_name(temp_track, fx_idx)
+
+	for i=0, fx_idx-1 do -- only up until current fx index
+	local fx_name = get_fx_name(temp_track, i)
+		if is_same_fx(src_fx_name, fx_name, fx_idx, i, temp_track) -- advanced identity comparison beyond comparing names // WORKS BUT SEEMS TO BE SLOWING DOWN LOADING A BIT EVEN WHEN ONLY NAMES ARE COMPARED INSIDE
+		and menu_t[i+1] and menu_t[i+1]:match('^>?'..Esc(fx_name)..'|') -- i+1 because menu table is indexed starting from 1; the pipe ensures that the match is exact because in the menu it marks out the end of the line
+		then
+		menu_t[#menu_t+1] = mark_active_preset(temp_track, fx_idx, menu_t[i+1]) -- fx_idx because of looking for the current fx active preset, not the previous one that's been found
+		return menu_t
+		end
+	end
+
+end
+
+
+
+function Get_FX_Type(obj, fx_idx)
+-- https://forum.cockos.com/showthread.php?t=277103
+local plug_types_t = {[0] = 'DX', [1] = 'LV2', [2] = 'JSFX', [3] = 'VST',
+[4] = '', [5] = 'AU', [6] = 'Video processor', [7] = 'CLAP', [8] = 'Container'}
+local GetIOSize = obj and (r.ValidatePtr(obj, 'MediaItem_Take*') and r.TakeFX_GetIOSize or r.ValidatePtr(obj, 'MediaTrack*') and r.TrackFX_GetIOSize)
+	if GetIOSize then
+	local plug_type, inputPins_cnt, outputPins_cnt = GetIOSize(obj, fx_idx)
+	return plug_types_t[plug_type]
+	end
 end
 
 
@@ -473,7 +639,7 @@ local obj, obj_type
 			or {0,0})
 			r.MoveEditCursor(min_val - subtr_val, false) -- dosel false = don't create time sel; restore orig. edit curs pos, greater subtracted from the lesser to get negative value meaning to move closer to zero (project start) // MOVES VIEW SO IS UNSUITABLE
 		--]]
-		-- OR SIMPLY
+		-- 	OR SIMPLY
 			r.SetEditCurPos(curs_pos, false, false) -- moveview, seekplay false // restore orig. edit curs pos
 			end
 		end
@@ -521,7 +687,9 @@ end
 
 
 function GetSet_FX_Selected_In_FX_Chain(obj, sel_idx, chunk, input_fx)
--- functions FX_Copy_To_Take(), FX_Copy_To_Track() in particular change fx selection in the source chain, making selected the last addressed fx
+-- relies on SetObjChunk()
+-- functions FX_Copy_To_Take(), FX_Copy_To_Track() in particular change fx selection in the source chain if the source and destination FX indices are identical https://forum.cockos.com/showthread.php?t=285177#18
+-- (their non-identity can be used as a conditon to avoid setting selection)
 -- so the original selection requires restoration
 -- sel_idx is string, input_fx is boolean to address input fx chain
 -- chunk comes from GetObjChunk(), relevant at both stages
@@ -530,7 +698,7 @@ function GetSet_FX_Selected_In_FX_Chain(obj, sel_idx, chunk, input_fx)
 -- FX_GetNamedConfigParm(obj, -1, 'chain_sel')
 -- FX_SetNamedConfigParm(obj, -1, 'chain_sel', fx_idx) -- fx_idx is a string
 -- https://forum.cockos.com/showthread.php?t=285177#19
--- so chunk arg can be ommitted
+-- but only for track main and take fx chains
 -- doesn't support containers
 local old = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.06
 local take, tr = r.ValidatePtr(obj, 'MediaItem_Take*'), r.ValidatePtr(obj, 'MediaItem_Track*')
@@ -592,48 +760,70 @@ function MAIN(menu_t, action_t, path, sep, temp_tr, obj_chunk, input_fx)
 -- input_fx is boolean to store input fx indices
 
 local fx_cnt = r.TrackFX_GetCount(temp_tr)
+local build = tonumber(r.GetAppVersion():match('[%d%.]+'))
 
-	local fx_chunk = FX_Chain_Chunk(obj_chunk, path, sep) -- needed for video processor and VST3 plugin instances detection with Collect_VideoProc_Instances() and Collect_VST3_Instances functions, detection video proc by fx name is unreliable as not all its preset names which are also instance names contain 'video processor' phrase due to length, neither it's reliable for VST3 plugins for the sake of getting .vstpreset file names as it can be changed by user in the FX browser
-	local video_proc_t = Collect_VideoProc_Instances(fx_chunk)
+	local fx_chunk = FX_Chain_Chunk(obj_chunk, path, sep) -- needed for video processor and VST3 plugin instances detection with Collect_VideoProc_Instances() and Collect_VST3_Instances functions, detection video proc by fx name until build 6.37 is unreliable as not all its preset names which are also instance names contain 'video processor' phrase due to length, neither it's reliable for VST3 plugins for the sake of getting .vstpreset file names as it can be changed by user in the FX browser
+	local video_proc_t = build < 6.37 and Collect_VideoProc_Instances(fx_chunk)
+	-- there's no practical reason to process VST3 plugins separately from other plugin types
+	-- other than catching a default preset which nevertheless cannot be disambiguated from 'no preset' selection
+	-- due to the way FX_GetPresetIndex() works https://forum.cockos.com/showthread.php?t=294090
 	local vst3_t = Collect_VST3_Instances(fx_chunk)
 		for i = 0, fx_cnt-1 do
-		local pres_cnt = select(2,r.TrackFX_GetPresetIndex(temp_tr, i))
-		local pres_fn = r.TrackFX_GetUserPresetFilename(temp_tr, i, '')
-		local pres_fn = pres_fn:match('[^\\/]+$') -- isolate preset file name
-		local fx_name = select(2,r.TrackFX_GetFXName(temp_tr, i, ''))
-		local act, act_pres_name = r.TrackFX_GetPreset(temp_tr, i, '')
-		local div = #menu_t > 0 and i == 0 and '|||' or '' -- divider between main fx and input fx lists only if there're main fx and so menu_t table is already populated
-			if pres_cnt == 0 then
-			menu_t[#menu_t+1] = div..'#'..fx_name..' (n o  p r e s e t s)|'
-			-- take the grayed out entry into account in the action_t as a disabled grayed out entry still counts against the total number of the menu entries
-			action_t[1][#action_t[1]+1] = '' -- dummy value
-			action_t[2][#action_t[2]+1] = '' -- same
-			elseif pres_cnt > 0 then -- only plugins with presets
-			-- collect presets depending on the type of fx at the current index
-			local preset_name_t = video_proc_t[i] and Collect_VideoProc_Preset_Names(temp_tr, fx_cnt, i, pres_cnt) or vst3_t[i] and Collect_VST3_Preset_Names(temp_tr, fx_cnt, i, pres_cnt) or Collect_FX_Preset_Names(temp_tr, fx_cnt, i, pres_cnt)
-			local preset_name_list = preset_name_t and table.concat(preset_name_t)
-				if preset_name_list then -- add active preset checkmark
-					if act and act_pres_name ~= '' --and not act_pres_name:match('%.vstpreset')
-					then -- if active preset matches the plug actual settings, not 'No preset', and not a path to VST3 preset file
-					local act_pres_name = act_pres_name:match('.+%.vstpreset') and act_pres_name:match('([^\\/]+)%.%w+$') or act_pres_name
-					local act_pres_name_esc = Esc(act_pres_name) -- escape special chars just in case
-					preset_name_list = preset_name_list:gsub(act_pres_name_esc, '!'..act_pres_name) -- add checkmark to indicate active preset in the menu
-					end
-				local div = fx_cnt > 1 and div..'>' or '' -- only add submenu tag if more than 1 plugin in the chain because submenu only makes sense in this scenario, addition of the closure tag < is conditioned within collect preset names functions
-				local fx_name = fx_cnt > 1 and fx_name..'|' or '' -- only include plugin name as submenu header if more than 1 plugin in the chain because submenu only makes sense in this scenario otherwise it counts agains the preset entry indices and disrupts their correspondence to preset indices
-				menu_t[#menu_t+1] = div..fx_name..preset_name_list:gsub('&', '+') -- ampersand is a quick access shortcut in the menu and won't be displayed
-					for j = 0, pres_cnt-1 do
+		local act_pres_idx, pres_cnt = r.TrackFX_GetPresetIndex(temp_tr, i)
+		local cntnr = Get_FX_Type(temp_tr, i) == 'Container'
+			if build > 7.22 and cntnr and pres_cnt > 0 or not cntnr then -- only include container if it has presets, until build 7.23 navigate and set presets functions didn't work with container presets bug report https://forum.cockos.com/showthread.php?t=294073
+			-- first try to borrow preset list from the earlier instance of current fx, if any
+			local menu_t_tmp = fx_cnt > 1 and Get_Presets_From_Earlier_Instance(temp_tr, i, menu_t)
+				if menu_t_tmp then -- earlier instance was found
+				menu_t = menu_t_tmp
+					for j = 0, pres_cnt-1 do -- store fx and preset indices
 					action_t[1][#action_t[1]+1] = input_fx and i+0x1000000 or i -- fx indices, repeated as many times as there're fx presets per fx to be triggered by the input form the menu
 					action_t[2][#action_t[2]+1] = j -- preset indices, repeated as many times as there're fx presets, starts from 0 with every new fx index
 					end
-				end
-			end
+				else -- no earlier instance was found, extract presets directly
+				local fx_name = select(2,r.TrackFX_GetFXName(temp_tr, i, ''))
+				local ret, orig_fx_name = r.TrackFX_GetNamedConfigParm(temp_tr, i, 'original_name')
+				fx_name = (cntnr and fx_name == 'Container' or not cntnr)
+				and (orig_fx_name == 'Video processor' and not fx_name:match('%- video processor') and orig_fx_name or fx_name)
+				or cntnr and '♯ '..fx_name -- replace video proc instance name with generic name if the instance doesn't include 'video processor' verbiage (was added at some point) and mark container with sharp sign if named differently // will work once the above mentioned bug is fixed
+				local act, act_pres_name = r.TrackFX_GetPreset(temp_tr, i, '')
+				local div = #menu_t > 0 and i == 0 and '|||' or '' -- divider between main fx and input fx lists only if there're main fx and so menu_t table is already populated at the start of the loop
+					if pres_cnt == 0 --or (act and act_pres_name:match('%.vstpreset')) -- a path to VST3 preset file
+					then
+					menu_t[#menu_t+1] = div..'#'..fx_name..' (n o  p r e s e t s)|'
+					-- take the grayed out entry into account in the action_t as a disabled grayed out entry still counts against the total number of the menu entries
+					action_t[1][#action_t[1]+1] = '' -- dummy value
+					action_t[2][#action_t[2]+1] = '' -- same
+					elseif pres_cnt > 0 then -- only plugins with presets
+					-- collect presets depending on the type of fx at the current index
+					local preset_name_t = video_proc_t and video_proc_t[i] and Collect_VideoProc_Preset_Names(temp_tr, fx_cnt, i, pres_cnt) or vst3_t[i] and Collect_VST3_Preset_Names(temp_tr, fx_cnt, i, pres_cnt)
+					or Collect_FX_Preset_Names(temp_tr, fx_cnt, i, pres_cnt)
+					local preset_name_list = preset_name_t and table.concat(preset_name_t)
+						if preset_name_list then -- add active preset checkmark
+							if act and act_pres_name ~= '' --and not act_pres_name:match('%.vstpreset') -- not 'No preset'
+							then
+							local act_pres_name = act_pres_name:match('.+%.vstpreset') and act_pres_name:match('([^\\/]+)%.%w+$') or act_pres_name
+							local lead_pipe = act_pres_idx > 0 and '|' or '' -- leading pipe only when preset index is greater that 0, i.e. not the 1st preset
+							local trail_pipe = fx_cnt > 1 and '|' or '' -- only when there're over 1 fx in the chain in which case all presets will be placed in a submenu
+							local act_pres_name_esc = lead_pipe..Esc(act_pres_name)..trail_pipe -- escape special chars just in case; adding pipes as menu line bounds markers to prevent similar captures from being affected by the replacement, e.g. '1/8', '1/8 dotted' and 'New 1/8' when the preset name is '1/8'
+							preset_name_list = preset_name_list:gsub(act_pres_name_esc, lead_pipe..'!'..act_pres_name..trail_pipe) -- add checkmark to indicate active preset in the menu
+							end
+						local div = fx_cnt > 1 and div..'>' or '' -- only add submenu tag if more than 1 plugin in the chain because submenu only makes sense in this scenario, addition of the closure tag < is conditioned within collect preset names functions
+						local fx_name = fx_cnt > 1 and fx_name..'|' or '' -- only include plugin name as submenu header if more than 1 plugin in the chain because submenu only makes sense in this scenario otherwise it counts agains the preset entry indices and disrupts their correspondence to preset indices
+						menu_t[#menu_t+1] = div..fx_name..preset_name_list:gsub('&', '+') -- ampersand is a quick access shortcut in the menu and won't be displayed, so replace it with a char that will
+							for j = 0, pres_cnt-1 do
+							action_t[1][#action_t[1]+1] = input_fx and i+0x1000000 or i -- fx indices, repeated as many times as there're fx presets per fx to be triggered by the input form the menu
+							action_t[2][#action_t[2]+1] = j -- preset indices, repeated as many times as there're fx presets, starts from 0 with every new fx index
+							end
+						end
+					end
+				end -- menu_t_tmp con end
+			end -- cntnr cond end
 		end
 
 return menu_t, action_t
 
 end
-
 
 
 ------- START MAIN ROUTINE ------------
@@ -647,7 +837,6 @@ LOCK_FX_CHAIN_FOCUS = LOCK_FX_CHAIN_FOCUS:gsub(' ','') ~= ''
 IGNORE_INPUT_FX = IGNORE_INPUT_FX:gsub(' ','') ~= ''
 IGNORE_MAIN_FX = IGNORE_MAIN_FX:gsub(' ','') ~= ''
 local space = (' '):rep(15)
-
 
 	if not SEL_OBJ_IN_CURR_CONTEXT then
 	obj, obj_type = Get_Object(LOCK_FX_CHAIN_FOCUS)
@@ -667,7 +856,6 @@ local space = (' '):rep(15)
 		end
 	end
 
-
 	if obj_type == 0 and IGNORE_INPUT_FX and IGNORE_MAIN_FX then
 	mess = '\n\n\t LISTING PRESETS OF BOTH\n\n\tTRACK MAIN AND INPUT FX\n\n IS DISABLED IN THE SCRIPT SETTINGS \n'
 	end
@@ -683,10 +871,9 @@ local space = (' '):rep(15)
 	return r.defer(no_undo) -- prevent undo point creation // might be redundant in this script
 	end
 
-
 	if obj then -- prevent error when no item and when no track (empty area at bottom of the TCP, in MCP or the ruler or focused window) and prevent undo point creation
 
-	r.Undo_BeginBlock() -- have to use this otherwise FX_Copy functions create their own undo points, as many as there're plugins in the chains, in the end since the undo point title is only displayed in the status bar and not listed in the undo history, not sure why because some changes to project are being made, such as temp track creation, anyway suits the task perfectly
+	r.Undo_BeginBlock() -- have to use this otherwise FX_Copy functions create their own undo points, as many as there're plugins in the chains, in the end since the undo point title is only displayed in the status bar and not listed in the undo history, not sure why because some changes to project are being made, such as temp track creation, anyway this suits the task perfectly
 
 		if obj_type == 1 then -- item
 		local fx_chain_focus = LOCK_FX_CHAIN_FOCUS or r.GetCursorContext() == -1
@@ -742,12 +929,10 @@ local space = (' '):rep(15)
 		r.Undo_EndBlock(r.Undo_CanUndo2(0) or '', -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
 		return r.defer(no_undo) end
 
+-->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	local action_t = {{},{}} -- stores fx and preset indices as values for each key matching a preset index
 	local menu_t = {}
-
--- NOW THE TEMP TRACK IS ONLY CREATED TWICE AT THE MOST IF TARGET TRACK CONTAINS BOTH MAIN AND INPUT/MINITORING FX,
--- INSTEAD OF ONE TEMP TRACK PER EACH FX IN THE CHAIN
 
 		if fx_cnt and fx_cnt > 0 then
 
@@ -839,4 +1024,7 @@ local space = (' '):rep(15)
 		end
 
 	end
+
+
+
 
