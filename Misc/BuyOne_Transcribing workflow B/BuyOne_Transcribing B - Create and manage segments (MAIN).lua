@@ -330,11 +330,6 @@ About:	The script is part of the Transcribing B workflow set of scripts
 	'BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua'
 	included in the script set.
 	
-	In both cases after regions positions have been changed run this 
-	script in Batch segment update mode (see par. F above) in order 
-	to update segment time stamps in the regions names and in track Notes.
-	
-	
 	
 	► CONVERSION BETWEEN PROJECTS
 	
