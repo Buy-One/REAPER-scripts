@@ -9,101 +9,101 @@ REAPER: at least v6.09
 Extensions: SWS/S&M recommended, not mandatory
 Provides: [main=main,midi_editor] .
 About:	The script provides an alternative to REAPER built-in take rank scale
-			which was introduced in build 7.17 AND allows to conveniently rank takes 
-			in earlier builds where take markers are supported, that is starting from
-			6.09.  
-			Besides ranking the script can be used for labeling items/takes for other 
-			purposes, but since take ranking is its primary purpose the following text 
-			will only refer to ranking.
+	which was introduced in build 7.17 AND allows to conveniently rank takes 
+	in earlier builds where take markers are supported, that is starting from
+	6.09.  
+	Besides ranking the script can be used for labeling items/takes for other 
+	purposes, but since take ranking is its primary purpose the following text 
+	will only refer to ranking.
+	
+	The script targets take under mouse cursor and if none is detected it 
+	targets active takes of all selected items under the edit cursor.   
+	Within take the script targets take marker directly under mouse/edit cursor 
+	and if none is detected it targets the first take marker left of cursor.  
+	If at cursor or to the left of it there's no rank marker the script will 
+	insert a new take marker, otherwise it'll update the found take marker.
+	
+	!!! Define target items before running the script so that when the rank 
+	menu opens you only need to press a button.
+	
+	If a new marker is needed and there's not enough space between the cursor 
+	and the item start, move the existing marker to the right beyond the cursor 
+	position or insert a new marker using REAPER native action and then set its 
+	rank with the script.
+	
+	If the rank scale used in the marker detected by the script differs from 
+	the script active rank scale defined in SCALE_TYPE settings, up/down-ranking 
+	options will be grayed out.  
+	Therefore if you changed the script active scale, in order to change rank 
+	of a marker ranked in a different scale use menu items meant for explicit 
+	rank setting.
+	
+	Up/down-ranking options aren't cyclic.
+	
+	To delete all or specific rank markers use Region/Marker Manager with 
+	'Take markers' option checked so they're listed. The feature is supported
+	since REAPER build 7.17.			
 			
-			The script targets take under mouse cursor and if none is detected it 
-			targets active takes of all selected items under the edit cursor.   			
-			Within take the script targets take marker directly under mouse/edit cursor 
-			and if none is detected it targets the first take marker left of cursor.  
-			If at cursor or to the left of it there's no rank marker the script will 
-			insert a new take marker, otherwise it'll update the found take marker.
-			
-			!!! Define target items before running the script so that when the rank 
-			menu opens you only need to press a button.
-			
-			If a new marker is needed and there's not enough space between the cursor 
-			and the item start, move the existing marker to the right beyond the cursor 
-			position or insert a new marker using REAPER native action and then set its 
-			rank with the script.
-			
-			If the rank scale used in the marker detected by the script differs from 
-			the script active rank scale defined in SCALE_TYPE settings, up/down-ranking 
-			options will be grayed out.  
-			Therefore if you changed the script active scale, in order to change rank 
-			of a marker ranked in a different scale use menu items meant for explicit 
-			rank setting.
-			
-			Up/down-ranking options aren't cyclic.
-			
-			To delete all or specific rank markers use Region/Marker Manager with 
-			'Take markers' option checked so they're listed. The feature is supported
-			since REAPER build 7.17.			
-					
-			Locked items are ignored by the script.
+	Locked items are ignored by the script.
 
-			
-			ADDITIONAL OPTIONS
-			
-			► Options 
-			'Select items with active take ranked as...'  
-			'Select items with any take ranked as...'  
-			 AND  
-			'Set take ranked as... active'
-			
-			are toggle mutually exclusive options. The elipsis in their titles implies 
-			a user selected rank, so in order to execute the actions associated with 
-			them, after enabling an option click a rank button in the rank menu.  
-			When acting on options 1 and 2, before selecting items the script deselects
-			all items in the project. When acting on option 3, if there're several takes 
-			which match the user selected rank, the first found take is the one which will 
-			be set active, however the currently active take is ignored even if it does 
-			match the user selected rank.  
-			The target item priority is as follows:  
-			in options 1 and 2: item under mouse, items on selected tracks, all items in 
-			the project on tracks visible in Arrange;   
-			in option 3: item under mouse, selected items, items on selected tracks, all 
-			items in the project on tracks visible in Arrange.			
-			
-			► Options under 'OTHER OPERATIONS' submenu
-			
-			'Sort takes in items by rank in desceding/ascending order'  
-			'Calculate take average/median rank'
-			
-			When sorting takes with multiple rank markers in the active scale, if direction 
-			is descending, only marker ranked the highest within take will be respected;
-			if direction is ascending, only the marker ranked the lowest within take will 
-			be respected. E.g. out of markers ranked 5, 3 and 1 in the active scale within 
-			the same take when sorting in descending order only marker ranked 5 will be 
-			respected, and when sorting in ascending order only marker ranked 1 will be 
-			respected.
-			
-			After sorting the last active take status is maintained regardless of its 
-			position. Takes which are unranked or ranked in a scale different from the 
-			active one are relegated to the bottom take lanes.
-			
-			When calculating average and median rank only markers ranked in the active scale 
-			are respected and if within take there're multiple markers ranked in the active 
-			scale the marker ranked the highest is always given priority.
-			
-			The target item priority for these options: item under mouse, selected items, 
-			items on selected tracks, all items in the project on tracks visible in Arrange.
-			
-			---------
-			
-			To target all items in the project besides selecting all items explicitly, either 
-			deselect all tracks (e.g. select one and then deselect it with Ctrl/Cmd+Click) 
-			or select all tracks.  
-			If during script execution all tracks are selected the script will leave only 
-			the first one selected after completing the task successfully.
-			
-			-----------------------------------------
-			
-			Proceed to USER SETTINGS below.
+	
+	ADDITIONAL OPTIONS
+	
+	► Options 
+	'Select items with active take ranked as...'  
+	'Select items with any take ranked as...'  
+	 AND  
+	'Set take ranked as... active'
+	
+	are toggle mutually exclusive options. The elipsis in their titles implies 
+	a user selected rank, so in order to execute the actions associated with 
+	them, after enabling an option click a rank button in the rank menu.  
+	When acting on options 1 and 2, before selecting items the script deselects
+	all items in the project. When acting on option 3, if there're several takes 
+	which match the user selected rank, the first found take is the one which will 
+	be set active, however the currently active take is ignored even if it does 
+	match the user selected rank.  
+	The target item priority is as follows:  
+	in options 1 and 2: item under mouse, items on selected tracks, all items in 
+	the project on tracks visible in Arrange;   
+	in option 3: item under mouse, selected items, items on selected tracks, all 
+	items in the project on tracks visible in Arrange.			
+	
+	► Options under 'OTHER OPERATIONS' submenu
+	
+	'Sort takes in items by rank in desceding/ascending order'  
+	'Calculate take average/median rank'
+	
+	When sorting takes with multiple rank markers in the active scale, if direction 
+	is descending, only marker ranked the highest within take will be respected;
+	if direction is ascending, only the marker ranked the lowest within take will 
+	be respected. E.g. out of markers ranked 5, 3 and 1 in the active scale within 
+	the same take when sorting in descending order only marker ranked 5 will be 
+	respected, and when sorting in ascending order only marker ranked 1 will be 
+	respected.
+	
+	After sorting the last active take status is maintained regardless of its 
+	position. Takes which are unranked or ranked in a scale different from the 
+	active one are relegated to the bottom take lanes.
+	
+	When calculating average and median rank only markers ranked in the active scale 
+	are respected and if within take there're multiple markers ranked in the active 
+	scale the marker ranked the highest is always given priority.
+	
+	The target item priority for these options: item under mouse, selected items, 
+	items on selected tracks, all items in the project on tracks visible in Arrange.
+	
+	---------
+	
+	To target all items in the project besides selecting all items explicitly, either 
+	deselect all tracks (e.g. select one and then deselect it with Ctrl/Cmd+Click) 
+	or select all tracks.  
+	If during script execution all tracks are selected the script will leave only 
+	the first one selected after completing the task successfully.
+	
+	-----------------------------------------
+	
+	Proceed to USER SETTINGS below.
 
 ]]
 
