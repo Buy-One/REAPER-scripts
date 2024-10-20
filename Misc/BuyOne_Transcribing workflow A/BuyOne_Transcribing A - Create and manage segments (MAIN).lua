@@ -43,7 +43,11 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	RATHER THAN FROM THE MEDIA ITEM START.  
 	PROJECT TIME BASE MUST BE SET TO TIME SO THAT MEDIA ITEM
 	LENGTH AND LOCATION AND MARKERS LOCATION ARE INDEPENDENT 
-	OF PROJECT TEMPO.
+	OF PROJECT TEMPO.  
+	For a method of updating segment time stamps when there's a  
+	need to move the media item on the time line after segments 
+	have been created, refer to ADDITIONAL WORKFLOW AIDS 
+	paragraph below.
 	
 	
 	If your aim is to transcribe for SRT/VTT formats be aware that
