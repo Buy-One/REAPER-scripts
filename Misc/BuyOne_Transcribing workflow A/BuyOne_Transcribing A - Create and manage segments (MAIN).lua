@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Transcribing A - Create and manage segments (MAIN).lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
-Changelog:  1.3 #Fixed error on creation of the very first segment while Notes are still empty
+Version: 1.4
+Changelog: 1.4 #Fixed track notes evaluation within the Notes window for SWS builds 
+		where BR_Win32_GetWindowText() function's buffer size is 1 kb  
+	   1.3 #Fixed error on creation of the very first segment while Notes are still empty
 		#Fixed script functionality in cases where there're gaps between segments
 		and there's no segment time stamp in the Notes and in some corner cases
 		#Made segment merging functionality more robust in general
@@ -835,6 +837,7 @@ function Scroll_SWS_Notes_Window(parent_wnd, str, tr)
 -- parent_wnd is window titled 'Notes' or 'Notes (docked)' found with Find_Window_SWS() function
 -- str is string to be found in the Notes
 -- tr is selected track
+-- no scrolling will occur if the track notes aren't found in the Notes window
 
 	local function string_exists(txt, str)
 		for line in txt:gmatch('[^\n]+') do
@@ -862,8 +865,8 @@ local i, notes = 1
 			if not notes then
 			local notes_tmp = r.NF_GetSWSTrackNotes(tr)
 				if #notes_tmp:gsub('[%c%s]','') > 0 then
-				local test_str = 'ISTRACKNOTES\n'
-				r.NF_SetSWSTrackNotes(tr, test_str..notes_tmp) -- add a test string to start of the notes so it's sure to be included in the string returned by the limited BR_Win32_GetWindowText() version
+				local test_str = 'ISTRACKNOTES' -- the test string is initialized without line break char to be able to successfully find it in the window text because search with the line break char will fail due to carriage return \r being added to the end of the line and thus preceding the line break, i.e. 'ISTRACKNOTES\r\n'
+				r.NF_SetSWSTrackNotes(tr, test_str..'\n'..notes_tmp) -- add a test string to start of the notes so it's sure to be included in the string returned by the limited BR_Win32_GetWindowText() version 
 				local ret, txt = r.BR_Win32_GetWindowText(child)
 					if ret and txt:match(test_str) and string_exists(notes_tmp, str) then
 					notes = notes_tmp
