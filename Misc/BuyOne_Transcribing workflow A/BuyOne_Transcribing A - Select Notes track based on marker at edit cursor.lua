@@ -308,7 +308,7 @@ local i, notes = 1
 		-- THE FOLLOWING line_st VALUE IS ONLY ACCURATE BECAUSE notes VAR STEMS FROM BR_Win32_GetWindowText()
 		-- or JS_Window_GetTitle() WHICH RETURN TEXT FROM WINDOW AND IN THE WINDOW EACH LINE IS TERMINATED 
 		-- WITH CARRIAGE RETURN \r WHICH IS COUNTED AS WELL. THIS WOULDN'T HAVE BEEN THE CASE IF notes VAR STEMMED
-		-- FROM NF_SetSWSTrackNotes()
+		-- FROM NF_GetSWSTrackNotes()
 		local line_st = notes:find(Esc('\n'..target_line)) or 0 -- if not the first line, new line char must be taken into account for start value to refer to the visible start of the line otherwise the start will be offset by 1
 		local line_len = #target_line:match('(.+:%d+.%d+)') -- in segment entry only heghlight the time stamp(s)
 		-- https://learn.microsoft.com/en-us/windows/win32/controls/em-setsel
