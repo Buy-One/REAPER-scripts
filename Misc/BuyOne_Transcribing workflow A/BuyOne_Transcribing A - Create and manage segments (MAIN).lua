@@ -505,9 +505,13 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	Notes window scroll position is reset to the top of the window. 
 	So one has to scroll down to search for the target line again 
 	in the Notes if it's located outside of the visible area. However 
-	this is fixable by installing js_ReaScriptAPI extension from     
+	this is fixable by installing js_ReaScriptAPI extension from  
 	https://github.com/juliansader/ReaExtensions  
-	or via ReaPack.
+	or via ReaPack.  
+	The solution is relevant for running the script in Batch update
+	mode (see par. 'F. Batch segment update' above) and when 
+	SELECT_TRACK_OF_UPDATED_NOTES setting isn't enabled in the USER
+	SETTING
 	
 	The track specific scroll position is also not stored, so when 
 	the Notes window is switched between tracks by changing track 
