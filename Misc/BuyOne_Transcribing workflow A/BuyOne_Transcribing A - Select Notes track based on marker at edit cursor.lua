@@ -2,9 +2,11 @@
 ReaScript name: BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.4
-Changelog: 1.4 #Fixed track notes evaluation within the Notes window for SWS builds 
-		where BR_Win32_GetWindowText() function's buffer size is 1 kb 
+Version: 1.5
+Changelog: 1.5 	#Fixed text highlighting if HIGHLIGHT_SEGMENT_ENTRY setting 
+	       	is enabled in cases where track Notes contain Unicode characters  
+	   1.4 	#Fixed track notes evaluation within the Notes window for SWS builds 
+	       	where BR_Win32_GetWindowText() function's buffer size is 1 kb 
 	   1.3 	#Added HIGHLIGHT_SEGMENT_ENTRY settings
 	   1.2 	#Added scrolling of the Notes window to the line contaning 
 	       	the time stamp of the marker at the edit cursor
@@ -304,16 +306,24 @@ local i, notes = 1
 		end
 		if HIGHLIGHT_SEGMENT_ENTRY then
 		r.BR_Win32_SetFocus(child) -- window must be focused for selection to work
-		notes = notes:gsub('[\128-\191]','') -- remove extra (continuation or trailing) bytes in case text is Unicode so string.find counts characters accurately
 		-- THE FOLLOWING line_st VALUE IS ONLY ACCURATE BECAUSE notes VAR STEMS FROM BR_Win32_GetWindowText()
-		-- or JS_Window_GetTitle() WHICH RETURN TEXT FROM WINDOW AND IN THE WINDOW EACH LINE IS TERMINATED 
-		-- WITH CARRIAGE RETURN \r WHICH IS COUNTED AS WELL. THIS WOULDN'T HAVE BEEN THE CASE IF notes VAR STEMMED
-		-- FROM NF_GetSWSTrackNotes()
-		local line_st = notes:find(Esc('\n'..target_line)) or 0 -- if not the first line, new line char must be taken into account for start value to refer to the visible start of the line otherwise the start will be offset by 1
+		-- or JS_Window_GetTitle() WHICH RETURN TEXT FROM WINDOW AND IN THE WINDOW EACH LINE FOLLOWED
+		-- BY A NEW LINE IS TERMINATED WITH CARRIAGE RETURN \r WHICH IS COUNTED AS WELL. 
+		-- THIS WOULDN'T HAVE BEEN THE CASE IF notes VAR STEMMED FROM NF_GetSWSTrackNotes()
+		-- and the count of lines preceding the target line would have to be added to line_cnt
+		-- e.g. notes:find(Esc('\n'..target_line)) + line_cnt or 0
+		local line_st = notes:find(Esc('\n'..target_line)) or 0 -- if not the first line, new line char must be taken into account for start value to refer to the visible start of the line otherwise the start will be offset by 1 because for accurate selection the cursor must start before the first selection character which is the same as past the previous one
+
+		-- correct the char count of notes preceding the target line by subtracting extra (continuation or trailing) bytes count
+		-- in case Unicode chars are present so that text selection/highlighting is accurate
+		-- because it's performed on the basis of characters rather than bytes
+		local extra_bytes_cnt = select(2, notes:match('(.-)'..Esc(target_line)):gsub('[\128-\191]','')) 
+		line_st = line_st - extra_bytes_cnt
+		
 		local line_len = #target_line:match('(.+:%d+.%d+)') -- in segment entry only heghlight the time stamp(s)
 		-- https://learn.microsoft.com/en-us/windows/win32/controls/em-setsel
 		SendMsg(child, 0x00B1, line_st, line_st+line_len) -- EM_SETSEL 0x00B1, wParam line_st, lParam line_st+line_len
-		--	r.BR_Win32_SetFocus(r.GetMainHwnd()) -- removing focus clears selection
+		-- r.BR_Win32_SetFocus(r.GetMainHwnd()) -- removing focus clears selection
 		end
 	end
 
