@@ -310,7 +310,7 @@ local i, notes = 1
 		-- or JS_Window_GetTitle() WHICH RETURN TEXT FROM WINDOW AND IN THE WINDOW EACH LINE FOLLOWED
 		-- BY A NEW LINE IS TERMINATED WITH CARRIAGE RETURN \r WHICH IS COUNTED AS WELL. 
 		-- THIS WOULDN'T HAVE BEEN THE CASE IF notes VAR STEMMED FROM NF_GetSWSTrackNotes()
-		-- and the count of lines preceding the target line would have to be added to line_cnt
+		-- and the count of lines preceding the target line would have to be added to line_st
 		-- e.g. notes:find(Esc('\n'..target_line)) + line_cnt or 0
 		local line_st = notes:find(Esc('\n'..target_line)) or 0 -- if not the first line, new line char must be taken into account for start value to refer to the visible start of the line otherwise the start will be offset by 1 because for accurate selection the cursor must start before the first selection character which is the same as past the previous one
 
