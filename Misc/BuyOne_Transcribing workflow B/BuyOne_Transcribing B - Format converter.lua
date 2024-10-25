@@ -28,6 +28,13 @@ About:	The script is part of the Transcribing B workflow set of scripts
 	directory. The dialogue will guide you through the process. The 
 	dialogue options respond to keyboard input, options 1 through 3 
 	to keys 1 - 3, .SRT - S, .VTT - V, and AS IS - A. 
+
+	IF A FILE WITH A TRANSCRIPT THAT CONTAINS UNICODE CHARACTERS (WHICH 
+	IS THE CASE WHEN YOU TRANSCRIBE TO A LANGUAGE WHICH USES ALPHABET 
+	OTHER THAN BASIC LATIN) IS VIEWED IN A VANILLA TEXT EDITOR, SUCH 
+	CHARACTERS WILL BE GARBLED. TO CORRECT THAT LOAD THE EXPORTED FILE 
+	INTO ANY CODE PROCESSOR SUCH AS NOTEPAD++ AND CONVERT ITS ENCODING 
+	INTO UTF-8.
 			
 ]]
 
