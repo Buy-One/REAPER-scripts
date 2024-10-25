@@ -49,6 +49,12 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	code is displayed in track Notes named after the selected format. 
 	The track is reused in subsequent conversions as long as its name
 	and the format remain the same.  
+
+	IF A TRANSCRIPT THAT CONTAINS UNICODE CHARACTERS (WHICH IS THE CASE
+	WHEN YOU TRANSCRIBE TO A LANGUAGE WHICH USES ALPHABET OTHER THAN
+	BASIC LATIN) IS VIEWED IN A VANILLA TEXT EDITOR, SUCH CHARACTERS WILL 
+	BE GARBLED. TO CORRECT THAT LOAD THE EXPORTED FILE INTO ANY CODE 
+	PROCESSOR SUCH AS NOTEPAD++ AND CONVERT ITS ENCODING INTO UTF-8.
 			
 ]]
 
