@@ -15,7 +15,8 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	BuyOne_Transcribing A - Prepare transcript for rendering.lua   
 	BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua  
 	BuyOne_Transcribing A - Go to segment marker.lua
-	BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua
+	BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua  
+	BuyOne_Transcribing A - Search the transcript.lua
 
 	The script can be used for general purposes because it
 	affects all markers in time selection, which is something
