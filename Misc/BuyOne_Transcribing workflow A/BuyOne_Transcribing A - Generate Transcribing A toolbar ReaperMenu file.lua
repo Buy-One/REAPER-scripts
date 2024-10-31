@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
-Changelog: 1.3 #Added button for the action SWS/S&M: Open/close Notes window (track notes)
+Version: 1.4
+Changelog: 1.4 #Added button for the script BuyOne_Transcribing A - Search the transcript.lua
+	       #Updated list of transcribing A scripts set in the About section
+	   1.3 #Added button for the action SWS/S&M: Open/close Notes window (track notes)
 	       #Added error it SWS/S&M extension isn't installed to complement the new button addition
 	       #Improved zooming of the track with 'Transcribing A toolbar layout.png' image
 	   1.2 #Fixed the toolbar name everywhere it's mentioned
@@ -362,6 +364,7 @@ icon_9=text_wide_tt
 icon_10=text_wide_tt
 icon_11=text_wide_tt
 icon_12=text_wide_tt
+icon_13=text_wide_tt
 ]]
 
 local toolbar2 = [[
@@ -377,10 +380,12 @@ item_8= Go to Notes track
 item_9= Go to segm marker
 item_10= Prepare for rendering
 item_11= Import SRT/VTT/TXT
-item_12=_S&M_TRACKNOTES Toggle track notes
+item_12= SEARCH
+item_13=_S&M_TRACKNOTES Toggle track notes
 ]]
 
 -- ref_t must contain the same number of items for the comparison in io.lines() loop below to be straightforward
+-- .lua EXTENSION IS OMMITTED
 local ref_t = {'BuyOne_Transcribing A - Create and manage segments (MAIN)',
 'Create loop points between adjacent project markers',
 '', -- line to match menu item item_2=40634 which doesn't need command ID update because it's a native action
@@ -393,6 +398,7 @@ local ref_t = {'BuyOne_Transcribing A - Create and manage segments (MAIN)',
 'BuyOne_Transcribing A - Go to segment marker',
 'BuyOne_Transcribing A - Prepare transcript for rendering',
 'BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes',
+'BuyOne_Transcribing A - Search the transcript',
 '' -- line to match menu item item_12=_S&M_TRACKNOTES which doesn't need command ID update because it's an SWS action
 }
 
@@ -422,7 +428,7 @@ local cntr = 0
 	for line in io.lines(path..'reaper-kb.ini') do -- parse action list contents
 		for k, item in ipairs(ref_t) do
 		local item = Esc(item)
-			if k ~= 3 and k ~= 13 -- ignoring 40634 'Clear loop points' and _S&M_TRACKNOTES Toggle track notes menu items which are 3d nd 13th items and don't require command ID update
+			if k ~= 3 and k ~= 14 -- ignoring 40634 'Clear loop points' and _S&M_TRACKNOTES Toggle track notes menu items which are 3d nd 13th items and don't require command ID update
 			and ( line:match(item..'%.lua') -- script
 			or not line:match(author..'_.-%.lua') and line:match(item) ) -- custom action
 			then
@@ -431,12 +437,12 @@ local cntr = 0
 			cntr = cntr+1
 			break end
 		end
-		if cntr == 11 then break end -- all entries have been found
+		if cntr == 12 then break end -- all entries have been found
 	end
 
 local absent = ''
 	for k, item in ipairs(toolbar2_t) do
-		if k ~= 3 and k ~= 13 and not item:match('=_') then -- command ID wasn't added in the loop above
+		if k ~= 3 and k ~= 14 and not item:match('=_') then -- command ID wasn't added in the loop above
 		absent = absent..'\n'..ref_t[k]
 		end
 	end
@@ -445,7 +451,7 @@ Error_Tooltip('') -- clear the 'analyzing' tooltip, because it sticks for some e
 
 function space(int) return (' '):rep(int) end
 
-	if cntr < 11 then -- or #absent > 0
+	if cntr < 12 then -- or #absent > 0
 	r.MB('Not all toolbar resources were found in the action list.\n\n'
 	..space(14)..'Be sure to import there all scripts AND\n\n"Transcribing workflow custom actions.ReaperKeyMap"\n\n\t'
 	..space(11)..'file included in the set.\n\nMissing resources:\n'..absent, 'ERROR', 0)
