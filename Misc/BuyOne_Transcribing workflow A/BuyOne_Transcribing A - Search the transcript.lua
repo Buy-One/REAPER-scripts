@@ -842,7 +842,7 @@ local output_t, output
 	-- and is run from the start at each mouse click
 	if not headless_mode then
 
-	output_t, output = GetUserInputs_Alt('TRANSCRIPT SEARCH', 3, 'SEARCH TERM:,Match case (register):,Match exact word:', search_sett, sep)
+	output_t, output = GetUserInputs_Alt('TRANSCRIPT SEARCH  (insert any character to enable settings)', 3, 'SEARCH TERM:,Match case (register):,Match exact word:', search_sett, sep)
 
 	elseif #search_sett:gsub('[%s'..sep..']','') > 0 then
 	output_t = {}
