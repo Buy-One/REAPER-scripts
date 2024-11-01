@@ -2,84 +2,90 @@
 ReaScript name: BuyOne_Transcribing A - Search the transcript.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 1.1 	#Cleaned up code
+		#Added search settings explanation to the About text
+		#Optimized search in non-ASCII texts
 Licence: WTFPL
 REAPER: at least v5.962; recommended 7.03 and newer
 Extensions: SWS/S&M build 2.14.03 and later mandatory; js_ReaScriptAPI is recommended if SWS build is older
 About:	The script is part of the Transcribing A workflow set of scripts
-  			alongside  
-  			BuyOne_Transcribing A - Create and manage segments (MAIN).lua   
-  			BuyOne_Transcribing A - Real time preview.lua  
-  			BuyOne_Transcribing A - Format converter.lua  
-  			BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua  
-  			BuyOne_Transcribing A - Prepare transcript for rendering.lua   
-  			BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua  
-  			BuyOne_Transcribing A - Go to segment marker.lua  
-  			BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua  
-  			BuyOne_Transcribing A - Offset position of markers in time selection by specified amount.lua
-  			
-  			Meant to search transctript created with the script  
-  			BuyOne_Transcribing A - Create and manage segments (MAIN).lua
-  						
-  			The search starts from the first selected track whose Notes 
-  			contain the transcript, if there're several such tracks.
-  			If no track is selected or no transcript track is selected
-  			the search starts from the 1st track whose Notes contain 
-  			the transcript if there're several such tracks.  
-  			Within the transcript the search starts from the line where 
-  			the cursor (caret) was located most recently and if the 
-  			search term was found and the search continues it will resume
-  			from the location on the line immediately following the found 
-  			match.  
-  			If the SWS Notes window isn't open before the script is executed
-  			the script will open it and in this case the search will start 
-  			from the 1st line of the transcript displayed in the opened 
-  			Notes window.  			
-  			Once a search match is found the search dialogue is reloaded 
-  			with fields already filled out with the last search settings. 
-  			To continue the search press OK button.  
-  			The search is curcular, after parsing the transcript part stored
-  			in the notes of last Notes track it loops around to the 1st
-  			Notes track.
-  			
-  			The Notes window is scrolled towards the line containing the 
-  			search match if there's enough scrolling space. The match itself 
-  			is also highlighted within the line, however due to the fact that 
-  			the search dialogue is a modal window it assumes absolute focus 
-  			as long as it's open therefore the text highlighting inside the 
-  			Notes window isn't visible.  
-  			To overcome this shortcoming a headless search mode has been devised.
-  			To use it 
-  			1. Run the search at least once using the search dialogue,
-  			so the search settings are stored in the buffer.
-  			2. Close the search dialogue.
-  			3. Arm the script. For example from the 'Transcribing A' toolbar button
-  			(see script BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua)
-  			4. Run the script.
-  			5. Fill out search settings.
-  			6. Launch the search by pressing OK.
-  			7. To continue the search click anywhere within Arrange as long
-  			as the latter 'A' is displayed next to the mouse cursor signifying
-  			script's armed state. The search will continue without the search
-  			dialogue using the last stored search settings.
-  			8. To access the search dialogue again unarm the script and 
-  			run it again.  
-  			
-  			Arming must be done before running the script because being modal
-  			search dialogue will prevent interaction with other windows as long
-  			as it stays open.
-  			
-  			SWS/S&M extension provides Find utility which also allows searching 
-  			track notes however it doesn't make the Notes window scroll to bring 
-  			the search match into view nor does it highlight the found match. 
-  			It's also only does non-circular search.
-  			
-  			If the REAPER build you're using is older than 7.03, then running 
-  			search with this script you're likely to encounter 'ReaScript task control' 
-  			dialogue pop up. Once it does, checkmark 'Remember my answer for 
-  			this script' checkbox and press 'New instance' button, this will 
-  			prevent the pop up from appearing in the future.
+	alongside  
+	BuyOne_Transcribing A - Create and manage segments (MAIN).lua   
+	BuyOne_Transcribing A - Real time preview.lua  
+	BuyOne_Transcribing A - Format converter.lua  
+	BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing A - Prepare transcript for rendering.lua   
+	BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua  
+	BuyOne_Transcribing A - Go to segment marker.lua  
+	BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua  
+	BuyOne_Transcribing A - Offset position of markers in time selection by specified amount.lua
+	
+	Meant to search transctript created with the script  
+	BuyOne_Transcribing A - Create and manage segments (MAIN).lua
+				
+	The search starts from the first selected track whose Notes 
+	contain the transcript, if there're several such tracks.
+	If no track is selected or no transcript track is selected
+	the search starts from the 1st track whose Notes contain 
+	the transcript if there're several such tracks.  
+	Within the transcript the search starts from the line where 
+	the cursor (caret) was located most recently and if the 
+	search term was found and the search continues it will resume
+	from the location on the line immediately following the found 
+	match.  
+	If the SWS Notes window isn't open before the script is executed
+	the script will open it and in this case the search will start 
+	from the 1st line of the transcript displayed in the opened 
+	Notes window.  			
+	Once a search match is found the search dialogue is reloaded 
+	with fields already filled out with the last search settings. 
+	To continue the search press OK button.  
+	The search is curcular, after parsing the transcript part stored
+	in the notes of last Notes track it loops around to the 1st
+	Notes track.
+	
+	In order to enable the search settings 'Match case' and
+	'Match exact word' insert any character in the corresponding
+	field.
+	
+	The Notes window is scrolled towards the line containing the 
+	search match if there's enough scrolling space. The match itself 
+	is also highlighted within the line, however due to the fact that 
+	the search dialogue is a modal window it assumes absolute focus 
+	as long as it's open therefore the text highlighting inside the 
+	Notes window isn't visible.  
+	To overcome this shortcoming a headless search mode has been devised.
+	To use it 
+	1. Run the search at least once using the search dialogue,
+	so the search settings are stored in the buffer.
+	2. Close the search dialogue.
+	3. Arm the script. For example from the 'Transcribing A' toolbar button
+	(see script BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua)
+	4. Run the script.
+	5. Fill out search settings.
+	6. Launch the search by pressing OK.
+	7. To continue the search click anywhere within Arrange as long
+	as the latter 'A' is displayed next to the mouse cursor signifying
+	script's armed state. The search will continue without the search
+	dialogue using the last stored search settings.
+	8. To access the search dialogue again unarm the script and 
+	run it again.  
+	
+	Arming must be done before running the script because being modal
+	search dialogue will prevent interaction with other windows as long
+	as it stays open.
+	
+	SWS/S&M extension provides Find utility which also allows searching 
+	track notes however it doesn't make the Notes window scroll to bring 
+	the search match into view nor does it highlight the found match. 
+	It's also only does non-circular search.
+	
+	If the REAPER build you're using is older than 7.03, then running 
+	search with this script you're likely to encounter 'ReaScript task control' 
+	dialogue pop up. Once it does, checkmark 'Remember my answer for 
+	this script' checkbox and press 'New instance' button, this will 
+	prevent the pop up from appearing in the future.
 
 ]]
 
@@ -123,6 +129,12 @@ local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
 return str
 end
 
+
+function is_utf8(str)
+-- capturing trailing (continuation bytes)
+-- returns a string (likely empty) if true and nil if false
+return str:match('[\128-\191]')
+end
 
 
 function Error_Tooltip(text, caps, spaced, x2, y2, want_color, want_blink)
@@ -464,7 +476,7 @@ function Get_SWS_Track_Notes_Caret_Line_Idx(child_wnd_t, tr_t)
 -- child_wnd_t is Notes window children table returned by Get_Child_Windows_SWS()
 -- tr_t stems from Get_Notes_Tracks_And_Their_Notes()
 -- and contains notes tracks data
--- relies on Validate_Track_Notes() and Get_Child_Windows_SWS()
+-- relies on Get_Child_Windows_SWS()
 -- https://learn.microsoft.com/en-us/windows/win32/controls/em-lineindex
 -- EM_LINEINDEX 0x00BB
 -- https://learn.microsoft.com/en-us/windows/win32/controls/em-linefromchar
@@ -530,7 +542,7 @@ local child_wnd -- to retrieve non-zero start line index if start_line_idx remai
 			break end
 		end
 		if r.NF_GetSWSTrackNotes(tr):match('^'..test_str) then -- test string was used to validate empty track notes active status
-		r.NF_SetSWSTrackNotes(tr, notes) -- restore original notes without the test string added inside Validate_Track_Notes() function
+		r.NF_SetSWSTrackNotes(tr, notes) -- restore original notes without the test string added above
 		end
 		if not is_active then -- track notes section isn't active in the open Notes window, toggle to open it
 	--	r.BR_Win32_ShowWindow(notes_wnd, 0) -- 0 SW_HIDE, hide window -- doesn't close the docker so can't be toggled On with action
@@ -588,30 +600,32 @@ function Search_Track_Notes(tr_t, tr_idx, start_line_idx, search_term, cmdID, ig
 	-- in order to return the capture string.find requires
 	-- explicit formatting of the pattern or literal string as a capture
 	-- rerun is boolean to condition recursive run once in case match wasn't found
-	-- in order to convert non-ANSI characters to lower case and retry
+	-- in order to convert non-ASCII characters to lower case and retry
 	local s = Esc(search_term)-- for brevity
 	local st, fin, capt
 		if not exact then
 		st, fin, capt = line:find('('..s..')', pos_in_line)
 		else
 		-- patterns where the search term is only allowed to be padded with non-alphanumeric characters if 'Match exact word' option is enabled // the capture start and end return values from string.find include the padding even if it's outside of the capture so to simplify start and end calculation for highlighting with Scroll_SWS_Notes_Window() it makes sense to include the padding in the capture to offset after the fact inside offset_capture_indices() otherwise there's no easy way to ascertain whether there was any padding // 3 capture patterns are used because pattern with repetition * operator, e.g. '%W*'..s..'%W*', will match search term contained within words as well because '%W*' will also match alphanumeric characters hence unsuitable, start/end anchors are also meant to exclude alphanumeric characters in case the search term is only padded with non-alphanumeric character on one side
-		local pad = '[\0-\47\58-\64\91-\96\123-191]' -- use punctuation marks explicitly by referring to their code points instead of %W because when the search term is surrounded with Unicode characters %W will match all non-ANSI characters in addition to punctuation marks so in these cases pattern such as '%W'..s..'%W' will fail to produce exact match and will return non-exact matches as well, the pattern range also includes control characters beyond code 127 which is the end of ANSI range, codes source https://www.charset.org/utf-8
+		local pad = '[\0-\47\58-\64\91-\96\123-191]' -- use punctuation marks explicitly by referring to their code points instead of %W because when the search term is surrounded with Unicode characters %W will match all non-ASCII characters in addition to punctuation marks so in these cases pattern such as '%W'..s..'%W' will fail to produce exact match and will return non-exact matches as well, the pattern range also includes control characters beyond code 127 which is the end of ASCII range, codes source https://www.charset.org/utf-8
 		--	for _, patt in ipairs({'%W'..s..'%W', '%W'..s..'$', '^'..s..'%W'}) do
 			for _, patt in ipairs({pad..s..pad, pad..s..'$', '^'..s..pad}) do
 			st, fin, capt = line:find('('..patt..')', pos_in_line)
 				if capt then break end -- OR st OR capt BUT capture is required for processing inside offset_capture_indices()
 			end
 		end
-	-- there's probably no reliable way to ascertain whether a string contains non-ANSI alphabetic characters because in alphabets represented by Latin encodings other than basic, regular basic Latin characters are also present and quick evaluation may land on those producing falsehood, evaluating every character in a short line and in a yet shorter search term is too inefficient and still unreliable, therefore convert case always, without such evaluation
-	-- for efficiency sake converting line by line instead of the entire Notes before the actual search as with ANSI
-	-- and even so it's a tad sluggish, on my PC anyway, but if there's a single match in the Notes of several tracks
-	-- reloading of the search dialogue as the script traverses all of them to come back to the starting points takes a few seconds
-		if not st and not rerun and not ignore_case then
+	-- for efficiency sake converting non-ASCII sttings line by line instead of the entire Notes 
+	-- before the actual search as with ASCII
+	-- and even so it may be a tad sluggish, on my PC anyway, but if there's a single match across several tracks
+	-- reloading of the search dialogue as the script traverses all of them track by track to come back
+	-- to the starting point may take a few seconds
+		if not st and not rerun and not ignore_case 
+		and (is_utf8(line) or is_utf8(s)) then -- only if non-ASCII characters are present, i.e. those containing trailing (continuation) bytes, because in this case after lowering the case with string.lower the match is likely to not be found if it's there
 		line = convert_case_in_unicode(line, want_upper_case) -- want_upper_case false
 		s = convert_case_in_unicode(s, want_upper_case) -- want_upper_case false
 		return get_capture(line, s, pos_in_line, exact, ignore_case, 1) -- rerun is true to only allow a single recursive run, otherwise an endless loop will be set off
 		end
-	return st, fin, capt, line -- return line as well in case its case was lowered above, to be passed to offset_capture_indices() because after case lowering the returned non-ANSI capture won't be found in the original line; instead the case lowered search term could be returned
+	return st, fin, capt, line -- return line as well in case its case was lowered above, to be passed to offset_capture_indices() because after case lowering the returned non-ASCII capture won't be found in the original line; instead the case lowered search term could be returned
 	end
 
 	local function offset_capture_indices(st, fin, line, capt, search_term, exact)
@@ -637,7 +651,7 @@ function Search_Track_Notes(tr_t, tr_idx, start_line_idx, search_term, cmdID, ig
 			pos_in_line = start_line_idx and line_cnt == start_line_idx and pos_in_line or 1 -- pos_in_line other than 1 is only used if the search resumes from the same line in the same track notes and only on such line, in all other cases it's 1
 			local st, fin, capt, line_cased
 				if #line:gsub(' ','') > 0 then -- for the sake of efficiency ignore empty lines
-				st, fin, capt, line_cased = get_capture(line, search_term, pos_in_line, exact, ignore_case) -- return line as well in case its case was lowered inside the function, to be passed to offset_capture_indices() below because after case lowering the returned non-ANSI capture won't be found in the original line; instead the case lowered search term could be returned
+				st, fin, capt, line_cased = get_capture(line, search_term, pos_in_line, exact, ignore_case) -- return line as well in case its case was lowered inside the function, to be passed to offset_capture_indices() below because after case lowering the returned non-ASCII capture won't be found in the original line; instead the case lowered search term could be returned
 				end
 				if capt then -- OR st OR fin BUT capture is required for processing inside offset_capture_indices() below
 				st, fin_adj = offset_capture_indices(st, fin, line_cased, capt, search_term, exact) -- subtracting extra (continuation or trailing) bytes in case text is Unicode so the value matches the actual character count and padding characters included in the capture start and end values when searching exact match despite being outside of it, all for the sake of accurate text selection/highlighting // keeping orig fin value to store for the next cycle because it all bytes must be taken account in it, fin_adj will be used for text highlighting where character count matters and not bytes
@@ -675,7 +689,7 @@ local t, tr, tr_idx_new = {}
 	local start_line_idx, pos_in_line = t and start_line_idx, t and pos_in_line or 1 -- start_line_idx will be valid and pos_in_line can be other than 1 in the 1st loop cycle only, because if the search term wasn't found in notes of the start search track and the search has proceded to the next track notes, it must begin from the very 1st line and in this case t var will be nil after being reset by an unsuccessful search in the 1st loop cycle below
 	local notes = r.NF_GetSWSTrackNotes(tr)
 		if ignore_case then notes = notes:lower() end
-	t = search_notes(notes, search_term, start_line_idx, pos_in_line, exact, ignore_case) -- ignore_case will be used inside get_capture() to convert case of non-ANSI characters which arent supported by string.lower
+	t = search_notes(notes, search_term, start_line_idx, pos_in_line, exact, ignore_case) -- ignore_case will be used inside get_capture() to convert case of non-ASCII characters which arent supported by string.lower
 		if t then
 		tr_idx_new = i
 		r.SetExtState(cmdID, 'LAST SEARCH', i..'\n'..table.concat(t,'\n', 1, 3), false) -- persist false // alongside notes track index only store first 3 values: line index, search term and capture original end pos within line
@@ -688,7 +702,7 @@ local t, tr, tr_idx_new = {}
 		tr = tr_t[i].tr
 		local notes = r.NF_GetSWSTrackNotes(tr)
 			if ignore_case then notes = notes:lower() end
-		t = search_notes(notes, search_term, nil, 1, exact, ignore_case) -- start_line_idx is nil, pos_in_line is 1, -- ignore_case will be used inside get_capture() to convert case of non-ANSI characters which arent supported by string.lower
+		t = search_notes(notes, search_term, nil, 1, exact, ignore_case) -- start_line_idx is nil, pos_in_line is 1, -- ignore_case will be used inside get_capture() to convert case of non-ASCII characters which arent supported by string.lower
 			if t then
 			tr_idx_new = i
 			r.SetExtState(cmdID, 'LAST SEARCH', i..'\n'..table.concat(t,'\n', 1, 3), false) -- persist false // alongside notes track index only store first 3 values: line index, search term and capture original end pos within line
@@ -723,13 +737,13 @@ r.BR_Win32_SetFocus(notes_wnd) -- window must be focused for selection to work
 
 local notes = r.NF_GetSWSTrackNotes(tr)
 
-	if ignore_case then notes = notes:lower() end -- this applies to ANSI characters because Notes case is lowered before the search inside Search_Track_Notes() and a line returned by search_notes() inside Search_Track_Notes() contains characters whose case was lowered, but for non-ANSI characters the case is lowered line by line during the search while the character case in the original line which is returned remains unaltered therefore here no separate change in the non-ANSI character case is required
+	if ignore_case then notes = notes:lower() end -- this applies to ASCII characters because Notes case is lowered before the search inside Search_Track_Notes() and a line returned by search_notes() inside Search_Track_Notes() contains characters whose case was lowered, but for non-ASCII characters the case is lowered line by line during the search while the character case in the original line which is returned remains unaltered therefore here no separate change in the non-ASCII character case is required
 
 local capt_line_st = notes:find('\n'..Esc(capt_line))
 capt_line_st = capt_line_st and capt_line_st + capt_line_idx-1 or 0 -- if not the first line, new line char \n must be taken into account for start value to refer to the visible start of the line otherwise the start will be offset by 1, or 0 if this is the 1st line in which case capt_line_st will be nil; !!!! since the capt_line_st is counted using Notes retrieved with NF_GetSWSTrackNotes() the count doesn't include carriage return characters \r which are terminating each line followed by a new line in the Notes inside the window, hence capt_line_idx is added to include their count because there's one per each line and subtracting 1 for the line the search term has been found on because scrolling doesn't go past it // alternatively the Notes could have been extracted with BR_Win32_GetWindowText() or JS_Window_GetTitle() functions but this is less reliable because before SWS ext build 2.14.0.3 BR_ function only supported 1kb buffer which would likely prevent retrieval of the Notes in full and JS_extension simply may happen to not be installed
 
 -- correct the char count of notes preceding the capture line by subtracting extra (continuation or trailing) bytes count
--- in case non-ANSI chars are present so that search term selection/highlighting is accurate
+-- in case non-ASCII chars are present so that search term selection/highlighting is accurate
 -- because it's performed on the basis of characters rather than bytes
 capt_line_st = capt_line_st > 0 and
 capt_line_st - select(2, notes:match('(.-)'..Esc(capt_line)):gsub('[\128-\191]','')) -- or #notes:match('(.-)'..Esc(capt_line)):gsub('[\128-\191]','')
@@ -819,21 +833,21 @@ local tr_idx, start_line_idx
 local search_sett = r.GetExtState(cmdID, 'SEARCH SETTINGS')
 --local last_term, match_case, exact = search_sett:match('(.-)'..sep..'(.-)'..sep..'(.+)')--, search_sett:match(';(.-);'), search_sett:match(';(.+)$')
 local sep = '`'
-local armed = r.GetArmedCommand() == cmdID_init
+local headless_mode = #search_sett > 0 and r.GetArmedCommand() == cmdID_init
 local output_t, output
 
 	-- If the script is armed and there's stored 'SEARCH SETTINGS' data don't load the search dialogue
 	-- and run the search headlessly in which case the script isn't restarted via atexit()
 	-- to prevent setting off endless CONTINUE loop
 	-- and is run from the start at each mouse click
-	if not (#search_sett > 0 and armed) then
+	if not headless_mode then
 
-	output_t, output = GetUserInputs_Alt('TRANSCRIPT SEARCH', 5, 'SEARCH TERM:,Match case (register):,Match exact word:,Enable replacement:,Replace with:', search_sett, sep)
+	output_t, output = GetUserInputs_Alt('TRANSCRIPT SEARCH', 3, 'SEARCH TERM:,Match case (register):,Match exact word:', search_sett, sep)
 
 	elseif #search_sett:gsub('[%s'..sep..']','') > 0 then
 	output_t = {}
 	local patt = '(.-)'..sep
-	output_t = {(search_sett..sep):match(patt:rep(5))} -- adding trailing field separator so that all fields are captured with the pattern, repeating the pattern as many times are there're fields in the dialogue // alternative to gmatch
+	output_t = {(search_sett..sep):match(patt:rep(3))} -- adding trailing field separator so that all fields are captured with the pattern, repeating the pattern as many times are there're fields in the dialogue // alternative to gmatch
 	output = search_sett -- assign to output var because this is what's being saved as extended state below
 	end
 
@@ -848,8 +862,8 @@ r.SetExtState(cmdID, 'SEARCH SETTINGS', output, false) -- persist false // keep 
 local ignore_case = not validate_output(output_t[2])
 local search_term = ignore_case and output_t[1]:lower() or output_t[1] -- convert to lower case if 'Match case' is not enabled
 local exact = validate_output(output_t[3])
-local replace_batch, replace_1by1 = output_t[4]:match('^0%W*$'), output_t[4]:match('^1%W*$')
-local replace_term = output_t[5]
+--local replace_batch, replace_1by1 = output_t[4]:match('^0%W*$'), output_t[4]:match('^1%W*$')
+--local replace_term = output_t[5]
 
 -------------------------------------------------------------------------
 
@@ -866,7 +880,7 @@ local tr, tr_idx_old, tr_idx_new, capt_line_idx, capt_line, capt_st, capt_end = 
 
 t = {notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case}
 
-	if tr and tr_t[tr_idx_old].tr == tr and not armed then -- OR if tr_idx_old == tr_idx_new // if as a result of search track selection hasn't changed // only if the script is unarmed, i.e. the seatch doesn't run headlessly otherwise it needs more time to process scrolling which will be done with DEFERRED_SCROLL() in the next block
+	if tr and tr_t[tr_idx_old].tr == tr and not headless_mode then -- OR if tr_idx_old == tr_idx_new // if as a result of search track selection hasn't changed // only if the script is unarmed, i.e. the seatch doesn't run headlessly otherwise it needs more time to process scrolling which will be done with DEFERRED_SCROLL() in the next block
 	Scroll_SWS_Notes_Window(table.unpack(t))
 	goto CONTINUE
 	elseif tr then -- track selection has changed or the search is run headlessly while the script is armed
@@ -885,15 +899,15 @@ t = {notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case}
 
 do
 	if time_init then
-	-- if DEFERRED_SCROLL() has been launched (time_init vat is valid)
-	-- set the script to relaunch after termination and re-launch as an action
-	-- with Main_OnCommand() via atexit(), Main_OnCommand() alone won't work because
-	-- no function is registered at termination apart from atexit(),
-	-- all that is because using 'goto CONTINUE' while the defer loop is running sets off an endless loop
+		-- if DEFERRED_SCROLL() has been launched (time_init vat is valid)
+		-- set the script to relaunch after termination and re-launch as an action
+		-- with Main_OnCommand() via atexit(), Main_OnCommand() alone won't work because
+		-- no function is registered at termination apart from atexit(),
+		-- all that is because using 'goto CONTINUE' while the defer loop is running sets off an endless loop
 		if r.set_action_options then r.set_action_options(1|2) end -- set to re-launch after termination, supported since build 7.03
-	-- script flag for auto-relaunching after termination in reaper-kb.ini is 516, e.g. SCR 516, but if changed
-	-- directly while REAPER is running the change doesn't take effect, so in builds older than 7.03 user input is required
-		if not armed then -- only restart if the search isn't run headlessly, i.e. the script isn't armed otherwise endless loop will be set off
+		-- script flag for auto-relaunching after termination in reaper-kb.ini is 516, e.g. SCR 516, but if changed
+		-- directly while REAPER is running the change doesn't take effect, so in builds older than 7.03 user input is required
+		if not headless_mode then -- only restart if the search isn't run headlessly, i.e. the script isn't armed otherwise endless loop will be set off
 		r.atexit(Wrapper(RESTART_FROM_DEFER, cmdID_init))
 		end
 	end
