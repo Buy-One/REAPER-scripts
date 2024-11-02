@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Transcribing A - Search the transcript.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: 1.1 	#Cleaned up code
+Version: 1.2
+Changelog: 1.2	#Fixed endless loop when the SWS Notes window is open without any track being selected
+		#Added scrolling selected track into view on Notes window opening or refreshing in all scenarios
+	   1.1 	#Cleaned up code
 		#Added search settings explanation to the About text
 		#Optimized search in non-ASCII texts
 Licence: WTFPL
@@ -23,7 +25,7 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	
 	Meant to search transctript created with the script  
 	BuyOne_Transcribing A - Create and manage segments (MAIN).lua
-				
+
 	The search starts from the first selected track whose Notes 
 	contain the transcript, if there're several such tracks.
 	If no track is selected or no transcript track is selected
@@ -500,7 +502,7 @@ local tr, tr_idx
 -- on the outside or no track notes, so what must be evaluated is the Notes
 -- of the outside track which is currently selected, if any
 local not_found = not tr
-tr = tr or r.GetSelectedTrack(0,0) --or tr_t[1].tr -- if no selected notes track was found but there's a selected outside track, use it for track notes state evaluation, in this case the 1st notes track will be subsequently selected for the transcript search
+tr = tr or r.GetSelectedTrack(0,0) -- if no selected notes track was found but there's a selected outside track, use it for track notes state evaluation, in this case the 1st notes track will be subsequently selected for the transcript search
 
 -- Determine the index of the line which holds the caret within the selected track Notes depending on the track notes state
 -- and open track notes if necessary by either opening the Notes window or if open by switching it to track notes
@@ -516,8 +518,9 @@ local start_line_idx -- index of a caret line inside the notes of tr which trans
 local open_tr_notesID = r.NamedCommandLookup('_S&M_TRACKNOTES')
 local act = r.Main_OnCommand
 local child_wnd -- to retrieve non-zero start line index if start_line_idx remains nil
+local notes_wnd_open = r.GetToggleCommandStateEx(0, r.NamedCommandLookup('_S&M_SHOW_NOTES_VIEW')) == 1
 
-	if tr and r.GetToggleCommandStateEx(0, r.NamedCommandLookup('_S&M_SHOW_NOTES_VIEW')) == 1 then -- notes track is selected and Notes window is open
+	if tr and notes_wnd_open then -- notes track is selected and Notes window is open
 	local notes = r.NF_GetSWSTrackNotes(tr)
 	-- TRACK NOTES RETURNED BY NF_GetSWSTrackNotes() WILL ALMOST NEVER BE DIRECTLY EQUAL TO THOSE RETURNED FROM THE WINDOW
 	-- BECAUSE INSIDE WINDOW EACH LINE IS TERMINATED WITH CARRIAGE RETURN \r
@@ -528,14 +531,13 @@ local child_wnd -- to retrieve non-zero start line index if start_line_idx remai
 
 	local test_str = 'ISTRACKNOTES' -- the test string is initialized without line break char to be able to successfully find it in the window text because search with the line break char will fail due to carriage return \r being added to the end of the line and thus preceding the line break, i.e. 'ISTRACKNOTES\r\n'
 		if #notes:gsub('[%c%s]','') == 0 or center_line_idx == 1 then r.NF_SetSWSTrackNotes(tr, test_str..'\n'..notes) end -- if notes are empty or there's 1 line only add test string so track notes active status can be evaluated, otherwise active non-track empty notes will produce truth as well, manipulating the notes isn't a problem because in this case start_line_idx will be 0 anyway, in other case it would be reset
-
 	local is_active
 		-- search for notes in Notes window children windows title
 		for k, data in ipairs(child_wnd_t) do
 		local ret, txt = r.BR_Win32_GetWindowText(data.child)
-			if txt:match('^'..test_str) or center_line_equal(txt, notes, cent_line_idx)
+			if txt:match('^'..test_str) or center_line_equal(txt, notes, cent_line_idx) -- txt == notes_tmp
 			or r.JS_Window_GetTitle -- use js_ReaScriptAPI ext if installed
-			and (r.JS_Window_GetTitle(data.child):match('^'..test_str) or center_line_equal(r.JS_Window_GetTitle(data.child), notes, cent_line_idx) )
+			and (r.JS_Window_GetTitle(data.child):match('^'..test_str) or center_line_equal(r.JS_Window_GetTitle(data.child), notes, cent_line_idx) ) --r.JS_Window_GetTitle(data.child) == notes_tmp
 			then
 			is_active = 1
 			child_wnd = data.child -- will be used to get caret line index if it's other than 0
@@ -556,10 +558,11 @@ local child_wnd -- to retrieve non-zero start line index if start_line_idx remai
 		-- selection isn't necessary here because the final selection target
 		-- is determined after search inside Search_Track_Notes()
 		r.SetOnlyTrackSelected(tr) -- select the 1st Notes track to ensure that the Notes window is populated with its transcript, although this may not be necessary if the transcript search term will be found in some other notes track
+		act(40913,0) -- Track: Vertical scroll selected tracks into view
 		r.SetCursorContext(0, r.GetSelectedEnvelope(0)) -- mode 0 TCP // REQUIRED TO GET NOTES WINDOW FOCUS UPDATED WHEN SWITCHING TO THE TRACK AFTER SWITCHING TO TRACK NOTES FROM ANOTHER NOTES WINDOW SECTION
 		end
 	start_line_idx = not is_active and 0 -- when notes window section is just activated the caret line index is reset to 0 (the topmost line)
-	else -- either notes or an outside track is selected or none is selected and Notes window isn't open
+	else -- either notes or an outside track is selected OR none is selected and Notes window is either open or closed
 		if not_found then
 		-- if no selected notes track is found fall back on the very first notes track
 		-- and set its index as the transcript search start
@@ -568,15 +571,20 @@ local child_wnd -- to retrieve non-zero start line index if start_line_idx remai
 		-- selection isn't necessary here because the final selection target
 		-- is determined after search inside Search_Track_Notes()
 		r.SetOnlyTrackSelected(tr) -- select the 1st Notes track to ensure that the Notes window is populated with its transcript, although this may not be necessary if the transcript search term will be found in some other notes track
+		act(40913,0) -- Track: Vertical scroll selected tracks into view
 		r.SetCursorContext(0, r.GetSelectedEnvelope(0)) -- mode 0 TCP // REQUIRED TO GET NOTES WINDOW FOCUS UPDATED WHEN SWITCHING TO THE TRACK AFTER SWITCHING TO TRACK NOTES FROM ANOTHER NOTES WINDOW SECTION
 		end
-	act(open_tr_notesID, 0)
+		if not notes_wnd_open then -- toggle Notes window open if closed
+		act(open_tr_notesID, 0)
+		end
 	start_line_idx = 0 -- when the notes window is just opened the caret line index is reset to 0 (the topmost line)
 	end
 
 	if not start_line_idx then -- OR 'if child_wnd' // caret line index other than 0
 	start_line_idx = r.BR_Win32_SendMessage(child_wnd, 0x00C9, -1, 0) -- EM_LINEFROMCHAR 0x00C9, wParam is -1 to get index of the line which holds the caret or the line containing selection start regardless of the Notes window being active/focused; when the Notes are switched between objects by their selection or the Notes window is closed and reopened or another type of notes is selected in the Notes window the caret position is reset to the first line, index 0
 	end
+
+Msg(start_line_idx, 'start_line_idx')
 
 return tr_idx, start_line_idx+1, child_wnd -- converting start_line_idx to 1-based count, two first values will be fed into Search_Track_Notes() function, the 3d to Scroll_SWS_Notes_Window()
 
@@ -765,11 +773,13 @@ SendMsg(notes_wnd, 0x00B1, capt_st, capt_st+capt_len) -- EM_SETSEL 0x00B1, wPara
 end
 
 
-function DEFERRED_SCROLL()
+function DEFERRED_WAIT()
 	if r.time_precise() - time_init > 0.1 then -- 0.03 also works but leaving 100 ms for a leeway
-	Scroll_SWS_Notes_Window(table.unpack(t)) -- table contains notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case
-	return true end
-r.defer(DEFERRED_SCROLL)
+		if t then
+		Scroll_SWS_Notes_Window(table.unpack(t)) -- table contains notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case
+		end
+	return end
+r.defer(DEFERRED_WAIT)
 end
 
 
@@ -818,13 +828,30 @@ child_wnd_t = child_wnd_t or Get_Child_Windows_SWS(notes_wnd)
 local tr_idx, start_line_idx
 
 	if not r.HasExtState(cmdID, 'LAST SEARCH') or r.HasExtState(cmdID, 'RELAUNCHED') then
-	-- for the sake of efficiency only run the  Get_SWS_Track_Notes_Caret_Line_Idx() function once before CONTINUE loop starts and before the last search data have been stored in the buffer inside Search_Track_Notes(), in order to determine location for the initial search start within Notes; once stored the location will be taken inside Search_Track_Notes()() function from the data stored inside Search_Track_Notes() function; notes_wnd var is being kept global to remain valid within the CONTINUE loop because it will be required below to prime the script for switching to another Notes track with DEFERRED_SCROLL() function by changing focus to the program main window with BR_Win32_SetFocus()
-	-- OR RUN the function after relaunching the script via atexit() when DEFERRED_SCROLL() has exited because in this case all variables are reset, notes_wnd var above will be again storing Notes window parent handle from Find_Window_SWS(), but since by this stage last search data will have been already stored, using absence of these stored data as a condition alone won't work and notes window child handle needed for window scrolling and text highlighting inside Scroll_SWS_Notes_Window() won't be re-initialized
-	-- enither the function will run when the script is executed headlessly conditioned by its armed state
-	-- because at this stage 'LAST SEARCH' data will be available
+	-- for the sake of efficiency only run the  Get_SWS_Track_Notes_Caret_Line_Idx() function once before CONTINUE loop starts and before the last search data have been stored in the buffer inside Search_Track_Notes(), in order to determine location for the initial search start within Notes; once stored the location will be taken inside Search_Track_Notes()() function from the data stored inside Search_Track_Notes() function; notes_wnd var is being kept global to remain valid within the CONTINUE loop because it will be required below to prime the script for switching to another Notes track with DEFERRED_WAIT() function by changing focus to the program main window with BR_Win32_SetFocus()
+	-- OR RUN the function after relaunching the script via atexit() when DEFERRED_WAIT() has exited because in this case all variables are reset, notes_wnd var above will be again storing Notes window parent handle from Find_Window_SWS(), but since by this stage last search data will have been already stored, using absence of these stored data as a condition alone won't work and notes window child handle needed for window scrolling and text highlighting inside Scroll_SWS_Notes_Window() won't be re-initialized
+	-- OR when the script is executed headlessly conditioned by its armed state because in this scenario
+	-- 'LAST SEARCH' data won't be available having been deleted when the search dialogue was exited
 	r.DeleteExtState(cmdID, 'RELAUNCHED', true) -- persist true
 	tr_idx, start_line_idx, notes_wnd = Get_SWS_Track_Notes_Caret_Line_Idx(child_wnd_t, tr_t) -- notes_wnd here is Notes child window containing the text, isolated from child_wnd_t
-		if not notes_wnd then goto CONTINUE end -- this will be true if at the moment of the script launch the Notes window is closed, so return to get the Notes window handles after opening it inside Get_SWS_Track_Notes_Caret_Line_Idx() otherwise window scrolling won't work as by the time the CONTINUE loop will have been started the HasExtState conditions will be false
+		if not notes_wnd then -- this will be true if at the moment of the script launch the Notes window is closed OR open without any track being selected, so return to get the Notes window handles after opening it inside Get_SWS_Track_Notes_Caret_Line_Idx() otherwise window scrolling won't work as by the time the CONTINUE loop will have been started the HasExtState conditions will be false
+			if r.GetToggleCommandStateEx(0, r.NamedCommandLookup('_S&M_SHOW_NOTES_VIEW')) == 1 then -- Notes window is open and no track is selected
+			-- starting CONTINUE loop in this scenario will set off endless loop even though a track gets selected
+			-- inside Get_SWS_Track_Notes_Caret_Line_Idx()
+			-- that's because loading Notes of a track just selected into the Notes window takes some time
+			-- but by the time this function is triggered again, this time within the CONTINUE loop, 
+			-- they still won't be accessible, so notes_wnd var will remain nil
+			-- and in turn will again trigger CONTINUE loop;
+			-- DEFERRED_WAIT() puts the script on hold for 100 ms which is enough for the selected track notes
+			-- to be loaded into the Notes window which will allow getting its handle as notes_wnd;
+			-- this issue doesn't occur when the Notes window is initially closed probably because
+			-- when the window opens the Motes load immediately
+			time_init = r.time_precise()
+			DEFERRED_WAIT()
+			else -- Notes window is closed
+			goto CONTINUE
+			end
+		end 
 	end
 
 
@@ -874,13 +901,13 @@ local tr, tr_idx_old, tr_idx_new, capt_line_idx, capt_line, capt_st, capt_end = 
 	r.SetOnlyTrackSelected(tr) -- select the track so its notes are dispayed in the Notes window
 	r.Main_OnCommand(40913,0) -- Track: Vertical scroll selected tracks into view
 		if tr_t[tr_idx_old].tr ~= tr then -- OR if tr_idx_old ~= tr_idx_new
-		r.BR_Win32_SetFocus(r.GetMainHwnd()) -- when the search term was found in another track Notes, for the SWS Notes window to focus on the newly selected track the program window must be active because while the dialogue is open its the one being active; this is in addition to DEFERRED_SCROLL() function below and must be done before it is launched
+		r.BR_Win32_SetFocus(r.GetMainHwnd()) -- when the search term was found in another track Notes, for the SWS Notes window to focus on the newly selected track the program window must be active because while the dialogue is open its the one being active; this is in addition to DEFERRED_WAIT() function below and must be done before it is launched
 		end
 	end
 
 t = {notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case}
 
-	if tr and tr_t[tr_idx_old].tr == tr and not headless_mode then -- OR if tr_idx_old == tr_idx_new // if as a result of search track selection hasn't changed // only if the script is unarmed, i.e. the seatch doesn't run headlessly otherwise it needs more time to process scrolling which will be done with DEFERRED_SCROLL() in the next block
+	if tr and tr_t[tr_idx_old].tr == tr and not headless_mode then -- OR if tr_idx_old == tr_idx_new // if as a result of search track selection hasn't changed // only if the script is unarmed, i.e. the seatch doesn't run headlessly otherwise it needs more time to process scrolling which will be done with DEFERRED_WAIT() in the next block
 	Scroll_SWS_Notes_Window(table.unpack(t))
 	goto CONTINUE
 	elseif tr then -- track selection has changed or the search is run headlessly while the script is armed
@@ -893,13 +920,13 @@ t = {notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case}
 	-- and be successfully affected by scroll position change
 	r.SetExtState(cmdID, 'RELAUNCHED', '', false) -- persist false // store to condition re-running Get_SWS_Track_Notes_Caret_Line_Idx() after defer loop has exited and the script has been relaunched via atexit() in order to re-get notes_wnd handle needed for Notes window scrolling, because when the script is relaunched all variables are reset
 	time_init = r.time_precise()
-	DEFERRED_SCROLL()
+	DEFERRED_WAIT()
 	end
 
 
 do
 	if time_init then
-		-- if DEFERRED_SCROLL() has been launched (time_init vat is valid)
+		-- if DEFERRED_WAIT() has been launched (time_init vat is valid)
 		-- set the script to relaunch after termination and re-launch as an action
 		-- with Main_OnCommand() via atexit(), Main_OnCommand() alone won't work because
 		-- no function is registered at termination apart from atexit(),
