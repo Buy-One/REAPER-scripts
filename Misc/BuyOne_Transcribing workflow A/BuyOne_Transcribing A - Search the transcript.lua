@@ -5,6 +5,7 @@ Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-
 Version: 1.2
 Changelog: 1.2	#Fixed endless loop when calling the search dialogue while the SWS Notes window 
 		is open without any track being selected
+		#Fixed 'Match case' setting
 		#Added scrolling selected track into view on Notes window opening or refreshing in all scenarios
 	   1.1 	#Cleaned up code
 		#Added search settings explanation to the About text
@@ -628,7 +629,7 @@ function Search_Track_Notes(tr_t, tr_idx, start_line_idx, search_term, cmdID, ig
 	-- and even so it may be a tad sluggish, on my PC anyway, but if there's a single match across several tracks
 	-- reloading of the search dialogue as the script traverses all of them track by track to come back
 	-- to the starting point may take a few seconds
-		if not st and not rerun and not ignore_case 
+		if not st and not rerun and ignore_case 
 		and (is_utf8(line) or is_utf8(s)) then -- only if non-ASCII characters are present, i.e. those containing trailing (continuation) bytes, because in this case after lowering the case with string.lower the match is likely to not be found if it's there
 		line = convert_case_in_unicode(line, want_upper_case) -- want_upper_case false
 		s = convert_case_in_unicode(s, want_upper_case) -- want_upper_case false
