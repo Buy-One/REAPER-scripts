@@ -3,7 +3,8 @@ ReaScript name: BuyOne_Transcribing A - Search the transcript.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
-Changelog: 1.2	#Fixed endless loop when the SWS Notes window is open without any track being selected
+Changelog: 1.2	#Fixed endless loop when loading search dialogue while the SWS Notes window 
+		is open without any track being selected
 		#Added scrolling selected track into view on Notes window opening or refreshing in all scenarios
 	   1.1 	#Cleaned up code
 		#Added search settings explanation to the About text
