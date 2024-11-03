@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Transcribing A - Search the transcript.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
-Changelog: 1.3	#Updated headless search mode description in the About text
+Version: 1.4
+Changelog: 1.4	#Fixed search match highlihgting in notes which were copied and pasted from another window
+	   1.3	#Updated headless search mode description in the About text
 	   1.2	#Fixed endless loop when calling the search dialogue while the SWS Notes window 
 		is open without any track being selected
 		#Fixed 'Match case' setting
@@ -752,8 +753,11 @@ local notes = r.NF_GetSWSTrackNotes(tr)
 
 	if ignore_case then notes = notes:lower() end -- this applies to ASCII characters because Notes case is lowered before the search inside Search_Track_Notes() and a line returned by search_notes() inside Search_Track_Notes() contains characters whose case was lowered, but for non-ASCII characters the case is lowered line by line during the search while the character case in the original line which is returned remains unaltered therefore here no separate change in the non-ASCII character case is required
 
-local capt_line_st = notes:find('\n'..Esc(capt_line))
-capt_line_st = capt_line_st and capt_line_st + capt_line_idx-1 or 0 -- if not the first line, new line char \n must be taken into account for start value to refer to the visible start of the line otherwise the start will be offset by 1, or 0 if this is the 1st line in which case capt_line_st will be nil; !!!! since the capt_line_st is counted using Notes retrieved with NF_GetSWSTrackNotes() the count doesn't include carriage return characters \r which are terminating each line followed by a new line in the Notes inside the window, hence capt_line_idx is added to include their count because there's one per each line and subtracting 1 for the line the search term has been found on because scrolling doesn't go past it // alternatively the Notes could have been extracted with BR_Win32_GetWindowText() or JS_Window_GetTitle() functions but this is less reliable because before SWS ext build 2.14.0.3 BR_ function only supported 1kb buffer which would likely prevent retrieval of the Notes in full and JS_extension simply may happen to not be installed
+local capt_line_st = notes:find('\n'..Esc(capt_line)) -- if not the first line, new line char \n must be taken into account for start value to refer to the visible start of the line otherwise the start will be offset by 1
+
+local carriage_return_cnt = notes:match('\r') and 0 or capt_line_idx-1 -- count carriage return chars \r preceding the capture line in the Notes window because in the window these terminate each line followed by a new line char so must be taken into account in determination of the text selection range, their count is equal to capt_line_idx-1, that is 1 per line excluding the capture line itself because selection doesn't go past it; in Notes retrieved with NF_GetSWSTrackNotes() carriage return chars can only be present if the notes were copied between Notes windows in which case they'd be included within the copied text, so if there're any, assign 0 because their count will be taken into account in capt_line_st value so adding won't be necessary, otherwise count them; had the Notes been retrieved directly fron the Notes window with BR_Win32_GetWindowText() or JS_Window_GetTitle() they'd already contain carriage returns and capt_line_st value would account for them so adding would be unnecessary, but using these functions is less reliable because before SWS ext build 2.14.0.3 BR_ function only supported 1 kb buffer which would likely prevent retrieval of the Notes in full and JS_extension simply may happen to not be installed
+
+capt_line_st = capt_line_st and capt_line_st + carriage_return_cnt or 0 -- add carriage return count if any; if capt_line_st is nil because capt_line is the first line, assign 0
 
 -- correct the char count of notes preceding the capture line by subtracting extra (continuation or trailing) bytes count
 -- in case non-ASCII chars are present so that search term selection/highlighting is accurate
