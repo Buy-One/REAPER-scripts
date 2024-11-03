@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Transcribing A - Search the transcript.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: 1.2	#Fixed endless loop when calling the search dialogue while the SWS Notes window 
+Version: 1.3
+Changelog: 1.3	#Updated headless search mode description in the About text
+	   1.2	#Fixed endless loop when calling the search dialogue while the SWS Notes window 
 		is open without any track being selected
 		#Fixed 'Match case' setting
 		#Added scrolling selected track into view on Notes window opening or refreshing in all scenarios
@@ -37,7 +38,9 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	the cursor (caret) was located most recently and if the 
 	search term was found and the search continues it will resume
 	from the location on the line immediately following the found 
-	match.  
+	match. Running search in headless mode (see below) allows 
+	retreating or advancing search within the Notes window by 
+	clicking above or below the line of the latest search match.  
 	If the SWS Notes window isn't open before the script is executed
 	the script will open it and in this case the search will start 
 	from the 1st line of the transcript displayed in the opened 
@@ -60,26 +63,27 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	as long as it's open therefore the text highlighting inside the 
 	Notes window isn't visible.  
 	To overcome this shortcoming a headless search mode has been devised.
-	To use it 
-	1. Run the search at least once using the search dialogue,
-	so the search settings are stored in the buffer.
-	2. Close the search dialogue.
-	3. Arm the script. For example from the 'Transcribing A' toolbar button
-	(see script BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua)
-	4. Run the script.
-	5. Fill out search settings.
-	6. Launch the search by pressing OK.
-	7. To continue the search click anywhere within Arrange as long
-	as the latter 'A' is displayed next to the mouse cursor signifying
-	script's armed state. The search will continue without the search
-	dialogue using the last stored search settings.
-	8. To access the search dialogue again unarm the script and 
-	run it again.  
-	
+	To use it:  
+	1. Arm the script. For example from the 'Transcribing A' toolbar button
+	(see script BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua)  
 	Arming must be done before running the script because being modal
 	search dialogue will prevent interaction with other windows as long
-	as it stays open.
-	
+	as it stays open.  
+	2. Run it by clicking anywhere over the Arrange view canvas as long
+	as the letter 'A' is displayed next to the mouse cursor signifying
+	script's armed state.  
+	2A If this is the first search during session in which case there're
+	no search settings in the buffer, the search dialogue will pop up.
+		I. When it does, fill out search settings and click OK.  
+		II. Continue the search with the latest search setting by clicking on 
+		the Arrange view canvas. The dialogue won't be reloaded because of 
+		the script's armed state.  
+	2B If the latest search settings have already been stored in the buffer
+	which they have if the search was excuted at least once, the seatch will 
+	continue.  
+	3. To access the search dialogue again unarm the script and run it 
+	as normal.  
+			
 	SWS/S&M extension provides Find utility which also allows searching 
 	track notes however it doesn't make the Notes window scroll to bring 
 	the search match into view nor does it highlight the found match. 
@@ -92,7 +96,6 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	prevent the pop up from appearing in the future.
 
 ]]
-
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
 -----------------------------------------------------------------------------
@@ -833,7 +836,9 @@ local tr_idx, start_line_idx
 	-- for the sake of efficiency only run the  Get_SWS_Track_Notes_Caret_Line_Idx() function once before CONTINUE loop starts and before the last search data have been stored in the buffer inside Search_Track_Notes(), in order to determine location for the initial search start within Notes; once stored the location will be taken inside Search_Track_Notes()() function from the data stored inside Search_Track_Notes() function; notes_wnd var is being kept global to remain valid within the CONTINUE loop because it will be required below to prime the script for switching to another Notes track with DEFERRED_WAIT() function by changing focus to the program main window with BR_Win32_SetFocus()
 	-- OR RUN the function after relaunching the script via atexit() when DEFERRED_WAIT() has exited because in this case all variables are reset, notes_wnd var above will be again storing Notes window parent handle from Find_Window_SWS(), but since by this stage last search data will have been already stored, using absence of these stored data as a condition alone won't work and notes window child handle needed for window scrolling and text highlighting inside Scroll_SWS_Notes_Window() won't be re-initialized
 	-- OR when the script is executed headlessly conditioned by its armed state because in this scenario
-	-- 'LAST SEARCH' data won't be available having been deleted when the search dialogue was exited
+	-- 'LAST SEARCH' data may not be available having been deleted if the search dialogue was exited with Cancel
+	-- but 'RELAUNCHED' ext state will be true in any case because it's stored in the block within which DEFERRED_WAIT()
+	-- function is launched needed in headless search mode to perform scrolling of the Notes window
 	r.DeleteExtState(cmdID, 'RELAUNCHED', true) -- persist true
 	tr_idx, start_line_idx, notes_wnd = Get_SWS_Track_Notes_Caret_Line_Idx(child_wnd_t, tr_t) -- notes_wnd here is Notes child window containing the text, isolated from child_wnd_t
 		if not notes_wnd then -- this will be true if at the moment of the script launch the Notes window is closed OR open without any track being selected, so return to get the Notes window handles after opening it inside Get_SWS_Track_Notes_Caret_Line_Idx() otherwise window scrolling won't work as by the time the CONTINUE loop will have been started the HasExtState conditions will be false
