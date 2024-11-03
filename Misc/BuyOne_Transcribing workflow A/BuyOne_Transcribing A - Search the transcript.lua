@@ -838,7 +838,11 @@ local tr_idx, start_line_idx
 	-- OR when the script is executed headlessly conditioned by its armed state because in this scenario
 	-- 'LAST SEARCH' data may not be available having been deleted if the search dialogue was exited with Cancel
 	-- but 'RELAUNCHED' ext state will be true in any case because it's stored in the block within which DEFERRED_WAIT()
-	-- function is launched needed in headless search mode to perform scrolling of the Notes window
+	-- function is launched needed in headless search mode to perform scrolling of the Notes window;
+	-- running this function in the headless mode allows retreating and advancing the search by moving
+	-- the caret up and down within the Notes window because the function returns caret position as start_line_idx
+	-- which isn't possible in non-headless mode because search dialogue being a modal window blocks interaction
+	-- with other windows so the function is skipped and the caret pos is taken from 'LAST SEARCH' data instead
 	r.DeleteExtState(cmdID, 'RELAUNCHED', true) -- persist true
 	tr_idx, start_line_idx, notes_wnd = Get_SWS_Track_Notes_Caret_Line_Idx(child_wnd_t, tr_t) -- notes_wnd here is Notes child window containing the text, isolated from child_wnd_t
 		if not notes_wnd then -- this will be true if at the moment of the script launch the Notes window is closed OR open without any track being selected, so return to get the Notes window handles after opening it inside Get_SWS_Track_Notes_Caret_Line_Idx() otherwise window scrolling won't work as by the time the CONTINUE loop will have been started the HasExtState conditions will be false
