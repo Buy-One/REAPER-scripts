@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Alternative take ranking scales.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 1.1 #The colors have been made consistent across systems
 Licence: WTFPL
 REAPER: at least v6.09
 Extensions: SWS/S&M recommended, not mandatory
@@ -17,7 +17,7 @@ About:	The script provides an alternative to REAPER built-in take rank scale
 	will only refer to ranking.
 	
 	The script targets take under mouse cursor and if none is detected it 
-	targets active takes of all selected items under the edit cursor.   
+	targets active takes of all selected items under the edit cursor.  
 	Within take the script targets take marker directly under mouse/edit cursor 
 	and if none is detected it targets the first take marker left of cursor.  
 	If at cursor or to the left of it there's no rank marker the script will 
@@ -218,7 +218,10 @@ CUSTOM_VERBOSE_SCALE = ""
 -- only corresponding rank numbers;
 -- if you wish to unclude the names in the menu, append color
 -- labels to the HEX code after a colon, e.g.
--- "#4287f5:my color1,,#ec42f5:my color3"
+-- "#4287f5:my color1,,#ec42f5:my color3",
+-- this format will also work if SCALE_TYPE setting is enabled
+-- but obviously the included custom color labels will 
+-- be ignored
 CUSTOM_COLOR_SCALE = ""
 
 
@@ -336,11 +339,10 @@ return c
 end
 
 
-function HEX_color_2_integer(HEX)
--- tonumber(HEX:gsub('#',''), 16) isn't suitable because it converts into a big endian number whereas color code is little endian
-local r,g,b = HEX:match('(%x%x)(%x%x)(%x%x)')
-r, g, b = tonumber(r,16), tonumber(g,16), tonumber(b,16)
-return r|g<<8|b<<16 -- OR r+(g<<8)+(b<<16)
+function hex2rgb(HEX_COLOR)
+-- https://gist.github.com/jasonbradley/4357406
+    local hex = HEX_COLOR:sub(2) -- trimming leading '#'
+    return tonumber('0x'..hex:sub(1,2)), tonumber('0x'..hex:sub(3,4)), tonumber('0x'..hex:sub(5,6))
 end
 
 
@@ -1224,7 +1226,15 @@ local SCALES = {}
 SCALES.verbose = {'GREAT','GOOD','AVERAGE','MEDIOCRE','BAD'} -- OR POOR instead of BAD, variant {'TOP','HIGH','MEDIUM','LOW','BOTTOM'}
 -- SCALES.urban = {'FIRE/LIT','DOPE','AAIGHT','ASS','DOODOO/GARBAGE/TRASH'}
 SCALES.verbose_num = {'5. GREAT','4. GOOD','3. AVERAGE','2. MEDIOCRE','1. BAD'}
-SCALES.colors = {48896, 16711680, 32767, 255, 0} -- green, blue, orange, red, black; need to be added 0x1000000 to have them applied with the function
+SCALES.colors = {
+-- ColorToNative() produces consistent color integer on all systems, 
+-- needs to be added 0x1000000 to have color applied with the function
+r.ColorToNative(0,191,0), -- green
+r.ColorToNative(0,0,255), -- blue
+r.ColorToNative(255,127,0), -- orange
+r.ColorToNative(255,0,0), -- red
+r.ColorToNative(0,0,0) -- black
+}
 SCALES.numeric = {5,4,3,2,1}
 SCALES.numeric_ext = {'5+','5','5—','4+','4','4—','3+','3','3—','2+','2','2—','1'}
 SCALES.alphabet = {'A','B','C','D','F'}
@@ -1304,7 +1314,7 @@ local color_names = {'5. Green','4. Blue','3. Orange','2. Red','1. Black'} -- to
 		for hex in CUSTOM_COLOR_SCALE:gmatch('[^,]*') do
 		local hex, label = hex:match('%x+'), hex:match(':(.+)')
 			if hex and Validate_HEX_Color_Setting(hex) then
-			hex = HEX_color_2_integer(hex)
+			hex = r.ColorToNative(hex2rgb(hex)) -- ColorToNative() produces consistent color integer on all systems
 				if i > 0 then -- while i is within the SCALES.colors table range
 				SCALES.colors[i] = hex
 				else -- when exceeds because custom scale is longer, insert at the table start
@@ -1324,7 +1334,7 @@ local color_names = {'5. Green','4. Blue','3. Orange','2. Red','1. Black'} -- to
 
 
 CUSTOM_DEFAULT_MARKER_COLOR = #CUSTOM_DEFAULT_MARKER_COLOR > 0 and Validate_HEX_Color_Setting(CUSTOM_DEFAULT_MARKER_COLOR)
-CUSTOM_DEFAULT_MARKER_COLOR = CUSTOM_DEFAULT_MARKER_COLOR and HEX_color_2_integer(CUSTOM_DEFAULT_MARKER_COLOR) -- convert to base 10
+CUSTOM_DEFAULT_MARKER_COLOR = CUSTOM_DEFAULT_MARKER_COLOR and r.ColorToNative(hex2rgb(CUSTOM_DEFAULT_MARKER_COLOR)) -- convert to base 10 // ColorToNative() produces consistent color integer on all systems
 
 -- Manage the menu --
 
