@@ -1182,7 +1182,7 @@ local tr_idx, start_line_idx
 	end
 
 	
-	if not time_init then -- only run if DEFERRED_WAIT() launched above to get Motes window when initially no track was selected has exited, time_init will be reset inside DEFERRED_WAIT()
+	if not time_init then -- only run if DEFERRED_WAIT() launched above to get Motes window when initially no track was selected has exited, time_init will be reset inside DEFERRED_WAIT(); the condition is needed because after DEFERRED_WAIT() launch the routine continues to run until the end but without window handle no window operations will be performed which is a flaw
 
 	----------- S E A R C H  D I A L O G U E  S E T T I N G S ----------------
 
