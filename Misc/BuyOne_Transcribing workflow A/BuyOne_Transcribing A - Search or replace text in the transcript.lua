@@ -1095,6 +1095,7 @@ function DEFERRED_WAIT()
 		if t then
 		Scroll_SWS_Notes_Window(table.unpack(t)) -- table contains notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case
 		end
+	time_init = nil -- resetting will allow the main routine to run when the function was launched to get Notes window while no track was initially selected, to be able to scroll the window and highlight text, as the script needs time to do that
 	return end
 r.defer(DEFERRED_WAIT)
 end
@@ -1180,124 +1181,128 @@ local tr_idx, start_line_idx
 		end
 	end
 
+	
+	if not time_init then -- only run if DEFERRED_WAIT() launched above to get Motes window when initially no track was selected has exited, time_init will be reset inside DEFERRED_WAIT()
 
------------ S E A R C H  D I A L O G U E  S E T T I N G S ----------------
+	----------- S E A R C H  D I A L O G U E  S E T T I N G S ----------------
 
-local search_sett = r.GetExtState(cmdID, 'SEARCH SETTINGS')
-local sep = '`'
-local headless_mode = #search_sett > 0 and r.GetArmedCommand() == cmdID_init
-local output_t, output
+	local search_sett = r.GetExtState(cmdID, 'SEARCH SETTINGS')
+	local sep = '`'
+	local headless_mode = #search_sett > 0 and r.GetArmedCommand() == cmdID_init
+	local output_t, output
 
-local i = 0
-search_sett = last_search_data and search_sett or search_sett:gsub('[^'..sep..']*', function(c) i = i+1 if i == 4 then return '' end end) -- disable 'Enable replacement' option by removing the flag from the stored search settings so that every time the script is launched in search rather than in replace mode for safety reasons, when the script is launched last_search_data is false because the data is deleted each time the search dialogue is exited
+	local i = 0
+	search_sett = last_search_data and search_sett or search_sett:gsub('[^'..sep..']*', function(c) i = i+1 if i == 4 then return '' end end) -- disable 'Enable replacement' option by removing the flag from the stored search settings so that every time the script is launched in search rather than in replace mode for safety reasons, when the script is launched last_search_data is false because the data is deleted each time the search dialogue is exited
 
-	-- If the script is armed and there're stored 'SEARCH SETTINGS' data don't load the search dialogue
-	-- and run the search headlessly in which case the script isn't restarted via atexit()
-	-- to prevent setting off endless CONTINUE loop
-	-- and is run from the start at each mouse click
-	if not headless_mode then
+		-- If the script is armed and there're stored 'SEARCH SETTINGS' data don't load the search dialogue
+		-- and run the search headlessly in which case the script isn't restarted via atexit()
+		-- to prevent setting off endless CONTINUE loop
+		-- and is run from the start at each mouse click
+		if not headless_mode then
 
-	output_t, output = GetUserInputs_Alt('TRANSCRIPT SEARCH  (insert any character to enable search settings)', 5, 'SEARCH TERM:,Match case (register):,Match exact word:,Enable replacement: ,Replace with:', search_sett, sep) -- autofill the dialogue with the last search settings
+		output_t, output = GetUserInputs_Alt('TRANSCRIPT SEARCH  (insert any character to enable search settings)', 5, 'SEARCH TERM:,Match case (register):,Match exact word:,Enable replacement (h for Help): ,Replace with:', search_sett, sep) -- autofill the dialogue with the last search settings
 
-	elseif #search_sett:gsub('[%s'..sep..']','') > 0 then
-	output_t = {}
-	--[[ WORKS BUT MORE VERBOSE THAN THE sring.match METHOD BELOW
-		for sett in (search_sett..sep):gmatch('[^'..sep..']*') -- adding trailing field separator so that gmatch pattern captures the last field content as well, but keeping original search_sett value intact
-		output_t[#output_t+1] = sett
+		elseif #search_sett:gsub('[%s'..sep..']','') > 0 then
+		output_t = {}
+		--[[ WORKS BUT MORE VERBOSE THAN THE sring.match METHOD BELOW
+			for sett in (search_sett..sep):gmatch('[^'..sep..']*') -- adding trailing field separator so that gmatch pattern captures the last field content as well, but keeping original search_sett value intact
+			output_t[#output_t+1] = sett
+			end
+		]]
+		local patt = '(.-)'..sep
+		output_t = {(search_sett..sep):match(patt:rep(5))} -- adding trailing field separator so that all fields are captured with the pattern, repeating the pattern as many times are there're fields in the dialogue // alternative to gmatch
+		output = search_sett -- assign to output var because this is what's being saved as extended state below
 		end
-	]]
-	local patt = '(.-)'..sep
-	output_t = {(search_sett..sep):match(patt:rep(5))} -- adding trailing field separator so that all fields are captured with the pattern, repeating the pattern as many times are there're fields in the dialogue // alternative to gmatch
-	output = search_sett -- assign to output var because this is what's being saved as extended state below
-	end
 
 
-	if not output_t or #output_t[1]:gsub(' ','') == 0 then -- all fields are empty or the search term field only
-	r.DeleteExtState(cmdID, 'LAST SEARCH', true) -- persist true // the search ext state data stored inside Search_Track_Notes() are kept as long as the search dialogue is kept open in which case the script keeps running or if the search is run headlessly while the script is armed; the data are only deleted when the dialogue is exited
-	return r.defer(no_undo) end
+		if not output_t or #output_t[1]:gsub(' ','') == 0 then -- all fields are empty or the search term field only
+		r.DeleteExtState(cmdID, 'LAST SEARCH', true) -- persist true // the search ext state data stored inside Search_Track_Notes() are kept as long as the search dialogue is kept open in which case the script keeps running or if the search is run headlessly while the script is armed; the data are only deleted when the dialogue is exited
+		return r.defer(no_undo) end
 
 
-r.SetExtState(cmdID, 'SEARCH SETTINGS', output, false) -- persist false // keep latest search settings during REAPER session to autofill the search dialogue when it's opened and to get them in the headless search
+	r.SetExtState(cmdID, 'SEARCH SETTINGS', output, false) -- persist false // keep latest search settings during REAPER session to autofill the search dialogue when it's opened and to get them in the headless search
 
-local ignore_case = not validate_output(output_t[2])
-local search_term = ignore_case and output_t[1]:lower() or output_t[1] -- convert to lower case if 'Match case' is not enabled
-local exact = validate_output(output_t[3])
-local replace_term = output_t[5]
---local replace_mode = output_t[4]:match('^%W*%d%W*$') -- 0 in all Notes tracks, 1 in currently selected, 2 doing 1 by 1
---local replace_in_all, replace_in_curr, replace_1by1 = replace_sett == '0', replace_sett == '1', replace_sett == '2'
-local replace_mode = #output_t[4]:gsub(' ','') > 0 and output_t[4]
+	local ignore_case = not validate_output(output_t[2])
+	local search_term = ignore_case and output_t[1]:lower() or output_t[1] -- convert to lower case if 'Match case' is not enabled
+	local exact = validate_output(output_t[3])
+	local replace_term = output_t[5]
+	--local replace_mode = output_t[4]:match('^%W*%d%W*$') -- 0 in all Notes tracks, 1 in currently selected, 2 doing 1 by 1
+	--local replace_in_all, replace_in_curr, replace_1by1 = replace_sett == '0', replace_sett == '1', replace_sett == '2'
+	local replace_mode = #output_t[4]:gsub(' ','') > 0 and output_t[4]
 
--------------------------------------------------------------------------
+	-------------------------------------------------------------------------
 
 
-	-- SEARCH AND REPLACE
-	if replace_mode then
-		if headless_mode then -- disable headless mode for replacement, which also prevents setting off endless CONTINUE loop in headless mode if replacement is enabled
-		r.ArmCommand(0,0) -- cmd is 0 to unarm all, section 0 Main
-		-- if headless mode is enabled the search dialogue won't load so if replacement is also enabled
-		-- this will cause its first execution in headless mode which is undesirable because user doesn't get visual feedback
-		-- of the cuerrent search settings, to prevent this Replace_In_Track_Notes() is separated by this condition;
-		-- the script will enter CONTINUE loop below anyway so returning to its start here is redundant
-		else
-		local valid_vals = 'Valid values are:\n\n0 — batch replace in all transcript tracks\n\n'
-		..'1 — batch replace in the only or the 1st\n       selected transcript track\n\n2 — replace word by word'
-		local is_num = replace_mode:match('^%W*%w%W*$')
-			if is_num:match('[hH]') then
-			r.MB(valid_vals,'HELP',0)
-			is_num = nil -- to prevent execution of Replace_In_Track_Notes() below, alternative to goto CONTINUE
+		-- SEARCH AND REPLACE
+		if replace_mode then
+			if headless_mode then -- disable headless mode for replacement, which also prevents setting off endless CONTINUE loop in headless mode if replacement is enabled
+			r.ArmCommand(0,0) -- cmd is 0 to unarm all, section 0 Main
+			-- if headless mode is enabled the search dialogue won't load so if replacement is also enabled
+			-- this will cause its first execution in headless mode which is undesirable because user doesn't get visual feedback
+			-- of the cuerrent search settings, to prevent this Replace_In_Track_Notes() is separated by this condition;
+			-- the script will enter CONTINUE loop below anyway so returning to its start here is redundant
 			else
-				is_num = tonumber(replace_mode)
-				if not is_num or is_num and math.floor(is_num) ~= is_num or is_num < 0 or is_num > 2 then
-				r.MB('INVALID REPLACE MODE "'..output_t[4]..'".\n\n'..valid_vals, 'ERROR', 0)
+			local valid_vals = 'Valid values are:\n\n0 — batch replace in all transcript tracks\n\n'
+			..'1 — batch replace in the only or the 1st\n       selected transcript track\n\n2 — replace word by word'
+			local pad = '[\0-\47\58-\64\91-\96\123-191]*' -- using punctuation marks explicitly by referring to their code points instead of %W because when the input contains non-ASCII characters %W will match all non-ASCII characters in addition to punctuation marks so in these cases pattern such as '%W*%w%W*' will fail to produce exact match and will return non-exact matches as well, the pattern range also includes control characters beyond code 127 which is the end of ASCII range, codes source https://www.charset.org/utf-8
+			local is_num = replace_mode:match('^'..pad..'[\1-\255]+'..pad..'$') -- accounting for non-ASCII input by the user, otherwise is_num will end up being nil
+				if is_num:match('[hH]') then
+				r.MB(valid_vals,'HELP',0)
 				is_num = nil -- to prevent execution of Replace_In_Track_Notes() below, alternative to goto CONTINUE
+				else
+					is_num = tonumber(replace_mode)
+					if not is_num or is_num and math.floor(is_num) ~= is_num or is_num < 0 or is_num > 2 then
+					r.MB('INVALID REPLACE MODE "'..output_t[4]..'".\n\n'..valid_vals, 'ERROR', 0)
+					is_num = nil -- to prevent execution of Replace_In_Track_Notes() below, alternative to goto CONTINUE
+					end
+				end
+				if not ignore_case and search_term == replace_term then -- only if ignore_case is true because otherwise if they're same the match and the replace term can still differ in their case so replacement will make sense
+				Error_Tooltip('\n\n the search and replacement \n\n\tterms are identical \n\n', 1, 1, 100) -- caps, spaced true, x is 100 to move the tooltip away from the cursor so it doesn't stand between the cursor and search/replace dialogue OK button and doesn't block the click
+				elseif is_num then
+				r.Undo_BeginBlock()
+				tr, tr_idx_old, tr_idx_new, capt_line_idx, capt_line, capt_st, capt_end, replace_cnt =
+				Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, search_term, replace_term, cmdID, ignore_case, exact, notes_wnd)
+				local undo = replace_mode == '0' and 'in entire transcript' or replace_mode == '1' and 'in selected track transcript' or ''
+				undo = replace_cnt and replace_cnt > 0 and 'Transcribing A: Replace '..search_term..' with '..replace_term..' '..undo
+				r.Undo_EndBlock(undo or r.Undo_CanUndo2(0) or '',-1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated if no replacements were made following Undo_BeginBlock(), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
 				end
 			end
-			if not ignore_case and search_term == replace_term then -- only if ignore_case is true because otherwise if they're same the match and the replace term can still differ in their case so replacement will make sense
-			Error_Tooltip('\n\n the search and replacement \n\n\tterms are identical \n\n', 1, 1, 100) -- caps, spaced true, x is 100 to move the tooltip away from the cursor so it doesn't stand between the cursor and search/replace dialogue OK button and doesn't block the click
-			elseif is_num then
-			r.Undo_BeginBlock()
-			tr, tr_idx_old, tr_idx_new, capt_line_idx, capt_line, capt_st, capt_end, replace_cnt =
-			Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, search_term, replace_term, cmdID, ignore_case, exact, notes_wnd)
-			local undo = replace_mode == '0' and 'in entire transcript' or replace_mode == '1' and 'in selected track transcript' or ''
-			undo = replace_cnt and replace_cnt > 0 and 'Transcribing A: Replace '..search_term..' with '..replace_term..' '..undo
-			r.Undo_EndBlock(undo or r.Undo_CanUndo2(0) or '',-1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated if no replacements were made following Undo_BeginBlock(), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
+		-- SEARCH
+		else
+		tr, tr_idx_old, tr_idx_new, capt_line_idx, capt_line, capt_st, capt_end =
+		Search_Track_Notes(tr_t, tr_idx, start_line_idx, search_term, cmdID, ignore_case, exact) -- search_term
+		end
+
+		if tr then
+		r.SetOnlyTrackSelected(tr) -- select the track so its notes are dispayed in the Notes window
+		r.Main_OnCommand(40913,0) -- Track: Vertical scroll selected tracks into view
+			if tr_t[tr_idx_old].tr ~= tr then -- OR if tr_idx_old ~= tr_idx_new
+			r.BR_Win32_SetFocus(r.GetMainHwnd()) -- when the search term was found in another track Notes, for the SWS Notes window to focus on the newly selected track the program window must be active because while the dialogue is open its the one being active; this is in addition to DEFERRED_WAIT() function below and must be done before it is launched
 			end
 		end
-	-- SEARCH
-	else
-	tr, tr_idx_old, tr_idx_new, capt_line_idx, capt_line, capt_st, capt_end =
-	Search_Track_Notes(tr_t, tr_idx, start_line_idx, search_term, cmdID, ignore_case, exact) -- search_term
-	end
 
-	if tr then
-	r.SetOnlyTrackSelected(tr) -- select the track so its notes are dispayed in the Notes window
-	r.Main_OnCommand(40913,0) -- Track: Vertical scroll selected tracks into view
-		if tr_t[tr_idx_old].tr ~= tr then -- OR if tr_idx_old ~= tr_idx_new
-		r.BR_Win32_SetFocus(r.GetMainHwnd()) -- when the search term was found in another track Notes, for the SWS Notes window to focus on the newly selected track the program window must be active because while the dialogue is open its the one being active; this is in addition to DEFERRED_WAIT() function below and must be done before it is launched
+	t = {notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case, replace_mode} -- global so it's accessinble inside DEFERRED_WAIT() function if needed
+
+
+		if tr and tr_t[tr_idx_old].tr == tr and not headless_mode then -- OR if tr_idx_old == tr_idx_new // if as a result of search track selection hasn't changed // only if the script is unarmed, i.e. the seatch doesn't run headlessly otherwise it needs more time to process scrolling which will be done with DEFERRED_WAIT() in the next block
+		Scroll_SWS_Notes_Window(table.unpack(t))
+		goto CONTINUE
+		elseif tr then -- track selection has changed or the search is run headlessly while the script is armed
+		-- deferred function must be used to wait until the window is fully loaded
+		-- because when changing track selection or when running search headlessly window update takes time
+		-- and the script fails to make the window scroll due to running through faster
+		-- that's unlike in BuyOne_Transcribing A - Create and manage segments (MAIN).lua
+		-- where execution of Scroll_SWS_Notes_Window() doesn't need to be delayed with a defer loop
+		-- probably because that script runs longer giving enough time for the window to load
+		-- and be successfully affected by scroll position change
+		r.SetExtState(cmdID, 'RELAUNCHED', '', false) -- persist false // store to condition re-running Get_SWS_Track_Notes_Caret_Line_Idx() after defer loop has exited and the script has been relaunched via atexit() in order to re-get notes_wnd handle needed for Notes window scrolling, because when the script is relaunched all variables are reset
+		time_init = r.time_precise()
+		DEFERRED_WAIT()
+		elseif replace_mode then -- if after batch replacement with Replace_In_Track_Notes() Notes window scroll position doesn't require restoration because selected Notes track notes haven't been updated, tr and tr_idx_old vars will be nil and this block will be activated
+		goto CONTINUE
 		end
-	end
-
-t = notes_wnd and {notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case, replace_mode} -- global so it's accessinble inside DEFERRED_WAIT() function if needed; only initializing table var when there's a valid value, otherwise Scroll_SWS_Notes_Window() may get triggered inside DEFERRED_WAIT() without all arguments being valid which will result in errors, in particular when at the script launch there's no selected track, and invalid replacement mode has been selected and then the search dialogue was exited, which will leave the script running past this point, allowing t being initialized and trigger the function inside DEFERRED_WAIT() which will be running in order to update the Notes window content after track selection according to the conditions set above; alternatively 'goto CONTINUE' could be used in the replacement block above when replacement settings are invalid, to prevent t initialization in the first place
-
-
-	if tr and tr_t[tr_idx_old].tr == tr and not headless_mode then -- OR if tr_idx_old == tr_idx_new // if as a result of search track selection hasn't changed // only if the script is unarmed, i.e. the seatch doesn't run headlessly otherwise it needs more time to process scrolling which will be done with DEFERRED_WAIT() in the next block
-	Scroll_SWS_Notes_Window(table.unpack(t))
-	goto CONTINUE
-	elseif tr then -- track selection has changed or the search is run headlessly while the script is armed
-	-- deferred function must be used to wait until the window is fully loaded
-	-- because when changing track selection or when running search headlessly window update takes time
-	-- and the script fails to make the window scroll due to running through faster
-	-- that's unlike in BuyOne_Transcribing A - Create and manage segments (MAIN).lua
-	-- where execution of Scroll_SWS_Notes_Window() doesn't need to be delayed with a defer loop
-	-- probably because that script runs longer giving enough time for the window to load
-	-- and be successfully affected by scroll position change
-	r.SetExtState(cmdID, 'RELAUNCHED', '', false) -- persist false // store to condition re-running Get_SWS_Track_Notes_Caret_Line_Idx() after defer loop has exited and the script has been relaunched via atexit() in order to re-get notes_wnd handle needed for Notes window scrolling, because when the script is relaunched all variables are reset
-	time_init = r.time_precise()
-	DEFERRED_WAIT()
-	elseif replace_mode then -- if after batch replacement with Replace_In_Track_Notes() Notes window scroll position doesn't require restoration because selected Notes track notes haven't been updated, tr and tr_idx_old vars will be nil and this block will be activated
-	goto CONTINUE
-	end
-
+	
+	end -- end 'if not time_init' block
 
 do
 	if time_init then
