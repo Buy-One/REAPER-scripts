@@ -29,7 +29,7 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	BuyOne_Transcribing A - Go to segment marker.lua
 	BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua  
 	BuyOne_Transcribing A - Offset position of markers in time selection by specified amount.lua  
-	BuyOne_Transcribing A - Search the transcript.lua
+	BuyOne_Transcribing A - Search or replace text in the transcript.lua
 	
 	It's purpose is to allow embedding transcript in a video file or
 	audio file.
