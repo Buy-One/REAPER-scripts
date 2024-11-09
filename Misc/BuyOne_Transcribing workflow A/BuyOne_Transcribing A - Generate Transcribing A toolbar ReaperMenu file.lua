@@ -2,20 +2,24 @@
 ReaScript name: BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.4
-Changelog: 1.4 #Added button for the script BuyOne_Transcribing A - Search the transcript.lua
-	       #Updated list of transcribing A scripts set in the About section
-	   1.3 #Added button for the action SWS/S&M: Open/close Notes window (track notes)
-	       #Added error it SWS/S&M extension isn't installed to complement the new button addition
-	       #Improved zooming of the track with 'Transcribing A toolbar layout.png' image
-	   1.2 #Fixed the toolbar name everywhere it's mentioned
-	       #Included toolbar name in the code for the exported file
-	       #Set toolbar buttons tooltip to display the linked action
-	       #Updated script name
-	   1.1 #Fixed resources search while generating the toolbar code
-	       #Disabled user prompt for the target toolbar number in builds newer than 7.21
-	       #Fixed a toolbar button name
-	       #Updated About text
+Version: 1.5
+Changelog: 1.5 	#Changed name of the script BuyOne_Transcribing A - Search the transcript.lua
+		to BuyOne_Transcribing A - Search or replace text in the transcript.lua
+		#Renamed the 'SEARCH' button into 'SEARCH or replace' to reflect new script
+		functionality
+	   1.4 	#Added button for the script BuyOne_Transcribing A - Search the transcript.lua
+	       	#Updated list of transcribing A scripts set in the About section
+	   1.3 	#Added button for the action SWS/S&M: Open/close Notes window (track notes)
+	       	#Added error it SWS/S&M extension isn't installed to complement the new button addition
+	       	#Improved zooming of the track with 'Transcribing A toolbar layout.png' image
+	   1.2 	#Fixed the toolbar name everywhere it's mentioned
+	       	#Included toolbar name in the code for the exported file
+	       	#Set toolbar buttons tooltip to display the linked action
+	       	#Updated script name
+	   1.1 	#Fixed resources search while generating the toolbar code
+	       	#Disabled user prompt for the target toolbar number in builds newer than 7.21
+	       	#Fixed a toolbar button name
+	       	#Updated About text
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is part of the Transcribing A workflow set of scripts
@@ -381,7 +385,7 @@ item_8= Go to Notes track
 item_9= Go to segm marker
 item_10= Prepare for rendering
 item_11= Import SRT/VTT/TXT
-item_12= SEARCH
+item_12= SEARCH or replace
 item_13=_S&M_TRACKNOTES Toggle track notes
 ]]
 
@@ -399,7 +403,7 @@ local ref_t = {'BuyOne_Transcribing A - Create and manage segments (MAIN)',
 'BuyOne_Transcribing A - Go to segment marker',
 'BuyOne_Transcribing A - Prepare transcript for rendering',
 'BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes',
-'BuyOne_Transcribing A - Search the transcript',
+'BuyOne_Transcribing A - Search or replace text in the transcript',
 '' -- line to match menu item item_12=_S&M_TRACKNOTES which doesn't need command ID update because it's an SWS action
 }
 
