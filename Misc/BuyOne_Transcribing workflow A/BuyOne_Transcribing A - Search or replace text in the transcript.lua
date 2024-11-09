@@ -1,9 +1,12 @@
 --[[
-ReaScript name: BuyOne_Transcribing A - Search the transcript.lua
+ReaScript name: BuyOne_Transcribing A - Search or replace text in the transcript.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.4
-Changelog: 1.4	#Fixed search match highlihgting in notes which were copied and pasted from another window
+Version: 1.5
+Changelog: 1.5 	#Added text replacement functionality
+		#Renamed the script to reflect the new feature
+		#Updated 'About' text
+	   1.4	#Fixed search match highlihgting in notes which were copied and pasted from another window
 	   1.3	#Updated headless search mode description in the About text
 	   1.2	#Fixed endless loop when calling the search dialogue while the SWS Notes window 
 		is open without any track being selected
@@ -14,7 +17,7 @@ Changelog: 1.4	#Fixed search match highlihgting in notes which were copied and p
 		#Optimized search in non-ASCII texts
 Licence: WTFPL
 REAPER: at least v5.962; recommended 7.03 and newer
-Extensions: SWS/S&M build 2.14.03 and later mandatory; js_ReaScriptAPI is recommended if SWS build is older
+Extensions: SWS/S&M build 2.14.03 and later mandatory; js_ReaScriptAPI is recommended, especially if SWS build is older				
 About:	The script is part of the Transcribing A workflow set of scripts
 	alongside  
 	BuyOne_Transcribing A - Create and manage segments (MAIN).lua   
@@ -27,9 +30,12 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua  
 	BuyOne_Transcribing A - Offset position of markers in time selection by specified amount.lua
 	
-	Meant to search transctript created with the script  
+	Meant to search transcript created with the script  
 	BuyOne_Transcribing A - Create and manage segments (MAIN).lua
-
+	or replace text in it.
+	
+	► SEARCH
+	
 	The search starts from the first selected track whose Notes 
 	contain the transcript, if there're several such tracks.
 	If no track is selected or no transcript track is selected
@@ -55,7 +61,7 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	
 	In order to enable the search settings 'Match case' and
 	'Match exact word' insert any character in the corresponding
-	field.
+	field.			
 	
 	The Notes window is scrolled towards the line containing the 
 	search match if there's enough scrolling space. The match itself 
@@ -83,8 +89,8 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	which they have if the search was excuted at least once, the seatch will 
 	continue.  
 	3. To access the search dialogue again unarm the script and run it 
-	as normal.  
-			
+	as normal. 
+	
 	SWS/S&M extension provides Find utility which also allows searching 
 	track notes however it doesn't make the Notes window scroll to bring 
 	the search match into view nor does it highlight the found match. 
@@ -95,8 +101,30 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	dialogue pop up. Once it does, checkmark 'Remember my answer for 
 	this script' checkbox and press 'New instance' button, this will 
 	prevent the pop up from appearing in the future.
+	
+	► REPLACEMENT
+	
+	There're 3 replacement modes: 
+	0 - batch replacement in the Notes of all tracks containing the transcript, 
+	which can be several if the transcript exceeds 65,535 bytes.  
+	1 - batch replacement in the only or the first selected track containing 
+	the transcript  
+	2 - replacement word by word
+	
+	To activate a mode, type a digit which represents it above in the 
+	'Enable replacement' field of the search dialogue.  
+	All other fields relevant to search are also relevant to replacement.
+	
+	When track notes displayed in the Notes window are updated in modes 0 and 1, 
+	the window scroll position is reset, therefore it's advised to have
+	js_ReaScriptAPI extension installed which will allow restoration of the
+	Notes window scroll position in such cases.
+	
+	Of course replacements in the transctipt can also be made outside 
+	of REAPER and the SWS Notes window with any 3d party software.
 
 ]]
+
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
 -----------------------------------------------------------------------------
@@ -164,13 +192,13 @@ r.TrackCtl_SetToolTip(text, x+x2, y+y2, true) -- topmost true
 	local color_init = r.GetThemeColor('col_tl_bg', 0)
 	local color = color_init ~= 255 and 255 or 65535 -- use red or yellow of red is taken
 		if want_blink then
-		    for i = 1, 100 do
+			for i = 1, 100 do
 				if i == 1 or i == 40 or i == 80 then
 				r.SetThemeColor('col_tl_bg', color, 0)
 				elseif i == 20 or i == 60 or i == 100 then
 				r.SetThemeColor('col_tl_bg', color_init, 0)
 				end
-				r.UpdateTimeline()
+			r.UpdateTimeline()
 			end
 		else
 		r.SetThemeColor('col_tl_bg', color, 0) -- Timeline background
@@ -317,7 +345,7 @@ local field_cnt = comment_field and #comment > 0 and field_cnt+1 or field_cnt
 field_names = comment_field and #comment > 0 and field_names..',Comment:' or field_names
 field_cont = comment_field and #comment > 0 and field_cont..sep..comment or field_cont
 local separator = separator and ',separator='..separator or ''
-local ret, output = r.GetUserInputs(title, field_cnt, field_names..',extrawidth=150'..separator, field_cont)
+local ret, output = r.GetUserInputs(title, field_cnt, field_names..',extrawidth=180'..separator, field_cont)
 output = #comment > 0 and output:match('(.+'..sep..')') or output -- exclude comment field keeping separator to simplify captures in the loop below
 field_cnt = #comment > 0 and field_cnt-1 or field_cnt -- adjust for the next statement
 	if not ret or (field_cnt > 1 and output:gsub('[%s%c]','') == (sep):rep(field_cnt-1)
@@ -451,6 +479,20 @@ end
 
 
 
+function GetSet_Notes_Wnd_Scroll_Pos(notes_wnd, scroll_pos)
+
+	if not r.JS_Window_Find then return end
+
+	if not scroll_pos then -- Get
+	local retval, top_pos, pageSize, min_px, max_px, scroll_pos = r.JS_Window_GetScrollInfo(notes_wnd, 'VERT') -- 'v' vertical scrollbar, or 'SB_VERT', or 'VERT' // the shorter the window the greater the bottomost scroll_pos value
+	return scroll_pos
+	else -- Set
+	r.JS_Window_SetScrollPos(notes_wnd, 'v', scroll_pos) -- 'v' vertical scrollbar, or 'SB_VERT', or 'VERT'
+	end
+
+end
+
+
 function Get_Notes_Tracks_And_Their_Notes(NOTES_TRACK_NAME)
 
 local tr_t = {}
@@ -464,6 +506,7 @@ local tr_t = {}
 		tr_t[#tr_t+1] = {tr=tr, name=name, idx=index}
 		end
 	end
+
 
 -- sort the table by integer in the track extended state
 table.sort(tr_t, function(a,b) return a.idx+0 < b.idx+0 end)
@@ -508,7 +551,7 @@ local tr, tr_idx
 -- on the outside or no track notes, so what must be evaluated is the Notes
 -- of the outside track which is currently selected, if any
 local not_found = not tr
-tr = tr or r.GetSelectedTrack(0,0) -- if no selected notes track was found but there's a selected outside track, use it for track notes state evaluation, in this case the 1st notes track will be subsequently selected for the transcript search
+tr = tr or r.GetSelectedTrack(0,0) --or tr_t[1].tr -- if no selected notes track was found but there's a selected outside track, use it for track notes state evaluation, in this case the 1st notes track will be subsequently selected for the transcript search
 
 -- Determine the index of the line which holds the caret within the selected track Notes depending on the track notes state
 -- and open track notes if necessary by either opening the Notes window or if open by switching it to track notes
@@ -537,6 +580,7 @@ local notes_wnd_open = r.GetToggleCommandStateEx(0, r.NamedCommandLookup('_S&M_S
 
 	local test_str = 'ISTRACKNOTES' -- the test string is initialized without line break char to be able to successfully find it in the window text because search with the line break char will fail due to carriage return \r being added to the end of the line and thus preceding the line break, i.e. 'ISTRACKNOTES\r\n'
 		if #notes:gsub('[%c%s]','') == 0 or center_line_idx == 1 then r.NF_SetSWSTrackNotes(tr, test_str..'\n'..notes) end -- if notes are empty or there's 1 line only add test string so track notes active status can be evaluated, otherwise active non-track empty notes will produce truth as well, manipulating the notes isn't a problem because in this case start_line_idx will be 0 anyway, in other case it would be reset
+
 	local is_active
 		-- search for notes in Notes window children windows title
 		for k, data in ipairs(child_wnd_t) do
@@ -549,9 +593,11 @@ local notes_wnd_open = r.GetToggleCommandStateEx(0, r.NamedCommandLookup('_S&M_S
 			child_wnd = data.child -- will be used to get caret line index if it's other than 0
 			break end
 		end
+
 		if r.NF_GetSWSTrackNotes(tr):match('^'..test_str) then -- test string was used to validate empty track notes active status
 		r.NF_SetSWSTrackNotes(tr, notes) -- restore original notes without the test string added above
 		end
+
 		if not is_active then -- track notes section isn't active in the open Notes window, toggle to open it
 	--	r.BR_Win32_ShowWindow(notes_wnd, 0) -- 0 SW_HIDE, hide window -- doesn't close the docker so can't be toggled On with action
 		act(open_tr_notesID, 0)
@@ -590,9 +636,258 @@ local notes_wnd_open = r.GetToggleCommandStateEx(0, r.NamedCommandLookup('_S&M_S
 	start_line_idx = r.BR_Win32_SendMessage(child_wnd, 0x00C9, -1, 0) -- EM_LINEFROMCHAR 0x00C9, wParam is -1 to get index of the line which holds the caret or the line containing selection start regardless of the Notes window being active/focused; when the Notes are switched between objects by their selection or the Notes window is closed and reopened or another type of notes is selected in the Notes window the caret position is reset to the first line, index 0
 	end
 
-Msg(start_line_idx, 'start_line_idx')
-
 return tr_idx, start_line_idx+1, child_wnd -- converting start_line_idx to 1-based count, two first values will be fed into Search_Track_Notes() function, the 3d to Scroll_SWS_Notes_Window()
+
+end
+
+
+
+function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, search_term, replace_term, cmdID, ignore_case, exact, notes_wnd)
+-- tr_idx, start_line_idx are only rekevant for one-by-one replacement mode
+-- and stem from Get_SWS_Track_Notes_Caret_Line_Idx()
+-- and reprsent index of the notes track in whose notes
+-- the transcript search must start and line holding the caret
+-- which the search must start from in the track notes;
+-- if ignore_case is true first the target word in original case must be found inside the line
+-- in order to be able to replace it in the original line
+-- searching by changing the line case is a wrong approach
+-- because replacement must not affect the original case of all other words
+-- and simple case change of the search term during search won't work
+-- because this will still miss words with capitalized first letter, i.e. mixed case words;
+-- segment time stamps must be excluded from search/replacement
+
+
+	local function get_replace_term_bounds(st, line, replace_term, exact)
+	-- used inside replace_capture()
+	-- to exclude unicode extra bytes before and within capture
+	-- so that 1 character corresponds to 1 byte because text highliting inside Scroll_SWS_Notes_Window() is based on characters
+	local st, fin = line:find(Esc(replace_term), st)
+	local pre_capt_extra = select(2, line:match('(.-)'..Esc(replace_term)):gsub('[\128-\191]',''))
+	local capt_extra = select(2, replace_term:gsub('[\128-\191]',''))
+	-- to exclude padding characters when searching exact match
+	-- to exclude padding characters when searching exact match
+	-- because padding characters are included in the capture start and end values despite being outside of it
+	return st - pre_capt_extra, fin, fin - pre_capt_extra - capt_extra -- returning both original byte based fin value and adjusted character based one, the first is for storage as 'LAST SEARCH' data, the second is for text highlighting inside Scroll_SWS_Notes_Window()
+	end
+
+	local function get_capture(line, search_term, ignore_case, exact, fin, rerun)
+	-- used inside replace_capture()
+	-- using string.find to extract original target term from the original line with st and end index
+	-- in case ignore_case is true, because simple extraction by lowering the case won't work for replacement
+	-- since it's the original word which must be replaced, not the one retrieved after changing case;
+	-- when ignore_case is true, the match wasn't found and the notes or the search term contain non-ASCII characters
+	-- rerun will be true to condition recursive run of the parent function replace_capture()
+	-- to try to find match after converting non-ASCII characters to lower case
+	-- beause string.lower() ignores these which is likely to result in negative outcome with non-ASCII characters
+	local s = not exact and Esc(search_term) or search_term -- if exact, search_term arg is a pattern, not the original search term therefore it must not be escaped to avoid pattern corruption, otherwise special chars will be treated as literals, the search term is escaped by itself in the parent function replace_capture()
+	s = ignore_case and (rerun and convert_case_in_unicode(s) or s:lower()) or s
+	local line_tmp = ignore_case and (rerun and convert_case_in_unicode(line) or line:lower()) or line -- using a line copy to be able to use the original to extract the original match from below
+	local st_idx = fin or 1 -- fin ensures that the search continues from where it had left off to prevent endless loop inside parent function replace_capture() when search and replacement terms only differ in case because if ignore_case is true string.find will get stuck at the first replacement keeping returning valid capture endlessly
+	local st, fin = line_tmp:find(s, st_idx)
+		if st then
+		return line:sub(st, fin), st, fin, line_tmp:sub(st, fin) -- st is only needed in one-by-one mode; last return value is only relevant when exact and ignore_case are true
+		end
+	end
+
+	local function replace_capture(line, search_term, replace_term, pos_in_line, ignore_case, exact, one_by_one, rerun)
+	-- used inside search_and_replace()
+	-- rerun is boolean to condition recursive run once when ignore_case is true but no replacement was done
+	-- because no match was found due to search_term or notes contaning non-ASCII characters ignored by string.lower()
+	-- in order to terty after converting non-ASCII characters to lower case
+
+	local timestamp, transcr = line:match('(.+%d+:%d+:%d+%.%d+)(.+)') -- split off segment time stamp to exclude it from search and replacement // ONLY RELEVANT FOR TRANSCRIBING SCRIPTS WHERE THERE'S TIME STAMP IN THE TEXT
+	local transcr = transcr or line -- keeping original line to be able to pass it into the recursive instance of the function
+	local replace_term = replace_term:gsub('%%','%%%%') -- must be escaped if contains % which is unlikley but just in case
+	local fin, replace_cnt = pos_in_line, 0 -- pos_in_line (assigned to fin var) will be valid and st is only needed in one-by-one mode, fin is needed in one-by-one mode or otherwise to prevent search from getting stuck, see comment below
+	fin = timestamp and fin > #timestamp and fin - #timestamp or fin -- subtract length of timestamp portion from fin value so that it's counted from the beginning of the segment transcript because when fin it returned and stored in 'LAST SEARCH' data it's counted from the actual line start which includes the time stamp // ONLY RELEVANT FOR TRANSCRIBING SCRIPTS WHERE THERE'S TIME STAMP IN THE TEXT
+	local capt, st, count
+
+		if not exact then
+		capt, st, fin = get_capture(transcr, search_term, ignore_case, exact, fin, rerun) -- fin is returned to be passed as new start index inside string.find because if the search and replacement terms only differ in case while ignore_case is true, at each loop cycle string.find will get stuck at the first replacement leading to an endless loop because count and capt both will keep being valid; rerun arg is relevant in recursive run of the function to search after changing case of non-ASCII characters // st is only needed in one-by-one mode
+			repeat
+				if capt then
+				capt = Esc(capt)
+				transcr, count = transcr:gsub(capt, replace_term, 1) -- replace capture because it was retuned with the correct case, doing it 1 by 1 which is presumably safer and more reliable because string.gsub has a limit of 32 replacements
+				replace_cnt = replace_cnt+count
+					if one_by_one then break end
+				capt, st, fin = get_capture(transcr, search_term, ignore_case, exact, fin, rerun) -- prime for the next cycle
+				else break end
+			until count == 0 or not capt
+		else
+		-- patterns where the search term is only allowed to be padded with non-alphanumeric characters if 'Match exact word' option is enabled // 3 capture patterns are used because pattern with repetition * operator, e.g. '%W*'..s..'%W*', will match search term contained within words as well because '%W*' will also match alphanumeric characters hence unsuitable, start/end anchors are also meant to exclude alphanumeric characters in case the search term is only padded with non-alphanumeric character on one side
+		local pad = '[\0-\47\58-\64\91-\96\123-191]' -- use punctuation marks explicitly by referring to their code points instead of %W because when the search term is surrounded with non-ASCII characters %W will match all non-ASCII characters in addition to punctuation marks so in these cases pattern such as '%W'..s..'%W' will fail to produce exact match and will return non-exact matches as well, the pattern range also includes control characters beyond code point 127 which is the end of ASCII range, codes source https://www.charset.org/utf-8
+		local s = Esc(search_term)
+			for _, patt in ipairs({pad..s..pad, pad..s..'$', '^'..s..pad}) do
+			local capt_tmp
+			capt, st, fin, capt_low = get_capture(transcr, patt, ignore_case, exact, fin, rerun) -- fin is returned to be passed as new start index inside string.find because if the search and replacement terms only differ in case while ignore_case is true, at each loop cycle string.find will get stuck at the first replacement leading to an endless loop because count and capt both will keep being valid; rerun arg is relevant in recursive run of the function to search after changing case of non-ASCII characters // st is only needed in one-by-one mode // capt_low is the capture after lowering the case when ignore_case is true, will be used to construct replace pattern for replacement of the original capture returned as capt which maintains the original case of the match so it can be found and replaced with gsub
+				repeat
+					if capt then
+					-- if ignore_case is true, lower the s (search term) case to match its case inside capt_low string, which in this event will be a lower case copy of capt string which is the original match, to be able to find it and replace within capt_low thereby constructing a replacement pattern for the original match in the source string
+					s = ignore_case and (rerun and convert_case_in_unicode(s) or s:lower()) or s
+					local repl_patt = capt_low:gsub(s, replace_term) -- first replace the target word inside the capture to keep all punctuation characters included in capt
+					capt, repl_patt = Esc(capt), repl_patt:gsub('%%','%%%%') -- repl_patt must be escaped if contains % which is unlikley but just in case
+					transcr, count = transcr:gsub(capt, repl_patt, 1) -- replace along with the originally captured punctuation marks, doin it 1 by 1 which is presumably safer and more reliable because string.gsub has a limit of 32 replacements
+					replace_cnt = replace_cnt+count
+						if one_by_one then break end
+					capt, st, fin, capt_low = get_capture(transcr, patt, ignore_case, exact, fin, rerun) -- prime for the next cycle
+					else break end
+				until count == 0 or not capt
+
+				if capt and one_by_one then break end -- exit the 'for' loop
+
+			end -- 'for' loop end
+
+		end
+
+		-- if not found with ignore_case being true, retry lowering case of non-ASCII characters as long as they're present
+		if replace_cnt == 0 and not rerun and ignore_case
+		and (is_utf8(line) or is_utf8(search_term)) then -- only if non-ASCII characters are present, i.e. those containing trailing (continuation) bytes, because in this case after lowering the case with string.lower the match is likely to not be found despite being there
+		return replace_capture(line, search_term, replace_term, pos_in_line, ignore_case, exact, one_by_one, 1) -- rerun is true to only allow a single recursive run, otherwise an endless loop will be set off
+		end
+
+	local line = (timestamp or '')..transcr -- re-assemble the original line by appending back the time stamp // placed here so that in one-by-one mode st and fin values are calculated below from the original line start
+	local fin_adj
+
+		if one_by_one and capt then
+		st = timestamp and st + #timestamp or st -- add length of timestamp portion to st value in case it was retrieved without it so that it's counted from the actual line start // ONLY RELEVANT FOR TRANSCRIBING SCRIPTS WHERE THERE'S TIME STAMP IN THE TEXT
+		st, fin, fin_adj = get_replace_term_bounds(st, line, replace_term) -- subtracting extra (continuation or trailing) bytes in case text is non_ASCII so the value matches the actual character count // keeping orig fin value to store for the next cycle in 'LAST SEARCH' data because it all bytes must be taken account in it, fin_adj will be used for text highlighting inside Scroll_SWS_Notes_Window() where character count matters and not bytes
+		end
+
+	return line, st, fin, fin_adj, replace_cnt -- st, fin and fin_adj are only needed in one-by-one mode
+
+	end
+
+
+	local function search_and_replace(notes, search_term, start_line_idx, pos_in_line, replace_term, ignore_case, exact, one_by_one)
+	local notes = notes:sub(-1) ~= '\n' and notes..'\n' or notes -- ensures that the last line is captured with gmatch search
+	local t, replace_cnt, line_cnt = {}, 0, 0
+	local line_upd, st, fin, fin_adj
+		for line in notes:gmatch('(.-)\n') do
+		line_cnt = line_cnt+1 -- could have been placed at the end of the loop so that only lines preceding the target line are counted which would obviate subtraction of 1 inside Scroll_SWS_Notes_Window() // ONLY RELEVANT IN ONE-BY-ONE MODE
+			if #line:gsub(' ','') > 0 then -- for the sake of efficiency ignore empty lines
+				if start_line_idx and line_cnt >= start_line_idx or not start_line_idx then -- start_line_idx is only relevant within the notes of a track where the start line belongs, if the search term wasn't found there and search has progressed to the next notes track these won't be relevant because there the search begins from the very first line // start_line_idx is ONLY RELEVANT IN ONE-BY-ONE MODE
+				pos_in_line = start_line_idx and line_cnt == start_line_idx and pos_in_line or 1 -- pos_in_line other than 1 is only used if the search resumes from the same line in the same track notes and only on such line, in all other cases it's 1 // ONLY RELEVANT IN ONE-BY-ONE MODE
+				local cnt
+				line_upd, st, fin, fin_adj, cnt = replace_capture(line, search_term, replace_term, pos_in_line, ignore_case, exact, one_by_one) -- st, fin, fin_adj are only relevant in one-by-one mode
+					if cnt > 0 then
+					replace_cnt = replace_cnt + cnt
+						if one_by_one then -- replace line within Notes with its updated version and exit
+						line, line_upd = Esc(line), line_upd:gsub('%%','%%%%')
+						notes = notes:gsub(line, line_upd)
+						break end
+					end
+				end
+			end
+		t[#t+1] = line_upd or line -- collect all lines into the table
+		end
+
+		if replace_cnt > 0 then
+		return one_by_one and notes or table.concat(t, '\n'), replace_cnt, {line_cnt, replace_term, fin, fin_adj, line_upd, st} -- the last table return value is only relevant in one-by-one replacement mode
+		end -- if no replacaments return nil
+
+	end
+
+
+local in_all_tracks, in_sel_track, one_by_one = replace_mode == '0', replace_mode == '1', replace_mode == '2'
+
+-------------- INITIALIZE VARS FOR ONE-BY-ONE REPLACEMENT MODE -------------
+
+-- Extract values of the last search to determine the position it must be resumed from
+-- relying on storage because of not being aware of the way to get current caret position
+-- within window other than from the capture returned by string.find();
+-- otherwise the search will get stuck at the line of the last search hit
+-- because of restarting from the beginning of this line and ending up at the same search hit
+local stored = r.GetExtState(cmdID, 'LAST SEARCH') -- contains track index, start line index, search term, search term end pos in line
+local stored_t = {}
+	if #stored > 0 then
+	stored = stored..'\n' -- to capture last entry
+		for entry in stored:gmatch('(.-)\n') do
+		stored_t[#stored_t+1] = entry
+		end
+	end
+
+-- tr_idx and start_line_idx vars will only be valid when the script is first launched,
+-- but once the CONTINUE loop has been set off these will be nil while the stored values will be valid
+local tr_idx = one_by_one and (tr_idx or stored_t[1]+0)
+local start_line_idx = one_by_one and (start_line_idx or stored_t[2]+0)
+local pos_in_line = one_by_one and (stored_t[#stored_t] and stored_t[#stored_t]+0 or 1) -- value to be used as index argument in sting.find to mark location within line to resume the search from, if no stored value as is the case when the script is first launched default to 1 to start search from the beginning of the line
+local t, tr = {}
+
+------------------------------------------------------------------
+
+local sel_tr = r.GetSelectedTrack(0,0) -- selected track is the one whose track Notes are displayed in the Notes window; the selected track will necessarily be one of the notes tracks because these are selected by Get_SWS_Track_Notes_Caret_Line_Idx() and in the course of search
+local scroll_pos = GetSet_Notes_Wnd_Scroll_Pos(notes_wnd) -- to restore Notes window scroll pos if selected track Notes will have been updated because this causes scroll pos reset
+local replace_cnt, cnt, sel_tr_idx = 0
+
+	for i=tr_idx or 1, #tr_t do
+	tr = tr_t[i].tr
+		if not in_sel_track or tr == sel_tr -- in selected track replacement mode only run the routine when the loop reaches the first selected Notes track
+		then
+		local start_line_idx, pos_in_line = t and start_line_idx, t and pos_in_line or 1 -- start_line_idx will be valid and pos_in_line can be other than 1 in the 1st loop cycle only, because if the search term wasn't found in notes of the start search track and the search has proceded to the next track notes, it must begin from the very 1st line and in this case t var will be nil after being reset by an unsuccessful search in the 1st loop cycle below // ONLY RELEVANT IN ONE-BY-ONE MODE
+		local notes = r.NF_GetSWSTrackNotes(tr)
+		notes, cnt, t = search_and_replace(notes, search_term, start_line_idx, pos_in_line, replace_term, ignore_case, exact, one_by_one) -- t return value is only relevant in one-by-one mode
+			if notes then -- if no replacemens will be nil
+			r.NF_SetSWSTrackNotes(tr, notes) -- overwrite notes
+			replace_cnt = replace_cnt+cnt -- store to display the replacement result to the user in modes other than one-by-one
+				if in_sel_track and tr == sel_tr or one_by_one then -- notes of the 1st selected track (those displayed in the Notes window) have been updated
+				sel_tr_idx = i -- store to return along with start_line_idx to condition and use inside Scroll_SWS_Notes_Window() because when notes are updated with NF_SetSWSTrackNotes() the notes window scroll position is reset so will need to be restored
+					if one_by_one then
+					r.SetExtState(cmdID, 'LAST SEARCH', i..'\n'..table.concat(t,'\n', 1, 3), false) -- persist false // alongside notes track index only store first 3 values: line index, replacement term and capture original end pos within line, replacement term is actually redundant here as it's never evaluated
+					end
+				break end -- in selected track or one by one replacement mode exit as soon as the 1st selected Noted track notes have been processed
+			end
+		end
+	end
+
+
+	if one_by_one and (tr_idx > 1 or pos_in_line > 1) and not t then -- OR not sel_tr_idx // if in one-by-one mode after searching from the notes track other than the 1st or from the 1st track but not from its 1st line the search term wasn't found, restart from the 1st line of the 1st track and continue until the track the search originally started from in case it didn't start from line 1 so not entire notes of that track have been scanned
+		for i=1, #tr_t do
+		tr = tr_t[i].tr
+		local notes = r.NF_GetSWSTrackNotes(tr)
+		notes, cnt, t = search_and_replace(notes, search_term, nil, 1, replace_term, ignore_case, exact, one_by_one) -- -- start_line_idx is nil, pos_in_line is 1; t return value is only relevant in one-by-one mode
+			if notes then -- if no replacemens will be nil
+			r.NF_SetSWSTrackNotes(tr, notes) -- overwrite notes
+			replace_cnt = replace_cnt+cnt -- store to display the replacement result to the user in modes other than one-by-one, still leaving for consistency to be used in this mode to condition message of no replacements
+			sel_tr_idx = i -- store to return along with start_line_idx to condition and use inside Scroll_SWS_Notes_Window() because when notes are updated with NF_SetSWSTrackNotes() the notes window scroll position is reset so will need to be restored
+			r.SetExtState(cmdID, 'LAST SEARCH', i..'\n'..table.concat(t,'\n', 1, 3), false) -- persist false // alongside notes track index only store first 3 values: line index, replacement term and capture original end pos within line, replacement term is actually redundant here as it's never evaluated
+			break end -- in selected track or one by one replacement mode exit as soon as the 1st selected Noted track notes have been processed
+		end
+	end
+
+
+-- Construct result message ------
+local repl_dest = in_all_tracks and ' \n\n in all '..NOTES_TRACK_NAME..' tracks'
+or in_sel_track and ' \n\n in selected '..NOTES_TRACK_NAME..' track' --or '' -- empty string in one-by-one mode
+local	mess = not one_by_one and replace_cnt > 0
+and math.floor(replace_cnt)..' replacements \n\n have been made'..repl_dest
+or (one_by_one and replace_cnt == 0 or not one_by_one)
+and 'no replacements have been made'..(one_by_one and '' or '\n\n '..repl_dest) -- in one-by-one mode only display message if no replacements have been made, in one-by-one mode t could be used as a condition instead of replace_cnt
+	if mess then
+	Error_Tooltip('\n\n '..mess..' \n\n', 1, 1, 100) -- caps, spaced true, x is 100 to move the tooltip away from the cursor so it doesn't stand between the cursor and search/replace dialogue OK button and doesn't block the click
+	end
+----------------------------------
+
+	if replace_cnt > 0 then -- this will be valid for all 3 replacement modes unlike sel_tr_idx which doesn't cover in_all_tracks '0'
+	-- return values if the currently selected or the 1st selected Notes track notes have been updated,
+	-- to restore Notes window scroll position BUT ONLY if replacement was run right after search
+	-- without closing the search dialogue, because in this case LAST SEARCH data containing caret line index will be available
+		if one_by_one then
+		return tr, tr_idx, sel_tr_idx, t[1], t[5], t[6], t[4], replace_cnt -- from the t table return line index to scroll, line itself to count its 1st character index inside notes, replacement term start/end within line to highlight it inside Scroll_SWS_Notes_Window(); comparison between last track index tr_idx and sel_tr_idx can be used in the main routine to condition a way of scrolling the Notes window with Scroll_SWS_Notes_Window(), although sel_tr_idx could be ommitted because tr_idx is used to retrieve track pointer from tr_t and compare it with tr return value; replace cound is returned to condition undo in the main routine
+		else
+		local stored = r.GetExtState(cmdID, 'LAST SEARCH') -- contains track index, start line index, search term, search term end pos in line
+		local last_search_line_idx = stored:match('\n(.-)\n') -- stored on line 2
+			if last_search_line_idx then
+			return sel_tr, sel_tr_idx, nil, last_search_line_idx+0, nil, nil, nil, replace_cnt -- converting last_search_line_idx to number if was extracted from LAST SEARCH ext state; replace count is returned to condition undo in the main routine; irrelevant return values are set to be nil just to serve as placeholders matching return values of one-by-one mode above
+			else
+			-- if LAST SEARCH data is unavaliable, the replacement has been run right after opening the search dialogue
+			-- and although at this stage start_line_idx can be taken from Get_SWS_Track_Notes_Caret_Line_Idx(),
+			-- it's useless because it refers to the caret line index and not to the topmost line, i.e. scroll position
+			-- and these can differ, so use js_ReaScriptAPI function to restore scroll position
+			GetSet_Notes_Wnd_Scroll_Pos(notes_wnd, scroll_pos)
+			return nil, nil, nil, nil, nil, nil, nil, replace_cnt -- adding nils as placeholders for return values which are irrelevant in this scenario to match the return values above otherwise replace_cnt will be treated as sel_tr return value outside
+			end
+		end
+	end
 
 end
 
@@ -625,28 +920,29 @@ function Search_Track_Notes(tr_t, tr_idx, start_line_idx, search_term, cmdID, ig
 		--	for _, patt in ipairs({'%W'..s..'%W', '%W'..s..'$', '^'..s..'%W'}) do
 			for _, patt in ipairs({pad..s..pad, pad..s..'$', '^'..s..pad}) do
 			st, fin, capt = line:find('('..patt..')', pos_in_line)
-				if capt then break end -- OR st OR capt BUT capture is required for processing inside offset_capture_indices()
+				if capt then break end -- OR st OR fin BUT capture is required for processing inside offset_capture_indices()
 			end
 		end
-	-- for efficiency sake converting non-ASCII sttings line by line instead of the entire Notes 
+
+	-- for efficiency sake converting non-ASCII sttings line by line instead of the entire Notes
 	-- before the actual search as with ASCII
 	-- and even so it may be a tad sluggish, on my PC anyway, but if there's a single match across several tracks
 	-- reloading of the search dialogue as the script traverses all of them track by track to come back
 	-- to the starting point may take a few seconds
-		if not st and not rerun and ignore_case 
+		if not st and not rerun and ignore_case
 		and (is_utf8(line) or is_utf8(s)) then -- only if non-ASCII characters are present, i.e. those containing trailing (continuation) bytes, because in this case after lowering the case with string.lower the match is likely to not be found if it's there
 		line = convert_case_in_unicode(line, want_upper_case) -- want_upper_case false
 		s = convert_case_in_unicode(s, want_upper_case) -- want_upper_case false
 		return get_capture(line, s, pos_in_line, exact, ignore_case, 1) -- rerun is true to only allow a single recursive run, otherwise an endless loop will be set off
 		end
+
 	return st, fin, capt, line -- return line as well in case its case was lowered above, to be passed to offset_capture_indices() because after case lowering the returned non-ASCII capture won't be found in the original line; instead the case lowered search term could be returned
 	end
 
 	local function offset_capture_indices(st, fin, line, capt, search_term, exact)
 	-- used inside search_notes()
 	-- to exclude unicode extra bytes before and within capture
-	-- so that 1 character correspond to 1 byte because text highliting is based on characters
-
+	-- so that 1 character corresponds to 1 byte because text highliting inside Scroll_SWS_Notes_Window() is based on characters
 	local pre_capt_extra = select(2, line:match('(.-)'..Esc(capt)):gsub('[\128-\191]',''))
 	local capt_extra = select(2, capt:gsub('[\128-\191]',''))
 	-- to exclude padding characters when searching exact match
@@ -668,7 +964,7 @@ function Search_Track_Notes(tr_t, tr_idx, start_line_idx, search_term, cmdID, ig
 				st, fin, capt, line_cased = get_capture(line, search_term, pos_in_line, exact, ignore_case) -- return line as well in case its case was lowered inside the function, to be passed to offset_capture_indices() below because after case lowering the returned non-ASCII capture won't be found in the original line; instead the case lowered search term could be returned
 				end
 				if capt then -- OR st OR fin BUT capture is required for processing inside offset_capture_indices() below
-				st, fin_adj = offset_capture_indices(st, fin, line_cased, capt, search_term, exact) -- subtracting extra (continuation or trailing) bytes in case text is Unicode so the value matches the actual character count and padding characters included in the capture start and end values when searching exact match despite being outside of it, all for the sake of accurate text selection/highlighting // keeping orig fin value to store for the next cycle because it all bytes must be taken account in it, fin_adj will be used for text highlighting where character count matters and not bytes
+				local st, fin_adj = offset_capture_indices(st, fin, line_cased, capt, search_term, exact) -- subtracting extra (continuation or trailing) bytes in case text is non_ASCII so the value matches the actual character count and padding characters included in the capture start and end values when searching exact match despite being outside of it, all for the sake of accurate text selection/highlighting // keeping orig fin value to store for the next cycle because it all bytes must be taken account in it, fin_adj will be used for text highlighting where character count matters and not bytes
 				return {line_cnt, search_term, fin, fin_adj, line, st}  -- storing search_term instead of capt because capture may include padding due to capture formatting inside get_capture() when 'Match exact word' is true
 				end
 			end
@@ -682,20 +978,20 @@ function Search_Track_Notes(tr_t, tr_idx, start_line_idx, search_term, cmdID, ig
 -- otherwise the search will get stuck at the line of the last search hit
 -- because of restarting from the beginning of this line and ending up at the same search hit
 local stored = r.GetExtState(cmdID, 'LAST SEARCH') -- contains track index, start line index, search term, search term end pos in line
-local compare_t = {current={tr_idx, start_line_idx, search_term}, stored={}}
+local stored_t = {}
 	if #stored > 0 then
 	stored = stored..'\n' -- to capture last entry
 		for entry in stored:gmatch('(.-)\n') do
-		local len = #compare_t.stored -- for brevity
-		compare_t.stored[len+1] = entry
+		stored_t[#stored_t+1] = entry
 		end
 	end
 
+
 -- tr_idx and start_line_idx vars will only be valid when the script is first launched,
 -- but once the CONTINUE loop has been set off these will be nil while the stored values will be valid
-local tr_idx = tr_idx or compare_t.stored[1]+0
-local start_line_idx = start_line_idx or compare_t.stored[2]+0
-local pos_in_line = compare_t.stored[#compare_t.stored] and compare_t.stored[#compare_t.stored]+0 or 1 -- value to be used as index argument in sting.find to mark location within line to resume the search from, if no stored value as is the case when the script is first launched default to 1 to start search from the beginning of the line
+local tr_idx = tr_idx or stored_t[1]+0
+local start_line_idx = start_line_idx or stored_t[2]+0
+local pos_in_line = stored_t[#stored_t] and stored_t[#stored_t]+0 or 1 -- value to be used as index argument in sting.find to mark location within line to resume the search from, if no stored value as is the case when the script is first launched default to 1 to start search from the beginning of the line
 local t, tr, tr_idx_new = {}
 
 	for i=tr_idx, #tr_t do
@@ -706,7 +1002,7 @@ local t, tr, tr_idx_new = {}
 	t = search_notes(notes, search_term, start_line_idx, pos_in_line, exact, ignore_case) -- ignore_case will be used inside get_capture() to convert case of non-ASCII characters which arent supported by string.lower
 		if t then
 		tr_idx_new = i
-		r.SetExtState(cmdID, 'LAST SEARCH', i..'\n'..table.concat(t,'\n', 1, 3), false) -- persist false // alongside notes track index only store first 3 values: line index, search term and capture original end pos within line
+		r.SetExtState(cmdID, 'LAST SEARCH', i..'\n'..table.concat(t,'\n', 1, 3), false) -- persist false // alongside notes track index only store first 3 values: line index, search term and capture original end pos within line, search term is actually redundant here as it's never evaluated
 		break end
 	end
 
@@ -719,14 +1015,14 @@ local t, tr, tr_idx_new = {}
 		t = search_notes(notes, search_term, nil, 1, exact, ignore_case) -- start_line_idx is nil, pos_in_line is 1, -- ignore_case will be used inside get_capture() to convert case of non-ASCII characters which arent supported by string.lower
 			if t then
 			tr_idx_new = i
-			r.SetExtState(cmdID, 'LAST SEARCH', i..'\n'..table.concat(t,'\n', 1, 3), false) -- persist false // alongside notes track index only store first 3 values: line index, search term and capture original end pos within line
+			r.SetExtState(cmdID, 'LAST SEARCH', i..'\n'..table.concat(t,'\n', 1, 3), false) -- persist false // alongside notes track index only store first 3 values: line index, search term and capture original end pos within line, search term is actually redundant here as it's never evaluated
 			break end
 		end
 	end
 
 
 	if t then
-	return tr, tr_idx, tr_idx_new, t[1], t[5], t[6], t[4] -- from the t table return line index to scroll, line itself to count its 1st character index inside notes, capture start/end within line to highlight it inside Scroll_SWS_Notes_Window(); comparison between last track index tr_idx and tr_idx_new can be used in the main routine to condition a way of scrolling the Notew window with Scroll_SWS_Notes_Window(), although tr_idx_new could be ommitted because tr_idx is used to retrieve track pointer from tr_t and compare it with re return value
+	return tr, tr_idx, tr_idx_new, t[1], t[5], t[6], t[4] -- from the t table return line index to scroll, line itself to count its 1st character index inside notes, capture start/end within line to highlight it inside Scroll_SWS_Notes_Window(); comparison between last track index tr_idx and tr_idx_new can be used in the main routine to condition a way of scrolling the Notes window with Scroll_SWS_Notes_Window(), although tr_idx_new could be ommitted because tr_idx is used to retrieve track pointer from tr_t and compare it with tr return value
 	else
 	Error_Tooltip("\n\n the search term wasn't found \n\n", 1, 1) -- caps, spaced true
 	end
@@ -734,7 +1030,7 @@ local t, tr, tr_idx_new = {}
 end
 
 
-function Scroll_SWS_Notes_Window(notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case)
+function Scroll_SWS_Notes_Window(notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case, replace_mode)
 -- notes_wnd stems from Get_SWS_Track_Notes_Caret_Line_Idx()
 -- the rest stem from Search_Track_Notes()
 
@@ -747,37 +1043,42 @@ SendMsg(notes_wnd, 0x0115, 6, 0) -- msg 0x0115 WM_VSCROLL, 6 SB_TOP, 7 SB_BOTTOM
 	-- WM_VSCROLL is equivalent of EM_SCROLL 0x00B5 https://learn.microsoft.com/en-us/windows/win32/controls/em-scroll
 	end
 
-r.BR_Win32_SetFocus(notes_wnd) -- window must be focused for selection to work
+	if capt_line then -- will be nil if this function is executed following Replace_In_Track_Notes() and capt_line_idx is valid because in this case only scroll position needs to be restored, text highligting isn't necessary
 
-local notes = r.NF_GetSWSTrackNotes(tr)
+	r.BR_Win32_SetFocus(notes_wnd) -- window must be focused for selection to work
 
-	if ignore_case then notes = notes:lower() end -- this applies to ASCII characters because Notes case is lowered before the search inside Search_Track_Notes() and a line returned by search_notes() inside Search_Track_Notes() contains characters whose case was lowered, but for non-ASCII characters the case is lowered line by line during the search while the character case in the original line which is returned remains unaltered therefore here no separate change in the non-ASCII character case is required
+	local notes = r.NF_GetSWSTrackNotes(tr)
 
-local capt_line_st = notes:find('\n'..Esc(capt_line)) -- if not the first line, new line char \n must be taken into account for start value to refer to the visible start of the line otherwise the start will be offset by 1
+		if ignore_case and not replace_mode then notes = notes:lower() end -- this applies to ASCII characters because Notes case is lowered before the search inside Search_Track_Notes() and a line returned by search_notes() inside Search_Track_Notes() contains characters whose case was lowered, but for non-ASCII characters the case is lowered line by line during the search while the character case in the original line which is returned remains unaltered therefore here no separate change in the non-ASCII character case is required; NOT FOR REPLACEMENT MODE because this will prevent capturing the replacement term with string.find below if its case is upper or mixed
 
-local carriage_return_cnt = notes:match('\r') and 0 or capt_line_idx-1 -- count carriage return chars \r preceding the capture line in the Notes window because in the window these terminate each line followed by a new line char so must be taken into account in determination of the text selection range, their count is equal to capt_line_idx-1, that is 1 per line excluding the capture line itself because selection starts within it; in Notes retrieved with NF_GetSWSTrackNotes() carriage return chars can only be present if the notes were copied between Notes windows in which case they'd be included within the copied text, so if there're any, assign 0 because their count will be taken into account in capt_line_st value so adding won't be necessary, otherwise count them; had the Notes been retrieved directly fron the Notes window with BR_Win32_GetWindowText() or JS_Window_GetTitle() they'd already contain carriage returns and capt_line_st value would account for them so adding would be unnecessary, but using these functions is less reliable because before SWS ext build 2.14.0.3 BR_ function only supported 1 kb buffer which would likely prevent retrieval of the Notes in full and JS_extension simply may happen to not be installed
+	local capt_line_st = notes:find('\n'..Esc(capt_line)) -- if not the first line, new line char \n must be taken into account for start value to refer to the visible start of the line otherwise the start will be offset by 1
 
-capt_line_st = capt_line_st and capt_line_st + carriage_return_cnt or 0 -- add carriage return count if any; if capt_line_st is nil because capt_line is the first line, assign 0
+	local carriage_return_cnt = notes:match('\r') and 0 or capt_line_idx-1 -- count carriage return chars \r preceding the capture line in the Notes window because in the window these terminate each line followed by a new line char so must be taken into account in determination of the text selection range, their count is equal to capt_line_idx-1, that is 1 per line excluding the capture line itself because selection starts within it; in Notes retrieved with NF_GetSWSTrackNotes() carriage return chars can only be present if the notes were copied between Notes windows in which case they'd be included within the copied text, so if there're any, assign 0 because their count will be taken into account in capt_line_st value so adding won't be necessary, otherwise count them; had the Notes been retrieved directly fron the Notes window with BR_Win32_GetWindowText() or JS_Window_GetTitle() they'd already contain carriage returns and capt_line_st value would account for them so adding would be unnecessary, but using these functions is less reliable because before SWS ext build 2.14.0.3 BR_ function only supported 1 kb buffer which would likely prevent retrieval of the Notes in full and JS_extension simply may happen to not be installed
 
--- correct the char count of notes preceding the capture line by subtracting extra (continuation or trailing) bytes count
--- in case non-ASCII chars are present so that search term selection/highlighting is accurate
--- because it's performed on the basis of characters rather than bytes
-capt_line_st = capt_line_st > 0 and
-capt_line_st - select(2, notes:match('(.-)'..Esc(capt_line)):gsub('[\128-\191]','')) -- or #notes:match('(.-)'..Esc(capt_line)):gsub('[\128-\191]','')
-or capt_line_st
+	capt_line_st = capt_line_st and capt_line_st + carriage_return_cnt or 0 -- add carriage return count if any; if capt_line_st is nil because capt_line is the first line, assign 0
 
-local capt_len = capt_end+1-capt_st -- +1 to get accurate length otherwise the last character isn't counted
-local capt_st = capt_line_st+capt_st-1 -- global capture start // -1 to start selection before the first capture character so it's included
+	-- correct the char count of notes preceding the capture line by subtracting extra (continuation or trailing) bytes count
+	-- in case non-ASCII chars are present so that search term selection/highlighting is accurate
+	-- because it's performed on the basis of characters rather than bytes
+	capt_line_st = capt_line_st > 0 and
+	capt_line_st - select(2, notes:match('(.-)'..Esc(capt_line)):gsub('[\128-\191]','')) -- or #notes:match('(.-)'..Esc(capt_line)):gsub('[\128-\191]','')
+	or capt_line_st
 
--- selection is only visible when the window is active
--- but since in the CONTINUE loop in the main routine search dialogue window is active
--- text selection in the Notes window won't be apparent
--- it will become visible after the search dialogue is closed
--- and the floating Notes window is put into focus or immediately
--- if the Notes window is docked because main window which the dock is a child of gets into focus
--- https://learn.microsoft.com/en-us/windows/win32/controls/em-setsel
-SendMsg(notes_wnd, 0x00B1, capt_st, capt_st+capt_len) -- EM_SETSEL 0x00B1, wParam capt_st, lParam capt_st+capt_len
---	r.BR_Win32_SetFocus(r.GetMainHwnd()) -- removing focus clears selection
+	local capt_len = capt_end+1-capt_st -- +1 to get accurate length otherwise the last character isn't counted
+
+	local capt_st = capt_line_st+capt_st-1 -- global capture start // -1 to start selection before the first capture character so it's included
+
+	-- selection is only visible when the window is active
+	-- but since in the CONTINUE loop in the main routine search dialogue window is active
+	-- text selection in the Notes window won't be apparent
+	-- it will become visible after the search dialogue is closed
+	-- and the floating Notes window is put into focus or immediately
+	-- if the Notes window is docked because main window which the dock is a child of gets into focus
+	-- https://learn.microsoft.com/en-us/windows/win32/controls/em-setsel
+	SendMsg(notes_wnd, 0x00B1, capt_st, capt_st+capt_len) -- EM_SETSEL 0x00B1, wParam capt_st, lParam capt_st+capt_len
+	--	r.BR_Win32_SetFocus(r.GetMainHwnd()) -- removing focus clears selection
+
+	end
 
 end
 
@@ -795,6 +1096,9 @@ end
 function RESTART_FROM_DEFER(cmdID)
 r.Main_OnCommand(cmdID, 0)
 end
+
+
+---------------- MAIN ROUTINE START ----------------
 
 
 NOTES_TRACK_NAME = #NOTES_TRACK_NAME:gsub(' ','') > 0 and NOTES_TRACK_NAME
@@ -854,7 +1158,7 @@ local tr_idx, start_line_idx
 			-- starting CONTINUE loop in this scenario will set off endless loop even though a track gets selected
 			-- inside Get_SWS_Track_Notes_Caret_Line_Idx()
 			-- that's because loading Notes of a track just selected into the Notes window takes some time
-			-- but by the time this function is triggered again, this time within the CONTINUE loop, 
+			-- but by the time this function is triggered again, this time within the CONTINUE loop,
 			-- they still won't be accessible, so notes_wnd var will remain nil
 			-- and in turn will again trigger CONTINUE loop;
 			-- DEFERRED_WAIT() puts the script on hold for 100 ms which is enough for the selected track notes
@@ -866,14 +1170,13 @@ local tr_idx, start_line_idx
 			else -- Notes window is closed
 			goto CONTINUE
 			end
-		end 
+		end
 	end
 
 
 ----------- S E A R C H  D I A L O G U E  S E T T I N G S ----------------
 
 local search_sett = r.GetExtState(cmdID, 'SEARCH SETTINGS')
---local last_term, match_case, exact = search_sett:match('(.-)'..sep..'(.-)'..sep..'(.+)')--, search_sett:match(';(.-);'), search_sett:match(';(.+)$')
 local sep = '`'
 local headless_mode = #search_sett > 0 and r.GetArmedCommand() == cmdID_init
 local output_t, output
@@ -884,12 +1187,17 @@ local output_t, output
 	-- and is run from the start at each mouse click
 	if not headless_mode then
 
-	output_t, output = GetUserInputs_Alt('TRANSCRIPT SEARCH  (insert any character to enable settings)', 3, 'SEARCH TERM:,Match case (register):,Match exact word:', search_sett, sep)
+	output_t, output = GetUserInputs_Alt('TRANSCRIPT SEARCH  (insert any character to enable search settings)', 5, 'SEARCH TERM:,Match case (register):,Match exact word:,Enable replacement: ,Replace with:', search_sett, sep)
 
 	elseif #search_sett:gsub('[%s'..sep..']','') > 0 then
 	output_t = {}
+	--[[ WORKS BUT MORE VERBOSE THAN THE sring.match METHOD BELOW
+		for sett in (search_sett..sep):gmatch('[^'..sep..']*') -- adding trailing field separator so that gmatch pattern captures the last field content as well, but keeping original search_sett value intact
+		output_t[#output_t+1] = sett
+		end
+	]]
 	local patt = '(.-)'..sep
-	output_t = {(search_sett..sep):match(patt:rep(3))} -- adding trailing field separator so that all fields are captured with the pattern, repeating the pattern as many times are there're fields in the dialogue // alternative to gmatch
+	output_t = {(search_sett..sep):match(patt:rep(5))} -- adding trailing field separator so that all fields are captured with the pattern, repeating the pattern as many times are there're fields in the dialogue // alternative to gmatch
 	output = search_sett -- assign to output var because this is what's being saved as extended state below
 	end
 
@@ -904,13 +1212,46 @@ r.SetExtState(cmdID, 'SEARCH SETTINGS', output, false) -- persist false // keep 
 local ignore_case = not validate_output(output_t[2])
 local search_term = ignore_case and output_t[1]:lower() or output_t[1] -- convert to lower case if 'Match case' is not enabled
 local exact = validate_output(output_t[3])
---local replace_batch, replace_1by1 = output_t[4]:match('^0%W*$'), output_t[4]:match('^1%W*$')
---local replace_term = output_t[5]
+local replace_term = output_t[5]
+--local replace_mode = output_t[4]:match('^%W*%d%W*$') -- 0 in all Notes tracks, 1 in currently selected, 2 doing 1 by 1
+--local replace_in_all, replace_in_curr, replace_1by1 = replace_sett == '0', replace_sett == '1', replace_sett == '2'
+local replace_mode = #output_t[4]:gsub(' ','') > 0 and output_t[4]
 
 -------------------------------------------------------------------------
 
 
-local tr, tr_idx_old, tr_idx_new, capt_line_idx, capt_line, capt_st, capt_end = Search_Track_Notes(tr_t, tr_idx, start_line_idx, search_term, cmdID, ignore_case, exact) -- search_term
+	-- SEARCH AND REPLACE
+	if replace_mode then
+	local is_num = replace_mode:match('^%W*%d%W*$')
+	is_num = tonumber(replace_mode)
+		if not is_num or is_num and math.floor(is_num) ~= is_num or is_num < 0 or is_num > 2 then
+		r.MB('INVALID REPLACE MODE "'..output_t[4]..'".\n\nValid values are:\n\n0 — batch replace in all transcript tracks\n\n'
+		..'1 — batch replace in the only or the 1st\n       selected transcript track\n\n2 — replace word by word', 'ERROR', 0)
+		is_num = nil -- to prevent execution of Replace_In_Track_Notes() below, alternative to goto CONTINUE
+		end
+		if headless_mode then -- disable headless mode for replacement, which also prevents setting off endless CONTINUE loop in headless mode if replacement is enabled
+		r.ArmCommand(0,0) -- cmd is 0 to unarm all, section 0 Main
+		-- if headless mode is enabled the search dialogue won't load so if replacement is also enabled
+		-- this will cause its first execution in headless mode which is undesirable because user doesn't get visual feedback
+		-- of the cuerrent search settings, to prevent this Replace_In_Track_Notes() is separated by this condition;
+		-- the script will enter CONTINUE loop below anyway so returning to its start here is redundant
+		else
+			if not ignore_case and search_term == replace_term then -- only if ignore_case is true because otherwise if they're same the match and the replace term can still differ in their case so replacement will make sense
+			Error_Tooltip('\n\n the search and replacement \n\n\tterms are identical \n\n', 1, 1, 100) -- caps, spaced true, x is 100 to move the tooltip away from the cursor so it doesn't stand between the cursor and search/replace dialogue OK button and doesn't block the click
+			elseif is_num then
+			r.Undo_BeginBlock()
+			tr, tr_idx_old, tr_idx_new, capt_line_idx, capt_line, capt_st, capt_end, replace_cnt =
+			Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, search_term, replace_term, cmdID, ignore_case, exact, notes_wnd)
+			local undo = replace_mode == '0' and 'in entire transcript' or replace_mode == '1' and 'in selected track transcript' or ''
+			undo = replace_cnt and replace_cnt > 0 and 'Transcribing A: Replace '..search_term..' with '..replace_term..' '..undo
+			r.Undo_EndBlock(undo or r.Undo_CanUndo2(0) or '',-1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated if no replacements were made following Undo_BeginBlock(), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
+			end
+		end
+	-- SEARCH
+	else
+	tr, tr_idx_old, tr_idx_new, capt_line_idx, capt_line, capt_st, capt_end =
+	Search_Track_Notes(tr_t, tr_idx, start_line_idx, search_term, cmdID, ignore_case, exact) -- search_term
+	end
 
 	if tr then
 	r.SetOnlyTrackSelected(tr) -- select the track so its notes are dispayed in the Notes window
@@ -920,7 +1261,8 @@ local tr, tr_idx_old, tr_idx_new, capt_line_idx, capt_line, capt_st, capt_end = 
 		end
 	end
 
-t = {notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case}
+t = notes_wnd and {notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case, replace_mode} -- only initializing table var when there's a valid value, otherwise Scroll_SWS_Notes_Window() may get triggered inside DEFERRED_WAIT() without all arguments being valid which will result in errors, in particular when at the script launch there's no selected track, and invalid replacement mode has been selected and then the search dialogue was exited, which will leave the script running past this point, allowing t being initialized and trigger the function inside DEFERRED_WAIT() which will be running in order to update the Notes window content after track selection according to the conditions set above; alternatively 'goto CONTINUE' could be used in the replacement block above when replacement settings are invalid, to prevent t initialization in the first place
+
 
 	if tr and tr_t[tr_idx_old].tr == tr and not headless_mode then -- OR if tr_idx_old == tr_idx_new // if as a result of search track selection hasn't changed // only if the script is unarmed, i.e. the seatch doesn't run headlessly otherwise it needs more time to process scrolling which will be done with DEFERRED_WAIT() in the next block
 	Scroll_SWS_Notes_Window(table.unpack(t))
@@ -936,6 +1278,8 @@ t = {notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case}
 	r.SetExtState(cmdID, 'RELAUNCHED', '', false) -- persist false // store to condition re-running Get_SWS_Track_Notes_Caret_Line_Idx() after defer loop has exited and the script has been relaunched via atexit() in order to re-get notes_wnd handle needed for Notes window scrolling, because when the script is relaunched all variables are reset
 	time_init = r.time_precise()
 	DEFERRED_WAIT()
+	elseif replace_mode then -- if after batch replacement with Replace_In_Track_Notes() Notes window scroll position doesn't require restoration because selected Notes track notes haven't been updated, tr and tr_idx_old vars will be nil and this block will be activated
+	goto CONTINUE
 	end
 
 
