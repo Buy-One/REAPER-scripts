@@ -3,8 +3,8 @@ ReaScript name: BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMe
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.5
-Changelog: 1.5 	#Changed name of the script BuyOne_Transcribing A - Search the transcript.lua
-		to BuyOne_Transcribing A - Search or replace text in the transcript.lua
+Changelog: 1.5 	#Changed name of the script BuyOne_Transcribing A - Search the transcript
+		to BuyOne_Transcribing A - Search or replace text in the transcript
 		#Renamed the 'SEARCH' button into 'SEARCH or replace' to reflect new script
 		functionality
 	   1.4 	#Added button for the script BuyOne_Transcribing A - Search the transcript.lua
