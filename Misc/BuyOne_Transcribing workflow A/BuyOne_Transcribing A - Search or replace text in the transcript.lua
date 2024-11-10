@@ -7,6 +7,8 @@ Changelog: 1.6 	#Fixed headless mode
 		#Updated replacement functionality description in the 'About' text
 		#Made search circular within the notes of the only track
 		#Updated search functionality description in the 'About' text
+		#Fixed calculation of the match location for highlighting 
+		when there're more than one within the same line
 	   1.5 	#Added text replacement functionality
 		#Renamed the script to reflect the new feature
 		#Updated 'About' text
@@ -678,7 +680,7 @@ function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, sear
 	-- to exclude unicode extra bytes before and within capture
 	-- so that 1 character corresponds to 1 byte because text highliting inside Scroll_SWS_Notes_Window() is based on characters
 	local st, fin = line:find(Esc(replace_term), st)
-	local pre_capt_extra = select(2, line:match('(.-)'..Esc(replace_term)):gsub('[\128-\191]',''))
+	local pre_capt_extra = select(2, line:sub(1,st-1):gsub('[\128-\191]',''))
 	local capt_extra = select(2, replace_term:gsub('[\128-\191]',''))
 	-- to exclude padding characters when searching exact match
 	-- to exclude padding characters when searching exact match
@@ -959,7 +961,7 @@ function Search_Track_Notes(tr_t, tr_idx, start_line_idx, search_term, cmdID, ig
 	-- used inside search_notes()
 	-- to exclude unicode extra bytes before and within capture
 	-- so that 1 character corresponds to 1 byte because text highliting inside Scroll_SWS_Notes_Window() is based on characters
-	local pre_capt_extra = select(2, line:match('(.-)'..Esc(capt)):gsub('[\128-\191]',''))
+	local pre_capt_extra = select(2, line:sub(1,st-1):gsub('[\128-\191]',''))
 	local capt_extra = select(2, capt:gsub('[\128-\191]',''))
 	-- to exclude padding characters when searching exact match
 	-- because padding characters are included in the capture start and end values despite being outside of it
