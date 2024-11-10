@@ -4,6 +4,7 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.6
 Changelog: 1.6  #Fixed headless mode
+		#Updated replacement functionality description
 	   1.5 	#Added text replacement functionality
 		#Renamed the script to reflect the new feature
 		#Updated 'About' text
@@ -127,6 +128,10 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	The 'Enable replacement' setting is not stored between script launches 
 	for safety reasons to prevent inadvertent replacement, even though the 
 	rest of the settings are kept.
+
+	Headless mode is not supported in replacement functionality. If after
+	exiting the search dialogue the script is armed and executed again
+	the search will be performed.
 	
 	Of course replacements in the transctipt can also be made outside 
 	of REAPER and the SWS Notes window with any 3d party software.
