@@ -9,6 +9,8 @@ Changelog: 1.6 	#Fixed headless mode
 		#Updated search functionality description in the 'About' text
 		#Fixed calculation of the match location for highlighting 
 		when there're more than one within the same line
+		#Ensured that in word by word replacement mode (code 2) replacements
+		continue only until all matches have been replaced
 	   1.5 	#Added text replacement functionality
 		#Renamed the script to reflect the new feature
 		#Updated 'About' text
@@ -128,7 +130,14 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	Notes window scroll position in such cases.
 
 	Since modes 0 and 1 could be resource intensive REAPER may freeze
-	for a number of seconds while the replacements are being made.
+	for a number of seconds while the replacements are being made.  
+	In mode 2 replacement is circular like the search until all matches 
+	have been found and replaced.  
+	In all 3 replacement modes if replacement is attempted on a long 
+	transcript where all matches have been replaced or when the transcript 
+	contains no matches or the distance between them is significant, REAPER 
+	may freeze for a number of seconds until the script will have parsed 
+	the entire transcript.
 	
 	The 'Enable replacement' setting is not stored between script launches 
 	for safety reasons to prevent inadvertent replacement, even though the 
@@ -717,17 +726,19 @@ function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, sear
 	local transcr = transcr or line -- keeping original line to be able to pass it into the recursive instance of the function
 	local replace_term = replace_term:gsub('%%','%%%%') -- must be escaped if contains % which is unlikley but just in case
 	local fin, replace_cnt = pos_in_line, 0 -- pos_in_line (assigned to fin var) will be valid and st is only needed in one-by-one mode, fin is needed in one-by-one mode or otherwise to prevent search from getting stuck, see comment below
-	fin = timestamp and fin > #timestamp and fin - #timestamp or fin -- subtract length of timestamp portion from fin value so that it's counted from the beginning of the segment transcript because when fin it returned and stored in 'LAST SEARCH' data it's counted from the actual line start which includes the time stamp // ONLY RELEVANT FOR TRANSCRIBING SCRIPTS WHERE THERE'S TIME STAMP IN THE TEXT
+	fin = timestamp and fin > #timestamp and fin - #timestamp or fin -- subtract length of timestamp portion from fin value so that it's counted from the beginning of the segment transcript because when fin is returned and stored in 'LAST SEARCH' data it's counted from the actual line start which includes the time stamp // ONLY RELEVANT FOR TRANSCRIBING SCRIPTS WHERE THERE'S TIME STAMP IN THE TEXT
 	local capt, st, count
 
 		if not exact then
 		capt, st, fin = get_capture(transcr, search_term, ignore_case, exact, fin, rerun) -- fin is returned to be passed as new start index inside string.find because if the search and replacement terms only differ in case while ignore_case is true, at each loop cycle string.find will get stuck at the first replacement leading to an endless loop because count and capt both will keep being valid; rerun arg is relevant in recursive run of the function to search after changing case of non-ASCII characters // st is only needed in one-by-one mode
 			repeat
 				if capt then
-				capt = Esc(capt)
-				transcr, count = transcr:gsub(capt, replace_term, 1) -- replace capture because it was retuned with the correct case, doing it 1 by 1 which is presumably safer and more reliable because string.gsub has a limit of 32 replacements
-				replace_cnt = replace_cnt+count
-					if one_by_one then break end
+					if capt ~= replace_term then -- only replace a match which hasn't been replaced yet; when all have been replaced a message of no replacements will be shown
+					capt = Esc(capt)
+					transcr, count = transcr:gsub(capt, replace_term, 1) -- replace capture because it was retuned with the correct case, doing it 1 by 1 which is presumably safer and more reliable because string.gsub has a limit of 32 replacements
+					replace_cnt = replace_cnt+count
+						if one_by_one then break end
+					end	
 				capt, st, fin = get_capture(transcr, search_term, ignore_case, exact, fin, rerun) -- prime for the next cycle
 				else break end
 			until count == 0 or not capt
@@ -738,17 +749,28 @@ function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, sear
 			for _, patt in ipairs({pad..s..pad, pad..s..'$', '^'..s..pad}) do
 			local capt_tmp
 			capt, st, fin, capt_low = get_capture(transcr, patt, ignore_case, exact, fin, rerun) -- fin is returned to be passed as new start index inside string.find because if the search and replacement terms only differ in case while ignore_case is true, at each loop cycle string.find will get stuck at the first replacement leading to an endless loop because count and capt both will keep being valid; rerun arg is relevant in recursive run of the function to search after changing case of non-ASCII characters // st is only needed in one-by-one mode // capt_low is the capture after lowering the case when ignore_case is true, will be used to construct replace pattern for replacement of the original capture returned as capt which maintains the original case of the match so it can be found and replaced with gsub
+				
 				repeat
+				
 					if capt then
-					-- if ignore_case is true, lower the s (search term) case to match its case inside capt_low string, which in this event will be a lower case copy of capt string which is the original match, to be able to find it and replace within capt_low thereby constructing a replacement pattern for the original match in the source string
-					s = ignore_case and (rerun and convert_case_in_unicode(s) or s:lower()) or s
-					local repl_patt = capt_low:gsub(s, replace_term) -- first replace the target word inside the capture to keep all punctuation characters included in capt
-					capt, repl_patt = Esc(capt), repl_patt:gsub('%%','%%%%') -- repl_patt must be escaped if contains % which is unlikley but just in case
-					transcr, count = transcr:gsub(capt, repl_patt, 1) -- replace along with the originally captured punctuation marks, doin it 1 by 1 which is presumably safer and more reliable because string.gsub has a limit of 32 replacements
-					replace_cnt = replace_cnt+count
-						if one_by_one then break end
+					
+						if not capt:match(Esc(replace_term)) then -- only replace a match which hasn't been replaced yet, using string.match because the capture will contain surrounding characters; when all have been replaced a message of no replacements will be shown
+						
+						-- if ignore_case is true, lower the s (search term) case to match its case inside capt_low string, which in this event will be a lower case copy of capt string which is the original match, to be able to find it and replace within capt_low thereby constructing a replacement pattern for the original match in the source string
+						s = ignore_case and (rerun and convert_case_in_unicode(s) or s:lower()) or s
+						local repl_patt = capt_low:gsub(s, replace_term) -- first replace the target word inside the capture to keep all punctuation characters included in capt
+						capt, repl_patt = Esc(capt), repl_patt:gsub('%%','%%%%') -- repl_patt must be escaped if contains % which is unlikley but just in case
+						transcr, count = transcr:gsub(capt, repl_patt, 1) -- replace along with the originally captured punctuation marks, doin it 1 by 1 which is presumably safer and more reliable because string.gsub has a limit of 32 replacements
+						replace_cnt = replace_cnt+count
+							
+							if one_by_one then break end
+						
+						end
+					
 					capt, st, fin, capt_low = get_capture(transcr, patt, ignore_case, exact, fin, rerun) -- prime for the next cycle
+					
 					else break end
+					
 				until count == 0 or not capt
 
 				if capt and one_by_one then break end -- exit the 'for' loop
@@ -874,12 +896,13 @@ local replace_cnt, cnt, sel_tr_idx = 0
 
 
 -- Construct result message ------
-local repl_dest = in_all_tracks and ' \n\n in all '..NOTES_TRACK_NAME..' tracks'
-or in_sel_track and ' \n\n in selected '..NOTES_TRACK_NAME..' track' --or '' -- empty string in one-by-one mode
-local	mess = not one_by_one and replace_cnt > 0
-and math.floor(replace_cnt)..' replacements \n\n have been made'..repl_dest
+local mess = ' replacements \n\n have been made'
+local repl_dest = in_all_tracks and ' \n\n in all '..NOTES_TRACK_NAME..' tracks '
+or in_sel_track and ' \n\n in selected '..NOTES_TRACK_NAME..' track ' --or '' -- empty string in one-by-one mode
+mess = not one_by_one and replace_cnt > 0
+and math.floor(replace_cnt)..mess..repl_dest
 or (one_by_one and replace_cnt == 0 or not one_by_one)
-and 'no replacements have been made'..(one_by_one and '' or '\n\n '..repl_dest) -- in one-by-one mode only display message if no replacements have been made, in one-by-one mode t could be used as a condition instead of replace_cnt
+and 'no'..mess..(one_by_one and '' or repl_dest)..'\n\n or all matches \n\n have been replaced.' -- in one-by-one mode only display message if no replacements have been made, in one-by-one mode t could be used as a condition instead of replace_cnt in the previous line
 	if mess then
 	Error_Tooltip('\n\n '..mess..' \n\n', 1, 1, 100) -- caps, spaced true, x is 100 to move the tooltip away from the cursor so it doesn't stand between the cursor and search/replace dialogue OK button and doesn't block the click
 	end
@@ -1046,6 +1069,7 @@ local t, tr, tr_idx_new = {}
 	end
 
 end
+
 
 
 function Scroll_SWS_Notes_Window(notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case, replace_mode)
