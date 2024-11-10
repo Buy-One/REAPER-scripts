@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Transcribing A - Search or replace text in the transcript.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.5
-Changelog: 1.5 	#Added text replacement functionality
+Version: 1.6
+Changelog: 1.6  #Fixed headless mode
+	   1.5 	#Added text replacement functionality
 		#Renamed the script to reflect the new feature
 		#Updated 'About' text
 	   1.4	#Fixed search match highlihgting in notes which were copied and pasted from another window
@@ -923,7 +924,7 @@ function Search_Track_Notes(tr_t, tr_idx, start_line_idx, search_term, cmdID, ig
 		st, fin, capt = line:find('('..s..')', pos_in_line)
 		else
 		-- patterns where the search term is only allowed to be padded with non-alphanumeric characters if 'Match exact word' option is enabled // the capture start and end return values from string.find include the padding even if it's outside of the capture so to simplify start and end calculation for highlighting with Scroll_SWS_Notes_Window() it makes sense to include the padding in the capture to offset after the fact inside offset_capture_indices() otherwise there's no easy way to ascertain whether there was any padding // 3 capture patterns are used because pattern with repetition * operator, e.g. '%W*'..s..'%W*', will match search term contained within words as well because '%W*' will also match alphanumeric characters hence unsuitable, start/end anchors are also meant to exclude alphanumeric characters in case the search term is only padded with non-alphanumeric character on one side
-		local pad = '[\0-\47\58-\64\91-\96\123-191]' -- use punctuation marks explicitly by referring to their code points instead of %W because when the search term is surrounded with Unicode characters %W will match all non-ASCII characters in addition to punctuation marks so in these cases pattern such as '%W'..s..'%W' will fail to produce exact match and will return non-exact matches as well, the pattern range also includes control characters beyond code 127 which is the end of ASCII range, codes source https://www.charset.org/utf-8
+		local pad = '[\0-\47\58-\64\91-\96\123-191]' -- use punctuation marks explicitly by referring to their code points instead of %W because when the search term is surrounded with non-ASCII characters %W will match all non-ASCII characters in addition to punctuation marks so in these cases pattern such as '%W'..s..'%W' will fail to produce exact match and will return non-exact matches as well, the pattern range also includes control characters beyond code 127 which is the end of ASCII range, codes source https://www.charset.org/utf-8
 		--	for _, patt in ipairs({'%W'..s..'%W', '%W'..s..'$', '^'..s..'%W'}) do
 			for _, patt in ipairs({pad..s..pad, pad..s..'$', '^'..s..pad}) do
 			st, fin, capt = line:find('('..patt..')', pos_in_line)
@@ -1091,6 +1092,11 @@ end
 
 
 function DEFERRED_WAIT()
+-- when t is invalid the function is used to get the Notes window pointer after track selection 
+-- in the scenario where no track is initially selected while the Notes window is open,
+-- both with Get_SWS_Track_Notes_Caret_Line_Idx()
+-- when t is valid the function is used to scroll the Notes window and select text inside it
+-- when switching track selection
 	if r.time_precise() - time_init > 0.1 then -- 0.03 also works but leaving 100 ms for a leeway
 		if t then
 		Scroll_SWS_Notes_Window(table.unpack(t)) -- table contains notes_wnd, tr, capt_line_idx, capt_line, capt_st, capt_end, ignore_case
@@ -1182,14 +1188,14 @@ local tr_idx, start_line_idx
 	end
 
 	
+local search_sett = r.GetExtState(cmdID, 'SEARCH SETTINGS')
+local sep = '`'
+local headless_mode = #search_sett > 0 and r.GetArmedCommand() == cmdID_init -- initialized outside of the next block to be accessible inside 'if time_init' block at the end, otherwise the script will run in a loop in the headless mode
+local output_t, output	
+	
 	if not time_init then -- only run if DEFERRED_WAIT() launched above to get Motes window when initially no track was selected has exited, time_init will be reset inside DEFERRED_WAIT(); the condition is needed because after DEFERRED_WAIT() launch the routine continues to run until the end but without window handle no window operations will be performed which is a flaw
 
 	----------- S E A R C H  D I A L O G U E  S E T T I N G S ----------------
-
-	local search_sett = r.GetExtState(cmdID, 'SEARCH SETTINGS')
-	local sep = '`'
-	local headless_mode = #search_sett > 0 and r.GetArmedCommand() == cmdID_init
-	local output_t, output
 
 	local i = 0
 	search_sett = last_search_data and search_sett or search_sett:gsub('[^'..sep..']*', function(c) i = i+1 if i == 4 then return '' end end) -- disable 'Enable replacement' option by removing the flag from the stored search settings so that every time the script is launched in search rather than in replace mode for safety reasons, when the script is launched last_search_data is false because the data is deleted each time the search dialogue is exited
@@ -1235,37 +1241,29 @@ local tr_idx, start_line_idx
 
 		-- SEARCH AND REPLACE
 		if replace_mode then
-			if headless_mode then -- disable headless mode for replacement, which also prevents setting off endless CONTINUE loop in headless mode if replacement is enabled
-			r.ArmCommand(0,0) -- cmd is 0 to unarm all, section 0 Main
-			-- if headless mode is enabled the search dialogue won't load so if replacement is also enabled
-			-- this will cause its first execution in headless mode which is undesirable because user doesn't get visual feedback
-			-- of the cuerrent search settings, to prevent this Replace_In_Track_Notes() is separated by this condition;
-			-- the script will enter CONTINUE loop below anyway so returning to its start here is redundant
+		local valid_vals = 'Valid values are:\n\n0 — batch replace in all transcript tracks\n\n'
+		..'1 — batch replace in the only or the 1st\n       selected transcript track\n\n2 — replace word by word'
+		local pad = '[\0-\47\58-\64\91-\96\123-191]*' -- using punctuation marks explicitly by referring to their code points instead of %W because when the input contains non-ASCII characters %W will match all non-ASCII characters in addition to punctuation marks so in these cases pattern such as '%W*%w%W*' will fail to produce exact match and will return non-exact matches as well, the pattern range also includes control characters beyond code 127 which is the end of ASCII range, codes source https://www.charset.org/utf-8
+		local is_num = replace_mode:match('^'..pad..'[\1-\255]+'..pad..'$') -- accounting for non-ASCII input by the user, otherwise is_num will end up being nil
+			if is_num:match('[hH]') then
+			r.MB(valid_vals,'HELP',0)
+			is_num = nil -- to prevent execution of Replace_In_Track_Notes() below, alternative to goto CONTINUE
 			else
-			local valid_vals = 'Valid values are:\n\n0 — batch replace in all transcript tracks\n\n'
-			..'1 — batch replace in the only or the 1st\n       selected transcript track\n\n2 — replace word by word'
-			local pad = '[\0-\47\58-\64\91-\96\123-191]*' -- using punctuation marks explicitly by referring to their code points instead of %W because when the input contains non-ASCII characters %W will match all non-ASCII characters in addition to punctuation marks so in these cases pattern such as '%W*%w%W*' will fail to produce exact match and will return non-exact matches as well, the pattern range also includes control characters beyond code 127 which is the end of ASCII range, codes source https://www.charset.org/utf-8
-			local is_num = replace_mode:match('^'..pad..'[\1-\255]+'..pad..'$') -- accounting for non-ASCII input by the user, otherwise is_num will end up being nil
-				if is_num:match('[hH]') then
-				r.MB(valid_vals,'HELP',0)
+				is_num = tonumber(replace_mode)
+				if not is_num or is_num and math.floor(is_num) ~= is_num or is_num < 0 or is_num > 2 then
+				r.MB('INVALID REPLACE MODE "'..output_t[4]..'".\n\n'..valid_vals, 'ERROR', 0)
 				is_num = nil -- to prevent execution of Replace_In_Track_Notes() below, alternative to goto CONTINUE
-				else
-					is_num = tonumber(replace_mode)
-					if not is_num or is_num and math.floor(is_num) ~= is_num or is_num < 0 or is_num > 2 then
-					r.MB('INVALID REPLACE MODE "'..output_t[4]..'".\n\n'..valid_vals, 'ERROR', 0)
-					is_num = nil -- to prevent execution of Replace_In_Track_Notes() below, alternative to goto CONTINUE
-					end
 				end
-				if not ignore_case and search_term == replace_term then -- only if ignore_case is true because otherwise if they're same the match and the replace term can still differ in their case so replacement will make sense
-				Error_Tooltip('\n\n the search and replacement \n\n\tterms are identical \n\n', 1, 1, 100) -- caps, spaced true, x is 100 to move the tooltip away from the cursor so it doesn't stand between the cursor and search/replace dialogue OK button and doesn't block the click
-				elseif is_num then
-				r.Undo_BeginBlock()
-				tr, tr_idx_old, tr_idx_new, capt_line_idx, capt_line, capt_st, capt_end, replace_cnt =
-				Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, search_term, replace_term, cmdID, ignore_case, exact, notes_wnd)
-				local undo = replace_mode == '0' and 'in entire transcript' or replace_mode == '1' and 'in selected track transcript' or ''
-				undo = replace_cnt and replace_cnt > 0 and 'Transcribing A: Replace '..search_term..' with '..replace_term..' '..undo
-				r.Undo_EndBlock(undo or r.Undo_CanUndo2(0) or '',-1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated if no replacements were made following Undo_BeginBlock(), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
-				end
+			end
+			if not ignore_case and search_term == replace_term then -- only if ignore_case is true because otherwise if they're same the match and the replace term can still differ in their case so replacement will make sense
+			Error_Tooltip('\n\n the search and replacement \n\n\tterms are identical \n\n', 1, 1, 100) -- caps, spaced true, x is 100 to move the tooltip away from the cursor so it doesn't stand between the cursor and search/replace dialogue OK button and doesn't block the click
+			elseif is_num then
+			r.Undo_BeginBlock()
+			tr, tr_idx_old, tr_idx_new, capt_line_idx, capt_line, capt_st, capt_end, replace_cnt =
+			Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, search_term, replace_term, cmdID, ignore_case, exact, notes_wnd)
+			local undo = replace_mode == '0' and 'in entire transcript' or replace_mode == '1' and 'in selected track transcript' or ''
+			undo = replace_cnt and replace_cnt > 0 and 'Transcribing A: Replace '..search_term..' with '..replace_term..' '..undo
+			r.Undo_EndBlock(undo or r.Undo_CanUndo2(0) or '',-1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated if no replacements were made following Undo_BeginBlock(), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
 			end
 		-- SEARCH
 		else
