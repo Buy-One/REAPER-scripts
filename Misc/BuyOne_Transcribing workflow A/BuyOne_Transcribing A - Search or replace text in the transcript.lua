@@ -3,8 +3,10 @@ ReaScript name: BuyOne_Transcribing A - Search or replace text in the transcript
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.6
-Changelog: 1.6  #Fixed headless mode
-		#Updated replacement functionality description
+Changelog: 1.6 	#Fixed headless mode
+		#Updated replacement functionality description in the 'About' text
+		#Made search circular within the notes of the only track
+		#Updated search functionality description in the 'About' text
 	   1.5 	#Added text replacement functionality
 		#Renamed the script to reflect the new feature
 		#Updated 'About' text
@@ -58,8 +60,9 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	with fields already filled out with the last search settings. 
 	To continue the search press OK button.  
 	The search is curcular, after parsing the transcript part stored
-	in the notes of last Notes track it loops around to the 1st
-	Notes track.
+	in the notes of last Notes track it loops back to the 1st
+	Notes track, or, if there's a single track, after reaching end
+	of its Notes it loops back to its start.
 	
 	In order to enable the search settings 'Match case' and
 	'Match exact word' insert any character in the corresponding
@@ -853,7 +856,7 @@ local replace_cnt, cnt, sel_tr_idx = 0
 	end
 
 
-	if one_by_one and (tr_idx > 1 or pos_in_line > 1) and not t then -- OR not sel_tr_idx // if in one-by-one mode after searching from the notes track other than the 1st or from the 1st track but not from its 1st line the search term wasn't found, restart from the 1st line of the 1st track and continue until the track the search originally started from in case it didn't start from line 1 so not entire notes of that track have been scanned
+	if one_by_one and (tr_idx > 1 or start_line_idx > 1 or pos_in_line > 1) and not t then -- OR not sel_tr_idx // if in one-by-one mode after searching from the notes track other than the 1st or from the 1st or the only track but not from its 1st line or from the 1st line and not from its very start the search term wasn't found, restart from the 1st line of the 1st or the only track and continue until the track the search originally started from (which could be the same track if there's only one) to scan the so far non-scanned part of the transcript
 		for i=1, #tr_t do
 		tr = tr_t[i].tr
 		local notes = r.NF_GetSWSTrackNotes(tr)
@@ -1020,7 +1023,7 @@ local t, tr, tr_idx_new = {}
 	end
 
 
-	if (tr_idx > 1 or pos_in_line > 1) and not t then -- OR not tr_idx_new // if after searching from the notes track other than the 1st or from the 1st track but not from its 1st line the search term wasn't found, restart from the 1st line of the 1st track and continue until the track the search originally started from in case it didn't start from line 1 so not entire notes of that track have been scanned
+	if (tr_idx > 1 or start_line_idx > 1 or pos_in_line > 1) and not t then -- OR not tr_idx_new // if after searching from the notes track other than the 1st or from the 1st or the only track but not from its 1st line or from the 1st line but not from its very beginning, restart from the 1st line of the 1st or the only track and continue until the track the search originally started from (which could be the same track if there's only one) to scan the so far non-scanned part of the transcript // the multitude of conditions is meant to ensure that the search isn't re-run when the search term hasn't been found after scanning the entire transcript for the sake efficiency
 		for i=1, tr_idx do
 		tr = tr_t[i].tr
 		local notes = r.NF_GetSWSTrackNotes(tr)
