@@ -310,7 +310,17 @@ About:	The script is part of the Transcribing B workflow set of scripts
 	such as segments splitting and merging is conveniently reflected 
 	in the Notes.
 	
-	
+	Managing segments transcript in the Region/Marker Manager is less
+	convenient but possible. Region name field in the Manager becomes 
+	inaccessible for keyboard input as soon as there's mouse click 
+	outside of it. To prevent that while listening to a segment in a 
+	loop in order to transcribe it, which may require stopping and 
+	resuming playback, use action 'Transport: Play/pause' activating 
+	it with the default shortcut Ctrl + Space or with another more 
+	convenient shortcut which is ignored inside the Manager, such as 
+	Alt + /
+
+
 	If after you started your project you need to move the transcript
 	media source later or earlier (after trimming from the beginning)
 	on the time line in order to lengthen/shorten the time between the 
