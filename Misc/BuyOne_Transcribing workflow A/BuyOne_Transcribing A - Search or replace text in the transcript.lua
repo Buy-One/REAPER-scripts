@@ -3,7 +3,8 @@ ReaScript name: BuyOne_Transcribing A - Search or replace text in the transcript
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.7
-Changelog: 1.7 	#Improved handling of invalid replacement mode
+Changelog: 1.7 	#Imroved capture of replacement mode code
+		#Improved handling of invalid replacement mode code
 	   1.6 	#Fixed headless mode
 		#Updated replacement functionality description in the 'About' text
 		#Made search circular within the notes of the only track
@@ -1275,8 +1276,7 @@ local output_t, output
 		if replace_mode then
 		local valid_vals = 'Valid values are:\n\n0 — batch replace in all transcript tracks\n\n'
 		..'1 — batch replace in the only or the 1st\n       selected transcript track\n\n2 — replace word by word'
-		local pad = '[\0-\47\58-\64\91-\96\123-191]*' -- using punctuation marks explicitly by referring to their code points instead of %W because when the input contains non-ASCII characters %W will match all non-ASCII characters in addition to punctuation marks so in these cases pattern such as '%W*%w%W*' will fail to produce exact match and will return non-exact matches as well, the pattern range also includes control characters beyond code 127 which is the end of ASCII range, codes source https://www.charset.org/utf-8
-		local is_num = replace_mode:match('^'..pad..'[\1-\255]'..pad..'$') -- accounting for non-ASCII input by the user, otherwise is_num will end up being nil
+		local is_num = replace_mode:match('^%s*([\1-\255])%s*$') -- accounting for non-ASCII input by the user, otherwise is_num will end up being nil, only allowing padding with spaces
 			if is_num and is_num:match('[hH]') then
 			r.MB(valid_vals,'HELP',0)
 			is_num = nil -- to prevent execution of Replace_In_Track_Notes() below, alternative to goto CONTINUE
