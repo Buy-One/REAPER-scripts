@@ -693,9 +693,6 @@ function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, sear
 	local st, fin = line:find(Esc(replace_term), st)
 	local pre_capt_extra = select(2, line:sub(1,st-1):gsub('[\128-\191]',''))
 	local capt_extra = select(2, replace_term:gsub('[\128-\191]',''))
-	-- to exclude padding characters when searching exact match
-	-- to exclude padding characters when searching exact match
-	-- because padding characters are included in the capture start and end values despite being outside of it
 	return st - pre_capt_extra, fin, fin - pre_capt_extra - capt_extra -- returning both original byte based fin value and adjusted character based one, the first is for storage as 'LAST SEARCH' data, the second is for text highlighting inside Scroll_SWS_Notes_Window()
 	end
 
