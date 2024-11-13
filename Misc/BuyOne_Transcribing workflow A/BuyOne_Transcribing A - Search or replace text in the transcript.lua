@@ -686,7 +686,7 @@ function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, sear
 -- segment time stamps must be excluded from search/replacement
 
 
-	local function get_replace_term_bounds(st, line, replace_term, exact)
+	local function get_replace_term_bounds(st, line, replace_term)
 	-- used inside replace_capture()
 	-- to exclude unicode extra bytes before and within capture
 	-- so that 1 character corresponds to 1 byte because text highliting inside Scroll_SWS_Notes_Window() is based on characters
