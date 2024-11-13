@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Transcribing A - Search or replace text in the transcript.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.7
-Changelog: 1.7 	#Imroved capture of replacement mode code
+Version: 1.8
+Changelog: 1.8	#Improved search in cases where there're several matches in a segment
+	   1.7 	#Imroved capture of replacement mode code
 		#Improved handling of invalid replacement mode code
 	   1.6 	#Fixed headless mode
 		#Updated replacement functionality description in the 'About' text
@@ -745,7 +746,7 @@ function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, sear
 		-- patterns where the search term is only allowed to be padded with non-alphanumeric characters if 'Match exact word' option is enabled // 3 capture patterns are used because pattern with repetition * operator, e.g. '%W*'..s..'%W*', will match search term contained within words as well because '%W*' will also match alphanumeric characters hence unsuitable, start/end anchors are also meant to exclude alphanumeric characters in case the search term is only padded with non-alphanumeric character on one side
 		local pad = '[\0-\47\58-\64\91-\96\123-191]' -- use punctuation marks explicitly by referring to their code points instead of %W because when the search term is surrounded with non-ASCII characters %W will match all non-ASCII characters in addition to punctuation marks so in these cases pattern such as '%W'..s..'%W' will fail to produce exact match and will return non-exact matches as well, the pattern range also includes control characters beyond code point 127 which is the end of ASCII range, codes source https://www.charset.org/utf-8
 		local s = Esc(search_term)
-			for _, patt in ipairs({pad..s..pad, pad..s..'$', '^'..s..pad}) do
+			for _, patt in ipairs({'^'..s..pad, pad..s..pad, pad..s..'$'}) do -- in this order of captures, because if there're several matches in the line the one at the very beginning will be ignored in favor of the later ones if '^'..s..pad pattern is not the 1st
 			local capt_tmp
 			capt, st, fin, capt_low = get_capture(transcr, patt, ignore_case, exact, fin, rerun) -- fin is returned to be passed as new start index inside string.find because if the search and replacement terms only differ in case while ignore_case is true, at each loop cycle string.find will get stuck at the first replacement leading to an endless loop because count and capt both will keep being valid; rerun arg is relevant in recursive run of the function to search after changing case of non-ASCII characters // st is only needed in one-by-one mode // capt_low is the capture after lowering the case when ignore_case is true, will be used to construct replace pattern for replacement of the original capture returned as capt which maintains the original case of the match so it can be found and replaced with gsub
 				
@@ -957,8 +958,8 @@ function Search_Track_Notes(tr_t, tr_idx, start_line_idx, search_term, cmdID, ig
 		else
 		-- patterns where the search term is only allowed to be padded with non-alphanumeric characters if 'Match exact word' option is enabled // the capture start and end return values from string.find include the padding even if it's outside of the capture so to simplify start and end calculation for highlighting with Scroll_SWS_Notes_Window() it makes sense to include the padding in the capture to offset after the fact inside offset_capture_indices() otherwise there's no easy way to ascertain whether there was any padding // 3 capture patterns are used because pattern with repetition * operator, e.g. '%W*'..s..'%W*', will match search term contained within words as well because '%W*' will also match alphanumeric characters hence unsuitable, start/end anchors are also meant to exclude alphanumeric characters in case the search term is only padded with non-alphanumeric character on one side
 		local pad = '[\0-\47\58-\64\91-\96\123-191]' -- use punctuation marks explicitly by referring to their code points instead of %W because when the search term is surrounded with non-ASCII characters %W will match all non-ASCII characters in addition to punctuation marks so in these cases pattern such as '%W'..s..'%W' will fail to produce exact match and will return non-exact matches as well, the pattern range also includes control characters beyond code 127 which is the end of ASCII range, codes source https://www.charset.org/utf-8
-		--	for _, patt in ipairs({'%W'..s..'%W', '%W'..s..'$', '^'..s..'%W'}) do
-			for _, patt in ipairs({pad..s..pad, pad..s..'$', '^'..s..pad}) do
+		--	for _, patt in ipairs({'^'..s..'%W','%W'..s..'%W', '%W'..s..'$'}) do
+			for _, patt in ipairs({'^'..s..pad, pad..s..pad, pad..s..'$'}) do -- in this order of captures, because if there're several matches in the line the one at the very beginning will be ignored in favor of the later ones if '^'..s..pad pattern is not the 1st
 			st, fin, capt = line:find('('..patt..')', pos_in_line)
 				if capt then break end -- OR st OR fin BUT capture is required for processing inside offset_capture_indices()
 			end
