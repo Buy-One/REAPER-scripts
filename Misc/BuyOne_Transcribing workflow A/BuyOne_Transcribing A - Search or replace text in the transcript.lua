@@ -727,7 +727,7 @@ function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, sear
 	local timestamp, transcr = line:match('(.+%d+:%d+:%d+%.%d+)(.+)') -- split off segment time stamp to exclude it from search and replacement // ONLY RELEVANT FOR TRANSCRIBING SCRIPTS WHERE THERE'S TIME STAMP IN THE TEXT
 	local transcr = transcr or line -- keeping original line to be able to pass it into the recursive instance of the function
 	local replace_term = replace_term:gsub('%%','%%%%') -- must be escaped if contains % which is unlikley but just in case
-	local fin, replace_cnt = pos_in_line, 0 -- pos_in_line (assigned to fin var) will be valid and st is only needed in one-by-one mode, fin is needed in one-by-one mode or otherwise to prevent search from getting stuck, see comment below
+	local fin, replace_cnt = pos_in_line, 0 -- pos_in_line (assigned to fin var) will be valid in one-by-one mode, fin is needed in one-by-one mode or otherwise to prevent search from getting stuck, see comment below
 	fin = timestamp and fin > #timestamp and fin - #timestamp or fin -- subtract length of timestamp portion from fin value so that it's counted from the beginning of the segment transcript because when fin is returned and stored in 'LAST SEARCH' data it's counted from the actual line start which includes the time stamp // ONLY RELEVANT FOR TRANSCRIBING SCRIPTS WHERE THERE'S TIME STAMP IN THE TEXT
 	local capt, st, count
 
