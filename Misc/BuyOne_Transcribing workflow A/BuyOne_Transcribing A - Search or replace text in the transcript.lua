@@ -3,7 +3,8 @@ ReaScript name: BuyOne_Transcribing A - Search or replace text in the transcript
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.8
-Changelog: 1.8	#Improved search in cases where there're several matches in a segment
+Changelog: 1.8	#Improved search for exact word in cases where there're
+		several matches in a segment 
 	   1.7 	#Imroved capture of replacement mode code
 		#Improved handling of invalid replacement mode code
 	   1.6 	#Fixed headless mode
