@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Transcribing A - Search or replace text in the transcript.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.8
-Changelog: 1.8	#Improved search for exact word in cases where there're
+Version: 1.9
+Changelog: 1.9  #Fixed endless replacement loop in replacement modes 0 & 1
+		in cases where the replacement term is multi-word and contains the search term
+	   1.8	#Improved search for exact word in cases where there're
 		several matches in a segment 
 	   1.7 	#Imroved capture of replacement mode code
 		#Improved handling of invalid replacement mode code
@@ -739,7 +741,8 @@ function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, sear
 					transcr, count = transcr:gsub(capt, replace_term, 1) -- replace capture because it was retuned with the correct case, doing it 1 by 1 which is presumably safer and more reliable because string.gsub has a limit of 32 replacements
 					replace_cnt = replace_cnt+count
 						if one_by_one then break end
-					end	
+					end
+				fin = fin + math.abs(#search_term-#replace_term) -- if replace term is mutli-word and terminated with the search term the search might get stuck, and in general the length difference between the search and replace terms must be accounted for when search continues in the updated line
 				capt, st, fin = get_capture(transcr, search_term, ignore_case, exact, fin, rerun) -- prime for the next cycle
 				else break end
 			until count == 0 or not capt
@@ -767,7 +770,7 @@ function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, sear
 							if one_by_one then break end
 						
 						end
-					
+					fin = fin + math.abs(#search_term-#replace_term) -- if replace term is mutli-word and terminated with the search term the search might get stuck, and in general the length difference between the search and replace terms must be accounted for when search continues in the updated line
 					capt, st, fin, capt_low = get_capture(transcr, patt, ignore_case, exact, fin, rerun) -- prime for the next cycle
 					
 					else break end
