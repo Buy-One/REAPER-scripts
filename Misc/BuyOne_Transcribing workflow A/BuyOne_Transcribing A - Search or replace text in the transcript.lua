@@ -742,7 +742,7 @@ function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, sear
 					replace_cnt = replace_cnt+count
 						if one_by_one then break end
 					end
-				fin = fin + math.abs(#search_term-#replace_term) -- if replace term is mutli-word and terminated with the search term the search might get stuck, and in general the length difference between the search and replace terms must be accounted for when search continues in the updated line
+				fin = fin + (#replace_term-#search_term) -- OR st + #replace_term // if replace term is mutli-word and terminated with the search term the search might get stuck, and in general the length difference between the search and replace terms must be accounted for when search continues in the updated line
 				capt, st, fin = get_capture(transcr, search_term, ignore_case, exact, fin, rerun) -- prime for the next cycle
 				else break end
 			until count == 0 or not capt
@@ -770,7 +770,7 @@ function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, sear
 							if one_by_one then break end
 						
 						end
-					fin = fin + math.abs(#search_term-#replace_term) -- if replace term is mutli-word and terminated with the search term the search might get stuck, and in general the length difference between the search and replace terms must be accounted for when search continues in the updated line
+					fin = fin + (#replace_term-#search_term) -- OR st + #replace_term // if replace term is mutli-word and terminated with the search term the search might get stuck, and in general the length difference between the search and replace terms must be accounted for when search continues in the updated line
 					capt, st, fin, capt_low = get_capture(transcr, patt, ignore_case, exact, fin, rerun) -- prime for the next cycle
 					
 					else break end
