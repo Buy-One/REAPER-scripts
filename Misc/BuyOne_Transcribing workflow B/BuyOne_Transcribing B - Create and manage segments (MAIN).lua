@@ -14,7 +14,8 @@ About:	The script is part of the Transcribing B workflow set of scripts
 	BuyOne_Transcribing B - Prepare transcript for rendering.lua  
 	BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
 	BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
-	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
+	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua  
+	BuyOne_Transcribing B - Replace text in the transcript.lua
 
 	This is the main script of the set geared towards segment 
 	manipulation: creation, boundaries change, split, merger.
