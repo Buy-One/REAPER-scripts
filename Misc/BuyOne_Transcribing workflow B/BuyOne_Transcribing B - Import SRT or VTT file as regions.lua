@@ -1,9 +1,9 @@
 --[[
-ReaScript name: BuyOne_Transcribing B - Import SRT or VTT file as markers and SWS track Notes.lua
+ReaScript name: BuyOne_Transcribing B - Import SRT or VTT file as regions.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Fixed script name
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is part of the Transcribing B workflow set of scripts
