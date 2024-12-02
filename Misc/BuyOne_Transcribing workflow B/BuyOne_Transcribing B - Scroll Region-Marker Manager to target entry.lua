@@ -15,7 +15,8 @@ About:	The script is part of the Transcribing B workflow set of scripts
 	BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
 	BuyOne_Transcribing B - Prepare transcript for rendering.lua  
 	BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
-	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
+	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua  
+	BuyOne_Transcribing B - Replace text in the transcript.lua
 	
 	If js_ReaScriptAPI extension is installed the script either scrolls 
 	'Region/Marker Manager' to the entry of region currently selected in Arrange 
