@@ -8,13 +8,14 @@ Licence: WTFPL
 REAPER: at least v6.37
 About:	The script is part of the Transcribing B workflow set of scripts
 	alongside  
-	BuyOne_Transcribing B - Create and manage segments (MAIN).lua
+	BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
 	BuyOne_Transcribing B - Format converter.lua  
 	BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
 	BuyOne_Transcribing B - Prepare transcript for rendering.lua  
 	BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
 	BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
-	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
+	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua  
+	BuyOne_Transcribing B - Replace text in the transcript.lua
 	
 	meant to display the transcript segment by segment in real time
 	while REAPER is in play mode or when the edit cursor is located
