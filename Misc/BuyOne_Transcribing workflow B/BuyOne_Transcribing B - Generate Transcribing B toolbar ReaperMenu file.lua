@@ -2,7 +2,7 @@
 ReaScript name: BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
+Version: 1.2
 Changelog: 1.2  #Added button for the script BuyOne_Transcribing B - Replace text in the transcript.lua
 		#Fixed failure to update the toolbar number when overwriting an existing 
 		'Transcribing B workflow toolbar.ReaperMenu' file
