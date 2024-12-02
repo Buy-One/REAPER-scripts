@@ -10,7 +10,7 @@ About:	The script is part of the Transcribing B workflow set of scripts
 	alongside  
 	BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
 	BuyOne_Transcribing B - Real time preview.lua  
-	BuyOne_Transcribing B - Import SRT or VTT file as markers and SWS track Notes.lua  
+	BuyOne_Transcribing B - Import SRT or VTT file as regions.lua    
 	BuyOne_Transcribing B - Prepare transcript for rendering.lua  
 	BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
 	BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
