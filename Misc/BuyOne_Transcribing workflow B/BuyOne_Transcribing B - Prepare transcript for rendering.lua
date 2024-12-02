@@ -14,7 +14,8 @@ About:	The script is part of the Transcribing B workflow set of scripts
 	BuyOne_Transcribing B - Import SRT or VTT file as regions.lua 
 	BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
 	BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
-	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
+	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua  
+	BuyOne_Transcribing B - Replace text in the transcript.lua
 	
 	Its purpose is to allow embedding transcript in a video file or
 	audio file.
