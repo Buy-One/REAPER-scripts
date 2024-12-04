@@ -6,47 +6,47 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 About:	To create a default input FX chain to be used with this script
-  			when you save a regular default FX chain via 
-  			FX chain right click menu -> FX cgains -> Save all FX as defaut chain for new tracks
-  			add to it the FX needed to be inserted by default into the input
-  			FX chain preceded with an FX instance (ANY) named "input chain start"
-  			which is a title instance, so that your chain looks something like so:
-  				FX 1
-  				FX 2
-  				FX 3
-  				input chain start
-  				FX A
-  				FX B
-  				FX C
-  			
-  			FX which precede the title instance named 'input chain start' will
-  			remain in the main FX chain, while those which follow it will
-  			be moved to the input FX chain.
-  			The title instance name can be padded with spaces.
-  			
-  			If you only need to save input FX chain as defaut chain, don't
-  			precede the title instance with any FX, so that your chain starts
-  			with the title instance, e.g:
-  				input chain start
-  				FX A
-  				FX B
-  				FX C
-  			
-  			When the chain is applied to the input FX chain the title instance
-  			is deleted.
-  			
-  			!!!!! CAVEAT
-  			
-  			If FX in your default chain are linked through parameter modulation, 
-  			parameter modulation linkage won't be preserved when they're moved 
-  			to the input FX chain. For this use another script			
-  			BuyOne_Insert multiple new tracks with default input FX chain + PM.lua
-  			OR
-  			BuyOne_Apply FX chain preset to input FX chain in selected tracks.lua
-  			  			
-  			To insert news tracks select a track which they'll be inserted after.
-  			If no track is selected the new tracks will be inserted at the end
-  			of the track list.
+	when you save a regular default FX chain via 
+	FX chain right click menu -> FX cgains -> Save all FX as defaut chain for new tracks
+	add to it the FX needed to be inserted by default into the input
+	FX chain preceded with an FX instance (ANY) named "input chain start"
+	which is a title instance, so that your chain looks something like so:
+		FX 1
+		FX 2
+		FX 3
+		input chain start
+		FX A
+		FX B
+		FX C
+	
+	FX which precede the title instance named 'input chain start' will
+	remain in the main FX chain, while those which follow it will
+	be moved to the input FX chain.
+	The title instance name can be padded with spaces.
+	
+	If you only need to save input FX chain as defaut chain, don't
+	precede the title instance with any FX, so that your chain starts
+	with the title instance, e.g:
+		input chain start
+		FX A
+		FX B
+		FX C
+	
+	When the chain is applied to the input FX chain the title instance
+	is deleted.
+	
+	!!!!! CAVEAT
+	
+	If FX in your default chain are linked through parameter modulation, 
+	parameter modulation linkage won't be preserved when they're moved 
+	to the input FX chain. For this use another script			
+	BuyOne_Insert multiple new tracks with default input FX chain + PM.lua
+	OR
+	BuyOne_Apply FX chain preset to input FX chain in selected tracks.lua
+				
+	To insert news tracks select a track which they'll be inserted after.
+	If no track is selected the new tracks will be inserted at the end
+	of the track list.
 ]]
 
 local r = reaper
