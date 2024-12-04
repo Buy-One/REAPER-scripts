@@ -6,16 +6,16 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 About:	Although the script can be used by itself, 
-			its primary purpose was to be used inseide 
-			a custom action with the native actions
-			Track: Insert new track
-			Track: Insert new track at end of mixer
-			Track: Insert new track at end of track list
-			Track: Insert multiple new tracks...
-			E.g.  
-			Custom: Insert new track with default input FX chain
-				Track: Insert new track
-				BuyOne_Apply FX chain preset to input FX chain in selected tracks.lua
+	its primary purpose was to be used inseide 
+	a custom action with the native actions
+	Track: Insert new track
+	Track: Insert new track at end of mixer
+	Track: Insert new track at end of track list
+	Track: Insert multiple new tracks...
+	E.g.  
+	Custom: Insert new track with default input FX chain
+	  Track: Insert new track
+	  BuyOne_Apply FX chain preset to input FX chain in selected tracks.lua
 ]]
 
 -----------------------------------------------------------------------------
