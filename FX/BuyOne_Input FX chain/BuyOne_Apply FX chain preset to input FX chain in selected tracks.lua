@@ -16,6 +16,10 @@ About:	Although the script can be used by itself,
 	Custom: Insert new track with default input FX chain
 	  Track: Insert new track
 	  BuyOne_Apply FX chain preset to input FX chain in selected tracks.lua
+
+	If the script is used by itself the FX chain
+	preset applied by it will replace any FX currently 
+	inserted in the target input FX chain.
 ]]
 
 -----------------------------------------------------------------------------
