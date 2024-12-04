@@ -6,20 +6,20 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 About:	This version differs from 
-			BuyOne_Insert single new track with default input FX chain.lua
-			in that it preserves parameter mudulation linkage between FX
-			instances in the chain (hence the PM acronym in the name) and 
-			doesn't depend on the existing default FX chain, it can apply 
-			any FX chain preset whose file name is specified in the 
-			FX_CHAIN_FILE_NAME user setting.  
-			
-			To insert a new track select a track which it'll be inserted after.
-			If no track is selected the new track will be inserted at the end
-			of the track list.
-			
-			If a default FX chain for new tracks is saved, the input FX chain
-			will be inserted by this script concurrently with the default FX chain
-			added automatically by REAPER's native actions.
+	BuyOne_Insert single new track with default input FX chain.lua
+	in that it preserves parameter mudulation linkage between FX
+	instances in the chain (hence the PM acronym in the name) and 
+	doesn't depend on the existing default FX chain, it can apply 
+	any FX chain preset whose file name is specified in the 
+	FX_CHAIN_FILE_NAME user setting.  
+	
+	To insert a new track select a track which it'll be inserted after.
+	If no track is selected the new track will be inserted at the end
+	of the track list.
+	
+	If a default FX chain for new tracks is saved, the input FX chain
+	will be inserted by this script concurrently with the default FX chain
+	added automatically by REAPER's native actions.
 ]]
 
 -----------------------------------------------------------------------------
