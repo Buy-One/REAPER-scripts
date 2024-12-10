@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Temporary FX presets.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: 1.1 	#Fixed typo in the only preset deletion warning message  
+Version: 1.2
+Changelog: 1.2 	#Improved backward compatibility with v1.0
+	   1.1 	#Fixed typo in the only preset deletion warning message  
 		#Fixed user preset name format to allow multi-word names (with spaces)  
 		#Fixed the title of preset rename dialogue  
 		#Fixed 'Keep menu open' option so that the menu is sure to reload
@@ -308,7 +309,7 @@ local t, preset_menu, fx_name, retval = {}, ''
 	local st, fin, dir = table.unpack(desc_order and {100,1,-1} or {1,100,1})
 		for i = st, fin, dir do
 		local preset = r.GetExtState(scr_name..'::'..fx_name, i)
-			if #preset == 0 and first_run then
+			if #preset == 0 and (first_run or not select(2, r.GetProjExtState(0, scr_name, 'PLUGIN NAME LIST')):match(Esc(fx_name)) ) then -- in v1.0 of the script plugin name list wasn't updated in the project dump when presets were stored per plugin therefore it's likely that on first script run in the session only some selected plugin presets would load from project ext state, so for backward compatibility extract plugin data by plugin name, this will only target v1.0 stored data because after running convert_to_new_format() function below the script plugin name list will be updated in the project dump and for such plugins GetProjExtState() evaluation will be false on the next run which will prevent auto-reloading of presets from updated project dump if all have been deleted from regular extended state
 			preset = convert_to_new_format(fx_name, i, scr_name)
 			end
 			if #preset > 0 then
