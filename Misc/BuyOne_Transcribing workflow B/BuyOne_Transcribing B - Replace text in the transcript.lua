@@ -8,95 +8,95 @@ Licence: WTFPL
 REAPER: recommended 7.03 and newer
 Extensions: SWS/S&M or js_ReaScriptAPI is recommended			
 About:	The script is part of the Transcribing B workflow set of scripts
-  			alongside 
-  			BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
-        BuyOne_Transcribing B - Real time preview.lua  
-  			BuyOne_Transcribing B - Format converter.lua  
-  			BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
-  			BuyOne_Transcribing B - Prepare transcript for rendering.lua  
-  			BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
-  			BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
-  			BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
-  			
-  			Installation of extensions isn't absolutely necessary as the script 
-  			can do the job without them but they may enhance the user experience
-  			because they help isolating in the Region/Marker Manager the targeted
-  			segment region for the sake of visual freedback of the replacement
-  			result.
-  			
-  			The script offers 4 replacement modes:  
-  			0. Batch replace in all segment regions
-  			1. Batch replace in segment regions within time selection
-  			2. Batch replace in segment regions from the edit/mouse cursor onwards
-  			3. Batch replace from the first segment region up to the edit/mouse cursor
-  			4. Word by word starting from the segment region at the edit/mouse cursor
-  			
-  			In mode 2 time selection may include region start, region end, both
-  			or be inside the region.  
-  			In mode 4 replacement starts from the region at the edit cursor which 
-  			includes the entire region width but not its end marker.  		
-  			If there's no region at cursor the closest next region will be used 
-  			as the starting point.  			
-  			To look up the modes, type character h or H (for help) in the field 
-  			'5. Mode' of the replacement dialogue.
-  
-  
-  			► js_ReaScriptAPI extension
-  
-  			With js_ReaScriptAPI extension in modes 0-3 the script is able to scroll 
-  			the Region/Marker Manager towards the entry of the first segment region 
-  			whose name was changed in the range affected by the script and in mode 4 
-  			towards the entry of the segment region whose name was edited last, UNLESS 
-  			SUCH ENTRY IS ALREADY WITHIN VIEW. If not within view such entry is scrolled 
-  			into view either at the bottom or at the top of the Region/Marker Manager list.  
-  			Unlike with the SWS extension it's not possible to automatically fill out 
-  			the Region/Marker Manager filter field with he replacement term to isolate 
-  			entries containing the replacement term so that they're more apparent in
-  			the list. However the replacement term can be copied from the replacement
-  			dialogue and pasted in the Region/Marker Manager filter field. In this
-  			respect there're a couple of guidelines:  
-  			1. If you search to replace the exact match (field '4. Match exact word' is
-  			enabled in the dialogue), enclose the replacement term in the Region/Marker 
-  			Manager filter field within single or double quotes which is the exact match
-  			operator in REAPER.
-  			2. Since in REAPER words AND, OR, NOT (in upper case) are used as list filter 
-  			operators, if the replacement term contains them, in the Region/Marker Manager 
-  			filter field change their case to lower so that they're interpreted as regular
-  			words and not as operators. 
-  			
-  			If the REAPER build you're using is older than 7.03, then using this script 
-  			with js_ReaScriptAPI extension and having the replacement term in the 
-  			Region/Marker Manager filter field you're likely to encounter 'ReaScript task control' 
-  			dialogue pop up. Once it does, checkmark 'Remember my answer for this script' 
-  			checkbox and press 'New instance' button, this will prevent the pop up from 
-  			appearing in the future.
-  			
-  			
-  			► SWS/S&M extension
-  
-  			With the SWS/S&M extension in modes 0-3 the Region/Marker Manager list 
-  			is by default filtered with the replacement term and is scrolled towards 
-  			the entry of the first segment region whose stranscript was changed 
-  			in the range affected by the script while in mode 4 the entry of the
-  			segment region whose name was changed last can either be scrolled into
-  			view or isolated in the list through insertion of either the updated segment
-  			transcript or the replacement term into the Manager's filter field depending 
-  			on the USER SETTINGS. When scrolled, such segment region entry is scrolled 
-  			to the top of the list as long as the list is long enough.  
-  			In order for scrolling to be accurate Region/Marker Manager display settings
-  			('Regions', 'Markers', and 'Take markers' checkboxes) are changed so that 
-  			only regions are listed. The entries in the Region/Marker Manager must be 
-  			sorted by start in ascending order otherwise the scrolling won't be performed.
-  
-  			If both extensions are installed js_ReaScriptAPI has priority which can be 
-  			changed in the USER SETTINGS.	
-  			
-  			In replacement mode 4 the edit cursor follows the replacement progress and
-  			is moved to the segment region whose transcript was edited the last.  
-  			
-  			If extensions are installed and the Region/Marker Manager is closed at the
-  			moment of the script execution, the script will open it so that the user 
-  			can get visual feedback of the changes to the transcript.
+	alongside 
+	BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
+	BuyOne_Transcribing B - Real time preview.lua  
+	BuyOne_Transcribing B - Format converter.lua  
+	BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
+	BuyOne_Transcribing B - Prepare transcript for rendering.lua  
+	BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
+	BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
+	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua
+	
+	Installation of extensions isn't absolutely necessary as the script 
+	can do the job without them but they may enhance the user experience
+	because they help isolating in the Region/Marker Manager the targeted
+	segment region for the sake of visual freedback of the replacement
+	result.
+	
+	The script offers 4 replacement modes:  
+	0. Batch replace in all segment regions
+	1. Batch replace in segment regions within time selection
+	2. Batch replace in segment regions from the edit/mouse cursor onwards
+	3. Batch replace from the first segment region up to the edit/mouse cursor
+	4. Word by word starting from the segment region at the edit/mouse cursor
+	
+	In mode 2 time selection may include region start, region end, both
+	or be inside the region.  
+	In mode 4 replacement starts from the region at the edit cursor which 
+	includes the entire region width but not its end marker.  		
+	If there's no region at cursor the closest next region will be used 
+	as the starting point.  			
+	To look up the modes, type character h or H (for help) in the field 
+	'5. Mode' of the replacement dialogue.
+
+
+	► js_ReaScriptAPI extension
+
+	With js_ReaScriptAPI extension in modes 0-3 the script is able to scroll 
+	the Region/Marker Manager towards the entry of the first segment region 
+	whose name was changed in the range affected by the script and in mode 4 
+	towards the entry of the segment region whose name was edited last, UNLESS 
+	SUCH ENTRY IS ALREADY WITHIN VIEW. If not within view such entry is scrolled 
+	into view either at the bottom or at the top of the Region/Marker Manager list.  
+	Unlike with the SWS extension it's not possible to automatically fill out 
+	the Region/Marker Manager filter field with he replacement term to isolate 
+	entries containing the replacement term so that they're more apparent in
+	the list. However the replacement term can be copied from the replacement
+	dialogue and pasted in the Region/Marker Manager filter field. In this
+	respect there're a couple of guidelines:  
+	1. If you search to replace the exact match (field '4. Match exact word' is
+	enabled in the dialogue), enclose the replacement term in the Region/Marker 
+	Manager filter field within single or double quotes which is the exact match
+	operator in REAPER.
+	2. Since in REAPER words AND, OR, NOT (in upper case) are used as list filter 
+	operators, if the replacement term contains them, in the Region/Marker Manager 
+	filter field change their case to lower so that they're interpreted as regular
+	words and not as operators. 
+	
+	If the REAPER build you're using is older than 7.03, then using this script 
+	with js_ReaScriptAPI extension and having the replacement term in the 
+	Region/Marker Manager filter field you're likely to encounter 'ReaScript task control' 
+	dialogue pop up. Once it does, checkmark 'Remember my answer for this script' 
+	checkbox and press 'New instance' button, this will prevent the pop up from 
+	appearing in the future.
+	
+	
+	► SWS/S&M extension
+
+	With the SWS/S&M extension in modes 0-3 the Region/Marker Manager list 
+	is by default filtered with the replacement term and is scrolled towards 
+	the entry of the first segment region whose stranscript was changed 
+	in the range affected by the script while in mode 4 the entry of the
+	segment region whose name was changed last can either be scrolled into
+	view or isolated in the list through insertion of either the updated segment
+	transcript or the replacement term into the Manager's filter field depending 
+	on the USER SETTINGS. When scrolled, such segment region entry is scrolled 
+	to the top of the list as long as the list is long enough.  
+	In order for scrolling to be accurate Region/Marker Manager display settings
+	('Regions', 'Markers', and 'Take markers' checkboxes) are changed so that 
+	only regions are listed. The entries in the Region/Marker Manager must be 
+	sorted by start in ascending order otherwise the scrolling won't be performed.
+
+	If both extensions are installed js_ReaScriptAPI has priority which can be 
+	changed in the USER SETTINGS.	
+	
+	In replacement mode 4 the edit cursor follows the replacement progress and
+	is moved to the segment region whose transcript was edited the last.  
+	
+	If extensions are installed and the Region/Marker Manager is closed at the
+	moment of the script execution, the script will open it so that the user 
+	can get visual feedback of the changes to the transcript.
 
 ]]
 
