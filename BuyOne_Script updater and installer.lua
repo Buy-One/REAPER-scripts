@@ -2,15 +2,18 @@
 ReaScript name: BuyOne_Script updater and installer.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog:  v1.2 #Made user setting transfer report message a bit more descriptive
-	    v1.1 #Reworded installation report message
+Version: 1.3
+Changelog: 1.3 	#Added support for Media Explorer script installation
+		#Optimized installation function
+		#Updated 'About' text
+	   1.2 	#Made user setting transfer report message a bit more descriptive
+	   1.1  #Reworded installation report message
 Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main=main,midi_editor] .
-About:		THIS SCRIPT MUST BE INSTALLED FIRST
+About:	THIS SCRIPT MUST BE INSTALLED FIRST
 	
-		***	 H O W   T O   U S E  	 ***
+	***  H O W   T O   U S E  ***
 	
 	1. INSTALLATION
 	
@@ -85,7 +88,7 @@ About:		THIS SCRIPT MUST BE INSTALLED FIRST
 	you can delete the backup copy if one was created as suggested
 	above.
 	
-			***	 N U A N C E S     ***
+			***  N U A N C E S  ***
 	
 	This script can also be used to install 3d party scripts BUT 
 	NOT to transfer their user settings.
@@ -105,6 +108,9 @@ About:		THIS SCRIPT MUST BE INSTALLED FIRST
 	also laid out in the pop uo dialogue so be sure to refer to them
 	in case of a doubt.
 	
+	The successful installation stats include all scripts which were
+	submitted for installation regardless their being already installed.
+		
 ]]
 
 
@@ -235,13 +241,14 @@ function Collect_Files(path, MIDI_FIT_FOLDERS, t, midi, native_install_mode)
 -- native_install_mode boolean arg comes from user choice, meaning scripts by BuyOne
 -- t and midi will be initialized within the function
 -- thanks to MPL and Lokasenna // https://forum.cockos.com/showthread.php?t=206933
+-- the function collects all scripts found at the path, both already installed and not yet installed
 
-	local function is_midi_fit_script(scr_path)
+	local function is_specific_section_script(scr_path, section) -- section in the format of 'Provides:' header tag
 	local start
 		for line in io.lines(scr_path) do
 			if line:match('ReaScript name:') then start = 1 -- header start
-			elseif start and line:match('Provides:') then -- looking for line 'Provides: [main=main, midi_editor]'
-				if line:match('midi_editor') then return true end
+			elseif start and line:match('Provides:') then -- looking for line 'Provides: [main=main,midi_editor]'			
+				if line:match(section) then return true end
 			elseif line:match('About:') or line:match(']]') then break -- header end
 			end
 		end
@@ -263,11 +270,11 @@ local midi = path:match('.+[\\/](.+)') -- folder name
 midi = midi == 1 -- folder fit for MIDI Editor section
 
 r.EnumerateFiles(r.GetResourcePath(), 0) -- reset cache, works in all versions
-local i, t = 0, t or {midi = {}, total={} }
+local i, t = 0, t or {midi = {}, mx = {}, total={} }
 
 -- first spawn scripts from any META scripts found in the folder in order to get accurate final stats
 -- these will be installed directly by this script using Install_Scripts() function
--- rather by running the META script with Main_OnCommand()
+-- rather than by running the META script with Main_OnCommand()
 	repeat
 	local file_n = r.EnumerateFiles(path, i)
 		if file_n then
@@ -293,11 +300,15 @@ i = 0
 				if native_install_mode and -- only collect scripts fit for the MIDI Editor if native_install_mode is true
 				(midi -- folder fit for the MIDI Editor as per loop above
 				or file_n:lower():match('midi') -- file name ...
-				or is_midi_fit_script(f_path) ) -- or header indicating fitness of the script for the MIDI Editor
+				or is_specific_section_script(f_path, 'midi_editor') ) -- or header indicating fitness of the script for the MIDI Editor
 				or not native_install_mode -- scripts by other devs, which will all be installed in both Main and MIDI Editor sections
 				then -- a script fit for the MIDI Editor section
 				t.midi[#t.midi+1] = f_path
 				end
+				if native_install_mode and (file_n:lower():match('Media Explorer') 
+				or is_specific_section_script(f_path, 'media_explorer') ) then
+				t.mx[#t.mx+1] = f_path
+				end				
 				if (not native_install_mode -- if not native_install_mode collect all scripts regardless of their designation
 				or native_install_mode and not path:lower():match('.+[\\/]midi')) then -- not MIDI folder // UP FOR CUSTOMIZATION BY OTHER SCRIPTERS
 				t[#t+1] = f_path
@@ -464,36 +475,28 @@ return 0 -- update count
 end
 
 
-function Install_Scripts(t, native_install_mode)
+function Install_Scripts(t)
 -- t is table returned by Collect_Files()
--- native_install_mode boolean arg comes from user choice, meaning scripts by BuyOne
 
--- install in the Main section of the Action list
-	for i = #t,1,-1 do -- in reverse because fields of scripts installed successfully will be deleted to only keep failed for final stats
-	local scr = t[i]
-		if type(scr) == 'string' then -- ignoring midi and total fields which are tables
-		local cmdID = r.AddRemoveReaScript(true, 0, scr, true) -- add, commit true // doesn't affect the props of an already installed script if attempts to install it again, so is safe
-			if cmdID > 0 then -- successfully installed, only keep failed for final stats
-			table.remove(t, i)
+	local function install(t, sectionID) -- sectionID is integer
+		for i = #t,1,-1 do -- in reverse because fields of scripts installed successfully will be deleted to only keep failed for final stats
+		local scr = t[i]
+			if type(scr) == 'string' then -- ignoring midi and total fields which are tables
+			local cmdID = r.AddRemoveReaScript(true, sectionID, scr, true) -- add, commit true // doesn't affect the props of an already installed script if attempts to install it again, so is safe
+				if cmdID > 0 then -- successfully installed, only keep failed for final stats
+				table.remove(t, i)
+				end
 			end
-		end
+		end		
 	end
-
---	install in the MIDI Editor section of the Action list
-	for i = #t.midi,1,-1 do -- in reverse because fields of scripts installed successfully will be deleted to only keep failed for final stats
-	local scr = t.midi[i]
-		if type(scr) == 'string' then -- ignoring midi and total fields which are tables
-		local cmdID = r.AddRemoveReaScript(true, 32060, scr, true) -- add, commit true // doesn't affect the props of an already installed script if attempts to install it again, so is safe
-			if cmdID > 0 then -- successfully installed, only keep failed for final stats
-			table.remove(t.midi, i)
-			end
-		end
+	
+	for k, tab in ipairs({ {t, 0}, {t.midi, 32060}, {t.mx, 32063} }) do
+	install(tab[1], tab[2])
 	end
-
+	
 return t
 
 end
-
 
 function INSTALL(path, MIDI_FIT_FOLDERS, native_install_mode)
 -- path is user supplied via GetUserInputs()
@@ -501,15 +504,15 @@ function INSTALL(path, MIDI_FIT_FOLDERS, native_install_mode)
 
 local t = Collect_Files(path, MIDI_FIT_FOLDERS, t, midi, native_install_mode) -- t, midi nil
 
-	if #t + #t.midi == 0 then
+local orig_cnt = #t + #t.midi + #t.mx -- store because the entries will be deleted inside Install_Scripts()
+
+	if orig_cnt == 0 then
 	r.MB('No scripts were found at the provided path.','REPORT',0)
 	return end
 
-local orig_cnt = #t + #t.midi -- store because the entries will be deleted inside Install_Scripts()
-
 t = Install_Scripts(t, native_install_mode)
 
-local failed_cnt = #t + #t.midi --#failed_t == #t and 'all' or #failed_t
+local failed_cnt = #t + #t.midi + #t.mx
 local zip = t.zip and '\tThere\'s a .zip archive in the /Misc folder'
 ..'\n\n      scripts in which cannot be installed with the installer.'
 ..'\n\n     If you find them useful, you can install them manually.' or ''
@@ -517,8 +520,7 @@ local br = t.zip and '\n\n\n' or ''
 local failure = failed_cnt > 0
 and (t.zip and space(15) or space(16))..failed_cnt..' installations have failed out of '..orig_cnt..',\n\n'
 ..(t.zip and space(18) or space(9))..'see the list in the ReaScript console.'..(br or '') or ''
-local success = #failure == 0 and (t.zip and space(4) or space(6))..#t.total
-..' script installations have been completed successfully.'..br or ''
+local success = #failure == 0 and (t.zip and space(4) or space(6))..#t.total -- the successful installation count includes scripts both installed previously and newly installed, all which were collected at the user supplied path
 
 	if failed_cnt > 0 then -- list all scripts which failed to get installed
 	Msg('MAIN:\n\n'..table.concat(t,'\n')..'\n\nMIDI EDITOR:\n\n'..table.concat(t.midi,'\n'), r.ClearConsole())
