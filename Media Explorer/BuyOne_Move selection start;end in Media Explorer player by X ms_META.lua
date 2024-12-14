@@ -8,39 +8,39 @@ Licence: WTFPL
 REAPER: 7.12 and newer
 Extensions: SWS/S&M
 Provides: [main=main,media_explorer]
-			. > BuyOne_Move selection start in Media Explorer player right by X ms.lua
-			. > BuyOne_Move selection start in Media Explorer player left by X ms.lua
-			. > BuyOne_Move selection end in Media Explorer player right by X ms.lua
-			. > BuyOne_Move selection end in Media Explorer player left by X ms.lua
-			. > BuyOne_Move selection start in Media Explorer player by X ms with mousewheel.lua
-			. > BuyOne_Move selection end in Media Explorer player by X ms with mousewheel.lua
-			. > BuyOne_Move selection in Media Explorer player by X ms with mousewheel.lua
+	. > BuyOne_Move selection start in Media Explorer player right by X ms.lua
+	. > BuyOne_Move selection start in Media Explorer player left by X ms.lua
+	. > BuyOne_Move selection end in Media Explorer player right by X ms.lua
+	. > BuyOne_Move selection end in Media Explorer player left by X ms.lua
+	. > BuyOne_Move selection start in Media Explorer player by X ms with mousewheel.lua
+	. > BuyOne_Move selection end in Media Explorer player by X ms with mousewheel.lua
+	. > BuyOne_Move selection in Media Explorer player by X ms with mousewheel.lua
 About:	If this script name is suffixed with META it will spawn 
-			all individual scripts included in the package into the 
-			directory of the META script and will import them into 
-			the Action list from that directory. That's provided such 
-			scripts don't exist yet, if they do, then in order to 
-			recreate them they have to be deleted from the Action list 
-			and from the disk first.  
-			If there's no META suffix in this script name it will perfom 
-			the operation indicated in its name.			
-			
-			The script doesn't create undo points.
-						
-			If the current script contains the word 'start' in its name
-			it can be used to move MX player playback start position. 
-			If there's no selection it will be created automatically
-			as soon as the selection start position change.
-			
-			If the current script contains the word 'mousewheel' in its 
-			name, it can be run with the mousewheel only if installed in 
-			the Main section of the Action list. For the mousewheel input 
-			to be registered the Media Explorer window, Arrange or Track 
-			must be focused but not the Media Explorer player because 
-			this switches mousewheel focus to the player scrollbar.  
-			The mousewheel input isn't registered by the script instance 
-			installed in the Media Explorer section.  
-			Mousewheel direction is in/down - left, out/up - right.
+	all individual scripts included in the package into the 
+	directory of the META script and will import them into 
+	the Action list from that directory. That's provided such 
+	scripts don't exist yet, if they do, then in order to 
+	recreate them they have to be deleted from the Action list 
+	and from the disk first.  
+	If there's no META suffix in this script name it will perfom 
+	the operation indicated in its name.			
+	
+	The script doesn't create undo points.
+				
+	If the current script contains the word 'start' in its name
+	it can be used to move MX player playback start position. 
+	If there's no selection it will be created automatically
+	as soon as the selection start position change.
+	
+	If the current script contains the word 'mousewheel' in its 
+	name, it can be run with the mousewheel only if installed in 
+	the Main section of the Action list. For the mousewheel input 
+	to be registered the Media Explorer window, Arrange or Track 
+	must be focused but not the Media Explorer player because 
+	this switches mousewheel focus to the player scrollbar.  
+	The mousewheel input isn't registered by the script instance 
+	installed in the Media Explorer section.  
+	Mousewheel direction is in/down - left, out/up - right.
 ]]
 
 -----------------------------------------------------------------------------
