@@ -1,9 +1,12 @@
 --[[
-ReaScript name: BuyOne_Move selection start;end in Media Explorer player by X ms_META.lua (7 scripts)
+ReaScript name: BuyOne_Move selection start;end in Media Explorer player by X ms_META.lua (9 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Fixed defaulting to 100 ms when user selected value is 0
+	   #Added error when the Media Explorer is closed
+	   #Added 2 new scripts to the META set
+	   #Updated 'About' text
 Licence: WTFPL
 REAPER: 7.12 and newer
 Extensions: SWS/S&M
@@ -12,6 +15,8 @@ Provides: [main=main,media_explorer]
 	. > BuyOne_Move selection start in Media Explorer player left by X ms.lua
 	. > BuyOne_Move selection end in Media Explorer player right by X ms.lua
 	. > BuyOne_Move selection end in Media Explorer player left by X ms.lua
+	. > BuyOne_Move selection in Media Explorer player right by X ms.lua
+	. > BuyOne_Move selection in Media Explorer player left by X ms.lua
 	. > BuyOne_Move selection start in Media Explorer player by X ms with mousewheel.lua
 	. > BuyOne_Move selection end in Media Explorer player by X ms with mousewheel.lua
 	. > BuyOne_Move selection in Media Explorer player by X ms with mousewheel.lua
@@ -41,6 +46,29 @@ About:	If this script name is suffixed with META it will spawn
 	The mousewheel input isn't registered by the script instance 
 	installed in the Media Explorer section.  
 	Mousewheel direction is in/down - left, out/up - right.
+	
+	The behavior of each mousewheel script can be simulated with 
+	a custom action made up of non-mousewheel scripts and modifier
+	actions mapped to the mousewheel, e.g.
+	
+	Custom: Move selection start in Media Explorer player by X ms with mousewheel 
+		Action: Skip next action if CC parameter <0/mid  
+		BuyOne_Move selection start in Media Explorer player right by X ms.lua  
+		Action: Skip next action if CC parameter >0/mid  
+		BuyOne_Move selection start in Media Explorer player left by X ms.lua
+		
+	Custom: Move selection end in Media Explorer player by X ms with mousewheel 
+		Action: Skip next action if CC parameter <0/mid  
+		BuyOne_Move selection end in Media Explorer player right by X ms.lua  
+		Action: Skip next action if CC parameter >0/mid  
+		BuyOne_Move selection end in Media Explorer player left by X ms.lua
+						
+	Custom: Move selection in Media Explorer player by X ms with mousewheel  
+		Action: Skip next action if CC parameter <0/mid  
+		BuyOne_Move selection in Media Explorer player right by X ms.lua  
+		Action: Skip next action if CC parameter >0/mid  
+		BuyOne_Move selection in Media Explorer player left by X ms.lua
+
 ]]
 
 -----------------------------------------------------------------------------
@@ -321,7 +349,7 @@ local SendMsg = r.BR_Win32_SendMessage
 -- https://ecs.syr.edu/faculty/fawcett/Handouts/CoreTechnologies/windowsprogramming/WinUser.h
 -- https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-keydown
 -- https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
--- https://learn.microsoft.com/en-us/windows/win32/inputdev/about-keyboard-input#keystroke-message-flags -- scan codes are listed in a table in 'Scan 1 Make' colum in Scan Codes paragraph
+-- https://learn.microsoft.com/en-us/windows/win32/inputdev/about-keyboard-input#keystroke-message-flags -- scan codes are listed in a table in 'Scan 1 Make' column in Scan Codes paragraph
 -- https://handmade.network/forums/articles/t/2823-keyboard_inputs_-_scancodes%252C_raw_input%252C_text_input%252C_key_names
 -- 'Home' (extended key) scan code 0xE047 (move cursor to start of the line) or 0x0047, 'Del' (extended key) scan code 15, Backspace scancode 0x000E or 0x0E (14), Forward delete (regular delete) 0xE053 (extended), Left arrow 0xE04B (extended key), Left Shift 0x002A or 0x02A, Right shift 0x0036 or 0x036 // all extended key codes start with 0xE0
 	-- #filter_cont count works accurately here for Unicode characters as well for some reason
@@ -367,6 +395,7 @@ Error_Tooltip('') -- clear any stuck tooltips, especially relevant for mousewhee
 
 local err = not r.BR_Win32_SendMessage and 'the SWS/S&M extension \n\n       isn\'t installed '
 or tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.12 and 'the script is only suported \n\n     in reaper builds 7.12+'
+or r.GetToggleCommandStateEx(0, 50124) == 0 and 'the media explorer is closed'
 
 	if err then
 	Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced true
@@ -397,6 +426,8 @@ local err = not ((sel_start or sel_end) and (right or left)) and not mousewheel 
 VAL = VALUE_IN_MS:gsub(' ','')
 VAL = #VAL > 0 and tonumber(VAL) or 100
 VAL = math.abs(VAL)/1000 -- rectify negative value in case not default and convert to seconds
+VAL = VAL > 0 and VAL or 0.1 -- converting to seconds
+
 
 local MX_hwnd = Find_Window_SWS('Media Explorer', want_main_children)
 local child_t = Get_Child_Windows_SWS(MX_hwnd)
@@ -409,8 +440,8 @@ local start_input_wnd_idx
 	end
 
 	if not start_input_wnd_idx then -- the window is either empty or the value format is not 0:00.000 which isn't suitable for this script
-	Error_Tooltip('\n\n   either no file is loaded \n\n    into the MX player or \n\n'
-	..' "display preview position\n\n in beats" option is enabled \n\n', 1, 1) -- caps, spaced true
+	Error_Tooltip('\n\n\teither no file is loaded \n\n\t  into the MX player or \n\n'
+	..'      "display preview position\n\n in beats" option is/was enabled \n\n', 1, 1) -- caps, spaced true
 	return r.defer(no_undo)
 	end
 
@@ -428,27 +459,8 @@ local length, selection_bounds
 		if selection_bounds and length then break end
 	end
 
+
 length = length and parse(length)
-
--- Determine whether there's active selection
--- won't be possible if options 'Display preview position in beats for audio files...'
--- or 'Display preview position in whole seconds or beats' because they change readout format
-local sel_st, sel_fin = table.unpack(selection_bounds and {selection_bounds:match('^(%d+:%d+%.%d+)  /  (%d+:%d+%.%d+)$')} or {})
-sel_st, sel_fin = sel_st and parse(sel_st), sel_fin and parse(sel_fin)
-
-	-- when there's no selection, moving its end beyond media length or its start beyond zero position doesn't auto-create selection
-	-- so must be aborted
-	-- technically the cursor can be located at the very start and then the values will resemble the state
-	-- when the selection encompasses the entire media, however this is not very likely
-	if sel_st and sel_st ~= 0 and sel_fin == length -- when there's no selection the readout left hand value shows cursor position while the right hand value shows total media length
-	and (not mousewheel and (sel_start and left or sel_end and right)
-	or mousewheel and (sel_start and val < 0 or sel_end and val > 0) -- mousewheel dedicated to either start or end
-	or mousewheel and not sel_start and not sel_end) -- mousewheel dedicated to both start and end, moving entire selection
-	then
-	local addition = mousewheel and (sel_start or sel_end) and ' try in the opposite direction \n\n' or ''
-	Error_Tooltip('\n\n there\'s no active selection \n\n'..addition, 1, 1) -- caps, spaced true
-	return r.defer(no_undo)
-	end
 
 -- file length is also listed in the 'Length' column of the file browser but it cannot be accessed with SWS API
 
@@ -469,26 +481,46 @@ sel_st, sel_fin = sel_st and parse(sel_st), sel_fin and parse(sel_fin)
 	length = math.floor(length*(1000)+0.5)/1000 -- length value is a long float, so round down to 3 decimal places to be able to accurately compare with selection end value taken from the end readout window
 	end
 
+
+-- Determine whether there's active selection
+-- won't be possible if options 'Display preview position in beats for audio files...'
+-- or 'Display preview position in whole seconds or beats' because they change readout format
+local sel_st, sel_fin = table.unpack(selection_bounds and {selection_bounds:match('^(%d+:%d+%.%d+)  /  (%d+:%d+%.%d+)$')} or {})
+sel_st, sel_fin = sel_st and parse(sel_st), sel_fin and parse(sel_fin)
+
+	-- when there's no selection, moving its end beyond media length or its start beyond zero position doesn't auto-create selection
+	-- so must be aborted, selection is auto-created if start/end are moved in the opposite direction though
+	-- technically the cursor can be located at the very start and then the values will resemble the state
+	-- when the selection encompasses the entire media, however this is not very likely
+	if sel_st and sel_st ~= 0 and (sel_fin == length or sel_fin-0.001 == length) -- when there's no selection the readout left hand value shows cursor position while the right hand value shows total media length // sel_fin value displayed in the selection end readout may be greater by 1 ms than the length value displayed in the 'Media information box' and will actually match the length returned by PCM_Source_GetSectionInfo() and rounded down
+	and (not mousewheel and (left or right)
+	or mousewheel and (sel_start and val < 0 or sel_end and val > 0) -- mousewheel dedicated to either start or end
+	or mousewheel and not sel_start and not sel_end) -- mousewheel dedicated to both start and end, moving entire selection
+	then
+	local addition = mousewheel and (sel_start or sel_end) and ' try in the opposite direction \n\n' or '' -- only add in scripts where mousewheel only controls one end of the selection
+	Error_Tooltip('\n\n there\'s no active selection \n\n'..addition, 1, 1) -- caps, spaced true
+	return r.defer(no_undo)
+	end
+
 local st, fin = parse(start_props.title), parse(end_props.title)
 
 local parm = sel_start and st or sel_end and fin
 
-	if not mousewheel and (left and parm <= 0 or right and parm >= length)
+	if not mousewheel and (parm and (left and parm <= 0 or right and parm >= length) or left and st <= 0 or right and fin >= length)
 	or mousewheel and parm and (val < 0 and parm <= 0 or val > 0 and parm >= length) -- mousewheel dedicated to either start or end
-	or mousewheel and not parm and (val < 0 and st <= 0 or val > 0 and fin >= length) --  mousewheel dedicated to both start and end, moving entire selection
+	or mousewheel and not parm and (val < 0 and st <= 0 or val > 0 and fin >= length) -- mousewheel dedicated to both start and end, moving entire selection
 	then
-	Error_Tooltip('\n\n    the limit has been reached \n\n or there\'s no active selection \n\n', 1, 1) -- caps, spaced true
+	Error_Tooltip('\n\n    the limit has been reached \n\n or there\'s no active selection \n\n', 1, 1) -- caps, spaced true // if options 'Display preview position in beats for audio files...' and/or 'Display preview position in whole seconds or beats' are enabled the 'no active time selection' error message won't be generated above and the script will continue running up until this point, here 'no active selection' alternative is based on the fact that when there's no active selection st and fin values will be equal to 0 and media length respectively resembling the state when the selection encompasses the entire media, but it's impossible to determine what the actual state is hence two suggestions
 	return r.defer(no_undo)
 	end
 
 VAL = mousewheel and parm and (val < 0 and parm-VAL or val > 0 and val < 63 and parm+VAL) -- mousewheel dedicated to either start or end
-or mousewheel and val < 0 and {st-VAL, fin-VAL} or val > 0 and val < 63 and {st+VAL, fin+VAL} -- mousewheel dedicated to both start and end, moving entire selection
-or not mousewheel and (right and parm+VAL or left and parm-VAL)
+or mousewheel and (val < 0 and {st-VAL, fin-VAL} or val > 0 and val < 63 and {st+VAL, fin+VAL}) -- mousewheel dedicated to both start and end, moving entire selection
+or not mousewheel and (parm and (right and parm+VAL or left and parm-VAL) or right and {st+VAL, fin+VAL} or left and {st-VAL, fin-VAL})
 -- prevent going beyond limits, which is technically possible
 VAL = tonumber(VAL) and (VAL < 0 and 0 or VAL > length and length)
 or type(VAL) == 'table' and (VAL[1] < 0 and {0, VAL[2]-VAL[1]}  or VAL[2] > length and {VAL[1]+length-VAL[2], length})
 or VAL
-
 
 	if tonumber(VAL) and (sel_start and VAL >= fin or sel_end and VAL <= st) then -- impossible if both selection ends move simultaneously
 	Error_Tooltip('\n\n new position clears selection \n\n', 1, 1) -- caps, spaced true
