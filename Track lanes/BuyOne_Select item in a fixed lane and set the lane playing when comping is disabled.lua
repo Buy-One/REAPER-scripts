@@ -6,12 +6,13 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: 7
-About: The script name is self-explanatory.
-		 Can be bound to the left mouse click in the 'Media item'
-		 context of Mouse modifiers. There's no native way to bind 
-		 the action 'Track lanes: Play only lane under mouse' to
-		 a mouse modifier because there's no context for fixed
-		 lanes outside of comping mode.
+About: 	Meant to allow simultaneous item selection and lane playback
+	activation.  
+	Can be bound to the left mouse click in the 'Media item'
+	context of Mouse modifiers. There's no native way to bind 
+	the action 'Track lanes: Play only lane under mouse' to
+	a mouse modifier because there's no context for fixed
+	lanes outside of comping mode.
 ]]
 
 local r = reaper
