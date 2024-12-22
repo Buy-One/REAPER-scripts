@@ -17,7 +17,7 @@ About: 	Meant to allow simultaneous item selection and lane playback
 
 local r = reaper
 
-local Debug = "1"
+local Debug = ""
 function Msg(param, cap) -- caption second or none
 local cap = cap and type(cap) == 'string' and #cap > 0 and cap..' = ' or ''
 	if #Debug:gsub(' ','') > 0 then -- declared outside of the function, allows to only didplay output when true without the need to comment the function out when not needed, borrowed from spk77
