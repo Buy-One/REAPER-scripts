@@ -2,8 +2,13 @@
 ReaScript name: BuyOne_Transcribing B - Replace text in the transcript.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog:	#Fixed error in one by one replacement mode when segment region name contains 
+		several search matches and the replacement term contains the search term				
+		#Added a workaround for the issue of unbalanced characters handling by ReaScript API
+		#Added error message when the dialogue is submitted with empty 'Replace target:' field 
+		#Added error message when search and replacement terms are identical
+		#Updated 'About' text
 Licence: WTFPL
 REAPER: recommended 7.03 and newer
 Extensions: SWS/S&M or js_ReaScriptAPI is recommended			
@@ -24,11 +29,15 @@ About:	The script is part of the Transcribing B workflow set of scripts
 	segment region for the sake of visual freedback of the replacement
 	result.
 	
-	The script offers 4 replacement modes:  
-	0. Batch replace in all segment regions
-	1. Batch replace in segment regions within time selection
-	2. Batch replace in segment regions from the edit/mouse cursor onwards
-	3. Batch replace from the first segment region up to the edit/mouse cursor
+	In order to enable settings '3. Match case' and '4. Match exact word'
+	insert any character in the corresponding field, preferably 
+	avoiding apostrophe ', quotation mark " and parentheses ( or ).
+	
+	As a setting '5. Mode' the script offers 4 replacement modes:  
+	0. Batch replace in all segment regions  
+	1. Batch replace in segment regions within time selection  
+	2. Batch replace in segment regions from the edit/mouse cursor onwards  
+	3. Batch replace from the first segment region up to the edit/mouse cursor  
 	4. Word by word starting from the segment region at the edit/mouse cursor
 	
 	In mode 2 time selection may include region start, region end, both
@@ -97,6 +106,31 @@ About:	The script is part of the Transcribing B workflow set of scripts
 	If extensions are installed and the Region/Marker Manager is closed at the
 	moment of the script execution, the script will open it so that the user 
 	can get visual feedback of the changes to the transcript.
+	
+	
+	CAVEATS
+	
+	Due to an issue of handling unbalanced (odd numbered) parentheses, apostrophe 
+	and quotation marks by the ReaScript API
+	(ref: https://forum.cockos.com/showthread.php?t=288046)
+	for the sake of correct text display within the replacement dialogue the script 
+	adds as many instances of these characters as needed (if needed) to balance them 
+	out. 
+	In the case of unbalanced quotation marks and parentheses the script generates
+	a warning message and allows the user to fix the field content after balancing
+	them out automatically to be able to maintain the dialogue content integrity
+	when it's reloaded after the warning message.  
+	In the case of apostrophe an odd number of instances (most common 1) the script 
+	converts into an even number, so a single ' becomes '' for the sake of display
+	within the dialogue. Internally however all occurrences of multiple apostrophe
+	instances the script converts into a single instance as would be required by
+	regular syntax. For this reason it won't be possible to add multiple apostrophes
+	to the segment transcript via the replacement term (should such a need arise) 
+	which along with the requirement to use replace target and replacement terms with
+	balanced quotation marks and perentheses is an inevitable side effect of tackling 
+	the above mentioned issue.  
+	Unbalanced characters in fields 3 and 4, which are optional, are substituted 
+	with + sign.
 
 ]]
 
@@ -947,7 +981,9 @@ function Replace_In_Segment_Regions(reg_t, repl_mode, search_term, replace_term,
 				if capt then
 					if capt ~= replace_term then -- only replace a match which hasn't been replaced yet; when all have been replaced a message of no replacements will be shown
 					capt = Esc(capt)
-					line, count = line:gsub(capt, replace_term, 1) -- replace capture because it was retuned with the correct case, doing it 1 by 1 which is presumably safer and more reliable because string.gsub has a limit of 32 replacements
+					local lineA, lineB = line:sub(1,st-1), line:sub(st,#line) -- split to be able to target capture at the correct location in case there's an earlier capture which otherwise will be targeted by gsub below, i.e. if search term is WAS and replacement term is "WAS" the WAS in earlier "WAS" will be targeted instead of the next WAS // this isn't a problem in exact match search
+					line, count = lineB:gsub(capt, replace_term, 1) -- replace capture because it was retuned with the correct case, doing it 1 by 1
+					line = lineA..line
 					replace_cnt = replace_cnt+count
 						if one_by_one then break end
 					end
@@ -969,7 +1005,7 @@ function Replace_In_Segment_Regions(reg_t, repl_mode, search_term, replace_term,
 						s = ignore_case and (rerun and convert_case_in_unicode(s) or s:lower()) or s
 						local repl_patt = capt_low:gsub(s, replace_term) -- first replace the target word inside the capture to keep all punctuation characters included in capt
 						capt, repl_patt = Esc(capt), repl_patt:gsub('%%','%%%%') -- repl_patt must be escaped if contains % which is unlikley but just in case
-						line, count = line:gsub(capt, repl_patt, 1) -- replace along with the originally captured punctuation marks, doing it 1 by 1 which is presumably safer and more reliable because string.gsub has a limit of 32 replacements
+						line, count = line:gsub(capt, repl_patt, 1) -- replace along with the originally captured punctuation marks, doing it 1 by 1
 						replace_cnt = replace_cnt+count
 
 							if one_by_one then break end
@@ -1138,6 +1174,75 @@ end
 
 
 
+function resolve_all_or_restore_apostrophe(fields_t, sep, resolve)
+-- fields_t is table of fields content returned by GetUserInputs_Alt() as 1st return value
+-- if sep arg isn't supplied, default to comma
+-- the function is meant to balance unbalanced perenthesis '(' or ')', quotation marks " and apostrophe '
+-- before content is fed back into GetUserInputs_Alt() on dialogue reload because lack of parenthesis balance
+-- or odd number of quotation marks and apostrophe breaks fields separation
+-- https://forum.cockos.com/showthread.php?t=288046
+-- {}, [], <> don't cause this problem
+-- the function is to be run after GetUserInputs_Alt() in resolve mode
+-- to balance any unbalanced characters and store the returned result as extended state
+-- so that it can be fed back into the dialogue reliably later on
+-- then followed by another instance of the function in restore mode
+-- to restore balanced apostrophe instances to their original form in order to accurately 
+-- find and replace content in the target text
+-- unbalanced quotation marks and parentheses after resolution trigger a warning message
+-- and reloading of the dialogue to allow the user to resolve the unbalanced characters
+-- as they see fit
+
+	if resolve then
+	local sep, unbalanced_char_data = sep or ',', ''
+		for field_idx, field in ipairs(fields_t) do
+			if field_idx < #fields_t and #field > 0 then -- unbalanced characters in the last field don't break the dialogue so it can be excluded
+				for k, char in ipairs({'"',"'"}) do
+				local unbalanced_char = select(2, field:gsub(char,''))%2 > 0 -- if quote char or apostrophe count is odd, they're unbalanced
+					if unbalanced_char then
+						if field_idx > 2 then -- in this script fields at indices greater than 2 are boolean therefore there's no point in balancing their characters, it's enough to replace them with one which doesn't require balancing
+						field = '+'
+						else
+						local pt1, pt2 = field:match("(.*"..char..")(.*)") -- isolate pt1 up to the last (odd) char
+						field = pt1..char..pt2 -- balance the last char
+							if char == '"' then
+							unbalanced_char_data = unbalanced_char_data..'Field: '..math.floor(field_idx)..'\tCharacter: '..char..'\n'
+							end
+						end
+					end
+				end
+			-- determine which parenthesis instances are fewer and make up for the deficit
+			-- to balance out the oppotite parenthesis instances
+			local open_parenth_cnt = select(2, field:gsub('%(',''))
+			local clsd_parenth_cnt = select(2, field:gsub('%)',''))
+			local minim = math.min(open_parenth_cnt, clsd_parenth_cnt)
+			local maxim = math.max(open_parenth_cnt, clsd_parenth_cnt)
+			local parenth = open_parenth_cnt ~= clsd_parenth_cnt and (minim == open_parenth_cnt and '(' or ')') -- determine type if parenthesis to be added
+				if parenth then -- will be false if open_parenth_cnt and clsd_parenth_cnt are equal, i.e. all instances are balanced
+					if field_idx > 2 then -- in this script fields at indices greater than 2 are boolean therefore there's no point in balancing their characters, it's enough to replace them with one which doesn't require balancing
+					field = '+'
+					else
+				--	local src_parenth = parenth:byte() == 40 and ')' or '(' -- 40 is ASCII code for left parenthesis, 41 is for right, determine the source parenthesis to be complemented with replacement parenthesis // TOO VERBOSE
+					local src_parenth = parenth == '(' and ')' or '(' -- determine the source parenthesis to be complemented with balancing parenthesis, all instances of the balancing parenthesis are appended to the first instance of the opposite parenthesis
+					field = field..' '..parenth:rep(maxim-minim) -- escaping parenth at the string end
+					unbalanced_char_data = unbalanced_char_data..'Field: '..math.floor(field_idx)..'\tCharacter: '..src_parenth..'\n'
+					end
+				end
+			end
+		fields_t[field_idx] = field
+		end
+		if #unbalanced_char_data > 0 then
+		r.MB('Please resolve unbalanced characters in:\n\n'..unbalanced_char_data:sub(1,-2)..'\n\nThey have been balanced for the settings\nto be properly displayed in the reloaded dialogue.\n\nBut if you leave them as they are, that\'s how\nthe terms will be searched for and/or appear\nafter replacement in the transcript.', 'WARNING',0) -- stripping trailing new line character from unbalanced_char_data
+		end
+	return fields_t, unbalanced_char_data -- unbalanced_char_data return value will be used to condition reloading of the dialogue by setting off the 'goto' loop
+	else -- restore apostrophe
+		for k, field in ipairs(fields_t) do
+		fields_t[k] = field:gsub("'''*","'") -- replace all instances of muliple apostrophes with a single one
+		end
+	return fields_t
+	end
+end
+
+
 function replace_term_lower(replace_term)
 
 -- since in the Region/Marker Manager upper case AND, OR and NOT are used as operators
@@ -1221,7 +1326,8 @@ or Get_Child_Windows_JS('Region/Marker Manager', false) -- want_exact false to i
 
 local current_segm -- used to display last edited segment transcript in the replacement dialogue when js extension is used in mode 4
 
-::CONTINUE::
+
+::CONTINUE:: -- MUST BE LOCATED HERE SO THAT IN one-by-one mode region names are updated at each cycle which is important for character counting if the name contains several search matches
 
 local reg_t = Get_Segment_Regions(REG_COLOR)
 
@@ -1239,23 +1345,36 @@ local sep = '`'
 local ext = r.GetExtState(cmdID, 'UPDATED SEGMENT') -- ext state is stored when the script uses js extension to scroll the Manager in mode 4 and the Manager filter contains the replacement term which requires scrolling with DEFERRED_WAIT() function and current_segm var won't work when the script is restarted after defer loop termination
 current_segm = current_segm or #ext > 0 and ext
 
-local output_t, output = GetUserInputs_Alt('REPLACE IN TRANSCRIPT (insert any character to enable settings 3 and 4)', 5, '1. Replace target:,2. Replace with:,3. Match case (register):,4. Match exact word:,5. Mode (h for Help):', replace_sett, sep, current_segm and 1, current_segm) -- autofill the dialogue with the last search settings, comment_field is 1, true, in the comment field the currently edited segment will be displayed in one-by-one mode
+local output_t, output = GetUserInputs_Alt('REPLACE IN TRANSCRIPT (insert any character to enable settings 3 and 4)', 5, '1. Replace target:,2. Replace with:,3. Match case (register):,4. Match exact word:,5. Mode (h for Help):', replace_sett, sep, current_segm and 1, current_segm) -- autofill the dialogue with the last search settings, comment_field is 1, true, in the comment field the currently edited segment will be displayed in one-by-one mode // output return string isn't used in the script
 
-	if not output_t or #output_t[1]:gsub(' ','') == 0 then -- all fields are empty or the search term field only
+	if not output_t then -- all fields are empty
 	r.DeleteExtState(cmdID, 'LAST SEARCH', true) -- persist true // the search ext state data stored inside Search_Track_Notes() are kept as long as the search dialogue is kept open in which case the script keeps running or if the search is run headlessly while the script is armed; the data are only deleted when the dialogue is exited
 	r.DeleteExtState(cmdID, 'UPDATED SEGMENT', true) -- persist true
-	return r.defer(no_undo) end
+	return r.defer(no_undo)
+	elseif #output_t[1]:gsub(' ','') == 0 then -- the search term field is empty
+	Error_Tooltip('\n\n "replace target:" field is empty \n\n', 1, 1, 200) -- caps, spaced true, x 200 to move tooltip away from the OK button because it blocks it for click
+	goto CONTINUE
+	else -- resolve any unbalanced characters input by the user
+	output_t, unbalanced_char_data = resolve_all_or_restore_apostrophe(output_t, sep, 1) -- resolve true
+	r.SetExtState(cmdID, 'REPLACE SETTINGS', table.concat(output_t, sep), false) -- persist false // keep latest search settings during REAPER session to autofill the search dialogue when it's opened
+		if #unbalanced_char_data > 0 then
+		goto CONTINUE
+		end
+	end
+	
+output_t = resolve_all_or_restore_apostrophe(output_t, sep) -- resolve nil, restore instances of resolved apostrophe to a single apostrophe in each occurrence
 
-r.SetExtState(cmdID, 'REPLACE SETTINGS', output, false) -- persist false // keep latest search settings during REAPER session to autofill the search dialogue when it's opened and to get them in the headless search
-
-local search_term = output_t[1]
-local replace_term = output_t[2]
 local ignore_case = not validate_output(output_t[3])
+local search_term = ignore_case and output_t[1]:lower() or output_t[1] -- convert to lower case if 'Match case' is not enabled
+local replace_term = output_t[2]
 local exact = validate_output(output_t[4])
 local repl_mode = #output_t[5]:gsub(' ','') > 0 and output_t[5]
 
 	if not repl_mode then
 	Error_Tooltip("\n\n\treplace mode \n\n has not been selected \n\n", 1, 1, 200) -- caps, spaced true, x is 200 to move the tooltip away from the dialogue OK button beause its blocks the click
+	elseif not ignore_case and search_term == replace_term then -- only if ignore_case is false because otherwise if they're same after the search term convesion to lower case, the match and the replace term can still differ in their case so replacement will make sense
+	Error_Tooltip("\n\n the search and replacement \n\n\tterms are the same \n\n", 1, 1, 200) -- caps, spaced true, x is 200 to move the tooltip away from the dialogue OK button beause its blocks the click
+	goto CONTINUE
 	end
 
 
