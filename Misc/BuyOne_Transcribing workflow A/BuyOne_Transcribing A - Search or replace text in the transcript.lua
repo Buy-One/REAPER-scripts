@@ -2,8 +2,14 @@
 ReaScript name: BuyOne_Transcribing A - Search or replace text in the transcript.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.9
-Changelog: 1.9  #Fixed endless replacement loop in replacement modes 0 & 1
+Version: 2.0
+Changelog: 2.0 #Fixed error in one by one replacement mode when segment transcript contains 
+		several search matches and the replacement term contains the search term
+		#Added a workaround for the issue of unbalanced characters handling by ReaScript API					
+		#Shortened replacement mode field title so it's visible in full
+		#Made the dialogue settings clearer
+		#Updated 'About' text
+	   1.9  #Fixed endless replacement loop in replacement modes 0 & 1
 		in cases where the replacement term is multi-word and contains the search term
 	   1.8	#Improved search for exact word in cases where there're
 		several matches in a segment 
@@ -74,9 +80,10 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	Notes track, or, if there's a single track, after reaching end
 	of its Notes it loops back to its start.
 	
-	In order to enable the search settings 'Match case' and
-	'Match exact word' insert any character in the corresponding
-	field.			
+	In order to enable the search settings '2. Match case' and
+	'3. Match exact word' insert any character in the corresponding
+	field, preferably avoiding apostrophe ', quotation mark " and 
+	parentheses ( or ).		
 	
 	The Notes window is scrolled towards the line containing the 
 	search match if there's enough scrolling space. The match itself 
@@ -119,7 +126,7 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	
 	► REPLACEMENT
 	
-	There're 3 replacement modes: 
+	For the setting '4. Replace mode' there're 3 replacement modes: 
 	0 - batch replacement in the Notes of all tracks containing the transcript, 
 	which can be several if the transcript exceeds 65,535 bytes.  
 	1 - batch replacement in the only or the first selected track containing 
@@ -127,14 +134,14 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	2 - replacement word by word
 	
 	To activate a mode, type a digit which represents it above in the 
-	'Enable replacement' field of the search dialogue.  
+	'4. Replace mode' field of the search dialogue.  
 	All other fields relevant to search are also relevant to replacement.
 	
 	When track notes displayed in the Notes window are updated in modes 0 and 1, 
 	the window scroll position is reset, therefore it's advised to have
 	js_ReaScriptAPI extension installed which will allow restoration of the
 	Notes window scroll position in such cases.
-
+	
 	Since modes 0 and 1 could be resource intensive REAPER may freeze
 	for a number of seconds while the replacements are being made.  
 	In mode 2 replacement is circular like the search until all matches 
@@ -145,16 +152,43 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	may freeze for a number of seconds until the script will have parsed 
 	the entire transcript.
 	
-	The 'Enable replacement' setting is not stored between script launches 
+	The '4. Replace mode' setting is not stored between script launches 
 	for safety reasons to prevent inadvertent replacement, even though the 
 	rest of the settings are kept.
-
+	
 	Headless mode is not supported in replacement functionality. If after
 	exiting the search dialogue the script is armed and executed again
 	the search will be performed.
 	
 	Of course replacements in the transctipt can also be made outside 
 	of REAPER and the SWS Notes window with any 3d party software.
+	
+	
+	► CAVEATS
+	
+	Due to an issue of handling unbalanced (odd numbered) parentheses, 
+	apostrophe and quotation marks by the ReaScript API
+	(ref: https://forum.cockos.com/showthread.php?t=288046)
+	for the sake of correct text display within the dialogue the script 
+	will add to the search term as many instances of these characters as 
+	needed (if needed) to balance them out. 
+	In the case of unbalanced quotation marks and parentheses the script 
+	generates a warning message and allows the user to fix the 'SEARCH TERM'
+	field content after balancing them out automatically to be able to 
+	maintain the dialogue content integrity when it's reloaded after the 
+	warning message.  
+	In the case of apostrophe an odd number of instances (most common 1) 
+	the script converts into an even number, so a single ' becomes '' for 
+	the sake of display within the dialogue. Internally however all occurrences 
+	of multiple apostrophe instances the script converts into a single instance 
+	as would be required by regular syntax. For this reason it won't be possible 
+	to use search term with multiple apostrophes (should such a need arise) 
+	which along with the requirement to use search term with balanced quotation 
+	marks and perentheses is an inevitable side effect of tackling the above 
+	mentioned issue. 
+	Unbalanced characters in fields 2 and 3, which are optional, are substituted 
+	with + sign. Ine the 'Replace with:' field they don't affect the dialogue 
+	content integrity.
 
 ]]
 
@@ -675,6 +709,76 @@ end
 
 
 
+function resolve_all_or_restore_apostrophe(fields_t, sep, resolve)
+-- fields_t is table of fields content returned by GetUserInputs_Alt() as 1st return value
+-- if sep arg isn't supplied, default to comma
+-- the function is meant to balance unbalanced perenthesis '(' or ')', quotation marks " and apostrophe '
+-- before content is fed back into GetUserInputs_Alt() on dialogue reload because lack of parenthesis balance
+-- or odd number of quotation marks and apostrophe breaks fields separation
+-- https://forum.cockos.com/showthread.php?t=288046
+-- {}, [], <> don't cause this problem
+-- the function is to be run after GetUserInputs_Alt() in resolve mode
+-- to balance any unbalanced characters and store the returned result as extended state
+-- so that it can be fed back into the dialogue reliably later on
+-- then followed by another instance of the function in restore mode
+-- to restore balanced apostrophe instances to their original form in order to accurately 
+-- find and replace content in the target text
+-- unbalanced quotation marks and parentheses after resolution trigger a warning message
+-- and reloading of the dialogue to allow the user to resolve the unbalanced characters
+-- as they see fit
+
+	if resolve then
+	local sep, unbalanced_char_data = sep or ',', ''
+		for field_idx, field in ipairs(fields_t) do
+			if field_idx < #fields_t and #field > 0 then -- unbalanced characters in the last field don't break the dialogue so it can be excluded
+				for k, char in ipairs({'"',"'"}) do
+				local unbalanced_char = select(2, field:gsub(char,''))%2 > 0 -- if quote char or apostrophe count is odd, they're unbalanced
+					if unbalanced_char then
+						if field_idx > 2 then -- in this script fields at indices greater than 2 are either boolean or numeric (besides the last, which is included from the loop anyway) therefore there's no point in balancing their characters, it's enough to replace them with one which doesn't require balancing
+						field = '+'
+						else
+						local pt1, pt2 = field:match("(.*"..char..")(.*)") -- isolate pt1 up to the last (odd) char
+						field = pt1..char..pt2 -- balance the last char
+							if char == '"' then
+							unbalanced_char_data = unbalanced_char_data..'Field: '..math.floor(field_idx)..'\tCharacter: '..char..'\n'
+							end
+						end
+					end
+				end
+			-- determine which parenthesis instances are fewer and make up for the deficit
+			-- to balance out the oppotite parenthesis instances
+			local open_parenth_cnt = select(2, field:gsub('%(',''))
+			local clsd_parenth_cnt = select(2, field:gsub('%)',''))
+			local minim = math.min(open_parenth_cnt, clsd_parenth_cnt)
+			local maxim = math.max(open_parenth_cnt, clsd_parenth_cnt)
+			local parenth = open_parenth_cnt ~= clsd_parenth_cnt and (minim == open_parenth_cnt and '(' or ')') -- determine type if parenthesis to be added
+				if parenth then -- will be false if open_parenth_cnt and clsd_parenth_cnt are equal, i.e. all instances are balanced
+					if field_idx > 2 then -- in this script fields at indices greater than 2 are boolean therefore there's no point in balancing their characters, it's enough to replace them with one which doesn't require balancing
+					field = '+'
+					else
+				--	local src_parenth = parenth:byte() == 40 and ')' or '(' -- 40 is ASCII code for left parenthesis, 41 is for right, determine the source parenthesis to be complemented with replacement parenthesis // TOO VERBOSE
+					local src_parenth = parenth == '(' and ')' or '(' -- determine the source parenthesis to be complemented with balancing parenthesis, all instances of the balancing parenthesis are appended to the first instance of the opposite parenthesis
+					field = field..' '..parenth:rep(maxim-minim) -- escaping parenth at the string end
+					unbalanced_char_data = unbalanced_char_data..'Field: '..math.floor(field_idx)..'\tCharacter: '..src_parenth..'\n'
+					end
+				end
+			end
+		fields_t[field_idx] = field
+		end
+		if #unbalanced_char_data > 0 then
+		r.MB('Please resolve unbalanced characters in:\n\n'..unbalanced_char_data:sub(1,-2)..'\n\nThey have been balanced for the settings\nto be properly displayed in the reloaded dialogue.\n\nBut if you leave them as they are, that\'s how\nthe terms will be searched for and/or appear\nafter replacement in the transcript.', 'WARNING',0) -- stripping trailing new line character from unbalanced_char_data
+		end
+	return fields_t, unbalanced_char_data -- unbalanced_char_data return value will be used to condition reloading of the dialogue by setting off the 'goto' loop
+	else -- restore apostrophe
+		for k, field in ipairs(fields_t) do
+		fields_t[k] = field:gsub("'''*","'") -- replace all instances of muliple apostrophes with a single one
+		end
+	return fields_t
+	end
+end
+
+
+
 function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, search_term, replace_term, cmdID, ignore_case, exact, notes_wnd)
 -- tr_idx, start_line_idx are only rekevant for one-by-one replacement mode
 -- and stem from Get_SWS_Track_Notes_Caret_Line_Idx()
@@ -697,7 +801,7 @@ function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, sear
 	local st, fin = line:find(Esc(replace_term), st)
 	local pre_capt_extra = select(2, line:sub(1,st-1):gsub('[\128-\191]',''))
 	local capt_extra = select(2, replace_term:gsub('[\128-\191]',''))
-	return st - pre_capt_extra, fin, fin - pre_capt_extra - capt_extra -- returning both original byte based fin value and adjusted character based one, the first is for storage as 'LAST SEARCH' data, the second is for text highlighting inside Scroll_SWS_Notes_Window()
+	return st - pre_capt_extra, fin, fin - pre_capt_extra - capt_extra -- returning both original byte based fin value and adjusted character based one, the first is for storage as 'LAST SEARCH' data, the second is for text highlighting inside Scroll_SWS_Notes_Window() in one-by-one mode
 	end
 
 	local function get_capture(line, search_term, ignore_case, exact, fin, rerun)
@@ -711,7 +815,7 @@ function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, sear
 	-- beause string.lower() ignores these which is likely to result in negative outcome with non-ASCII characters
 	local s = not exact and Esc(search_term) or search_term -- if exact, search_term arg is a pattern, not the original search term therefore it must not be escaped to avoid pattern corruption, otherwise special chars will be treated as literals, the search term is escaped by itself in the parent function replace_capture()
 	s = ignore_case and (rerun and convert_case_in_unicode(s) or s:lower()) or s
-	local line_tmp = ignore_case and (rerun and convert_case_in_unicode(line) or line:lower()) or line -- using a line copy to be able to use the original to extract the original match from below
+	local line_tmp = ignore_case and (rerun and convert_case_in_unicode(line) or line:lower()) or line -- using a line copy to be able to use the original to extract the original match below because it's the original which needs to be replaced
 	local st_idx = fin or 1 -- fin ensures that the search continues from where it had left off to prevent endless loop inside parent function replace_capture() when search and replacement terms only differ in case because if ignore_case is true string.find will get stuck at the first replacement keeping returning valid capture endlessly
 	local st, fin = line_tmp:find(s, st_idx)
 		if st then
@@ -738,7 +842,9 @@ function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, sear
 				if capt then
 					if capt ~= replace_term then -- only replace a match which hasn't been replaced yet; when all have been replaced a message of no replacements will be shown
 					capt = Esc(capt)
-					transcr, count = transcr:gsub(capt, replace_term, 1) -- replace capture because it was retuned with the correct case, doing it 1 by 1 which is presumably safer and more reliable because string.gsub has a limit of 32 replacements
+					local transcrA, transcrB = transcr:sub(1,st-1), transcr:sub(st,#transcr) -- split to be able to target capture at the correct location in case there's an earlier capture which otherwise will be targeted by gsub below, i.e. if search term is WAS and replacement term is "WAS" the WAS in earlier "WAS" will be targeted instead of the next WAS // this isn't a problem in exact match search
+					transcr, count = transcrB:gsub(capt, replace_term, 1) -- replace capture because it was retuned with the correct case, doing it 1 by 1
+					transcr = transcrA..transcr
 					replace_cnt = replace_cnt+count
 						if one_by_one then break end
 					end
@@ -764,12 +870,13 @@ function Replace_In_Track_Notes(replace_mode, tr_t, tr_idx, start_line_idx, sear
 						s = ignore_case and (rerun and convert_case_in_unicode(s) or s:lower()) or s
 						local repl_patt = capt_low:gsub(s, replace_term) -- first replace the target word inside the capture to keep all punctuation characters included in capt
 						capt, repl_patt = Esc(capt), repl_patt:gsub('%%','%%%%') -- repl_patt must be escaped if contains % which is unlikley but just in case
-						transcr, count = transcr:gsub(capt, repl_patt, 1) -- replace along with the originally captured punctuation marks, doin it 1 by 1 which is presumably safer and more reliable because string.gsub has a limit of 32 replacements
+						transcr, count = transcr:gsub(capt, repl_patt, 1) -- replace along with the originally captured punctuation marks, doin it 1 by 1
 						replace_cnt = replace_cnt+count
 							
 							if one_by_one then break end
 						
 						end
+					
 					fin = fin + (#replace_term-#search_term) -- OR st + #replace_term // if replace term is mutli-word and terminated with the search term the search might get stuck, and in general the length difference between the search and replace terms must be accounted for when search continues in the updated line
 					capt, st, fin, capt_low = get_capture(transcr, patt, ignore_case, exact, fin, rerun) -- prime for the next cycle
 					
@@ -962,7 +1069,7 @@ function Search_Track_Notes(tr_t, tr_idx, start_line_idx, search_term, cmdID, ig
 		else
 		-- patterns where the search term is only allowed to be padded with non-alphanumeric characters if 'Match exact word' option is enabled // the capture start and end return values from string.find include the padding even if it's outside of the capture so to simplify start and end calculation for highlighting with Scroll_SWS_Notes_Window() it makes sense to include the padding in the capture to offset after the fact inside offset_capture_indices() otherwise there's no easy way to ascertain whether there was any padding // 3 capture patterns are used because pattern with repetition * operator, e.g. '%W*'..s..'%W*', will match search term contained within words as well because '%W*' will also match alphanumeric characters hence unsuitable, start/end anchors are also meant to exclude alphanumeric characters in case the search term is only padded with non-alphanumeric character on one side
 		local pad = '[\0-\47\58-\64\91-\96\123-191]' -- use punctuation marks explicitly by referring to their code points instead of %W because when the search term is surrounded with non-ASCII characters %W will match all non-ASCII characters in addition to punctuation marks so in these cases pattern such as '%W'..s..'%W' will fail to produce exact match and will return non-exact matches as well, the pattern range also includes control characters beyond code 127 which is the end of ASCII range, codes source https://www.charset.org/utf-8
-		--	for _, patt in ipairs({'^'..s..'%W','%W'..s..'%W', '%W'..s..'$'}) do
+		--	for _, patt in ipairs({'^'..s..'%W', '%W'..s..'%W', '%W'..s..'$'}) do
 			for _, patt in ipairs({'^'..s..pad, pad..s..pad, pad..s..'$'}) do -- in this order of captures, because if there're several matches in the line the one at the very beginning will be ignored in favor of the later ones if '^'..s..pad pattern is not the 1st
 			st, fin, capt = line:find('('..patt..')', pos_in_line)
 				if capt then break end -- OR st OR fin BUT capture is required for processing inside offset_capture_indices()
@@ -1236,7 +1343,7 @@ local output_t, output
 	----------- S E A R C H  D I A L O G U E  S E T T I N G S ----------------
 
 	local i = 0
-	search_sett = last_search_data and search_sett or search_sett:gsub('[^'..sep..']*', function(c) i = i+1 if i == 4 then return '' end end) -- disable 'Enable replacement' option by removing the flag from the stored search settings so that every time the script is launched in search rather than in replace mode for safety reasons, when the script is launched last_search_data is false because the data is deleted each time the search dialogue is exited
+	search_sett = last_search_data and search_sett or search_sett:gsub('[^'..sep..']*', function(c) i = i+1 if i == 4 then return '' end end) -- disable '4. Replace mode' option by removing the flag from the stored search settings so that every time the script is launched in search rather than in replace mode for safety reasons, when the script is launched last_search_data is false because the data is deleted each time the search dialogue is exited
 
 		-- If the script is armed and there're stored 'SEARCH SETTINGS' data don't load the search dialogue
 		-- and run the search headlessly in which case the script isn't restarted via atexit()
@@ -1244,28 +1351,32 @@ local output_t, output
 		-- and is run from the start at each mouse click
 		if not headless_mode then
 
-		output_t, output = GetUserInputs_Alt('TRANSCRIPT SEARCH  (insert any character to enable search settings)', 5, 'SEARCH TERM:,Match case (register):,Match exact word:,Enable replacement (h for Help): ,Replace with:', search_sett, sep) -- autofill the dialogue with the last search settings
+		output_t, output = GetUserInputs_Alt('TRANSCRIPT SEARCH  (insert any character to enable settings 2 and 3)', 5, '1. SEARCH TERM:,2. Match case (register):,3. Match exact word:,4. Replace mode (h for Help): ,5. Replace with:', search_sett, sep) -- autofill the dialogue with the last search settings // output return string isn't used in the script
+		
+			if not output_t or #output_t[1]:gsub(' ','') == 0 then -- all fields are empty or the search term field only
+			r.DeleteExtState(cmdID, 'LAST SEARCH', true) -- persist true // the search ext state data stored inside Search_Track_Notes() are kept as long as the search dialogue is kept open in which case the script keeps running or if the search is run headlessly while the script is armed; the data are only deleted when the dialogue is exited
+			return r.defer(no_undo) end		
 
-		elseif #search_sett:gsub('[%s'..sep..']','') > 0 then
-		output_t = {}
+		output_t, unbalanced_char_data = resolve_all_or_restore_apostrophe(output_t, sep, 1) -- resolve true
+
+		r.SetExtState(cmdID, 'SEARCH SETTINGS', table.concat(output_t, sep), false) -- persist false // keep latest search settings during REAPER session to autofill the search dialogue when it's opened and to get them in the headless search
+			if #unbalanced_char_data > 0 then
+			goto CONTINUE
+			end
+
+		elseif #search_sett:gsub('[%s'..sep..']','') > 0 then		
 		--[[ WORKS BUT MORE VERBOSE THAN THE sring.match METHOD BELOW
+		output_t = {}
 			for sett in (search_sett..sep):gmatch('[^'..sep..']*') -- adding trailing field separator so that gmatch pattern captures the last field content as well, but keeping original search_sett value intact
 			output_t[#output_t+1] = sett
 			end
 		]]
-		local patt = '(.-)'..sep
-		output_t = {(search_sett..sep):match(patt:rep(5))} -- adding trailing field separator so that all fields are captured with the pattern, repeating the pattern as many times are there're fields in the dialogue // alternative to gmatch
-		output = search_sett -- assign to output var because this is what's being saved as extended state below
+		local patt = '(.-)'..sep -- adding trailing field separator so that all fields are captured with the pattern
+		output_t = {(search_sett..sep):match(patt:rep(5))} -- repeating the pattern as many times are there're fields in the dialogue // alternative to gmatch
 		end
 
-
-		if not output_t or #output_t[1]:gsub(' ','') == 0 then -- all fields are empty or the search term field only
-		r.DeleteExtState(cmdID, 'LAST SEARCH', true) -- persist true // the search ext state data stored inside Search_Track_Notes() are kept as long as the search dialogue is kept open in which case the script keeps running or if the search is run headlessly while the script is armed; the data are only deleted when the dialogue is exited
-		return r.defer(no_undo) end
-
-
-	r.SetExtState(cmdID, 'SEARCH SETTINGS', output, false) -- persist false // keep latest search settings during REAPER session to autofill the search dialogue when it's opened and to get them in the headless search
-
+	output_t = resolve_all_or_restore_apostrophe(output_t, sep) -- resolve nil, restore instances of resolved apostrophe to a single apostrophe in each occurrence
+		
 	local ignore_case = not validate_output(output_t[2])
 	local search_term = ignore_case and output_t[1]:lower() or output_t[1] -- convert to lower case if 'Match case' is not enabled
 	local exact = validate_output(output_t[3])
@@ -1273,6 +1384,7 @@ local output_t, output
 	local replace_mode = #output_t[4]:gsub(' ','') > 0 and output_t[4]
 
 	-------------------------------------------------------------------------
+
 
 		-- SEARCH AND REPLACE
 		if replace_mode then
@@ -1289,7 +1401,7 @@ local output_t, output
 				is_num = nil -- to prevent execution of Replace_In_Track_Notes() below, alternative to goto CONTINUE
 				end
 			end
-			if not ignore_case and search_term == replace_term then -- only if ignore_case is true because otherwise if they're same the match and the replace term can still differ in their case so replacement will make sense
+			if not ignore_case and search_term == replace_term then -- only if ignore_case is false because otherwise if they're same after the search term convesion to lower case, the match and the replace term can still differ in their case so replacement will make sense
 			Error_Tooltip('\n\n the search and replacement \n\n\tterms are identical \n\n', 1, 1, 100) -- caps, spaced true, x is 100 to move the tooltip away from the cursor so it doesn't stand between the cursor and search/replace dialogue OK button and doesn't block the click
 			elseif is_num then
 			r.Undo_BeginBlock()
