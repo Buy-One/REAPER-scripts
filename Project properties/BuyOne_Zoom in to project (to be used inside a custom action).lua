@@ -7,18 +7,18 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script is meant to be used inside horizontal zoom
-			custom action to prevent zooming out beyond project bounds, e.g.:
-			
-			Custom: Zoom horizontally respecting project bounds when zooming out
-				View: Zoom horizontally (MIDI CC relative/mousewheel)
-				Script: BuyOne_Zoom in to project (to be used inside a custom action).lua
-			
-			Project left bound is 0 sec on the time line while project right bound
-			is the location of one of the following: end of the last media item, 
-			the last marker, end of the last region, the last tempo envelope point, 
-			whichever is the farthest on the time line.  
-			So the script prevents zooming out beyond the project farthest coordinate
-			which as i was told some other DAWs do automatically.
+	custom action to prevent zooming out beyond project bounds, e.g.:
+	
+	Custom: Zoom horizontally respecting project bounds when zooming out
+		View: Zoom horizontally (MIDI CC relative/mousewheel)
+		Script: BuyOne_Zoom in to project (to be used inside a custom action).lua
+	
+	Project left bound is 0 sec on the time line while project right bound
+	is the location of one of the following: end of the last media item, 
+	the last marker, end of the last region, the last tempo envelope point, 
+	whichever is the farthest on the time line.  
+	So the script prevents zooming out beyond the project farthest coordinate
+	which as i was told some other DAWs do automatically.
 			
 ]]
 
