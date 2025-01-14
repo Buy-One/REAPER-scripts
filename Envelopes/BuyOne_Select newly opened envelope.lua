@@ -5,7 +5,7 @@ Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-
 Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
-RREAPER: at least v5.962, 7.19 is recommended
+RREAPER: at least v5.962, 7.19 and later is recommended
 About: 	The script sets the newly opened envelope selected.
 	It can be either envelope that's just been created
 	or one that's been unhidden.
