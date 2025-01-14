@@ -7,65 +7,65 @@ Changelog: #Initial release
 Licence: WTFPL
 RREAPER: at least v5.962, 7.19 is recommended
 About: 	The script sets the newly opened envelope selected.
-			It can be either envelope that's just been created
-			or one that's been unhidden.
-			
-			The script can only work as part of a custom action
-			alongside one of the following stock REAPER actions:
-			Take: Toggle take mute envelope
-			Take: Toggle take pan envelope
-			Take: Toggle take pitch envelope
-			Take: Toggle take volume envelope
-			Toggle show master tempo envelope
-			Track: Toggle track mute envelope active
-			Track: Toggle track mute envelope visible
-			Track: Toggle track pan envelope active
-			Track: Toggle track pan envelope visible
-			Track: Toggle track pre-FX pan envelope active
-			Track: Toggle track pre-FX pan envelope visible
-			Track: Toggle track pre-FX volume envelope active
-			Track: Toggle track pre-FX volume envelope visible
-			Track: Toggle track trim envelope visible
-			Track: Toggle track volume envelope active
-			Track: Toggle track volume envelope visible
-			FX: Activate/bypass track/take envelope for last touched FX parameter
-			FX: Show/hide track/take envelope for last touched FX parameter
-			
-			and SWS extension actions:
-			SWS/BR: Show mute send envelopes for selected tracks
-			SWS/BR: Show pan send envelopes for selected tracks
-			SWS/BR: Show volume send envelopes for selected tracks
-			SWS/BR: Show/hide pan track envelope for last adjusted send			
-			SWS/BR: Show/hide track envelope for last adjusted send (volume/pan only)
-			SWS/BR: Show/hide volume track envelope for last adjusted send
-			SWS/BR: Toggle show active mute send envelopes for selected tracks
-			SWS/BR: Toggle show active pan send envelopes for selected tracks
-			SWS/BR: Toggle show active volume send envelopes for selected tracks
-			SWS/BR: Toggle show mute send envelopes for selected tracks
-			SWS/BR: Toggle show pan send envelopes for selected tracks
-			SWS/BR: Toggle show volume send envelopes for selected tracks
-			SWS/S&M: Show and unbypass take mute envelope
-			SWS/S&M: Show and unbypass take pan envelope
-			SWS/S&M: Show and unbypass take pitch envelope
-			SWS/S&M: Show and unbypass take volume envelope
-			SWS/S&M: Show take mute envelope
-			SWS/S&M: Show take pan envelope
-			SWS/S&M: Show take pitch envelope
-			SWS/S&M: Show take volume envelope
-			SWS/S&M: Toggle show take mute envelope
-			SWS/S&M: Toggle show take pan envelope
-			SWS/S&M: Toggle show take pitch envelope
-			SWS/S&M: Toggle show take volume envelope
-						
-			If several envelopes are opened at once only the first 
-			one found will be set selected. REAPER doesn't support 
-			selection of several envelopes.
-			
-			THE CUSTOM ACTION SEQUENCE MUST LOOK AS FOLLOWS:
-			
-			BuyOne_Select newly opened envelope.lua
-			--- REAPER/SWS Extension ACTION ---
-			BuyOne_Select newly opened envelope.lua			
+	It can be either envelope that's just been created
+	or one that's been unhidden.
+	
+	The script can only work as part of a custom action
+	alongside one of the following stock REAPER actions:
+	Take: Toggle take mute envelope
+	Take: Toggle take pan envelope
+	Take: Toggle take pitch envelope
+	Take: Toggle take volume envelope
+	Toggle show master tempo envelope
+	Track: Toggle track mute envelope active
+	Track: Toggle track mute envelope visible
+	Track: Toggle track pan envelope active
+	Track: Toggle track pan envelope visible
+	Track: Toggle track pre-FX pan envelope active
+	Track: Toggle track pre-FX pan envelope visible
+	Track: Toggle track pre-FX volume envelope active
+	Track: Toggle track pre-FX volume envelope visible
+	Track: Toggle track trim envelope visible
+	Track: Toggle track volume envelope active
+	Track: Toggle track volume envelope visible
+	FX: Activate/bypass track/take envelope for last touched FX parameter
+	FX: Show/hide track/take envelope for last touched FX parameter
+	
+	and SWS extension actions:
+	SWS/BR: Show mute send envelopes for selected tracks
+	SWS/BR: Show pan send envelopes for selected tracks
+	SWS/BR: Show volume send envelopes for selected tracks
+	SWS/BR: Show/hide pan track envelope for last adjusted send			
+	SWS/BR: Show/hide track envelope for last adjusted send (volume/pan only)
+	SWS/BR: Show/hide volume track envelope for last adjusted send
+	SWS/BR: Toggle show active mute send envelopes for selected tracks
+	SWS/BR: Toggle show active pan send envelopes for selected tracks
+	SWS/BR: Toggle show active volume send envelopes for selected tracks
+	SWS/BR: Toggle show mute send envelopes for selected tracks
+	SWS/BR: Toggle show pan send envelopes for selected tracks
+	SWS/BR: Toggle show volume send envelopes for selected tracks
+	SWS/S&M: Show and unbypass take mute envelope
+	SWS/S&M: Show and unbypass take pan envelope
+	SWS/S&M: Show and unbypass take pitch envelope
+	SWS/S&M: Show and unbypass take volume envelope
+	SWS/S&M: Show take mute envelope
+	SWS/S&M: Show take pan envelope
+	SWS/S&M: Show take pitch envelope
+	SWS/S&M: Show take volume envelope
+	SWS/S&M: Toggle show take mute envelope
+	SWS/S&M: Toggle show take pan envelope
+	SWS/S&M: Toggle show take pitch envelope
+	SWS/S&M: Toggle show take volume envelope
+				
+	If several envelopes are opened at once only the first 
+	one found will be set selected. REAPER doesn't support 
+	selection of several envelopes.
+	
+	THE CUSTOM ACTION SEQUENCE MUST LOOK AS FOLLOWS:
+	
+	BuyOne_Select newly opened envelope.lua
+	--- REAPER/SWS Extension ACTION ---
+	BuyOne_Select newly opened envelope.lua
 
 ]]
 
