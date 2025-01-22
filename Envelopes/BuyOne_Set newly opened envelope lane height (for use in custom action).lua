@@ -7,75 +7,75 @@ Changelog: #Initial release
 Licence: WTFPL
 RREAPER: at least v5.962, 7.19 and later is recommended
 About: 	The script sets newly opened envelope lane height
-			to the user value definded in the USER SETTINGS,
-			so that the user have enough space for drawing
-			envelope curve as soon as the envelope shows up.
-			It can be either envelope that's just been created
-			or one that's been unhidden.  
+	to the user value definded in the USER SETTINGS,
+	so that the user have enough space for drawing
+	envelope curve as soon as the envelope shows up.
+	It can be either envelope that's just been created
+	or one that's been unhidden.  
 
-			The script is only functional within a custom action
-			alongside one of the following stock REAPER and 
-			SWS extension actions:
-			Take: Toggle take mute envelope
-			Take: Toggle take pan envelope
-			Take: Toggle take pitch envelope
-			Take: Toggle take volume envelope
-			Toggle show master tempo envelope
-			Track: Toggle track mute envelope active
-			Track: Toggle track mute envelope visible
-			Track: Toggle track pan envelope active
-			Track: Toggle track pan envelope visible
-			Track: Toggle track pre-FX pan envelope active
-			Track: Toggle track pre-FX pan envelope visible
-			Track: Toggle track pre-FX volume envelope active
-			Track: Toggle track pre-FX volume envelope visible
-			Track: Toggle track trim envelope visible
-			Track: Toggle track volume envelope active
-			Track: Toggle track volume envelope visible
-			FX: Activate/bypass track/take envelope for last touched FX parameter
-			FX: Show/hide track/take envelope for last touched FX parameter
-			SWS/BR: Show mute send envelopes for selected tracks
-			SWS/BR: Show pan send envelopes for selected tracks
-			SWS/BR: Show volume send envelopes for selected tracks
-			SWS/BR: Show/hide pan track envelope for last adjusted send			
-			SWS/BR: Show/hide track envelope for last adjusted send (volume/pan only)
-			SWS/BR: Show/hide volume track envelope for last adjusted send
-			SWS/BR: Toggle show active mute send envelopes for selected tracks
-			SWS/BR: Toggle show active pan send envelopes for selected tracks
-			SWS/BR: Toggle show active volume send envelopes for selected tracks
-			SWS/BR: Toggle show mute send envelopes for selected tracks
-			SWS/BR: Toggle show pan send envelopes for selected tracks
-			SWS/BR: Toggle show volume send envelopes for selected tracks
-			SWS/S&M: Show and unbypass take mute envelope
-			SWS/S&M: Show and unbypass take pan envelope
-			SWS/S&M: Show and unbypass take pitch envelope
-			SWS/S&M: Show and unbypass take volume envelope
-			SWS/S&M: Show take mute envelope
-			SWS/S&M: Show take pan envelope
-			SWS/S&M: Show take pitch envelope
-			SWS/S&M: Show take volume envelope
-			SWS/S&M: Toggle show take mute envelope
-			SWS/S&M: Toggle show take pan envelope
-			SWS/S&M: Toggle show take pitch envelope
-			SWS/S&M: Toggle show take volume envelope
-						
-			
-			THE CUSTOM ACTION SEQUENCE MUST LOOK AS FOLLOWS:
-			
-			BuyOne_Set newly opened envelope lane height (for use in custom action).lua
-			--- REAPER/SWS Extension ACTION ---  
-			BuyOne_Set newly opened envelope lane height (for use in custom action).lua
+	The script is only functional within a custom action
+	alongside one of the following stock REAPER and 
+	SWS extension actions:
+	Take: Toggle take mute envelope
+	Take: Toggle take pan envelope
+	Take: Toggle take pitch envelope
+	Take: Toggle take volume envelope
+	Toggle show master tempo envelope
+	Track: Toggle track mute envelope active
+	Track: Toggle track mute envelope visible
+	Track: Toggle track pan envelope active
+	Track: Toggle track pan envelope visible
+	Track: Toggle track pre-FX pan envelope active
+	Track: Toggle track pre-FX pan envelope visible
+	Track: Toggle track pre-FX volume envelope active
+	Track: Toggle track pre-FX volume envelope visible
+	Track: Toggle track trim envelope visible
+	Track: Toggle track volume envelope active
+	Track: Toggle track volume envelope visible
+	FX: Activate/bypass track/take envelope for last touched FX parameter
+	FX: Show/hide track/take envelope for last touched FX parameter
+	SWS/BR: Show mute send envelopes for selected tracks
+	SWS/BR: Show pan send envelopes for selected tracks
+	SWS/BR: Show volume send envelopes for selected tracks
+	SWS/BR: Show/hide pan track envelope for last adjusted send			
+	SWS/BR: Show/hide track envelope for last adjusted send (volume/pan only)
+	SWS/BR: Show/hide volume track envelope for last adjusted send
+	SWS/BR: Toggle show active mute send envelopes for selected tracks
+	SWS/BR: Toggle show active pan send envelopes for selected tracks
+	SWS/BR: Toggle show active volume send envelopes for selected tracks
+	SWS/BR: Toggle show mute send envelopes for selected tracks
+	SWS/BR: Toggle show pan send envelopes for selected tracks
+	SWS/BR: Toggle show volume send envelopes for selected tracks
+	SWS/S&M: Show and unbypass take mute envelope
+	SWS/S&M: Show and unbypass take pan envelope
+	SWS/S&M: Show and unbypass take pitch envelope
+	SWS/S&M: Show and unbypass take volume envelope
+	SWS/S&M: Show take mute envelope
+	SWS/S&M: Show take pan envelope
+	SWS/S&M: Show take pitch envelope
+	SWS/S&M: Show take volume envelope
+	SWS/S&M: Toggle show take mute envelope
+	SWS/S&M: Toggle show take pan envelope
+	SWS/S&M: Toggle show take pitch envelope
+	SWS/S&M: Toggle show take volume envelope
+				
+	
+	THE CUSTOM ACTION SEQUENCE MUST LOOK AS FOLLOWS:
+	
+	BuyOne_Set newly opened envelope lane height (for use in custom action).lua
+	--- REAPER/SWS Extension ACTION ---  
+	BuyOne_Set newly opened envelope lane height (for use in custom action).lua
 
-			The script can be combined within a custom action
-			with BuyOne_Select newly opened envelope (for use in custom action).lua
-			so that the envelope lane height is set and the
-			envelope is selected simultaneously, e.g.
-			
-			BuyOne_Set newly opened envelope lane height (for use in custom action).lua
-			BuyOne_Select newly opened envelope (for use in custom action).lua
-			--- REAPER/SWS Extension ACTION ---  
-			BuyOne_Set newly opened envelope lane height (for use in custom action).lua
-			BuyOne_Select newly opened envelope (for use in custom action).lua
+	The script can be combined within a custom action
+	with BuyOne_Select newly opened envelope (for use in custom action).lua
+	so that the envelope lane height is set and the
+	envelope is selected simultaneously, e.g.
+	
+	BuyOne_Set newly opened envelope lane height (for use in custom action).lua
+	BuyOne_Select newly opened envelope (for use in custom action).lua
+	--- REAPER/SWS Extension ACTION ---  
+	BuyOne_Set newly opened envelope lane height (for use in custom action).lua
+	BuyOne_Select newly opened envelope (for use in custom action).lua
 
 
 ]]
