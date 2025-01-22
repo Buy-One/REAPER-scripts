@@ -1,17 +1,19 @@
 --[[
-ReaScript name: BuyOne_Select newly opened envelope.lua
+ReaScript name: BuyOne_Select newly opened envelope (for use in custom action).lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Added mechanism to re-sync the script state
+	   #Updated 'About' text
 Licence: WTFPL
 RREAPER: at least v5.962, 7.19 and later is recommended
 About: 	The script sets the newly opened envelope selected.
 	It can be either envelope that's just been created
 	or one that's been unhidden.
 	
-	The script can only work as part of a custom action
-	alongside one of the following stock REAPER actions:
+	The script is only functional within a custom action
+	alongside one of the following stock REAPER and 
+	SWS extension actions:
 	Take: Toggle take mute envelope
 	Take: Toggle take pan envelope
 	Take: Toggle take pitch envelope
@@ -30,8 +32,6 @@ About: 	The script sets the newly opened envelope selected.
 	Track: Toggle track volume envelope visible
 	FX: Activate/bypass track/take envelope for last touched FX parameter
 	FX: Show/hide track/take envelope for last touched FX parameter
-	
-	and SWS extension actions:
 	SWS/BR: Show mute send envelopes for selected tracks
 	SWS/BR: Show pan send envelopes for selected tracks
 	SWS/BR: Show volume send envelopes for selected tracks
@@ -66,6 +66,17 @@ About: 	The script sets the newly opened envelope selected.
 	BuyOne_Select newly opened envelope.lua
 	--- REAPER/SWS Extension ACTION ---
 	BuyOne_Select newly opened envelope.lua
+
+	The script can be combined within a custom action
+	with BuyOne_Set newly opened envelope lane height.lua
+	so that the envelope selection and envelope lane 
+	height adjustment occur simultaneously, e.g.
+	
+	BuyOne_Select newly opened envelope.lua
+	BuyOne_Set newly opened envelope lane height.lua  
+	--- REAPER/SWS Extension ACTION ---
+	BuyOne_Select newly opened envelope.lua
+	BuyOne_Set newly opened envelope lane height.lua
 
 ]]
 
@@ -134,9 +145,8 @@ end
 
 function Is_Env_Visible(env)
 	if r.CountEnvelopePoints(env) > 0 then -- validation of fx envelopes in REAPER builds prior to 7.06
-	local build = tonumber(r.GetAppVersion():match('[%d%.]+'))
 	local retval, chunk, is_vis
-			if build < 7.19 then
+			if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.19 then
 			retval, chunk = r.GetEnvelopeStateChunk(env, '', false) -- isundo false
 			else
 			retval, is_vis = r.GetSetEnvelopeInfo_String(env, 'VISIBLE', '', false) -- setNewValue false
@@ -197,7 +207,8 @@ local count = 0
 	elseif pointer_t then -- if the function reached this point while pointer_t is valid, no newly open envelope was found
 	r.DeleteExtState(cmdID, 'POINTER_LIST', true) -- persist true
 		if count == orig_count+0 then -- this prevents the error message when the toggle action is used within the custom action and the envelope has been toggled to off in which case there's also no newly opened envelope but their total count differs
-		Error_Tooltip('\n\n no newly opened envelope \n\n\t     was found \n\n', 1, 1) -- caps, spaced true
+		Error_Tooltip('\n\n   no newly opened envelope \n\n\t\twas found. \n\n\t or the script state \n\n'
+		..' is out of sync, in which case \n\n\t   toggle it to OFF. \n\n', 1, 1) -- caps, spaced true
 		end
 	end
 
@@ -206,12 +217,14 @@ end
 
 local is_new_value, scr_name, sect_ID, cmdID_init, mode, resol, val, contextstr = r.get_action_context()
 local cmdID = r.ReverseNamedCommandLookup(cmdID_init)
+local togg_state = r.GetToggleCommandStateEx(sect_ID, cmdID_init)
 
 local pointer_list = r.GetExtState(cmdID, 'POINTER_LIST')
 
-	if #pointer_list == 0 then -- store
+	if #pointer_list == 0 and togg_state <= 0 then -- store
 	Store_Get_Env_Pointers(cmdID) -- envelope pointers are collected instead of GUIDs because their uniqueness isn't guaranteed, in copies of tracks/takes they stay the same until the envelope is deleted
-	else -- evaluate after action execution and select an envelope if any
+	r.SetToggleCommandState(sect_ID, cmdID_init, 1)
+	elseif #pointer_list > 0 and togg_state == 1 then-- evaluate after action execution and select an envelope if any
 	local pointer_t = {}
 		for pointer in pointer_list:gmatch('[^\n]+') do
 			if pointer then
@@ -220,6 +233,7 @@ local pointer_list = r.GetExtState(cmdID, 'POINTER_LIST')
 		end
 	local orig_count = pointer_list:match('^%d+')
 	Store_Get_Env_Pointers(cmdID, pointer_t, orig_count)
+	r.SetToggleCommandState(sect_ID, cmdID_init, 0)
 	end
 
 
