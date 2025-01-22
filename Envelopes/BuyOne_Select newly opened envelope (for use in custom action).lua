@@ -63,20 +63,20 @@ About: 	The script sets the newly opened envelope selected.
 	
 	THE CUSTOM ACTION SEQUENCE MUST LOOK AS FOLLOWS:
 	
-	BuyOne_Select newly opened envelope.lua
-	--- REAPER/SWS Extension ACTION ---
-	BuyOne_Select newly opened envelope.lua
-
+	BuyOne_Select newly opened envelope (for use in custom action).lua
+	--- REAPER/SWS Extension ACTION ---  
+	BuyOne_Select newly opened envelope (for use in custom action).lua
+	
 	The script can be combined within a custom action
-	with BuyOne_Set newly opened envelope lane height.lua
+	with BuyOne_Set newly opened envelope lane height (for use in custom action).lua
 	so that the envelope selection and envelope lane 
 	height adjustment occur simultaneously, e.g.
 	
-	BuyOne_Select newly opened envelope.lua
-	BuyOne_Set newly opened envelope lane height.lua  
-	--- REAPER/SWS Extension ACTION ---
-	BuyOne_Select newly opened envelope.lua
-	BuyOne_Set newly opened envelope lane height.lua
+	BuyOne_Select newly opened envelope (for use in custom action).lua
+	BuyOne_Set newly opened envelope lane height (for use in custom action).lua
+	--- REAPER/SWS Extension ACTION ---  
+	BuyOne_Select newly opened envelope (for use in custom action).lua 
+	BuyOne_Set newly opened envelope lane height (for use in custom action).lua
 
 ]]
 
