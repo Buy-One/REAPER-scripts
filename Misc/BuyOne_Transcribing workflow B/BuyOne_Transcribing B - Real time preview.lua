@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Transcribing B - Real time preview.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 1.1	#Done away with 'ReaScript task control' dialogue when the script is re-launched
+		while already running. Relevant for users of REAPER 7.
+		#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v6.37
 About:	The script is part of the Transcribing B workflow set of scripts
@@ -66,11 +68,13 @@ About:	The script is part of the Transcribing B workflow set of scripts
 	regions with no transcript preview items are not created.
 	
 	The script must run in the background which it will after the 
-	initial launch. To terminate it, launch it again and click 
-	'Terminate instances' button in the ReaScript task control dialogue 
-	which will pop up. Before doing this it's recommended to checkmark 
-	'Remember my answer for this script option' so from then on the 
-	script is terminated automatically.
+	initial launch. To terminate the script, launch it again. In
+	case you run a REAPER version older than 7 
+	'ReaScript task control' dialogue which will pop up.
+	Click 'Terminate instances' button in the dialogue. Before 
+	doing this it's recommended to checkmark 
+	'Remember my answer for this script' option so that from then 
+	on the script is terminated automatically.
 	
 	While the script runs a toolbar button linked to it is lit and 
 	a menu item is ticked.
@@ -720,6 +724,8 @@ Re_Set_Toggle_State(sect_ID, cmd_ID, 1)
 
 proj_init, projfn_init = r.EnumProjects(-1)
 local reg_idx_init, last_playpos, playstate, pos_next_init
+
+	if r.set_action_options then r.set_action_options(1) end -- tacitly terminate when re-launched
 
 RUN_PREVIEW()
 
