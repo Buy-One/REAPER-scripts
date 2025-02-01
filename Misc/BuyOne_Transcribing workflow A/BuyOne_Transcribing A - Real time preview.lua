@@ -2,26 +2,29 @@
 ReaScript name: BuyOne_Transcribing A - Real time preview.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.6
-Changelog: 1.6 #Added TEXT_WITH_SHADOW setting
-	      #Updated script name
-  	  1.5 #Fixed duplication of preview items when there're gaps between segments					
-	      #Made the script ignore non-segment markers following segment markers
-	      #Segments with no transcript no longer affect timing of preview item creation
-	      #Changed the location of preview items when the transport is stopped
-	      so that they're created for the segment immediately at the edit cursor rather than the next one
-	      #Made preview item creation more consistent with the original concept
-	      #Updated 'About' text
-	  1.4 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
-	  1.3 #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
-	  1.2 #Included explicit undo point creation mechanism when a new preview item is placed on the preview track
-	      #Fixed error when the project is reloaded while the script is running
-	      #Optimized Video processor source track creation function
-	      #Added OVERLAY_PRESET setting validation
-	      #Updated About text
-  	  1.1 #Added overlay preset availability evaluation in builds 7.20 and newer
-	      #Optimized undo point creation in cases where overlay preset isn't found
-	      #Fixed error when the preview track is deleted manually before the script is terminated
+Version: 1.7
+Changelog:  1.7	#Done away with 'ReaScript task control dialogue' when the script is re-launched
+		while already running. Relevant for users of REAPER 7.
+		#Updated 'About' text
+  	    1.6 #Added TEXT_WITH_SHADOW setting
+		#Updated script name
+  	    1.5 #Fixed duplication of preview items when there're gaps between segments					
+		#Made the script ignore non-segment markers following segment markers
+		#Segments with no transcript no longer affect timing of preview item creation
+		#Changed the location of preview items when the transport is stopped
+		so that they're created for the segment immediately at the edit cursor rather than the next one
+		#Made preview item creation more consistent with the original concept
+		#Updated 'About' text
+ 	    1.4 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
+ 	    1.3 #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
+ 	    1.2 #Included explicit undo point creation mechanism when a new preview item is placed on the preview track
+		#Fixed error when the project is reloaded while the script is running
+		#Optimized Video processor source track creation function
+		#Added OVERLAY_PRESET setting validation
+		#Updated About text
+ 	    1.1 #Added overlay preset availability evaluation in builds 7.20 and newer
+		#Optimized undo point creation in cases where overlay preset isn't found
+		#Fixed error when the preview track is deleted manually before the script is terminated
 Licence: WTFPL
 REAPER: at least v6.37
 Extensions: SWS/S&M
@@ -130,11 +133,13 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	text. 
 	
 	The script must run in the background which it will after the 
-	initial launch. To terminate it, launch it again and click 
-	'Terminate instances' button in the ReaScript task control dialogue 
-	which will pop up. Before doing this it's recommended to checkmark 
-	'Remember my answer for this script option' so from then on the 
-	script is terminated automatically.
+	initial launch. To terminate the script, launch it again. In
+	case you run a REAPER version older than 7 a dialogue will pop 
+	up. Click 'Terminate instances' button in the ReaScript task 
+	control dialogue which will pop up. Before doing this it's 
+	recommended to checkmark 
+	'Remember my answer for this script' option so that from then 
+	on the script is terminated automatically.
 	
 	While the script runs a toolbar button linked to it is lit and 
 	a menu item is ticked.
@@ -943,6 +948,8 @@ local notes_init, mrkr_idx_init, last_playpos, playstate
 Re_Set_Toggle_State(sect_ID, cmd_ID, 1)
 
 proj_init, projfn_init = r.EnumProjects(-1)
+
+	if r.set_action_options then r.set_action_options(1) end -- tacitly terminate when re-launched
 
 RUN_PREVIEW()
 
