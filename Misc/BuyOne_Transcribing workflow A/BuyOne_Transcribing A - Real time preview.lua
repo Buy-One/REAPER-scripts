@@ -3,7 +3,7 @@ ReaScript name: BuyOne_Transcribing A - Real time preview.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.7
-Changelog:  1.7	#Done away with 'ReaScript task control dialogue' when the script is re-launched
+Changelog:  1.7	#Done away with 'ReaScript task control' dialogue when the script is re-launched
 		while already running. Relevant for users of REAPER 7.
 		#Updated 'About' text
   	    1.6 #Added TEXT_WITH_SHADOW setting
@@ -134,10 +134,10 @@ About:	The script is part of the Transcribing A workflow set of scripts
 	
 	The script must run in the background which it will after the 
 	initial launch. To terminate the script, launch it again. In
-	case you run a REAPER version older than 7 a dialogue will pop 
-	up. Click 'Terminate instances' button in the ReaScript task 
-	control dialogue which will pop up. Before doing this it's 
-	recommended to checkmark 
+	case you run a REAPER version older than 7 
+	'ReaScript task control' dialogue which will pop up.
+	Click 'Terminate instances' button in the dialogue. Before 
+	doing this it's recommended to checkmark 
 	'Remember my answer for this script' option so that from then 
 	on the script is terminated automatically.
 	
