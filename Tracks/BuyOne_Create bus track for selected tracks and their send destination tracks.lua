@@ -6,33 +6,33 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 About: 	Creates a bus track from track selection.
-			Can be used to convert a folder of tracks into a bus track
-			or to create a bus track for submix rendering.
+	Can be used to convert a folder of tracks into a bus track
+	or to create a bus track for submix rendering.
 
-			RULES
+	RULES
 
-			1. If ROUTE_SEND_DESTINATION_TRACKS setting is enabled all 
-				send destination tracks of selected tracks and their own send 
-				destination tracks are routed	to the bus track.
-			2. Selected and send destination tracks whose Master/Parent
-				send AKA Master send (depending on REAPER build) is disabled
-				aren't routed to the bus track.
-			3. Selected folder child tracks aren't routed to the bus track if
-				at least one parent track of theirs is also selected and has 
-				its Master/Parent send AKA Master send (depending on REAPER build) 
-				enabled.
-			4. if ROUTE_SEND_DESTINATION_TRACKS setting is enabled send destination 
-				tracks of child tracks in a folder whose parent track is routed 
-				to the bus track are also routed to the bus track.
+	1. If ROUTE_SEND_DESTINATION_TRACKS setting is enabled all 
+	send destination tracks of selected tracks and their own send 
+	destination tracks are routed to the bus track.  
+	2. Selected and send destination tracks whose Master/Parent
+	send AKA Master send (depending on REAPER build) is disabled
+	aren't routed to the bus track.  
+	3. Selected folder child tracks aren't routed to the bus track if
+	at least one parent track of theirs is also selected and has 
+	its Master/Parent send AKA Master send (depending on REAPER build) 
+	enabled.  
+	4. if ROUTE_SEND_DESTINATION_TRACKS setting is enabled send destination 
+	tracks of child tracks in a folder whose parent track is routed 
+	to the bus track are also routed to the bus track.
 
-			The bus track is created immediately above the first track which
-			has been routed to it.
+	The bus track is created immediately above the first track which
+	has been routed to it.
 
-			If ROUTE_SEND_DESTINATION_TRACKS setting is enabled and you'd like
-			to look up send destination tracks which have been routed to the
-			bus track along with the selected tracks, use the script  
-			BuyOne_Navigate to track send destination or receive source track via menu.lua
-			which will generate a menu where they will be listed under 'Receives:'
+	If ROUTE_SEND_DESTINATION_TRACKS setting is enabled and you'd like
+	to look up send destination tracks which have been routed to the
+	bus track along with the selected tracks, use the script  
+	BuyOne_Navigate to track send destination or receive source track via menu.lua
+	which will generate a menu where they will be listed under 'Receives:'
 
 ]]
 
