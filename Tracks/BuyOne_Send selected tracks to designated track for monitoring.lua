@@ -5,6 +5,7 @@ Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-
 Version: 1.1
 Changelog: #Added a USER SETTING to include in the routing to the designated track
 	  send destination tracks of the selected tracks along their entire send tree.
+	  #Added SEND_MODE setting.
 	  #Done away with 'ReaScript task control' dialogue when the script is re-launched
 	  while already running in AUTO mode. Relevant for users of REAPER 7.03+
 Licence: WTFPL
@@ -62,6 +63,14 @@ About:	The script creates sends from selected tracks
 -- the actual name of the designated track in the project
 -- must be exact disregarding leading and trailing spaces
 MONITOR_TRACK_NAME = "Current"
+
+-- Between the quotes insert number corresponding
+-- to the send mode:
+-- 1 - Post-Fader (Post-Pan)
+-- 2 - Pre-Fader (Post-FX)
+-- 3 - Pre-Fader (Pre-FX)
+-- if the setting is empty or invalid defaults to 1 - Post-Fader (Post-Pan)
+SEND_MODE = ""
 
 -- Insert any alphanumeric character between the quotes
 -- to enable routing to the designated track track send
@@ -292,7 +301,7 @@ return t
 end
 
 
-function Create_Sends_From_Sel_Tracks(mon_tr)
+function Create_Sends_From_Sel_Tracks(mon_tr, send_mode)
 	if mon_tr then
 		if r.GetMediaTrackInfo_Value(mon_tr, 'B_MAINSEND') == 1 then
 		r.SetMediaTrackInfo_Value(mon_tr, 'B_MAINSEND', 0) -- disable master/parent send just in case it isn't
@@ -345,6 +354,9 @@ function Create_Sends_From_Sel_Tracks(mon_tr)
 		-- disable MIDI sends https://forum.cockos.com/showthread.php?t=287218
 		for i=0, r.GetTrackNumSends(mon_tr, -1)-1 do -- category -1 receives
 		r.SetTrackSendInfo_Value(mon_tr, -1, i, 'I_MIDIFLAGS', 31) -- category -1 receives
+			if send_mode ~= 0 then -- by default send mode is Post-Fader (Post-Pan), i.e. 0
+			r.SetTrackSendInfo_Value(mon_tr, -1, i, 'I_SENDMODE', send_mode) -- category -1 receives
+			end
 		end
 	return tr_numbers, tr_t
 	end
@@ -355,7 +367,7 @@ function RUN()
 
 	if Track_Selection_Changed(tr_numbers) then
 	mon_tr = Get_Designated_Track(mon_tr, MONITOR_TRACK_NAME)
-	tr_numbers = Create_Sends_From_Sel_Tracks(mon_tr)
+	tr_numbers = Create_Sends_From_Sel_Tracks(mon_tr, send_mode)
 	end
 
 r.defer(RUN)
@@ -392,8 +404,10 @@ is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val = r.get_action_context
 
 
 ROUTE_SEND_DESTINATION_TRACKS = #ROUTE_SEND_DESTINATION_TRACKS:gsub(' ','') > 0
+local send_modes_t = {['1'] = 0, ['2'] = 3, ['3'] = 1}
+send_mode = send_modes_t[SEND_MODE] or 0 -- global to accommodate AUTO mode
 
-local tr_numbers, tr_t = Create_Sends_From_Sel_Tracks(mon_tr)
+local tr_numbers, tr_t = Create_Sends_From_Sel_Tracks(mon_tr, send_mode)
 local snd_dest_trks = ROUTE_SEND_DESTINATION_TRACKS and #tr_t > #tr_numbers and ' and their send tree' or ''
 
 	if not AUTO then
