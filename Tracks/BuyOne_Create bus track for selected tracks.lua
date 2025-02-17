@@ -2,9 +2,11 @@
 ReaScript name: BuyOne_Create bus track for selected tracks.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: 1.1 #Updated script name to better reflect its funcionality
-		Updsated 'About' text.
+Version: 1.2
+Changelog: 1.2 #Fixed setting USER SETTINGS via menu
+	       #Added a setting to disable Master send on traclks routed to the bus track
+	   1.1 #Updated script name to better reflect its funcionality
+	       #Updsated 'About' text.
 Licence: WTFPL
 About: 	Creates a bus track from track selection.
 	Can be used to convert a folder of tracks into a bus track
@@ -47,7 +49,6 @@ About: 	Creates a bus track from track selection.
 -- if the setting is empty defaults to BUS TRACK
 BUS_TRACK_NAME = "BUS TRACK"
 
-
 -- Insert any alphanumeric character between the quotes
 -- to be able to configure settings listed below via menu
 -- before each script run, in which case the settings
@@ -57,19 +58,7 @@ BUS_TRACK_NAME = "BUS TRACK"
 -- if this setting is disabled, the settings listed below
 -- will be used instead, which is preferable if the script
 -- is supposed to be executed from a custom action
-RUN_VIA_MENU = ""
-
--- Insert any alphanumeric character between the quotes
--- to enable appending number to the bus track name
--- in case several bus tracks are created, which
--- with the default name will look like "BUS TRACK 1",
--- "BUS TRACK 2" etc.
-ADD_AND_INCREMENT_NAME_NUMBER = "1"
-
--- Insert any alphanumeric character between the quotes
--- to enable routing to the bus track send destination tracks
--- along the entire send tree which starts with selected tracks
-ROUTE_SEND_DESTINATION_TRACKS = "1"
+RUN_VIA_MENU = "1"
 
 -- Between the quotes insert number corresponding
 -- to the send mode:
@@ -79,13 +68,39 @@ ROUTE_SEND_DESTINATION_TRACKS = "1"
 -- if the setting is empty or invalid defaults to 1 - Post-Fader (Post-Pan)
 SEND_MODE = ""
 
+-- To enable the following settings insert any alphanumeric 
+-- character between the quotes
+
+-- Enable appending number to the bus track name
+-- in case several bus tracks are created, which
+-- with the default name will look like "BUS TRACK 1",
+-- "BUS TRACK 2" etc.
+ADD_AND_INCREMENT_NAME_NUMBER = "1"
+
+-- Enable routing to the bus track send destination tracks
+-- along the entire send tree which starts with selected tracks
+ROUTE_SEND_DESTINATION_TRACKS = "1"
+
+-- Enable to turn off the Master send of all tracks
+-- routed to the bus track to prevent duplication of the signal;
+-- be circumspect in using this setting, especially if
+-- ROUTE_SEND_DESTINATION_TRACKS setting is enabled because
+-- it's easy to ruin the routing to the Master track of a whole
+-- bunch of tracks in one go;
+-- if you only need the bus track for submix rendering,
+-- keep this setting off because you're going to either solo
+-- the bus track, apply a rendering action to it or render it
+-- via the Master with the Render dialogue, so it will be isolated
+-- anyway
+DISABLE_MASTER_SEND = ""
+
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
 -----------------------------------------------------------------------------
 
 local r = reaper
 
-local Debug = "1"
+local Debug = ""
 function Msg(param, cap) -- caption second or none
 local cap = cap and type(cap) == 'string' and #cap > 0 and cap..' = ' or ''
 	if #Debug:gsub(' ','') > 0 then -- declared outside of the function, allows to only didplay output when true without the need to comment the function out when not needed, borrowed from spk77
@@ -216,31 +231,32 @@ local send_modes_t = {'Post-Fader (Post-Pan)', 'Pre-Fader (Post-FX)', 'Pre-Fader
 
 ::RELOAD::
 local sett = r.GetExtState(scr_cmdID, 'SETTINGS')
-sett = #sett > 0 and sett or '001' -- initialize defaults on the first load
-local increment_name, route_dest_tr, send_mode = sett:match(('(%d)'):rep(3))
+sett = #sett > 0 and sett or '0001' -- initialize defaults on the first load
+local increment_name, route_dest_tr, master_send, send_mode = sett:match(('(%d)'):rep(4))
 local i = 0 -- counter for gsub below
 local idx = increment_name == '1' and Get_Bus_Track_Index(bus_tr_name)
 local bus_tr_name = idx and bus_tr_name..' '..idx or bus_tr_name -- must be local so the name is updated in the menu when the increment_name setting is toggled and the menu is reloaded
 local menu = '#Bus track name: '..bus_tr_name..'||'..checkmark('Increment number in bus track name', increment_name)
-..'|'..checkmark('Route send destination tracks', route_dest_tr)..'|>'..'Send mode: '..send_modes_t[send_mode+0]
+..'|'..checkmark('Route send destination tracks', route_dest_tr)..'|'..checkmark('Disable Master send', master_send)
+..'|>'..'Send mode: '..send_modes_t[send_mode+0]
 ..'|'..table.concat(send_modes_t,'|'):gsub('|', function() i=i+1 if i == 2 then return '|<' end end)
 ..'||'..('CREATE BUS TRACK'):gsub('.','%0 ')
 
 local output = Reload_Menu_at_Same_Pos(menu, 1) -- keep_menu_open true
 
 	if output == 0 then return
-	elseif output < 4 then
-	local pos = output == 2 and 1 or 2 -- in the menu increment_name setting is at index 2 but in the ext state it's at index 1, similarly route_dest_tr setting, so offset
+	elseif output < 5 then
+	local pos = output-1 -- offset taking account of the top item dispalying bus track name
 	local i = 0 -- reset from gsub above
 	sett = sett:gsub('%d', function(c) i=i+1 if i==pos then return math.floor(c+0~1) end end) -- flipping the bit
-	elseif output < 7 then -- send modes
-	send_mode = math.floor(output-3) -- offset by the preceeding menu items and strip off the trailing decimal 0
+	elseif output < 8 then -- send modes
+	send_mode = math.floor(output-4) -- offset by the preceeding menu items and strip off the trailing decimal 0
 	local i = 0 -- reset from gsub above
-	sett = sett:gsub('%d', function() i=i+1 if i==3 then return send_mode end end)
-	else return true, bus_tr_name, send_mode -- create bus track
+	sett = sett:gsub('%d', function() i=i+1 if i==4 then return send_mode end end)
+	else return true, bus_tr_name, route_dest_tr, master_send, send_mode -- create bus track
 	end
 
-	if output < 7 then
+	if output < 8 then
 	r.SetExtState(scr_cmdID, 'SETTINGS', sett, false) -- persist false
 	goto RELOAD end
 
@@ -369,7 +385,7 @@ or scr_name -- if an non-installed script is run via 'ReaScript: Run (last) ReaS
 local bus_tr_name = #BUS_TRACK_NAME:gsub(' ','') > 0 and BUS_TRACK_NAME or 'BUS TRACK'
 
 	if #RUN_VIA_MENU:gsub(' ','') > 0 then
-	output, bus_tr_name, SEND_MODE = MENU(named_ID, bus_tr_name)
+	output, bus_tr_name, ROUTE_SEND_DESTINATION_TRACKS, DISABLE_MASTER_SEND, SEND_MODE = MENU(named_ID, bus_tr_name)
 		if not output then return r.defer(no_undo) end
 	elseif #ADD_AND_INCREMENT_NAME_NUMBER:gsub(' ','') > 0 then
 	local idx = Get_Bus_Track_Index(bus_tr_name)
@@ -409,6 +425,9 @@ local send_mode = send_modes_t[SEND_MODE] or 0
 
 	for k, tr in ipairs(sel_tr_t) do
 	r.CreateTrackSend(tr, bus_tr) -- by default send mode is Post-Fader (Post-Pan), i.e. 0
+		if #DISABLE_MASTER_SEND:gsub(' ','') > 0 then
+		r.SetMediaTrackInfo_Value(tr, 'B_MAINSEND', 0) -- disable master/parent send
+		end
 		if send_mode ~= 0 then
 		r.SetTrackSendInfo_Value(bus_tr, -1, r.GetTrackNumSends(bus_tr, -1)-1, 'I_SENDMODE', send_mode) -- category -1 receive
 		end
