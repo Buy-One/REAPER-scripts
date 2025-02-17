@@ -1,33 +1,36 @@
 --[[
-ReaScript name: BuyOne_Create bus track for selected tracks and their send destination tracks.lua
+ReaScript name: BuyOne_Create bus track for selected tracks.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 1.1 #Updated script name to better reflect its funcionality
+		Updsated 'About' text.
 Licence: WTFPL
 About: 	Creates a bus track from track selection.
 	Can be used to convert a folder of tracks into a bus track
 	or to create a bus track for submix rendering.
-
+	
 	RULES
-
+	
 	1. If ROUTE_SEND_DESTINATION_TRACKS setting is enabled all 
-	send destination tracks of selected tracks and their own send 
-	destination tracks are routed to the bus track.  
-	2. Selected and send destination tracks whose Master/Parent
-	send AKA Master send (depending on REAPER build) is disabled
-	aren't routed to the bus track.  
-	3. Selected folder child tracks aren't routed to the bus track if
-	at least one parent track of theirs is also selected and has 
+	send destination tracks along the entire sends chain which
+	starts with selected tracks (hereinafter 'send destination tracks')
+	are routed to the bus track.  
+	2. Selected and send destination tracks 
+	(in case ROUTE_SEND_DESTINATION_TRACKS setting is enabled) 
+	whose Master/Parent send AKA Master send (depending on 
+	REAPER build) is disabled aren't routed to the bus track.  
+	3. Selected folder child tracks aren't routed to the bus track 
+	if at least one parent track of theirs is also selected and has 
 	its Master/Parent send AKA Master send (depending on REAPER build) 
 	enabled.  
 	4. if ROUTE_SEND_DESTINATION_TRACKS setting is enabled send destination 
 	tracks of child tracks in a folder whose parent track is routed 
 	to the bus track are also routed to the bus track.
-
+		
 	The bus track is created immediately above the first track which
 	has been routed to it.
-
+	
 	If ROUTE_SEND_DESTINATION_TRACKS setting is enabled and you'd like
 	to look up send destination tracks which have been routed to the
 	bus track along with the selected tracks, use the script  
@@ -65,7 +68,7 @@ ADD_AND_INCREMENT_NAME_NUMBER = "1"
 
 -- Insert any alphanumeric character between the quotes
 -- to enable routing to the bus track send destination tracks
--- of the selected tracks and their send destination tracks
+-- along the entire sends chain which starts with selected tracks
 ROUTE_SEND_DESTINATION_TRACKS = "1"
 
 -- Between the quotes insert number corresponding
@@ -362,7 +365,7 @@ local err = r.GetNumTracks() == 0 and 'no tracks in the project' or sel_tr == 0 
 
 local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
 local named_ID = r.ReverseNamedCommandLookup(cmd_ID) -- convert to named
-or debug.getinfo(1,'S').source:match('^@?(.+)') -- if an non-installed script is run via 'ReaScript: Run (last) ReaScript (EEL2 or lua)' actions get_action_context() won't return valid command ID, in which case fall back on the script full path
+or scr_name -- if an non-installed script is run via 'ReaScript: Run (last) ReaScript (EEL2 or lua)' actions get_action_context() won't return valid command ID, in which case fall back on the script full path
 
 local bus_tr_name = #BUS_TRACK_NAME:gsub(' ','') > 0 and BUS_TRACK_NAME or 'BUS TRACK'
 
