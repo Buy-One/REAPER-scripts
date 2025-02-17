@@ -13,7 +13,7 @@ About: 	Creates a bus track from track selection.
 	RULES
 	
 	1. If ROUTE_SEND_DESTINATION_TRACKS setting is enabled all 
-	send destination tracks along the entire sends chain which
+	send destination tracks along the entire send tree which
 	starts with selected tracks (hereinafter 'send destination tracks')
 	are routed to the bus track.  
 	2. Selected and send destination tracks 
@@ -68,7 +68,7 @@ ADD_AND_INCREMENT_NAME_NUMBER = "1"
 
 -- Insert any alphanumeric character between the quotes
 -- to enable routing to the bus track send destination tracks
--- along the entire sends chain which starts with selected tracks
+-- along the entire send tree which starts with selected tracks
 ROUTE_SEND_DESTINATION_TRACKS = "1"
 
 -- Between the quotes insert number corresponding
@@ -330,8 +330,7 @@ local fin = fin or 1
 
 	for i=#t,fin,-1 do -- in reverse because of removal of irrelevant tracks
 	local tr = t[i]
-		if --r.GetTrackDepth(tr) == 0 and -- top level track
-		r.GetMediaTrackInfo_Value(tr, 'B_MAINSEND') == 0 -- isn't routed to Master
+		if r.GetMediaTrackInfo_Value(tr, 'B_MAINSEND') == 0 -- isn't routed to Master
 		or Is_Track_Parent_Included(tr, t) -- a parent of a child track has already been stored and has its Master/parent send enabled so no need to store and route the child track as well
 		then
 		table.remove(t,i)
