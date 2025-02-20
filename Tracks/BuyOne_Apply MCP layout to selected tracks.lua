@@ -2,8 +2,12 @@
 ReaScript name: BuyOne_Apply MCP layout to selected tracks.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #1.1 Added menu title
+Version: 1.2
+Changelog: 1.2 	#Made layout type conditional on the script name
+		which fixed applying MCP layout
+		#Made undo point name conditional on the script name
+		which fixed applying MCP layout undo point name
+	   1.1 	#Added menu title
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script displays a menu of MCP layouts available
@@ -114,6 +118,7 @@ local tr_cnt = r.CountSelectedTracks(0)
 local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
 local scr_name = scr_name:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
 local layout_type = scr_name:match('TCP') or scr_name:match('MCP')
+local attr = layout_type == 'TCP' and 'P_TCP_LAYOUT' or layout_type == 'MCP' and 'P_MCP_LAYOUT'
 
 local i, t = 0, {}
 
@@ -131,10 +136,10 @@ local output = Show_Menu_Dialogue(layout_type:gsub('.','%0  ')..'|'..table.conca
 	local layout = t[output-1] -- offsetting to account for the menu title
 		for i = 0, tr_cnt-1 do
 		local tr = r.GetSelectedTrack(0,i)
-		r.GetSetMediaTrackInfo_String(tr, 'P_TCP_LAYOUT', layout, true) -- setNewValue true
+		r.GetSetMediaTrackInfo_String(tr, attr, layout, true) -- setNewValue true
 		end
 	r.PreventUIRefresh(-1)
-	r.Undo_EndBlock('Apply TCP layout "'..layout..'" to selected tracks', -1)	
+	r.Undo_EndBlock('Apply '..layout_type..' layout "'..layout..'" to selected tracks', -1)
 	end
 
 
