@@ -8,76 +8,76 @@ Licence: WTFPL
 REAPER: at least v5.962, 6.36+ recommended
 Metapackage: true
 Provides:	[main=main,midi_editor] .
-				. > BuyOne_Apply next TCP layout to selected tracks.lua
-				. > BuyOne_Apply previous TCP layout to selected tracks.lua
-				. > BuyOne_Apply next MCP layout to selected tracks.lua
-				. > BuyOne_Apply previous MCP layout to selected tracks.lua
+		. > BuyOne_Apply next TCP layout to selected tracks.lua
+		. > BuyOne_Apply previous TCP layout to selected tracks.lua
+		. > BuyOne_Apply next MCP layout to selected tracks.lua
+		. > BuyOne_Apply previous MCP layout to selected tracks.lua
 About:	If this script name is suffixed with META, when executed 
-			it will automatically spawn all individual scripts included 
-			in the package into the directory of the META script and will 
-			import them into the Action list from that directory. That's 
-			provided such scripts don't exist yet, if they do, then in 
-			order to recreate them they have to be deleted from the Action 
-			list and from the disk first.  
-			If there's no META suffix in this script name it will perfom 
-			the operation indicated in its name. Individual scripts can
-			be included in custom actions.
+	it will automatically spawn all individual scripts included 
+	in the package into the directory of the META script and will 
+	import them into the Action list from that directory. That's 
+	provided such scripts don't exist yet, if they do, then in 
+	order to recreate them they have to be deleted from the Action 
+	list and from the disk first.  
+	If there's no META suffix in this script name it will perfom 
+	the operation indicated in its name. Individual scripts can
+	be included in custom actions.
 
-			The script name is self-explanatory.
+	The script name is self-explanatory.
 
-			The Master track is supported.
+	The Master track is supported.
 
-			The Master track is given priority, i.e. if the Master 
-			track is selected or is under mouse cursor when SYNC_TO_TRACK 
-			setting is set to 2, all other selected tracks are ignored 
-			and Master track layouts are cycled.	
+	The Master track is given priority, i.e. if the Master 
+	track is selected or is under mouse cursor when SYNC_TO_TRACK 
+	setting is set to 2, all other selected tracks are ignored 
+	and Master track layouts are cycled.	
 
-			Cycling Master track layouts essentially cycles its Global  
-			default layouts, those listed under 
-			Options -> Layouts -> Master Track panel / Master Mixer panel
-			which means that once its layout is switched to it will apply 
-			to all new and other projects.
+	Cycling Master track layouts essentially cycles its Global  
+	default layouts, those listed under 
+	Options -> Layouts -> Master Track panel / Master Mixer panel
+	which means that once its layout is switched to it will apply 
+	to all new and other projects.
 
-			If the Master track isn't selected and is not under the mouse
-			cursor when SYNC_TO_TRACK setting is set to 2 the script will 
-			target other selected tracks, if any.
+	If the Master track isn't selected and is not under the mouse
+	cursor when SYNC_TO_TRACK setting is set to 2 the script will 
+	target other selected tracks, if any.
 
-			Master track layout change doesn't create an undo point
-			due to REAPER design.
+	Master track layout change doesn't create an undo point
+	due to REAPER design.
 
-			To cycle layouts with the individual scripts in both 
-			directions, use the following custom actions:
+	To cycle layouts with the individual scripts in both 
+	directions, use the following custom actions:
 
-			Custom: Cycle selected tracks TCP layouts  
-				Action: Skip next action if CC parameter >0/mid  
-				BuyOne_Apply previous TCP layout to selected tracks.lua  
-				Action: Skip next action if CC parameter <0/mid  
-				BuyOne_Apply next TCP layout to selected tracks.lua
-
-
-			Custom: Cycle selected tracks MCP layouts  
-				Action: Skip next action if CC parameter >0/mid  
-				BuyOne_Apply previous MCP layout to selected tracks.lua  
-				Action: Skip next action if CC parameter <0/mid  
-				BuyOne_Apply next MCP layout to selected tracks.lua
+	Custom: Cycle selected tracks TCP layouts  
+		Action: Skip next action if CC parameter >0/mid  
+		BuyOne_Apply previous TCP layout to selected tracks.lua  
+		Action: Skip next action if CC parameter <0/mid  
+		BuyOne_Apply next TCP layout to selected tracks.lua
 
 
-			Custom: Cycle selected tracks TCP and MCP layouts  
-				Action: Skip next action if CC parameter >0/mid  
-				BuyOne_Apply previous TCP layout to selected tracks.lua 
-				BuyOne_Apply previous MCP layout to selected tracks.lua  
-				Action: Skip next action if CC parameter <0/mid  
-				BuyOne_Apply next TCP layout to selected tracks.lua  
-				BuyOne_Apply next MCP layout to selected tracks.lua
+	Custom: Cycle selected tracks MCP layouts  
+		Action: Skip next action if CC parameter >0/mid  
+		BuyOne_Apply previous MCP layout to selected tracks.lua  
+		Action: Skip next action if CC parameter <0/mid  
+		BuyOne_Apply next MCP layout to selected tracks.lua
 
 
-			And map them to the mousewheel. The associaton between 
-			the mousewheel scroll direction and the action type is as 
-			follows: mousewheel forward/out/up - next,  
-			mousewheel backward/in/down - previous. 
-			To reverse the direction add action   
-			'Action: Modify MIDI CC/mousewheel: Negative'  
-			at the very beginning of each custom action sequence.
+	Custom: Cycle selected tracks TCP and MCP layouts  
+		Action: Skip next action if CC parameter >0/mid  
+		BuyOne_Apply previous TCP layout to selected tracks.lua 
+		BuyOne_Apply previous MCP layout to selected tracks.lua  
+		Action: Skip next action if CC parameter <0/mid  
+		BuyOne_Apply next TCP layout to selected tracks.lua  
+		BuyOne_Apply next MCP layout to selected tracks.lua
+
+
+	And map them to the mousewheel. The associaton between 
+	the mousewheel scroll direction and the action type is as 
+	follows: mousewheel forward/out/up - next,  
+	mousewheel backward/in/down - previous. 
+	To reverse the direction add action   
+	'Action: Modify MIDI CC/mousewheel: Negative'  
+	at the very beginning of each custom action sequence.
 
 ]]
 
