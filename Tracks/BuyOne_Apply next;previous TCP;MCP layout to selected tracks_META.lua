@@ -71,7 +71,7 @@ About:	If this script name is suffixed with META, when executed
 		BuyOne_Apply next MCP layout to selected tracks.lua
 
 
-	And map them to the mousewheel. The associaton between 
+	And bind them to the mousewheel. The associaton between 
 	the mousewheel scroll direction and the action type is as 
 	follows: mousewheel forward/out/up - next,  
 	mousewheel backward/in/down - previous. 
