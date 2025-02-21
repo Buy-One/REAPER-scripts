@@ -72,8 +72,8 @@ About:	If this script name is suffixed with META, when executed
 
 
 	And bind them to the mousewheel. The associaton between 
-	the mousewheel scroll direction and the action type is as 
-	follows: mousewheel forward/out/up - next,  
+	the mousewheel scroll direction and the performed action 
+	is as follows: mousewheel forward/out/up - next,  
 	mousewheel backward/in/down - previous. 
 	To reverse the direction add action   
 	'Action: Modify MIDI CC/mousewheel: Negative'  
