@@ -1,17 +1,21 @@
 --[[
-ReaScript name: BuyOne_Apply next;previous TCP;MCP layout to selected tracks_META.lua (4 scripts)
+ReaScript name: BuyOne_Apply next;previous TCP;MCP layout to tracks_META.lua (4 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 	#Changed logic of the scripts behavior
+		#Updated script names to reflect that
+		#Updated 'About' text
+		#Updated USER SETTINGS
+		#Added ACTIVATE_UNDO user setting
 Licence: WTFPL
 REAPER: at least v5.962, 6.36+ recommended
 Metapackage: true
 Provides:	[main=main,midi_editor] .
-		. > BuyOne_Apply next TCP layout to selected tracks.lua
-		. > BuyOne_Apply previous TCP layout to selected tracks.lua
-		. > BuyOne_Apply next MCP layout to selected tracks.lua
-		. > BuyOne_Apply previous MCP layout to selected tracks.lua
+		. > BuyOne_Apply next TCP layout to tracks.lua
+		. > BuyOne_Apply previous TCP layout to tracks.lua
+		. > BuyOne_Apply next MCP layout to tracks.lua
+		. > BuyOne_Apply previous MCP layout to tracks.lua
 About:	If this script name is suffixed with META, when executed 
 	it will automatically spawn all individual scripts included 
 	in the package into the directory of the META script and will 
@@ -26,21 +30,22 @@ About:	If this script name is suffixed with META, when executed
 	The script name is self-explanatory.
 
 	The Master track is supported.
+	
+	Track under mouse cursor is given priority over selected tracks
+	whether itself selected or not and regardless of the number of
+	selected tracks. If there're several selected tracks and 
+	SYNC_TO_TRACK user setting is enabled, the script bevaves according 
+	to the user setting.
 
-	The Master track is given priority, i.e. if the Master 
-	track is selected or is under mouse cursor when SYNC_TO_TRACK 
-	setting is set to 2, all other selected tracks are ignored 
-	and Master track layouts are cycled.	
+	The Master track is given priority over regular tracks, i.e. if 
+	the Master track is selected or is under mouse cursor all other 
+	selected tracks are ignored and Master track layouts are cycled.	
 
 	Cycling Master track layouts essentially cycles its Global  
 	default layouts, those listed under 
 	Options -> Layouts -> Master Track panel / Master Mixer panel
-	which means that once its layout is switched to it will apply 
+	which means that once its layout is switched to, it will apply 
 	to all new and other projects.
-
-	If the Master track isn't selected and is not under the mouse
-	cursor when SYNC_TO_TRACK setting is set to 2 the script will 
-	target other selected tracks, if any.
 
 	Master track layout change doesn't create an undo point
 	due to REAPER design.
@@ -72,7 +77,7 @@ About:	If this script name is suffixed with META, when executed
 
 
 	And bind them to the mousewheel. The associaton between 
-	the mousewheel scroll direction and the performed action 
+	the mousewheel scroll direction and the performed action
 	is as follows: mousewheel forward/out/up - next,  
 	mousewheel backward/in/down - previous. 
 	To reverse the direction add action   
@@ -81,7 +86,6 @@ About:	If this script name is suffixed with META, when executed
 
 ]]
 
-
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
 -----------------------------------------------------------------------------
@@ -89,17 +93,22 @@ About:	If this script name is suffixed with META, when executed
 -- Enable to make the script sync layouts of all selected tracks
 -- to the layout of one track so their layouts are cycled in sync
 -- 1 - sync to the first selected track;
--- 2 - sync to the track at mouse cursor,
+-- 2 - sync to selected track at mouse cursor,
 -- the mouse cursor must hover over the TCP/MCP,
 -- if no track under mouse cursor, mode 1 is activated;
--- MODE 1 DOESN'T APPLY TO THE MASTER TRACK
--- MODE 2 allows to detect the Master track panel under the mouse
--- cursor, i.e. TCP or MCP depending on the script name;
+-- DOESN'T APPLY TO THE MASTER TRACK
 -- if the setting is disabled or invalid, layouts of selected tracks
--- are cycled relative to current layout of each track while the type
--- of selected Master track layouts which are cycled depend
--- on the script name, i.e. either TCP or MCP
+-- are cycled relative to current layout of each track
 SYNC_TO_TRACK = ""
+
+-- Enable by inserting any / disable by removing an alphanumetic
+-- character between the quotes,
+-- if disabled, the script won't create undo point for every
+-- track layout switch which may be preferable to prevent flooding
+-- the undo history with many undo points;
+-- DOESN'T APPLY TO THE MASTER TRACK because undo point creation
+-- for Master track layout switch isn't supported
+ACTIVATE_UNDO = "1"
 
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
@@ -129,6 +138,7 @@ local r = reaper
 function no_undo()
 do return end
 end
+
 
 
 function META_Spawn_Scripts(fullpath, fullpath_init, scr_name, names_t)
@@ -273,9 +283,10 @@ function Get_TCP_MCP_Under_Mouse(want_mcp)
 
 -- in builds < 6.36 the function also detects MCP under mouse regardless of want_mcp argument
 -- because when the mouse cursor is over the MCP the action 'View: Move edit cursor to mouse cursor'
--- does move the edit cursor unless the focused MCP is situated to the left of the project start
--- which makes 'new_cur_pos == edge' expression true because the edit cursor
--- being unable to move to the mouse cursor is moved to the project start,
+-- does move the edit cursor unless the focused MCP is situated to the left of the Arrange view start
+-- or to the right of the Arrange view end depending on the 'View: Show TCP on right side of arrange'
+-- setting, which makes 'new_cur_pos == edge or new_cur_pos == 0' expression true because the edit cursor
+-- being unable to move to the mouse cursor is moved to the Arrange view start_time/end_time,
 -- in later builds this is prevented by conditioning the return value with info:match('tcp')
 -- so that the focus is solely on TCP if want_mcp arg is false
 
@@ -310,7 +321,6 @@ r.PreventUIRefresh(-1)
 return tcp_under_mouse and r.GetTrackFromPoint(r.GetMousePosition())
 
 end
-
 
 
 function Apply_Next_Previous_Track_Layout(tr, layout_t, layout_type, dir, attr)
@@ -360,27 +370,25 @@ local is_new_value, fullpath_init, sect_ID, cmd_ID, mode, resol, val, contextstr
 local fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
 local scr_name = fullpath:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
 
-	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Apply next;previous MCP;TCP layout to selected tracks_META.lua', names_t)
+
+	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Apply next;previous MCP;TCP layout to tracks_META.lua', names_t) -- names_t is optional only if constructed outside of the function, otherwise names are collected from the list in the header
 	then return r.defer(no_undo) end -- abort if META script but continue if not
 
-
---scr_name = 'next track TCP' ------------------ NAME TESTING
+--scr_name = 'next track MCP' ------------------ NAME TESTING
 
 local layout_type = scr_name:match('TCP') or scr_name:match('MCP')
 
-local sync_type = #SYNC_TO_TRACK:gsub(' ','') > 0 and tonumber(SYNC_TO_TRACK)
+local sync_mode = #SYNC_TO_TRACK:gsub(' ','') > 0 and tonumber(SYNC_TO_TRACK) or 0
 
--- when Master is selected all other selected tracks are ignored
+-- when Master is selected or is under mouse cursor all other selected tracks are ignored
+local tr_under_mouse = Get_TCP_MCP_Under_Mouse(layout_type == 'MCP') -- want_mcp depends on the script name
 local master = r.GetMasterTrack(0)
-master = (r.IsTrackSelected(r.GetMasterTrack(0)) -- OR r.GetSelectedTrack2(0,0, true)
-or sync_type and sync_type == 2 and Get_TCP_MCP_Under_Mouse(layout_type == 'MCP') == master) and master -- for the Master track SYNC_TO_TRACK value 2 allows to target Master track type under mouse cursor, i.e. TCP or MCP, depending on the script name
-local tr_cnt = master and 1 or r.CountSelectedTracks(0)
+master = ( tr_under_mouse == master or r.IsTrackSelected(r.GetMasterTrack(0)) ) and master -- OR r.GetSelectedTrack2(0,0, true) instead of IsTrackSelected()
+sync_mode = sync_mode == 2 and not tr_under_mouse and 1 or sync_mode -- if sync_mode is 2 but there's no selected track under mouse fall back on sync_mode 1
+local tr_cnt = (tr_under_mouse and sync_mode == 0 or master) and 1 or r.CountSelectedTracks(0)-- if track under mouse and sync_mode setting isn't enabled or if master track, count is 1
 
-	if tr_cnt == 0 then
-	local addendum = sync_type and sync_type == 2
-	and '\n\n and no Master track '..layout_type..'\n\n under the mouse cursor ' or ''
-	local s = (' '):rep(4)
-	Error_Tooltip('\n\n'..(#addendum>0 and s or '')..' no selected tracks '..addendum..'\n\n', 1, 1, 50) -- caps, spaced true, x2 50
+	if tr_cnt == 0 and not tr_under_mouse then
+	Error_Tooltip('\n\n  no selected tracks \n\n or '..layout_type..' under mouse \n\n', 1, 1, 50) -- caps, spaced true, x2 50
 	return r.defer(no_undo) end
 
 local nxt, prev = scr_name:match('next'), scr_name:match('previous')
@@ -395,7 +403,7 @@ local layout_type = master and 'master_'..layout_type or layout_type
 local i, layout_t = 0, {}
 
 	repeat
-	local retval, layout = r.ThemeLayout_GetLayout(layout_type, i) -- layout_type arg is apparently case agnostic // doesn't include 'Global Default' layout returned by GetSetMediaTrackInfo_String() as an empty string
+	local retval, layout = r.ThemeLayout_GetLayout(layout_type, i) -- layout_type arg is apparently case agnostic // doesn't include 'Global Default' layout returned by GetSetMediaTrackInfo_String() as an empty string, must be queried with i arg being -1
 		if retval and #layout > 0 then
 		local idx = #layout_t+1
 		layout_t[idx] = layout
@@ -404,14 +412,12 @@ local i, layout_t = 0, {}
 	i = i+1
 	until not retval
 
-
 	if #layout_t < 2 then
 	Error_Tooltip('\n\n no layouts to switch to \n\n', 1, 1, 50) -- caps, spaced true, x2 50
 	return r.defer(no_undo) end
 
-
-	if not master and sync_type and sync_type > 0 and sync_type < 3 then
-	local tr = sync_type == 2 and Get_TCP_MCP_Under_Mouse(layout_type == 'MCP') or r.GetSelectedTrack(0,0) -- want_mcp true
+	if tr_cnt > 1 and sync_mode > 0 and sync_mode < 3 then
+	local tr = sync_mode == 2 and tr_under_mouse or r.GetSelectedTrack(0,0)
 	local retval, layout = r.GetSetMediaTrackInfo_String(tr, attr, '', false) -- setNewValue false // if layout is set to 'Global default' layout val is an empty string which can be passed for setting, but won't do for applying next/previous; Global default layout is enabled via Options -> Layouts
 		for i = 0, tr_cnt-1 do
 		local tr = r.GetSelectedTrack(0,i)
@@ -419,19 +425,21 @@ local i, layout_t = 0, {}
 		end
 	end
 
+local undo = #ACTIVATE_UNDO:gsub(' ','') > 0
 
-	if not master then r.Undo_BeginBlock() end -- Master track layout change only creates undo point once and cannot be undone probably because it's written into reaper.ini
+	if not master and undo then r.Undo_BeginBlock() end -- Master track layout change only creates undo point once and cannot be undone probably because it's written into reaper.ini
 
-	for i = 0, tr_cnt-1 do
-	layout = Apply_Next_Previous_Track_Layout(master or r.GetSelectedTrack2(0,i,true), layout_t, layout_type, nxt or prev, attr) -- wantmaster true // when Master is selected all other selected tracks are ignored, tr_cnt is 1
-		if layout and (sync_type or master or tr_cnt == 1) then
+	tr_under_mouse = tr_cnt == 1 and (master or tr_under_mouse)
+	for i = 0, tr_cnt-1 do -- tr_cnt is 1 when track under mouse cursor or Master is selected
+	layout = Apply_Next_Previous_Track_Layout(tr_under_mouse or r.GetSelectedTrack(0,i), layout_t, layout_type, nxt or prev, attr) -- either master under cursor or selected, or track under cursor or selected tracks, when Master is selected all other selected tracks are ignored
+		if layout and (sync_mode or master or tr_cnt == 1) then
 		Error_Tooltip('\n\n '..layout..' \n\n ', nil, nil, 50) -- caps, spaced nil, x2 50
 		end
 	end
 
-	if not master then
+	if not master and undo then
 	local undo = string.format('Apply %s%s layout %sto selected tracks',
-	sync_type and '' or (nxt or prev)..' ', layout_type, sync_type and '"'..layout..'" ' or '')
+	sync_mode and '' or (nxt or prev)..' ', layout_type, sync_mode and '"'..layout..'" ' or '')
 	r.Undo_EndBlock(undo, -1)
 	else
 	return r.defer(no_undo)
