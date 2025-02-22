@@ -3,64 +3,64 @@ ReaScript name: BuyOne_Apply next;previous EnvCP;Transport layout_META.lua (4 sc
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
-Changelog: 	#Initial release
+Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962, 6.36+ recommended
 Metapackage: true
 Provides:	[main=main,midi_editor] .
-				. > BuyOne_Apply next EnvCP layout.lua
-				. > BuyOne_Apply previous EnvCP layout.lua
-				. > BuyOne_Apply next Transport layout.lua
-				. > BuyOne_Apply previous Transport layout.lua
+		. > BuyOne_Apply next EnvCP layout.lua
+		. > BuyOne_Apply previous EnvCP layout.lua
+		. > BuyOne_Apply next Transport layout.lua
+		. > BuyOne_Apply previous Transport layout.lua
 About:	If this script name is suffixed with META, when executed 
-			it will automatically spawn all individual scripts included 
-			in the package into the directory of the META script and will 
-			import them into the Action list from that directory. That's 
-			provided such scripts don't exist yet, if they do, then in 
-			order to recreate them they have to be deleted from the Action 
-			list and from the disk first.  
-			If there's no META suffix in this script name it will perfom 
-			the operation indicated in its name. Individual scripts can
-			be included in custom actions.
+	it will automatically spawn all individual scripts included 
+	in the package into the directory of the META script and will 
+	import them into the Action list from that directory. That's 
+	provided such scripts don't exist yet, if they do, then in 
+	order to recreate them they have to be deleted from the Action 
+	list and from the disk first.  
+	If there's no META suffix in this script name it will perfom 
+	the operation indicated in its name. Individual scripts can
+	be included in custom actions.
 
-			The script name is self-explanatory.
+	The script name is self-explanatory.
 
-			In the script targetting envelope control panel layout,
-			first found visible envelope control panel is scrolled
-			into view.
+	In the script targetting envelope control panel layout,
+	first found visible envelope control panel is scrolled
+	into view.
 
-			Cycling the layouts essentially cycles its Global  
-			default layouts, those listed under 
-			Options -> Layouts -> Transport / Envelope panel
-			which means that once its layout is switched to, it will apply 
-			to all new and other projects.
+	Cycling the layouts essentially cycles its Global  
+	default layouts, those listed under 
+	Options -> Layouts -> Transport / Envelope panel
+	which means that once its layout is switched to, it will apply 
+	to all new and other projects.
 
-			Layout change doesn't create an undo point due to REAPER design.
+	Layout change doesn't create an undo point due to REAPER design.
 
-			To cycle layouts with the individual scripts in both 
-			directions, use the following custom actions:
+	To cycle layouts with the individual scripts in both 
+	directions, use the following custom actions:
 
-			Custom: Cycle ECP layouts  
-				Action: Skip next action if CC parameter >0/mid  
-				BuyOne_Apply previous ECP layout.lua  
-				Action: Skip next action if CC parameter <0/mid  
-				BuyOne_Apply next ECP layout.lua
-
-
-			Custom: Cycle Transport layouts  
-				Action: Skip next action if CC parameter >0/mid  
-				BuyOne_Apply previous Transport layout.lua  
-				Action: Skip next action if CC parameter <0/mid  
-				BuyOne_Apply next Transport layout.lua  
+	Custom: Cycle ECP layouts  
+		Action: Skip next action if CC parameter >0/mid  
+		BuyOne_Apply previous ECP layout.lua  
+		Action: Skip next action if CC parameter <0/mid  
+		BuyOne_Apply next ECP layout.lua
 
 
-			And bind them to the mousewheel. The associaton between 
-			the mousewheel scroll direction and the performed action
-			is as follows: mousewheel forward/out/up - next,  
-			mousewheel backward/in/down - previous. 
-			To reverse the direction add action   
-			'Action: Modify MIDI CC/mousewheel: Negative'  
-			at the very beginning of each custom action sequence.
+	Custom: Cycle Transport layouts  
+		Action: Skip next action if CC parameter >0/mid  
+		BuyOne_Apply previous Transport layout.lua  
+		Action: Skip next action if CC parameter <0/mid  
+		BuyOne_Apply next Transport layout.lua  
+
+
+	And bind them to the mousewheel. The associaton between 
+	the mousewheel scroll direction and the performed action
+	is as follows: mousewheel forward/out/up - next,  
+	mousewheel backward/in/down - previous. 
+	To reverse the direction add action   
+	'Action: Modify MIDI CC/mousewheel: Negative'  
+	at the very beginning of each custom action sequence.
 
 ]]
 
