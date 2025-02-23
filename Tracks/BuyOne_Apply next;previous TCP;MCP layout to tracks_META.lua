@@ -2,8 +2,11 @@
 ReaScript name: BuyOne_Apply next;previous TCP;MCP layout to tracks_META.lua (4 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: 	#Changed logic of the scripts behavior
+Version: 1.2
+Changelog: 1.2 	#Added '(default)' indicator to layout name in the tooltip  
+		if the layout is set as track global default 
+		#Fixed individual scripts creation by the META script
+	   1.1 	#Changed logic of the scripts behavior
 		#Updated script names to reflect that
 		#Updated 'About' text
 		#Updated USER SETTINGS
@@ -355,6 +358,12 @@ local cur_layout_idx = layout_t[layout] or 1 -- if the returned by ThemeLayout_G
 	or prev and (layout_t[cur_layout_idx-1] or layout_t[#layout_t]) -- if out of range, wrap around
 		if not master then
 		r.GetSetMediaTrackInfo_String(tr, attr, layout, true) -- setNewValue true
+		local retval, cur_layout = r.ThemeLayout_GetLayout(layout_type, -1) -- -1 to quiery current default value // if empty string oor if no value in reaper.ini at the keys layout_tcp/layout_mcp, the very first layout is used as the default, 'Layout default' option is checked at Options -> Ttack/Mixer Panel
+		local default = (cur_layout == '' and layout == layout_t[1] or cur_layout == layout) and '(default)' or '' 
+			if #default > 0 then
+			local diff = math.floor((#layout-#default) * 4/5 + 0.5)
+			layout = layout..'\n'..(' '):rep(diff)..default -- centering 'default' string
+			end
 		else
 		r.ThemeLayout_SetLayout(layout_type, layout) -- this will change Global default layout
 		end
@@ -371,7 +380,7 @@ local fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script i
 local scr_name = fullpath:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
 
 
-	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Apply next;previous MCP;TCP layout to tracks_META.lua', names_t) -- names_t is optional only if constructed outside of the function, otherwise names are collected from the list in the header
+	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Apply next;previous TCP;MCP layout to tracks_META.lua', names_t) -- names_t is optional only if constructed outside of the function, otherwise names are collected from the list in the header
 	then return r.defer(no_undo) end -- abort if META script but continue if not
 
 --scr_name = 'next track MCP' ------------------ NAME TESTING
