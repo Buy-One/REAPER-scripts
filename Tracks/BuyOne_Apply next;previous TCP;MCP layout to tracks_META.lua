@@ -373,8 +373,6 @@ local cur_layout_idx = layout_t[layout] or 1 -- if the returned by ThemeLayout_G
 end
 
 
-local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
-
 local is_new_value, fullpath_init, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
 local fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
 local scr_name = fullpath:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
