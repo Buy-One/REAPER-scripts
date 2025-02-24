@@ -45,7 +45,7 @@ About:	The script only makes sense if the options
 -----------------------------------------------------------------------------
 
 -- One mousewheel nudge equals 1%, while scrolling several
--- such nudges are performed in a row which amount to about
+-- such nudges are performed in a row which amount to about 5-6%;
 -- between the quotes specify the desired value of pan persentage
 -- per one mousewheel nudge if coarser resolution is needed;
 -- supported values are 1 through 100, 1 equals default,
