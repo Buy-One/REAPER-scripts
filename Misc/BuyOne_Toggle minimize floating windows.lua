@@ -9,125 +9,125 @@ REAPER: at least v5.962
 Extensions: SWS/S&M
 Screenshot: https://github.com/Buy-One/screenshots/blob/main/Toggle%20minimize%20floating%20windows.mp4
 About:	When the script is first applied to a floating window, the window 
-			gets minimized and placed at the bottom of the REAPER main window.
-			When it's applied to the window which was minimized by it, the
-			window original size and location on the screen are restored.
-			
-			Minimized windows line up in a row from left to right at the 
-			bottom of the REAPER main window. When one minimized window is 
-			maximized the gap which has been left in the row is filled up 
-			by following minimized windows to. 
-			They can be moved around freely, this will not affect the ability
-			to restore their original properties.
-
-			The minimized windows can be closed manually without restoring
-			their orginal size and location. As long as the size and coordinates
-			haven't been restored by the script they are kept in the project 
-			during the session (and after quitting REAPER, provided the project 
-			was saved), can be recalled later and a gap which is left in the 
-			minimized windows row isn't filled up by the following windows,
-			so when re-opened, it will occupy the same screen space it occupied 
-			before closure. So if you wish to avoid creation of gaps in the 
-			minimized windows row as a result of window closing, before closing
-			toggle it back to its original properies with the script.  
-			Once a minimized window original properties have been restored by 
-			the script (even if it was resized manually after being minimized) 
-			its data are cleared.  
-			When a window from the middle or the very beginning of the minimized 
-			windows row is restored, the minimized windows to its right will 
-			shift leftward to close the gap left by it. Such shift will work as 
-			long as such minimized windows weren't closed and then re-opened or,
-			if they were closed, their name hasn't changed.
-			
-			The script can be executed either with a shortcut, with a click
-			on a toolbar button, on the 'Run' button in the Action list window
-			or by direct double click on the script entry in the Action list.
-			Still execution with a shortcut is the most reliable.
-
-			Regardless of the execution method the target window must be first
-			brought into focus with a mouse click, so that its top bar becomes
-			highlighted.
-			
-			A shortcut the script is bound to must be applied with the scope
-			being 'Global+text fields' which will ensure that REAPER main
-			window receives keyboard input even when it's not in focus because
-			the target window is in focus at that moment.
-			
-			If the script is executed with a shortcut while these windows are 
-			in focus, it will still target the window which was focused before 
-			the focus was moved to these windows.
-			
-			It's advised to save the project after every script execution so
-			that windows properties are stored in the project data and can be 
-			recalled in the next project session. For this purpose execute 
-			the script from within a custom action 
-			
-			Custom: Toggle minimize floating windows and save the project
-				BuyOne_Toggle minimize floating windows.lua
-				File: Save project
-						
-			
-			BATCH ACTIONS
-			
-			When project tabs are switched back and forth, minimized FX chain
-			window width and floating FX windows width and height will be reset
-			to their original size. To restore their minimized size arm the script
-			(which is convenient to do by right-clicking a toolbar button linked
-			to the script) and follow the dialogue options.  
-			The same technique can be applied for batch restoration of windows 
-			initial minimized coordinates and size after they have been moved 
-			elsewhere on the screen or for batch restoration of their original 
-			coordinates and size, including after project load. Restoration of
-			minimized window properties after REAPER launch under the project 
-			they were stored in may not always succeed 100% because that depends 
-			on whether the window is open which isn't the case with such windows 
-			as Routing or track/take Envelope Manager windows because these don't 
-			auto-reopen when REAPER is started.
-						
+	gets minimized and placed at the bottom of the REAPER main window.
+	When it's applied to the window which was minimized by it, the
+	window original size and location on the screen are restored.
 	
-			LIMITATIONS
-			
-			The script can be run only from a toolbar which has 'toolbar' word 
-			in its title (regardless of the characters register). Otherwise it 
-			will target the very toolbar window it's being executed from.
-			
-			Docked, toolbar windows (unless their name doesn't include 'toolbar'
-			word in it regardless of the characters register) and 'Actions' 
-			window aren't supported. If these windows happen to be in focus
-			when the script is run with a shortcut, a first supported window 
-			located below them in the Z order will be minimized instead.
-			'Routing' window minimization isn't supported when MINIMIZE_FULLY 
-			user setting is enabled.
-			
-			If the target window is modal, i.e. blocks access to other UI 
-			elements, the script cannot be executed because keyboard input won't 
-			be sent to REAPER main window and a toolbar, or a menu, or the 
-			interface won't be accessible for the mouse click to execute 
-			the script by other means.	
-			
-			Pinned windows (with the pressed pin in their title bar) cannot
-			be minimized.
-			
-			It's not recommended to change names of takes if any windows 
-			associated with them (such as FX chain, floating FX, Envelope Manager 
-			windows) are minimized, or close such minimized windows after take 
-			name was changed because this decreases the chances of being able to 
-			restore their original properties. If this happens you will have to 
-			restore such windows manually.
-			
-			If a minimized FX chain window is closed, when reopened by clicking 
-			the TCP or take FX button, its original non-minimized dimensions get 
-			restored while its minimized position is maintained so its original 
-			position on the screen can still be restored with the script.
-			
-			Floating window of a bridged 32 bit plugin on a 64 bit system 
-			cannot be minimized unless the option 'Run as -> Embed bridged UI' 
-			is enabled for it, which is accessible via the plugin entry right 
-			click context menu in the FX browser. If not enabled, when such
-			window is in focus the script cannot be executed regardless of
-			the method probably because it's not related to REAPER main window.
-			
-			The script was developed and only tested on Windows.
+	Minimized windows line up in a row from left to right at the 
+	bottom of the REAPER main window. When one minimized window is 
+	maximized the gap which has been left in the row is filled up 
+	by following minimized windows to. 
+	They can be moved around freely, this will not affect the ability
+	to restore their original properties.
+
+	The minimized windows can be closed manually without restoring
+	their orginal size and location. As long as the size and coordinates
+	haven't been restored by the script they are kept in the project 
+	during the session (and after quitting REAPER, provided the project 
+	was saved), can be recalled later and a gap which is left in the 
+	minimized windows row isn't filled up by the following windows,
+	so when re-opened, it will occupy the same screen space it occupied 
+	before closure. So if you wish to avoid creation of gaps in the 
+	minimized windows row as a result of window closing, before closing
+	toggle it back to its original properies with the script.  
+	Once a minimized window original properties have been restored by 
+	the script (even if it was resized manually after being minimized) 
+	its data are cleared.  
+	When a window from the middle or the very beginning of the minimized 
+	windows row is restored, the minimized windows to its right will 
+	shift leftward to close the gap left by it. Such shift will work as 
+	long as such minimized windows weren't closed and then re-opened or,
+	if they were closed, their name hasn't changed.
+	
+	The script can be executed either with a shortcut, with a click
+	on a toolbar button, on the 'Run' button in the Action list window
+	or by direct double click on the script entry in the Action list.
+	Still execution with a shortcut is the most reliable.
+
+	Regardless of the execution method the target window must be first
+	brought into focus with a mouse click, so that its top bar becomes
+	highlighted.
+	
+	A shortcut the script is bound to must be applied with the scope
+	being 'Global+text fields' which will ensure that REAPER main
+	window receives keyboard input even when it's not in focus because
+	the target window is in focus at that moment.
+	
+	If the script is executed with a shortcut while these windows are 
+	in focus, it will still target the window which was focused before 
+	the focus was moved to these windows.
+	
+	It's advised to save the project after every script execution so
+	that windows properties are stored in the project data and can be 
+	recalled in the next project session. For this purpose execute 
+	the script from within a custom action 
+	
+	Custom: Toggle minimize floating windows and save the project
+		BuyOne_Toggle minimize floating windows.lua
+		File: Save project
+				
+	
+	BATCH ACTIONS
+	
+	When project tabs are switched back and forth, minimized FX chain
+	window width and floating FX windows width and height will be reset
+	to their original size. To restore their minimized size arm the script
+	(which is convenient to do by right-clicking a toolbar button linked
+	to the script) and follow the dialogue options.  
+	The same technique can be applied for batch restoration of windows 
+	initial minimized coordinates and size after they have been moved 
+	elsewhere on the screen or for batch restoration of their original 
+	coordinates and size, including after project load. Restoration of
+	minimized window properties after REAPER launch under the project 
+	they were stored in may not always succeed 100% because that depends 
+	on whether the window is open which isn't the case with such windows 
+	as Routing or track/take Envelope Manager windows because these don't 
+	auto-reopen when REAPER is started.
+				
+
+	LIMITATIONS
+	
+	The script can be run only from a toolbar which has 'toolbar' word 
+	in its title (regardless of the characters register). Otherwise it 
+	will target the very toolbar window it's being executed from.
+	
+	Docked, toolbar windows (unless their name doesn't include 'toolbar'
+	word in it regardless of the characters register) and 'Actions' 
+	window aren't supported. If these windows happen to be in focus
+	when the script is run with a shortcut, a first supported window 
+	located below them in the Z order will be minimized instead.
+	'Routing' window minimization isn't supported when MINIMIZE_FULLY 
+	user setting is enabled.
+	
+	If the target window is modal, i.e. blocks access to other UI 
+	elements, the script cannot be executed because keyboard input won't 
+	be sent to REAPER main window and a toolbar, or a menu, or the 
+	interface won't be accessible for the mouse click to execute 
+	the script by other means.	
+	
+	Pinned windows (with the pressed pin in their title bar) cannot
+	be minimized.
+	
+	It's not recommended to change names of takes if any windows 
+	associated with them (such as FX chain, floating FX, Envelope Manager 
+	windows) are minimized, or close such minimized windows after take 
+	name was changed because this decreases the chances of being able to 
+	restore their original properties. If this happens you will have to 
+	restore such windows manually.
+	
+	If a minimized FX chain window is closed, when reopened by clicking 
+	the TCP or take FX button, its original non-minimized dimensions get 
+	restored while its minimized position is maintained so its original 
+	position on the screen can still be restored with the script.
+	
+	Floating window of a bridged 32 bit plugin on a 64 bit system 
+	cannot be minimized unless the option 'Run as -> Embed bridged UI' 
+	is enabled for it, which is accessible via the plugin entry right 
+	click context menu in the FX browser. If not enabled, when such
+	window is in focus the script cannot be executed regardless of
+	the method probably because it's not related to REAPER main window.
+	
+	The script was developed and only tested on Windows.
 
 ]]
 
