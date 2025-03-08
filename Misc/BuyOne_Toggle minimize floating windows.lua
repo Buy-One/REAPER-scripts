@@ -447,8 +447,7 @@ function ProjExtStates_2_Table(scr_cmdID)
 local i, t = 0, {}
 	repeat
 	local retval, title, coord = r.EnumProjExtState(0, scr_cmdID, i)
-		if retval --and title ~= 'NEXT_WND_LT' -- OLD, excluding 'NEXT_WND_LT' extended state since it doesn't store window data
-		then
+		if retval then
 		t[#t+1] = {title=title,coord=coord}
 		end
 	i=i+1
@@ -694,7 +693,7 @@ local ret, coord = r.GetProjExtState(0, named_ID, title)
 	local height = bottom-top
 	local width = right-left -- actual width after minimization which can be greater than 30 px
 
-	local next_wnd_lt = Get_Minimized_Wnd_Righmost_X_Coord(named_ID, main_l) -- this method is more consistent with the design than storage of the coordinate as 'NEXT_WND_LT' extended state above, because it ensures that a window just minimized is placed next to the last minimized window in the row and to its right, whereas the stored rightmost coordinate won't necessarily refer to the last minimized window right X coordinate if the last restored window was manually moved away from preceding minimized window, in which case the coordinate stored as 'NEXT_WND_LT' extended state inside Shift_Minimized_Windows_Left() will refer to the left X coordinate of such last restored window therefore the new minimized window will be removed from the last minimized window by the gap which existed between the last restored window and other minimized windows to its left
+	local next_wnd_lt = Get_Minimized_Wnd_Righmost_X_Coord(named_ID, main_l) -- this method is more consistent with the design than storage of the coordinate as extended state, because it ensures that a window just minimized is placed next to the last minimized window in the row and to its right, whereas the stored rightmost coordinate won't necessarily refer to the last minimized window right X coordinate if the last restored window was manually moved away from preceding minimized window, in which case the coordinate stored as extended state inside Shift_Minimized_Windows_Left() will refer to the left X coordinate of such last restored window therefore the new minimized window will be removed from the last minimized window by the gap which existed between the last restored window and other minimized windows to its left
 
 	-- prevent adding windows to the row if they end up sticking by more than 1/3
 	-- outside of the main window on the right
