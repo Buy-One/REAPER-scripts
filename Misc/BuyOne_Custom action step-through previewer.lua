@@ -8,222 +8,222 @@ Licence: WTFPL
 REAPER: recommended 6.71 or newer
 Extensions: SWS/S&M unless REAPER build is 6.71 or newer
 About: 	The script allows importing/replicating custom actions
-			to run them step by step while monitoring the progress
-			either to debug existing custom actions or to build new
-			ones from scratch.  
-			
-			Actions supposed to be run with the mousewheel cannot
-			be tested with this script.
-			
-			When the script is launched its click pad box will be 
-			opened. Left-click inside the box will call the script
-			menu interface. To be able to use the script the box must 
-			stay open. It can be closed when not needed. To close the 
-			click pad box press Escape key when it's focused or click 
-			the close button at its upper right-hand corner. 
-			On re-opening the clock pad box window is opened at its last 
-			location, not at the mouse cursor.  
-			The latest configuration is saved and will be available 
-			during the same REAPER session. The script doesn't store 
-			any data outside of the current session so in each new 
-			session it will start out completely reset.  
-			If you wish to make the custom action available to the
-			script in subsequent sessions export is as an .ReaperKeyMsp
-			file (see EXPORTING THE CUSTOM ACTION paragraph below).
-			
+	to run them step by step while monitoring the progress
+	either to debug existing custom actions or to build new
+	ones from scratch.  
+	
+	Actions supposed to be run with the mousewheel cannot
+	be tested with this script.
+	
+	When the script is launched its click pad box will be 
+	opened. Left-click inside the box will call the script
+	menu interface. To be able to use the script the box must 
+	stay open. It can be closed when not needed. To close the 
+	click pad box press Escape key when it's focused or click 
+	the close button at its upper right-hand corner. 
+	On re-opening the clock pad box window is opened at its last 
+	location, not at the mouse cursor.  
+	The latest configuration is saved and will be available 
+	during the same REAPER session. The script doesn't store 
+	any data outside of the current session so in each new 
+	session it will start out completely reset.  
+	If you wish to make the custom action available to the
+	script in subsequent sessions export is as an .ReaperKeyMsp
+	file (see EXPORTING THE CUSTOM ACTION paragraph below).
+	
 
-			ADDING CUSTOM ACTION TO THE SCRIPT
-			
-			There're 2.5 ways to add a custom action to the script:
-			1a. To import it by supplying its command ID taken from the
-			Action list (right click -> Copy selected action command ID);  
-			1b. To import it from a .ReaperKeyMap file;  
-			2. To add by arming actions one by one.
-			
-			To import use IMPORT CUSTOM ACTION option. To import from 
-			a .ReaperKeyMap file submit the import dialogue empty to call
-			a file browser.  
-			If the script menu alerady contains a list of actions imported
-			or added earlier, deleting them prior to the import is not
-			necessary because the import option will allow to replace
-			them with the imported ones.
-			
-			In order to be able to add an armed action 
-			1. Enable the ADD ARMED ACTION option
-			2. Open the Action list and arm the target action,
-			as soon as it's armed it will be added to the action sequence
-			after the checkmarked action item and immediately unarmed, 
-			if no action is checkmarked it will be added to the bottom 
-			of the list unless this behavior is changed in the 
-			USER SETTINGS. The newly created action item doesn't get
-			checkmarked which can be changed in the USER SETTINGS. 
-			Actions cannot be added with the Action list closed even 
-			by arming them via a toolbar.  
-			While the armed action is being added, the script menu will be 
-			closed because it has lost the mouse focus, but will open as 
-			soon as a new action has been added, to reflect the change.  
-			While ADD ARMED ACTION option is enabled the option RUN ACIONS
-			which triggers the actions will be inactive.		
-			
-			Only import/addition of actions belonging to the Main, MIDI Editor 
-			and MIDI Event List sections of the Action list is supported. 
-			
-			When importing from .ReaperKeyMap file containing multiple custom 
-			actions only the first found custom action will be imported.
-			
-			When importing a custom action via the dialogue on top of the 
-			existing list of actions and opting for 'Append' option, the custom
-			action sequence will be added after the last action entry of the 
-			current list. When adding actions to the existing list by arming
-			they're added after the ckeckmarked action entry and if there's
-			none they're added after the last action entry.
-			
-			The initial import/addition determine the association with the 
-			Action list section for all actions appended later to the existing 
-			list of actions, that is the newly added actions must belong to the 
-			same Action list section as the first imported custom action or 
-			the first action added by arming. Actions from other sections will 
-			be rejected. 
-			
-			
-			ACTION MANAGEMENT OPTIONS
-			
-			Once custom action has been imported or a list of actions 
-			has been built the individual action entries can be managed 
-			with the management options hidden in the OPERATION submenu.  
-			These are enabled and disabled automatically depending on the 
-			state of the list of actions and their total number.  
-			To be able to affect an action entry in the list with the 
-			management options checkmark it.  
-			The management options can be exploded to the main menu for
-			ease of access with 'Explode list menagement menu' item, which 
-			is especially convenient when an action needs to be moved more 
-			than one position in any direction.  
-			The MOVE ACTION UP/DOWN operation is circular.
-			
-			The script allows disabling action items which will prevent
-			execution of actions linked to them when the sequence is
-			stepped through, they will be skipped instead. Disabled action
-			items can be stored with the exported .ReaperKeyMap file and 
-			re-disabled when the file is imported into the script. 
-			On a 64 bit system a maximum of first 63 actions can be stored, 
-			while on a 32 bit system it's the first 52 actions.
-			
-			
-			EXECUTING THE CUSTOM ACTION
-			
-			The execution is performed by repetative clicking on the 
-			RUN ACTIONS menu item. 
-			To run MIDI Editor and MIDI Event List actions the MIDI Editor 
-			must be open.
-			The entry of the latest excuted action gets checkmarked in 
-			the list. 
-			In order to start the execution from the top no action item 
-			in the list must be checkmarked. The only way to achieve that 
-			is by un-checkmarking the very last action item in the list which 
-			is the only one whose checkmark can be toggled. So if not 
-			initially checkmarked its checkmark must be toggled to On to 
-			clear checkmark from any other action item and then to Off. 
-			Otherwise the action sequence is executed from the currently 
-			checkmarked action item, unless it's the last one because  
-			the execution cannot go past the last action item.  
-			
-			During action sequence execution the checkmark indicates the 
-			latest excuted action.
-			
-			Disabled actions are skipped during the sequence execution.
-			
-			
-			UNDOING
-			
-			Undo operation always runs from the last action executed
-			by the script regardless of the currently checkmarked action 
-			item. It's possible to shuttle between RUN ACTIONS and UNDO 
-			operations back and forth without reaching the end of the 
-			custom action sequence.
-			
-			To undo MIDI Editor and MIDI Event List actions with the 
-			script the MIDI Editor must be open.
-			
-			The UNDO menu item stays inactive as long as the latest undo
-			point in REAPER undo history was not created by this script.
-			It's activated when action sequence execution starts.
-			The UNDO menu item is deactivated as soon as the the first undo 
-			point created by the script has been undone, if action sequence 
-			execution is interrupted by other REAPER operations which create 
-			their own undo points, or if the undo point index doesn't match
-			the action position in the sequence which can happen if the 
-			actions have been reordered. 
-			
-			During undoing of the action sequence the checkmark indicates 
-			action preceding the latest undone action, that is the latest 
-			not yet undone.
-			
-			Of course custom action steps can be undone by conventional 
-			means while the menu us closed. 
-			
-			When undo is being performed by means other than the script, i.e. 
-			while the menu is closed, checkmark is not moved to the latest
-			not yet undone action and stays where it was before the menu was
-			exited. When the action sequence has been fully undone, i.e. when 
-			the undo point preceding the 1st undo point created by the script
-			in REAPER undo history has been reached, the checkmark is cleared 
-			from action items regardless of the way undo has been performed.
+	ADDING CUSTOM ACTION TO THE SCRIPT
+	
+	There're 2.5 ways to add a custom action to the script:
+	1a. To import it by supplying its command ID taken from the
+	Action list (right click -> Copy selected action command ID);  
+	1b. To import it from a .ReaperKeyMap file;  
+	2. To add by arming actions one by one.
+	
+	To import use IMPORT CUSTOM ACTION option. To import from 
+	a .ReaperKeyMap file submit the import dialogue empty to call
+	a file browser.  
+	If the script menu alerady contains a list of actions imported
+	or added earlier, deleting them prior to the import is not
+	necessary because the import option will allow to replace
+	them with the imported ones.
+	
+	In order to be able to add an armed action 
+	1. Enable the ADD ARMED ACTION option
+	2. Open the Action list and arm the target action,
+	as soon as it's armed it will be added to the action sequence
+	after the checkmarked action item and immediately unarmed, 
+	if no action is checkmarked it will be added to the bottom 
+	of the list unless this behavior is changed in the 
+	USER SETTINGS. The newly created action item doesn't get
+	checkmarked which can be changed in the USER SETTINGS. 
+	Actions cannot be added with the Action list closed even 
+	by arming them via a toolbar.  
+	While the armed action is being added, the script menu will be 
+	closed because it has lost the mouse focus, but will open as 
+	soon as a new action has been added, to reflect the change.  
+	While ADD ARMED ACTION option is enabled the option RUN ACIONS
+	which triggers the actions will be inactive.		
+	
+	Only import/addition of actions belonging to the Main, MIDI Editor 
+	and MIDI Event List sections of the Action list is supported. 
+	
+	When importing from .ReaperKeyMap file containing multiple custom 
+	actions only the first found custom action will be imported.
+	
+	When importing a custom action via the dialogue on top of the 
+	existing list of actions and opting for 'Append' option, the custom
+	action sequence will be added after the last action entry of the 
+	current list. When adding actions to the existing list by arming
+	they're added after the ckeckmarked action entry and if there's
+	none they're added after the last action entry.
+	
+	The initial import/addition determine the association with the 
+	Action list section for all actions appended later to the existing 
+	list of actions, that is the newly added actions must belong to the 
+	same Action list section as the first imported custom action or 
+	the first action added by arming. Actions from other sections will 
+	be rejected. 
+	
+	
+	ACTION MANAGEMENT OPTIONS
+	
+	Once custom action has been imported or a list of actions 
+	has been built the individual action entries can be managed 
+	with the management options hidden in the OPERATION submenu.  
+	These are enabled and disabled automatically depending on the 
+	state of the list of actions and their total number.  
+	To be able to affect an action entry in the list with the 
+	management options checkmark it.  
+	The management options can be exploded to the main menu for
+	ease of access with 'Explode list menagement menu' item, which 
+	is especially convenient when an action needs to be moved more 
+	than one position in any direction.  
+	The MOVE ACTION UP/DOWN operation is circular.
+	
+	The script allows disabling action items which will prevent
+	execution of actions linked to them when the sequence is
+	stepped through, they will be skipped instead. Disabled action
+	items can be stored with the exported .ReaperKeyMap file and 
+	re-disabled when the file is imported into the script. 
+	On a 64 bit system a maximum of first 63 actions can be stored, 
+	while on a 32 bit system it's the first 52 actions.
+	
+	
+	EXECUTING THE CUSTOM ACTION
+	
+	The execution is performed by repetative clicking on the 
+	RUN ACTIONS menu item. 
+	To run MIDI Editor and MIDI Event List actions the MIDI Editor 
+	must be open.
+	The entry of the latest excuted action gets checkmarked in 
+	the list. 
+	In order to start the execution from the top no action item 
+	in the list must be checkmarked. The only way to achieve that 
+	is by un-checkmarking the very last action item in the list which 
+	is the only one whose checkmark can be toggled. So if not 
+	initially checkmarked its checkmark must be toggled to On to 
+	clear checkmark from any other action item and then to Off. 
+	Otherwise the action sequence is executed from the currently 
+	checkmarked action item, unless it's the last one because  
+	the execution cannot go past the last action item.  
+	
+	During action sequence execution the checkmark indicates the 
+	latest excuted action.
+	
+	Disabled actions are skipped during the sequence execution.
+	
+	
+	UNDOING
+	
+	Undo operation always runs from the last action executed
+	by the script regardless of the currently checkmarked action 
+	item. It's possible to shuttle between RUN ACTIONS and UNDO 
+	operations back and forth without reaching the end of the 
+	custom action sequence.
+	
+	To undo MIDI Editor and MIDI Event List actions with the 
+	script the MIDI Editor must be open.
+	
+	The UNDO menu item stays inactive as long as the latest undo
+	point in REAPER undo history was not created by this script.
+	It's activated when action sequence execution starts.
+	The UNDO menu item is deactivated as soon as the the first undo 
+	point created by the script has been undone, if action sequence 
+	execution is interrupted by other REAPER operations which create 
+	their own undo points, or if the undo point index doesn't match
+	the action position in the sequence which can happen if the 
+	actions have been reordered. 
+	
+	During undoing of the action sequence the checkmark indicates 
+	action preceding the latest undone action, that is the latest 
+	not yet undone.
+	
+	Of course custom action steps can be undone by conventional 
+	means while the menu us closed. 
+	
+	When undo is being performed by means other than the script, i.e. 
+	while the menu is closed, checkmark is not moved to the latest
+	not yet undone action and stays where it was before the menu was
+	exited. When the action sequence has been fully undone, i.e. when 
+	the undo point preceding the 1st undo point created by the script
+	in REAPER undo history has been reached, the checkmark is cleared 
+	from action items regardless of the way undo has been performed.
 
 
-			EXPORTING THE CUSTOM ACTION
-			
-			The action sequence is exported from the script as a custom 
-			action with 'EXPORT as .ReaperKeyMap' option.  
-			On export the custom action command ID and name are determined 
-			by the command ID and name of the initially imported custom 
-			action. If the action sequence was built by arming actions,
-			on the very first export the command ID will be generated 
-			automatically while the name of the exported custom action will
-			be user chosen, and both will be preserved in the memory for 
-			future exports until all actions are deleted, a new custom action
-			is imported deleting the current one or REAPER session is finished.  
-			The exported .ReaperKeyMap file is placed in the /KeyMaps folder 
-			inside REAPER resource directory being named after the custom
-			action.  
-			Export of a custom action imported via its command ID from the 
-			Action list without any changes to the order or array of the 
-			actions it's made up of is prevented because it makes no sense. 
-			Such custom action can be exported directly from the Action list.
-			
-			
-			RUN ACTIONS and ADD ARMED ACTION options sre mutually exclusive.
-			
-			
-			Quick access shortcuts (the register is immaterial):
-			
-			(UN)DISABLE MARKED ACTION	- n
-			MOVE MARKED ACTION UP		- p
-			MOVE MARKED ACTION DOWN		- d
-			RUN ACTIONS						- r
-			UNDO								- u
-			
-			They're underscored in the menu.
-			
-			
-			CAVEATS
-			
-			The script doesn't support actions whose functionality depends
-			on mouse cursor position because when it's executed the mouse
-			cursor is engaged with the actions sequence menu.
-			
-			The script usability is limited by the screen resolution because
-			only so many menu items can be visible at once. If the menu size
-			cannot fit within the screen height the extra items will only
-			be accessible by scrolling the menu which besides being 
-			enconvenient makes using the script impractical because when the
-			menu is reloaded after each click to stay visible its scroll state
-			is reset and the item just accessed will again become hidden and
-			requiring scrolling.  
-			At screen height resolution of 768 px a max of 36 action items are 
-			visible in the menu. For every additional 17 px one more action item 
-			can be displayed, conversely, every reduction by 17 px will result 
-			in one fewer visible action item.
+	EXPORTING THE CUSTOM ACTION
+	
+	The action sequence is exported from the script as a custom 
+	action with 'EXPORT as .ReaperKeyMap' option.  
+	On export the custom action command ID and name are determined 
+	by the command ID and name of the initially imported custom 
+	action. If the action sequence was built by arming actions,
+	on the very first export the command ID will be generated 
+	automatically while the name of the exported custom action will
+	be user chosen, and both will be preserved in the memory for 
+	future exports until all actions are deleted, a new custom action
+	is imported deleting the current one or REAPER session is finished.  
+	The exported .ReaperKeyMap file is placed in the /KeyMaps folder 
+	inside REAPER resource directory being named after the custom
+	action.  
+	Export of a custom action imported via its command ID from the 
+	Action list without any changes to the order or array of the 
+	actions it's made up of is prevented because it makes no sense. 
+	Such custom action can be exported directly from the Action list.
+	
+	
+	RUN ACTIONS and ADD ARMED ACTION options sre mutually exclusive.
+	
+	
+	Quick access shortcuts (the register is immaterial):
+	
+	(UN)DISABLE MARKED ACTION	- n
+	MOVE MARKED ACTION UP		- p
+	MOVE MARKED ACTION DOWN		- d
+	RUN ACTIONS			- r
+	UNDO				- u
+	
+	They're underscored in the menu.
+	
+	
+	CAVEATS
+	
+	The script doesn't support actions whose functionality depends
+	on mouse cursor position because when it's executed the mouse
+	cursor is engaged with the actions sequence menu.
+	
+	The script usability is limited by the screen resolution because
+	only so many menu items can be visible at once. If the menu size
+	cannot fit within the screen height the extra items will only
+	be accessible by scrolling the menu which besides being 
+	enconvenient makes using the script impractical because when the
+	menu is reloaded after each click to stay visible its scroll state
+	is reset and the item just accessed will again become hidden and
+	requiring scrolling.  
+	At screen height resolution of 768 px a max of 36 action items are 
+	visible in the menu. For every additional 17 px one more action item 
+	can be displayed, conversely, every reduction by 17 px will result 
+	in one fewer visible action item.
 			
 ]]	
 
