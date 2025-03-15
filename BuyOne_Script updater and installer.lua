@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Script updater and installer.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
-Changelog: 1.3 	#Added support for Media Explorer script installation
+Version: 1.4
+Changelog:  1.4 #Fixed recognition of files from the 'Media Explorer' folder
+		or fit to be imported into the Media Explorer section of the Action list
+	    1.3 #Added support for Media Explorer script installation
 		#Optimized installation function
 		#Updated 'About' text
 	   1.2 	#Made user setting transfer report message a bit more descriptive
@@ -305,8 +307,8 @@ i = 0
 				then -- a script fit for the MIDI Editor section
 				t.midi[#t.midi+1] = f_path
 				end
-				if native_install_mode and (file_n:lower():match('Media Explorer') 
-				or is_specific_section_script(f_path, 'media_explorer') ) then
+				if native_install_mode and (file_n:lower():match('media explorer') -- file/folder name
+				or is_specific_section_script(f_path, 'media_explorer') ) then -- script header data
 				t.mx[#t.mx+1] = f_path
 				end				
 				if (not native_install_mode -- if not native_install_mode collect all scripts regardless of their designation
