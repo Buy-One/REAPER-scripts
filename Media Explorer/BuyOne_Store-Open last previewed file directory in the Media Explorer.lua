@@ -7,101 +7,101 @@ Changelog: #Initial release
 Licence: WTFPL
 Extensions: SWS/S&M for basic functionality, js_ReaScriptAPI for extended functionality
 About:	The script stores the directory of the media file
-			currently previewed in the Media Explorer preview
-			player allowing to quickly return to such directory 
-			after moving far away from it in the Media Explorer
-			directory tree.
+	currently previewed in the Media Explorer preview
+	player allowing to quickly return to such directory 
+	after moving far away from it in the Media Explorer
+	directory tree.
 
-			The script isn't meant to be executed by itself. It is 
-			only functional when run from the Media Explorer section 
-			of the Action list as an integral part of the following 
-			custom actions alongside native actions from the Media 
-			Explorer section of the Action list:
+	The script isn't meant to be executed by itself. It is 
+	only functional when run from the Media Explorer section 
+	of the Action list as an integral part of the following 
+	custom actions alongside native actions from the Media 
+	Explorer section of the Action list:
 
-			Custom: Play selected file or open last previewed file directory
-			  Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
-			  Media: Insert on a new track
-			  Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
-			  Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.
-			  Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
-			  Action: Skip next action if CC parameter >0/mid
-			  Preview: Play
+	Custom: Play selected file or open last previewed file directory
+	  Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
+	  Media: Insert on a new track
+	  Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
+	  Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.
+	  Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
+	  Action: Skip next action if CC parameter >0/mid
+	  Preview: Play
 
-			Custom: Play current file, select next or open last previewed file directory
-				Browser: Select next file in directory
-				Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
-				Media: Insert on a new track
-				Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
-				Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.
-				Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
-				Action: Skip next action if CC parameter >0/mid
-				Preview: Play
-				Action: Skip next action if CC parameter >0/mid
-				Browser: Select next file in directory
+	Custom: Play current file, select next or open last previewed file directory
+		Browser: Select next file in directory
+		Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
+		Media: Insert on a new track
+		Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
+		Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.
+		Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
+		Action: Skip next action if CC parameter >0/mid
+		Preview: Play
+		Action: Skip next action if CC parameter >0/mid
+		Browser: Select next file in directory
 
-			Custom: Play current file, select previous or open last previewed file directory				
-				Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
-				Media: Insert on a new track
-				Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
-				Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.
-				Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
-				Action: Skip next action if CC parameter >0/mid
-				Preview: Play
-				Action: Skip next action if CC parameter >0/mid
-				Browser: Select previous file in directory
+	Custom: Play current file, select previous or open last previewed file directory				
+		Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
+		Media: Insert on a new track
+		Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
+		Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.
+		Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
+		Action: Skip next action if CC parameter >0/mid
+		Preview: Play
+		Action: Skip next action if CC parameter >0/mid
+		Browser: Select previous file in directory
 
 
-			The two last custom actions are so weirdly named
-			and designed because it's impossible using a custom 
-			action to select next/previous file and immediately 
-			play it. Even if next/previous file is selected prior
-			to Play action, the currently selected file will be 
-			played instead due to what seems to be a bug  
-			https://forum.cockos.com/showthread.php?t=299186
-			When using these it's also recommended to turn off 
-			the option of subfolders display in the directories 
-			at right click -> Show -> Folders
+	The two last custom actions are so weirdly named
+	and designed because it's impossible using a custom 
+	action to select next/previous file and immediately 
+	play it. Even if next/previous file is selected prior
+	to Play action, the currently selected file will be 
+	played instead due to what seems to be a bug  
+	https://forum.cockos.com/showthread.php?t=299186
+	When using these it's also recommended to turn off 
+	the option of subfolders display in the directories 
+	at right click -> Show -> Folders
 
-			In its basic functionality for which the SWS/S&M 
-			extension will suffice the script will store the
-			directory of the file being currently previewed 
-			and will be able recall it by pasting its address 
-			into the path bar of the Media Explorer. To open 
-			that directory you will have to manually hit the 
-			Enter key. To find the file look up its name in
-			the Media Explorer footer.
+	In its basic functionality for which the SWS/S&M 
+	extension will suffice the script will store the
+	directory of the file being currently previewed 
+	and will be able recall it by pasting its address 
+	into the path bar of the Media Explorer. To open 
+	that directory you will have to manually hit the 
+	Enter key. To find the file look up its name in
+	the Media Explorer footer.
 
-			If js_ReaScriptAPI extension is installed alongside
-			the SWS/S&M extension, the stored directory will be
-			opened automatically and the file being previewed 
-			will be scrolled into view at the top of the list.
+	If js_ReaScriptAPI extension is installed alongside
+	the SWS/S&M extension, the stored directory will be
+	opened automatically and the file being previewed 
+	will be scrolled into view at the top of the list.
 
-			'Media: Insert on a new track' action inside the 
-			custom actions is only used to retrieve the file path
-			so no file ends up being inserted into the project
-			because it's immediately deleted by the script.
+	'Media: Insert on a new track' action inside the 
+	custom actions is only used to retrieve the file path
+	so no file ends up being inserted into the project
+	because it's immediately deleted by the script.
 
-			HOW TO USE
+	HOW TO USE
 
-			Execute the above custom actions to initialize preview 
-			of a file from a directory and at the same time store 
-			its directory path.
+	Execute the above custom actions to initialize preview 
+	of a file from a directory and at the same time store 
+	its directory path.
 
-			If a file directory has been stored, as soon as you
-			execute the custom action to play a file from another
-			directory the script will display a prompt asking
-			you for the course of action, either to return to
-			the stored directory or to play the file from the 
-			current one. If you choose to play the file from the 
-			current directory, the directory stored by the script
-			will be updated. If another directory is open without 
-			any file being selected, the script will automatically
-			re-open the stored directory.
+	If a file directory has been stored, as soon as you
+	execute the custom action to play a file from another
+	directory the script will display a prompt asking
+	you for the course of action, either to return to
+	the stored directory or to play the file from the 
+	current one. If you choose to play the file from the 
+	current directory, the directory stored by the script
+	will be updated. If another directory is open without 
+	any file being selected, the script will automatically
+	re-open the stored directory.
 
-			If by mistake you happen to have run the script by 
-			itself, make sure that it's toggle state is On, so
-			it remains being in sync with the other actions 
-			within custom actions.
+	If by mistake you happen to have run the script by 
+	itself, make sure that it's toggle state is On, so
+	it remains being in sync with the other actions 
+	within custom actions.
 
 ]]
 
