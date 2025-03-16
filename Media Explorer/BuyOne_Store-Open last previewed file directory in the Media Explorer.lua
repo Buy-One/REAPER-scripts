@@ -610,7 +610,7 @@ or sect_ID ~= 32063 and '     the script isn\'t run \n\n   from the media explor
 
 r.SetToggleCommandState(sect_ID, cmd_ID, 0) -- reset in case the path was restored in which case the toggle state was set to one to condition 'Preview: Play' action inside the custom action which follows the 2nd instance of the script
 -- OR
---	if r.set_action_options and r.set_action_options(4) end
+-- if r.set_action_options and r.set_action_options(4) end
 
 local scr_name = scr_name:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
 local named_ID = r.ReverseNamedCommandLookup(cmd_ID) -- convert to named
@@ -626,7 +626,6 @@ local track_data = r.GetExtState(named_ID, 'TRACKS')
 	r.SetExtState(named_ID, 'TRACKS', r.GetNumTracks()..'::'..selected_indices, false) -- persist false
 	return --r.defer(no_undo) -- when two script instances are run in close succession inside custom action defer causes ReaScript task control to appear
 	else -- runs in the 2nd instance of the script inside the custom action following 'Media: Insert on a new track' action
-Msg(r.GetSelectedTrack(0,0),'DELETE')
 	r.DeleteExtState(named_ID, 'TRACKS', true) -- persist true
 	end
 
