@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Made some functions error proof
 Licence: WTFPL
 Extensions: SWS/S&M for basic functionality, js_ReaScriptAPI for extended functionality
 About:	The script stores the directory of the media file
@@ -106,7 +106,7 @@ About:	The script stores the directory of the media file
 ]]
 
 
-local Debug = ""
+ Debug = ""
 function Msg(...)
 -- accepts either a single arg, or multiple pairs of value and caption
 -- caption must follow value because if value is nil
@@ -470,6 +470,8 @@ function Get_List_Item_Idx(list_wnd, col_cnt, item_text)
 local col_cnt = col_cnt or 1 -- only traverse 1st column if arg isn't provided
 local itm_cnt = r.JS_ListView_GetItemCount(list_wnd) -- number of rows
 
+	if itm_cnt == 0 then return end
+
 local col_idx = 0
 	repeat
 	local row_idx, text = 0
@@ -486,6 +488,9 @@ end
 
 function Scroll_Window(wnd, line_idx)
 -- line_idx is 1-based index of the target line
+
+	if not line_idx or line_idx == 0 then return end
+	
 	if wnd then
 	local SendMsg = r.BR_Win32_SendMessage
 	--	set scrollbar to top to procede from there on down by lines
@@ -510,8 +515,10 @@ function SCROLL()
 		if list_wnd then
 		local file_name = options[3] and stored_path:match('.+[\\/](.+)') or stored_path:match('.+[\\/](.+)%.') -- include extension if enabled in 'Show' settings as 'File extension even if file type displayed'
 		local col_cnt = Get_MX_Column_Count()
-		row_idx = Get_List_Item_Idx(list_wnd, col_cnt, file_name) -- isolating file name to the exclusion of its extension because it may be turned off in the 'Show' settings
-		Scroll_Window(list_wnd, row_idx+1)
+		local row_idx = Get_List_Item_Idx(list_wnd, col_cnt, file_name) -- isolating file name to the exclusion of its extension because it may be turned off in the 'Show' settings
+			if row_idx then
+			Scroll_Window(list_wnd, row_idx+1) -- +1 because row_idx return value is 0-based
+			end
 		--	r.JS_ListView_EnsureVisible(list_wnd, file_idx, false) -- partialOK false
 		end
 	return
@@ -610,7 +617,7 @@ or sect_ID ~= 32063 and '     the script isn\'t run \n\n   from the media explor
 
 r.SetToggleCommandState(sect_ID, cmd_ID, 0) -- reset in case the path was restored in which case the toggle state was set to one to condition 'Preview: Play' action inside the custom action which follows the 2nd instance of the script
 -- OR
--- if r.set_action_options and r.set_action_options(4) end
+--	if r.set_action_options and r.set_action_options(4) end
 
 local scr_name = scr_name:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
 local named_ID = r.ReverseNamedCommandLookup(cmd_ID) -- convert to named
