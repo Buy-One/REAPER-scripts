@@ -6,6 +6,7 @@ Version: 1.2
 Changelog: 1.2 #Improved error handling
 	   1.1 #Made some functions error proof
 Licence: WTFPL
+REAPER: at least v5.962
 Extensions: SWS/S&M for basic functionality, js_ReaScriptAPI for extended functionality
 About:	The script stores the directory of the media file
 	currently previewed in the Media Explorer preview
