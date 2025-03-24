@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #Made some functions error proof
+Version: 1.2
+Changelog: 1.2 #Improved error handling
+	   1.1 #Made some functions error proof
 Licence: WTFPL
 Extensions: SWS/S&M for basic functionality, js_ReaScriptAPI for extended functionality
 About:	The script stores the directory of the media file
@@ -18,7 +19,7 @@ About:	The script stores the directory of the media file
 	custom actions alongside native actions from the Media 
 	Explorer section of the Action list:
 
-	Custom: Play selected file or open last previewed file directory
+	Custom: Play currently selected file OR open last previewed file directory
 	  Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
 	  Media: Insert on a new track
 	  Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
@@ -27,7 +28,7 @@ About:	The script stores the directory of the media file
 	  Action: Skip next action if CC parameter >0/mid
 	  Preview: Play
 
-	Custom: Play current file, select next or open last previewed file directory
+	Custom: Play currently selected file, select next OR open last previewed file directory
 		Browser: Select next file in directory
 		Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
 		Media: Insert on a new track
@@ -39,7 +40,7 @@ About:	The script stores the directory of the media file
 		Action: Skip next action if CC parameter >0/mid
 		Browser: Select next file in directory
 
-	Custom: Play current file, select previous or open last previewed file directory				
+	Custom: Play currently selected file, select previous OR open last previewed file directory				
 		Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
 		Media: Insert on a new track
 		Script: BuyOne_Store-Open last previewed file directory in the Media Explorer.lua
@@ -106,7 +107,7 @@ About:	The script stores the directory of the media file
 ]]
 
 
- Debug = ""
+ local Debug = ""
 function Msg(...)
 -- accepts either a single arg, or multiple pairs of value and caption
 -- caption must follow value because if value is nil
@@ -656,17 +657,31 @@ stored_path = r.GetExtState(named_ID,key) -- must stay global to be accesible in
 
 local MX = Find_Window_SWS('Media Explorer')
 child_t = Get_Child_Windows_SWS(MX) -- path window is the 7th // must stay global to be accesible inside SCROLL() function
+local path_field_wnd
+	for k, wnd_data in ipairs(child_t) do
+		if wnd_data.title == 'Details' or wnd_data.title == 'List' then
+		path_field_wnd = child_t[k-2] -- the path field precedes the field titled 'Details' or 'List' by two indices, their order seems constant so indices are reliable
+		break end
+	end
+local open_folder_path = path_field_wnd.title
+local sep = open_folder_path:match('[\\/]')
+open_folder_path = open_folder_path:sub(1,-2) == sep and open_folder_path:sub(1,-2) or open_folder_path -- remove trailing separator if any to conform to the pattern for comparison with the stored path
 
-
-	if cur_path and #stored_path > 0 and stored_path:match('(.+)[\\/]') ~= cur_path:match('(.+)[\\/]') then -- excluding the file name
+	if #stored_path > 0 and (cur_path and stored_path:match('(.+)[\\/]') ~= cur_path:match('(.+)[\\/]') 
+	or open_folder_path and stored_path:match('(.+)[\\/]') ~= open_folder_path)
+	then -- excluding the file name
 	local s = (' '):rep(10)
 		if r.MB('Do you wish to start preview and store the path\n\n '..s..'of the currently selected file (YES)'
 		..'\n\n'..s..'or go back to the stored path (NO) ?','PROMPT',4) == 7 then -- NO
 		cur_path = nil -- reset to trigger restoration routine
+		open_folder_path = nil
 		end
 	end
 
-	if #stored_path > 0 and not cur_path then -- restore // cur_path is nil if either 'Media: Insert on a new track' action wasn't excuted successfully because no file had been selected or if user chose option 'NO' in response to the above prompt
+	if open_folder_path and not cur_path then -- no file is selected
+	Error_Tooltip('\n\n\tno selected file. \n\n nothing has been stored.\n\n',1,1) -- caps, spaced true
+	r.SetToggleCommandState(sect_ID, cmd_ID, 1) -- set to ON to prevent 'Preview: Play' action inside the custom action which follows the 2nd instance of the script in order to prevent inserting into MX preview player currently selected file thereby keeping the one whose home directory is being restored
+	elseif #stored_path > 0 and not cur_path and not open_folder_path then -- restore // cur_path is nil if either 'Media: Insert on a new track' action wasn't executed successfully because no file had been selected or if user chose option 'NO' in response to the above prompt; open_folder_path is nil due to user cosing 'NO' in response to the above prompt
 	local displayall = Check_reaper_ini('reaper_explorer', 'displayall')
 	options = Get_Media_Explorer_Show_Submenu_Options(displayall+0) -- must stay global to be accesible inside SCROLL() function
 
@@ -680,13 +695,6 @@ child_t = Get_Child_Windows_SWS(MX) -- path window is the 7th // must stay globa
 	r.SetToggleCommandState(sect_ID, cmd_ID, 1) -- set to ON to prevent 'Preview: Play' action inside the custom action which follows the 2nd instance of the script in order to prevent inserting into MX preview player currently selected file thereby keeping the one whose home directory is being restored
 	-- OR
 	--	if r.set_action_options and r.set_action_options(3) end
-
-	local path_field_wnd
-		for k, wnd_data in ipairs(child_t) do
-			if wnd_data.title == 'Details' or wnd_data.title == 'List' then
-			path_field_wnd = child_t[k-2] -- the path field precedes the field titled 'Details' or 'List' by two indices, their order seems constant so indices are reliable
-			break end
-		end
 
 	Insert_String_Into_Field_SWS(path_field_wnd.child, path_field_wnd.title, stored_path:match('(.+)[\\/]')) -- 'C:\\Users\\ME\\Desktop\\Chords' // path_field_wnd.title arg is optional and isn't used in this design // excluding the file name and last separator to conform to the format of the path displayed in the MX
 
