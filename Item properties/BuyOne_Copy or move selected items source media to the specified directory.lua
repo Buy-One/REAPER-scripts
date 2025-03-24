@@ -9,37 +9,37 @@ REAPER: at least v5.962
 Provides: [main=main,mediaexplorer] .
 Extensions: SWS/S&M or js_ReaScriptAPI for extended functionality
 About: 	The script may be useful for quick storage of sampled 
-  			or sound design audio along with categorizing it within 
-  			your sample library.
-  
-  			In its basic functionality the script uses destination
-  			directory supplied by the user via a dialogue.
-  
-  			If the SWS/S&M extension is installed and MEDIA_EXPLORER
-  			setting is enabled in the USER SETTINGS, the script will
-  			only work if the Media Explorer (MX) is open and will take 
-  			the destination directory from the MX path box.
-  
-  			If in addition to the SWS/S&M extension js_ReaScriptAPI 
-  			extension is installed or it alone is installed and 
-  			MEDIA_EXPLORER setting is enabled the script will also 
-  			scroll the last copied/stored file into view in the MX 
-  			file list.
-  
-  			If js_ReaScriptAPI extension isn't installed, sometimes, 
-  			for reasons which have nothing to do with the script, the 
-  			file may not appear immediately in the directory open in 
-  			the MX.  
-  			This is fixable by refreshing the MX window through either 
-  			pressing F5 key, toggling MX window visiblity off and on, or 
-  			running the actions 'Browser: Go to parent folder'
-  			and 'Browser: Go to previous folder in history'
-  			as a custom action.			
-  
-  			The script USER SETTINGS can be managed in real time and 
-  			tailored to suit the specific use case at each script
-  			execution provided MANAGE_SETTINGS_VIA_MENU setting is
-  			enabled in the USER SETTINGS section.				
+	or sound design audio along with categorizing it within 
+	your sample library.
+
+	In its basic functionality the script uses destination
+	directory supplied by the user via a dialogue.
+
+	If the SWS/S&M extension is installed and MEDIA_EXPLORER
+	setting is enabled in the USER SETTINGS, the script will
+	only work if the Media Explorer (MX) is open and will take 
+	the destination directory from the MX path box.
+
+	If in addition to the SWS/S&M extension js_ReaScriptAPI 
+	extension is installed or it alone is installed and 
+	MEDIA_EXPLORER setting is enabled the script will also 
+	scroll the last copied/stored file into view in the MX 
+	file list.
+
+	If js_ReaScriptAPI extension isn't installed, sometimes, 
+	for reasons which have nothing to do with the script, the 
+	file may not appear immediately in the directory open in 
+	the MX.  
+	This is fixable by refreshing the MX window through either 
+	pressing F5 key, toggling MX window visiblity off and on, or 
+	running the actions 'Browser: Go to parent folder'
+	and 'Browser: Go to previous folder in history'
+	as a custom action.			
+
+	The script USER SETTINGS can be managed in real time and 
+	tailored to suit the specific use case at each script
+	execution provided MANAGE_SETTINGS_VIA_MENU setting is
+	enabled in the USER SETTINGS section.				
 
 ]]
 
@@ -56,9 +56,10 @@ About: 	The script may be useful for quick storage of sampled
 MANAGE_SETTINGS_VIA_MENU = "1"
 
 
--- The setting is only relevant if SWS/S&M extension
--- is installed, to instruct the script to only work
--- if the Media Explorer is open retriebing the
+-- The setting is only relevant if SWS/S&M or
+-- js_ReaScriptAPI extensions are installed, 
+-- to instruct the script to only work
+-- if the Media Explorer is open retrieving the
 -- destination directory path from the Media Explorer
 -- directory box
 MEDIA_EXPLORER = ""
