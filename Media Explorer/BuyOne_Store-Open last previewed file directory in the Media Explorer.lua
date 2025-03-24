@@ -108,7 +108,7 @@ About:	The script stores the directory of the media file
 ]]
 
 
- local Debug = ""
+local Debug = ""
 function Msg(...)
 -- accepts either a single arg, or multiple pairs of value and caption
 -- caption must follow value because if value is nil
@@ -602,7 +602,7 @@ end
 -- if the script happens to be executed by itself, its toggle state
 -- must be set to On, otherwise its 1st and 2nd instance in the custom action
 -- will trigger the SCROLL() funcion, if supported which will trigger
--- ReaScript task control dialogue in buolds older than 7.03;
+-- ReaScript task control dialogue in builds older than 7.03;
 -- the SWS extension cannot be fully substitited with js_ReaScriptAPI extension
 -- because of CF_SetClipboard() function required for pasting
 -- the path into the path box which isn't available in js_ReaScriptAPI extension
@@ -697,7 +697,7 @@ open_folder_path = open_folder_path:sub(1,-2) == sep and open_folder_path:sub(1,
 	-- OR
 	--	if r.set_action_options and r.set_action_options(3) end
 
-	Insert_String_Into_Field_SWS(path_field_wnd.child, path_field_wnd.title, stored_path:match('(.+)[\\/]')) -- 'C:\\Users\\ME\\Desktop\\Chords' // path_field_wnd.title arg is optional and isn't used in this design // excluding the file name and last separator to conform to the format of the path displayed in the MX
+	Insert_String_Into_Field_SWS(path_field_wnd.child, path_field_wnd.title, stored_path:match('(.+)[\\/]')) -- path_field_wnd.title arg is optional and isn't used in this design // excluding the file name and last separator to conform to the format of the path displayed in the MX
 
 		-- Scroll the file into view
 		--	MX window is slow to update after directory switching
@@ -709,9 +709,9 @@ open_folder_path = open_folder_path:sub(1,-2) == sep and open_folder_path:sub(1,
 		-- so that scrolling does work
 		if r.JS_WindowMessage_Post then
 		-- if the target file remains selected (but not highlighted),
-		-- after path switching t's brought into view my MX automatically
+		-- after path switching it's brought into view by MX automatically
 		-- this routine however scrolls it regardless of the file status
-		-- conditioned by presence if js_ReaScriptAPI even though it's not needed for scrolling
+		-- conditioned by presence of js_ReaScriptAPI extension even though it's not needed for scrolling
 		-- because scrolling only makes sense when the target file list is available
 		-- which can only be ensured by sending 'Enter' keypress with JS_WindowMessage_Post()
 		time_init = r.time_precise() -- must stay global to be accesible inside SCROLL() function
@@ -727,5 +727,4 @@ open_folder_path = open_folder_path:sub(1,-2) == sep and open_folder_path:sub(1,
 
 
 do return r.defer(no_undo) end
-
 
