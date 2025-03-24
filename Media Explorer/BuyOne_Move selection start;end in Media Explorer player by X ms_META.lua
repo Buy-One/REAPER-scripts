@@ -10,7 +10,7 @@ Changelog: #Fixed defaulting to 100 ms when user selected value is 0
 Licence: WTFPL
 REAPER: 7.12 and newer
 Extensions: SWS/S&M
-Provides: [main=main,media_explorer]
+Provides: [main=main,mediaexplorer]
 	. > BuyOne_Move selection start in Media Explorer player right by X ms.lua
 	. > BuyOne_Move selection start in Media Explorer player left by X ms.lua
 	. > BuyOne_Move selection end in Media Explorer player right by X ms.lua
