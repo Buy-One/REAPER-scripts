@@ -10,17 +10,17 @@ REAPER: at least v7.35
 Extensions: SWS/S&M for basic functionality, js_ReaScriptAPI for extended functionality
 Provides: [main=main,mediaexplorer] .
 About:	In its basic functionality for which the SWS/S&M 
-			extension will suffice the script will paste the
-			address of the file currently being previewed
-			into the path bar of the Media Explorer. To open 
-			that directory you will have to manually hit the 
-			Enter key. To locate the file in the lust look up 
-			its name in the Media Explorer footer.
+	extension will suffice the script will paste the
+	address of the file currently being previewed
+	into the path bar of the Media Explorer. To open 
+	that directory you will have to manually hit the 
+	Enter key. To locate the file in the lust look up 
+	its name in the Media Explorer footer.
 
-			If js_ReaScriptAPI extension is installed alongside
-			the SWS/S&M extension, the stored directory will be
-			opened automatically and the file being previewed 
-			will be scrolled into view at the top of the list.
+	If js_ReaScriptAPI extension is installed alongside
+	the SWS/S&M extension, the stored directory will be
+	opened automatically and the file being previewed 
+	will be scrolled into view at the top of the list.
 
 ]]
 
