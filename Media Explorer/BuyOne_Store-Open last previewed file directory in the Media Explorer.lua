@@ -728,3 +728,4 @@ open_folder_path = open_folder_path:sub(1,-2) == sep and open_folder_path:sub(1,
 
 do return r.defer(no_undo) end
 
+
