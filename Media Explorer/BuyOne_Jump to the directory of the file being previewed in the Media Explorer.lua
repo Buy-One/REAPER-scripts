@@ -20,6 +20,8 @@ About:	In its basic functionality for which the SWS/S&M
 	the SWS/S&M extension, the stored directory will be
 	opened automatically and the file being previewed 
 	will be scrolled into view at the top of the list.
+	If the directory is already open, the file will be
+	scrolled into view.
 
 ]]
 
@@ -455,7 +457,7 @@ end
 
 local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
 
-local err = not r.MediaExplorerGetLastPlayedFileInfo and '\nthe script requires\n\nreaper build 7.35 and later'
+local err = not r.MediaExplorerGetLastPlayedFileInfo and '\tthe script requires\n\nreaper build 7.35 and later'
 or not r.BR_Win32_SendMessage and 'the sws/s&m extension \n\n\tisn\'t installed'
 
 	if err then
