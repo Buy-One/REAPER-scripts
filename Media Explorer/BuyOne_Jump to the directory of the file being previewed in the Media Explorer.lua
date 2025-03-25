@@ -1,4 +1,3 @@
--- https://old.reddit.com/r/Reaper/comments/1hq57m1/losing_my_place_in_the_media_explorer/
 --[[
 ReaScript name: BuyOne_Jump to the directory of the file being previewed in the Media Explorer.lua
 Author: BuyOne
