@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Jump to the directory of the file being previewed in the Media Explorer.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Added an error when the Media Explorer is closed
 Licence: WTFPL
 REAPER: at least v7.35
 Extensions: SWS/S&M for basic functionality, js_ReaScriptAPI for extended functionality
@@ -459,6 +459,7 @@ local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.
 
 local err = not r.MediaExplorerGetLastPlayedFileInfo and '\tthe script requires\n\nreaper build 7.35 and later'
 or not r.BR_Win32_SendMessage and 'the sws/s&m extension \n\n\tisn\'t installed'
+or r.GetToggleCommandStateEx(0, 50124) == 0 and 'the media explorer is closed'
 
 	if err then
 	Error_Tooltip('\n\n '..err..' \n\n',1,1) -- caps, spaced true
