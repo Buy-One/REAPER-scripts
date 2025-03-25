@@ -3,11 +3,20 @@ ReaScript name: Ripple edit per track when selected item length changes
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
 Version: 1.2
-Changelog: #Added a tooltip warning when script is started without Ripple per track being enabled.	    
+Changelog: 1.2  #Added a tooltip warning when script is started without Ripple per track being enabled.
+	   1.1  #Added support for ripple editing automation envelopes and automation items
+		#Added new user settings
+		#Updated script name
+		#Updated screenshot
+		#Updated text under About tag	    
 Licence: WTFPL
 REAPER: at least v5.962
 Screenshots: https://git.io/JSTkE
-About:	An enhancement to 'Ripple edit per track' mode. 
+About:	The feature is supported natively since REAPER 7.35.
+	Still the script may prove useful because it doesn't
+	behave exactly like the native feature.
+
+	An enhancement to 'Ripple edit per track' mode. 
 	As such only works when this mode is enabled. 
 	Makes all items following the one whose length 
 	is being changed move just like what regular 
