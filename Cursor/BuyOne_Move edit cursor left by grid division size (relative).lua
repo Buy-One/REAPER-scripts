@@ -7,24 +7,24 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script follows the actual grid resolution, not visible grid
-			which depends on the zoom level.
+	which depends on the zoom level.
 
-			See also BuyOne_Move edit cursor right by grid division size (relative).lua
-			
-			To move the edit cursor both left and right with the mousewheel
-			set up the following custom action and bind it to the mousweheel:
-			
-			Custom: Move edit cursor by grid division size (relative)
-				Action: Skip next action if CC parameter >0/mid
-				BuyOne_Move edit cursor left by grid division size (relative).lua
-				Action: Skip next action if CC parameter <0/mid
-				BuyOne_Move edit cursor right by grid division size (relative).lua
-				
-			This custom action implies the following scrolling direction: 
-			forwards/out/up - right, backwards/in/down - left
-			To reverse the direction swap the order of the scripts within
-			the custom action sequence without swapping the order of the
-			native actions.
+	See also BuyOne_Move edit cursor right by grid division size (relative).lua
+	
+	To move the edit cursor both left and right with the mousewheel
+	set up the following custom action and bind it to the mousweheel:
+	
+	Custom: Move edit cursor by grid division size (relative)
+		Action: Skip next action if CC parameter >0/mid
+		BuyOne_Move edit cursor left by grid division size (relative).lua
+		Action: Skip next action if CC parameter <0/mid
+		BuyOne_Move edit cursor right by grid division size (relative).lua
+		
+	This custom action implies the following scrolling direction: 
+	forwards/out/up - right, backwards/in/down - left
+	To reverse the direction swap the order of the scripts within
+	the custom action sequence without swapping the order of the
+	native actions.
 			
 ]]
 
@@ -139,7 +139,7 @@ local left, right = scr_name:match('left'), scr_name:match('right')
 local cur_pos = r.GetCursorPosition()
 local distance = r.GetToggleCommandStateEx(0, 41885) == 0 and Grid_Div_Dur_In_Sec() -- Grid: Toggle framerate grid
 or 1/r.TimeMap_curFrameRate(0) -- frame duration doesn't depend on the tempo, 1 because the rate is per second
-local err = not left and not right and '\t  the script name \n\n\tis not recognized, \n\n restore its original name' 
+local err = not left and not right and '\t  the script name \n\n\tis not recognized, \n\n restore its original name'
 or r.GetToggleCommandStateEx(0, 40145) == 0 and 'grid is disabled' -- Options: Toggle grid lines
 or left and (cur_pos == 0 or cur_pos - distance < 0) and '\tcannot move \n\n beyond project start'
 
@@ -149,12 +149,12 @@ or left and (cur_pos == 0 or cur_pos - distance < 0) and '\tcannot move \n\n bey
 	end
 
 UNDO = #UNDO:gsub(' ','') > 0
-	
+
 	if UNDO then r.Undo_BeginBlock() end
 
 r.SetEditCurPos(cur_pos + (left and distance*-1 or distance), true, false) -- moveview true, seekplay false
 
-	if UNDO then r.Undo_EndBlock(scr_name, -1) 
+	if UNDO then r.Undo_EndBlock(scr_name, -1)
 	else
 	return r.defer(no_undo)
 	end
