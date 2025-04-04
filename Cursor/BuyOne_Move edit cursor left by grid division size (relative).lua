@@ -9,6 +9,11 @@ REAPER: at least v5.962
 About: 	The script follows the actual grid resolution, not visible grid
 	which depends on the zoom level.
 
+	The script is only meant for the Arrange view because in the
+	MIDI Editor section of the Action list the actions
+	'Navigate: Move edit cursor left/right by grid'
+	already move the cursor relatively if snapping is disabled.
+
 	See also BuyOne_Move edit cursor right by grid division size (relative).lua
 	
 	To move the edit cursor both left and right with the mousewheel
