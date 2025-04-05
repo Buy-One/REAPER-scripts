@@ -2,12 +2,13 @@
 ReaScript name: BuyOne_Move edit cursor right by grid division size (relative).lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog:  #Added a setting to follow visible grid
+	    #Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
-About: 	The script follows the actual grid resolution, not visible grid
-	which depends on the zoom level.
+About: 	The script follows the actual grid resolution, unless FOLLOW_VISIBLE_GRID
+	setting is enabled in the USER SETTINGS section.
 
 	The script is only meant for the Arrange view because in the
 	MIDI Editor section of the Action list the actions
@@ -37,8 +38,14 @@ About: 	The script follows the actual grid resolution, not visible grid
 ------------------------------ USER SETTINGS --------------------------------
 -----------------------------------------------------------------------------
 
--- Enable by inserting any alphanumeric character
--- between the quotes to have the script create
+-- To enable a setting insert any alphanumeric character
+-- between the quotes 
+
+-- Enable to have the script follow visible grid
+-- in moving the edit cursor, which depends on the zoom level
+FOLLOW_VISIBLE_GRID = ""
+
+-- Enable to have the script create
 -- an undo point for each cursor movement
 UNDO = ""
 
@@ -137,6 +144,27 @@ local retval, div, swingmode, swingamt = r.GetSetProjectGrid(0, false, 0, 0, 0) 
 return 60/r.Master_GetTempo()*div/0.25 -- duration of 1 grid division in sec; 0.25 corresponds to a quarter note as per GetSetProjectGrid()
 end
 
+
+function Get_Visible_Grid_Div_Length(grid_div_len)
+-- grid_div_len stems from Grid_Div_Dur_In_Sec()
+-- returns length of visible grid division in sec
+local retval, min_spacing = r.get_config_var_string('projgridmin') -- minimum visible grid resolution // setting in Snap/Grid Settings dialogue 'Show grid, line spacing: ... minimum: ... pixels'
+	if min_spacing+0 > 0 then
+	local zoom = r.GetHZoomLevel() -- pix/sec
+	local pix_per_grid_div = zoom*grid_div_len
+		if pix_per_grid_div < min_spacing+0 then
+			-- increment until equal or greater than the minimum
+			while pix_per_grid_div < min_spacing+0 do
+			grid_div_len = grid_div_len+grid_div_len
+			pix_per_grid_div = zoom*grid_div_len
+			end
+		return grid_div_len
+		end	
+	end
+return grid_div_len
+end
+
+
 local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
 local scr_name = scr_name:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
 
@@ -144,6 +172,7 @@ local left, right = scr_name:match('left'), scr_name:match('right')
 local cur_pos = r.GetCursorPosition()
 local distance = r.GetToggleCommandStateEx(0, 41885) == 0 and Grid_Div_Dur_In_Sec() -- Grid: Toggle framerate grid
 or 1/r.TimeMap_curFrameRate(0) -- frame duration doesn't depend on the tempo, 1 because the rate is per second
+distance = #FOLLOW_VISIBLE_GRID:gsub(' ','') > 0 and Get_Visible_Grid_Div_Length(distance) or distance
 local err = not left and not right and '\t  the script name \n\n\tis not recognized, \n\n restore its original name'
 or r.GetToggleCommandStateEx(0, 40145) == 0 and 'grid is disabled' -- Options: Toggle grid lines
 or left and (cur_pos == 0 or cur_pos - distance < 0) and '\tcannot move \n\n beyond project start'
