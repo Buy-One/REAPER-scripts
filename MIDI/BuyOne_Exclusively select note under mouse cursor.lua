@@ -6,19 +6,19 @@ Version: 1.0
 Changelog:	#Initial release
 Licence: WTFPL
 About: 	If MIDI channel filter is enabled in the MIDI Editor
-			only notes in the active channel are considered both
-			for selection and for deselection, otherwise notes in
-			all channels.
-			
-			It's not recommended to bind the script
-			or a custom action it's used in, to a shortcut 
-			identical to one mapped to a split action in
-			the Main section of the Action list.  
-			Because if the edit cursor is located outside
-			of the MIDI item bounds or the MIDI Editor
-			isn't an active window, such shortcut will trigger
-			the split action causing the split of the MIDI
-			item, which is though reparable still annoying.
+	only notes in the active channel are considered both
+	for selection and for deselection, otherwise notes in
+	all channels.
+	
+	It's not recommended to bind the script
+	or a custom action it's used in, to a shortcut 
+	identical to one mapped to a split action in
+	the Main section of the Action list.  
+	Because if the edit cursor is located outside
+	of the MIDI item bounds or the MIDI Editor
+	isn't an active window, such shortcut will trigger
+	the split action causing the split of the MIDI
+	item, which is though reparable still annoying.
 ]]
 
 
