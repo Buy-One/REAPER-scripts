@@ -9,16 +9,7 @@ About: 	If MIDI channel filter is enabled in the MIDI Editor
 	only notes in the active channel are considered both
 	for selection and for deselection, otherwise notes in
 	all channels.
-	
-	It's not recommended to bind the script
-	or a custom action it's used in, to a shortcut 
-	identical to one mapped to a split action in
-	the Main section of the Action list.  
-	Because if the edit cursor is located outside
-	of the MIDI item bounds or the MIDI Editor
-	isn't an active window, such shortcut will trigger
-	the split action causing the split of the MIDI
-	item, which is though reparable still annoying.
+
 ]]
 
 
@@ -98,54 +89,12 @@ r.UpdateTimeline() -- might be needed because tooltip can sometimes affect graph
 end
 
 
-function Mouse_Cursor_outside_painoroll(take)
-
-local edit_cur_pos = r.GetCursorPosition()
-local item = r.GetMediaItemTake_Item(take)
-local item_st = r.GetMediaItemInfo_Value(item, 'D_POSITION')
-local item_end = item_st + r.GetMediaItemInfo_Value(item, 'D_LENGTH')
-
-return edit_cur_pos >= item_end or edit_cur_pos <= item_st
-
-end
-
-
-function Re_Store_Edit_Cursor_Pos_In_MIDI_Ed(stored_pos)
--- moves to mouse cursor, then restores
--- HOWEVER if within the MIDI Editor the edit cursor was initially located
--- to the left of the start in item which starts exactly at the project start
--- the cursor position will be registered as 0
--- and upon restoration the cursor will be moved to the item start
--- i.e. the project start, because it cannot be moved left past it
--- into the negative even if manually it can
-
-r.PreventUIRefresh(1)
-
-	if not stored_pos then -- store
-
-	local ACT = r.MIDIEditor_LastFocused_OnCommand
-	local stored_pos = r.GetCursorPosition()
-	ACT(40443, false) -- View: Move edit cursor to mouse cursor // islistviewcommand false
-	return stored_pos
-
-	else -- restore
-
-	r.SetEditCurPos(stored_pos, 0, 0) -- restore edit cursor pos; moveview is 0, seekplay is 0
-
-	end
-
-r.PreventUIRefresh(-1)
-
-end
-
-
 function Deselect_All_Notes(ME, take)
 local ME = not ME and r.MIDIEditor_GetActive() or ME
 local take = not take and r.MIDIEditor_GetTake(ME) or take
 local retval, notecnt, ccevtcnt, textsyxevtcnt = r.MIDI_CountEvts(take)
 	for i=0,notecnt-1 do
-	local retval, sel, muted, startppqpos, endppqpos, chan, pitch, numbevel = r.MIDI_GetNote(take, 0)
-	r.MIDI_SetNote(take, i, false)--, muted, startppqposIn, endppqposIn, chanIn, pitchIn, velIn, noSortIn) -- selectedIn false
+	r.MIDI_SetNote(take, i, false) -- selectedIn false
 	end
 end
 
@@ -193,19 +142,11 @@ local retval, notecnt, ccevtcnt, textsyxevtcnt = r.MIDI_CountEvts(take)
 	Error_Tooltip('\n\n no notes \n\n', 1,1) -- caps, spaced true
 	return r.defer(no_undo) end
 
+
 r.Undo_BeginBlock()
 r.PreventUIRefresh(1)
 
--- if the edit cursor is outside item bounds in the MIDI Editor
--- move to mouse cursor, then restore;
--- this is a workaround for cases where in the MIDI Editor section
--- of the Action list the script is mapped to a shortcut
--- identical to one active in the Main section of the Action list
--- such as one which a split action is mapped to, in which case
--- it will be triggered which is undesirable
-local stored_pos = Mouse_Cursor_outside_painoroll(take) and Re_Store_Edit_Cursor_Pos_In_MIDI_Ed(stored_pos) -- move to mouse and store
-
-local note_idx = Get_Note_Under_Mouse(ME, take)
+local note_idx = Get_Note_Under_Mouse(ME, take) -- this must be placed within the undo block rather than before the main routine for the sake of error message diplay, to prevent registering note splitting undo point which happens automatically, after which the script undo point is ignored
 
 	if note_idx then
 	Deselect_All_Notes(ME, take)
@@ -213,10 +154,7 @@ local note_idx = Get_Note_Under_Mouse(ME, take)
 	r.MIDI_SetNote(take, note_idx, true)--, muted, startppqposIn, endppqposIn, chanIn, pitchIn, velIn, noSortIn) -- selectedIn true
 	else
 	Error_Tooltip('\n\n no note under mouse \n\n', 1,1) -- caps, spaced true
-	end
-
-	if stored_pos then
-	Re_Store_Edit_Cursor_Pos_In_MIDI_Ed(stored_pos) -- restore
+	r.Undo_EndBlock(r.Undo_CanUndo2(0) or '', -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
 	end
 
 r.PreventUIRefresh(-1)
