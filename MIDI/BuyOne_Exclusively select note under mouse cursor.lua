@@ -2,14 +2,19 @@
 ReaScript name: BuyOne_Exclusively select note under mouse cursor.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Fixed glitch when targeting overlapping notes
+	   #Updated 'About' text
 REAPER: at least v5.962
 Licence: WTFPL
 About: 	If MIDI channel filter is enabled in the MIDI Editor
 	only notes in the active channel are considered both
 	for selection and for deselection, otherwise notes in
 	all channels.
+
+	The script automatically corrects overlapping notes
+	otherwise it will glitch out if a note set for selection
+	is overlapped by another note.
 
 ]]
 
@@ -105,7 +110,12 @@ function Get_Note_Under_Mouse(hwnd, midi_take)
 -- advised to use with Mouse_Cursor_outside_painoroll() because if mouse is outside of the MIDI item
 -- the result will be nil as when there's no note under mouse
 
+local ACT = r.MIDIEditor_OnCommand -- or r.MIDIEditor_LastFocused_OnCommand in which case hwnd arg isn't necessary
+
 r.PreventUIRefresh(1)
+
+ACT(hwnd, 40659) -- Correct overlapping notes // absolutely necessary because splitting overlapping notes breaks the entire edifice, the split action splits both
+
 local retval, notecntA, ccevtcnt, textsyxevtcnt = r.MIDI_CountEvts(midi_take)
 local props_t = {}
 	for i = 0, notecntA-1 do -- collect current notes properties
@@ -113,9 +123,9 @@ local props_t = {}
 	props_t[#props_t+1] = {startppq, endppq, pitch}
 	end
 local snap = r.GetToggleCommandStateEx(32060, 1014) == 1 -- View: Toggle snap to grid
-local off = snap and r.MIDIEditor_OnCommand(hwnd, 1014) -- disable snap
-r.MIDIEditor_OnCommand(hwnd, 40052)	-- Edit: Split notes at mouse cursor
-local on = snap and r.MIDIEditor_OnCommand(hwnd, 1014) -- re-enable snap
+local off = snap and ACT(hwnd, 1014) -- disable snap
+ACT(hwnd, 40052)	-- Edit: Split notes at mouse cursor
+local on = snap and ACT(hwnd, 1014) -- re-enable snap
 local retval, notecntB, ccevtcnt, textsyxevtcnt = r.MIDI_CountEvts(midi_take) -- re-count after split
 local idx, fin, note
 	if notecntB > notecntA then -- some note was split
