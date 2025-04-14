@@ -151,7 +151,7 @@ local note_idx = Get_Note_Under_Mouse(ME, take) -- this must be placed within th
 	if note_idx then
 	Deselect_All_Notes(ME, take)
 	local retval, sel, muted, startppqpos, endppqpos, chan, pitch, numbevel = r.MIDI_GetNote(take, note_idx)
-	r.MIDI_SetNote(take, note_idx, true)--, muted, startppqposIn, endppqposIn, chanIn, pitchIn, velIn, noSortIn) -- selectedIn true
+	r.MIDI_SetNote(take, note_idx, true) -- selectedIn true
 	else
 	Error_Tooltip('\n\n no note under mouse \n\n', 1,1) -- caps, spaced true
 	r.Undo_EndBlock(r.Undo_CanUndo2(0) or '', -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
