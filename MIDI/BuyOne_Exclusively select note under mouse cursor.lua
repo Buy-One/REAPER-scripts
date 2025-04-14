@@ -4,6 +4,7 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
 Changelog: #Initial release
+REAPER: at least v5.962
 Licence: WTFPL
 About: 	If MIDI channel filter is enabled in the MIDI Editor
 	only notes in the active channel are considered both
