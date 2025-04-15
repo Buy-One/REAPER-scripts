@@ -3,29 +3,29 @@ ReaScript name: BuyOne_Select note under mouse cursor.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
-Changelog: 1.2 #Added user setting to include note in selection 
-					rather than make it exclusively selected
-					#Updated script name accordingly
-					#Updated 'About' text
-			  1.1	#Fixed glitch when targeting overlapping notes
-					#Updated 'About' text
+Changelog: 1.2 	#Added user setting to include note in selection 
+		rather than make it exclusively selected
+		#Updated script name accordingly
+		#Updated 'About' text
+	   1.1	#Fixed glitch when targeting overlapping notes
+		#Updated 'About' text
 REAPER: at least v5.962
 Licence: WTFPL
 About: 	If MIDI channel filter is enabled in the MIDI Editor
-			only notes in the active channel are considered both
-			for selection and for deselection, otherwise notes in
-			all channels.
-			
-			By default the script makes note under mouse exclusively
-			selected. If ADD_TO_SELECTION setting is enabled in the
-			USER SETTINGS it will be added to selection rather than
-			become exclusively selected. To have both functionalities
-			duplicate the script having different user settings in each
-			copy.
-			
-			The script automatically corrects overlapping notes
-			otherwise it will glitch out if a note set for selection
-			is overlapped by another note.
+	only notes in the active channel are considered both
+	for selection and for deselection, otherwise notes in
+	all channels.
+	
+	By default the script makes note under mouse exclusively
+	selected. If ADD_TO_SELECTION setting is enabled in the
+	USER SETTINGS it will be added to selection rather than
+	become exclusively selected. To have both functionalities
+	duplicate the script having different user settings in each
+	copy.
+	
+	The script automatically corrects overlapping notes
+	otherwise it will glitch out if a note set for selection
+	is overlapped by another note.
 
 ]]
 
