@@ -8,17 +8,17 @@ Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main=main,midi_editor] .
 About: 	A utility script only meant to be used within custom actions
-			to condition their behavior by the first selected item mute 
-			state because the stock action 'Track: Lock/unlock track height'  
-			doesn't report toggle state.
-			
-			The actions order must look as follows:
-			
-			BuyOne_Set toggle state depending on selected track height lock state.lua
-			Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.
-			BuyOne_Set toggle state depending on selected track height lock state.lua
-			Action: Skip next action if CC parameter >0/mid OR Action: Skip next action if CC parameter <0/mid
-			(REST OF THE CUSTOM ACTION SEQUENCE)
+	to condition their behavior by the first selected item mute 
+	state because the stock action 'Track: Lock/unlock track height'  
+	doesn't report toggle state.
+	
+	The actions order must look as follows:
+	
+	BuyOne_Set toggle state depending on selected track height lock state.lua
+	Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.
+	BuyOne_Set toggle state depending on selected track height lock state.lua
+	Action: Skip next action if CC parameter >0/mid OR Action: Skip next action if CC parameter <0/mid
+	(REST OF THE CUSTOM ACTION SEQUENCE)
 ]]
 
 
