@@ -8,116 +8,116 @@ Licence: WTFPL
 REAPER: 6.71 or newer
 Extensions: SWS/S&M unless REAPER build is 6.71 or newer
 About: 	The script executes user defined actions depending
-			on the signal level registered at the designated trigger
-			track. 
-			Two actions can be defined, one for signal and another
-			for silence.
-			Once launched via the RUN button of the USER SETTINGS
-			menu the script will run in the background monitoring
-			the signal level at the designated tracks.
-			If the script is linked to a toolbar button, the button
-			will be lit while the script is running.
-			
-			In order for the action to be triggered by the signal
-			silence or signal below the user defined threshold must be 
-			detected first, so that the transition from a signal below 
-			the threshold to the level at or above it creates a trigger.
-			Therefore after the action has been executed once, in order 
-			for the script to get primed for next execution of the action, 
-			signal level below the threshold must be detected again.
-			
-			Likewise in order for the action to be triggered by silence
-			a signal above the threshold must be detected first, so that 
-			the transition from signal above the threshold to the level 
-			at or below it creates a trigger. Therefore after the action 
-			has been executed once, in order for script to get primed for
-			next execution of the action, signal level above the threshold 
-			must be detected again.
-			
-			If the signal fluctuates around the threshold, which happens
-			when the threshold is relatively high, the action will be 
-			triggered repeatedly as long as the signal is present, because 
-			the trigger will be reset almost immediately. But of course 
-			the time intervals between executions won't necessarily be 
-			consistent. Such scenario isn't good for triggering recording 
-			unless VALIDATION_COUNTDOWN or TRIGGER_RESET_DELAY settings 
-			are enabled in the USER SETTINGS.
+	on the signal level registered at the designated trigger
+	track. 
+	Two actions can be defined, one for signal and another
+	for silence.
+	Once launched via the RUN button of the USER SETTINGS
+	menu the script will run in the background monitoring
+	the signal level at the designated tracks.
+	If the script is linked to a toolbar button, the button
+	will be lit while the script is running.
+	
+	In order for the action to be triggered by the signal
+	silence or signal below the user defined threshold must be 
+	detected first, so that the transition from a signal below 
+	the threshold to the level at or above it creates a trigger.
+	Therefore after the action has been executed once, in order 
+	for the script to get primed for next execution of the action, 
+	signal level below the threshold must be detected again.
+	
+	Likewise in order for the action to be triggered by silence
+	a signal above the threshold must be detected first, so that 
+	the transition from signal above the threshold to the level 
+	at or below it creates a trigger. Therefore after the action 
+	has been executed once, in order for script to get primed for
+	next execution of the action, signal level above the threshold 
+	must be detected again.
+	
+	If the signal fluctuates around the threshold, which happens
+	when the threshold is relatively high, the action will be 
+	triggered repeatedly as long as the signal is present, because 
+	the trigger will be reset almost immediately. But of course 
+	the time intervals between executions won't necessarily be 
+	consistent. Such scenario isn't good for triggering recording 
+	unless VALIDATION_COUNTDOWN or TRIGGER_RESET_DELAY settings 
+	are enabled in the USER SETTINGS.
 
-			Because of the script update rate of about 30 ms which cannot 
-			be reduced due to ReaScript API constraints, the actions will 
-			be triggered either with a delay relative to the moment the 
-			threshold has been reached or crossed during recording, or with 
-			a delay or advance during playback because audio buffering allows 
-			anticipating in-project audio before the playhead. So you'll have 
-			to adjust your timing accodringly. The difference won't necessarily 
-			be 30 ms long because the script update frequency is unlikely to 
-			match the timing of the trigger appearence, so it will be either 
-			slighly smaller or greater.
-			
-			Muting the designated trigger tracks disables the triggers
-			even though they may still receive the signal.
-			
-			The most obvious use case for the script is triggering recording
-			with signal trigger and stopping recording with silence trigger.
-			However due to the inherent trigger delay mentioned above be
-			sure to adjust the recording start time so that the very first 
-			40 ms of the recording aren't cut off.
-			
-			
-			BASIC SETUP			
-			Create trigger tracks using relevant USER SETTINGS menu items
-			or one track named 'signal silence trigger'. The register of 
-			characters in the trigger track label is immaterisal, any 
-			punctuation marks are ignored, so it can be modified afterwards.
-			The trigger track is inserted after the last selected track 
-			and if none is selected - at the end of the track list.  
-			Create to the trigger track a send from another track or sends 
-			from several tracks a signal from which will serve as the trigger.
-			
-			To use signal/silence trigger when recording from external 
-			source on another track set the trigger track to receive signal 
-			from the same input as any of the recording tracks because 
-			routing signal from recording tracks via sends in this scenario 
-			won't work. Enable 'Record: disable (input monitoring only)' so 
-			that the trigger track itself doesn't record, and record arm it, 
-			its meter should be able to register the input signal.
-			
-			When trying to trigger 'Transport: Record' action by a signal
-			sent from a track with a VST instrument in order to record it live 
-			as you play the instrument from the VKB, QWERTY or MIDI Editor 
-			keyboard be sure to enable the preference  
-			**Preferences -> Plug-ins -> VST -> Don't flush synthesizer plug-ins on stop/reset**
-			so that the signal isn't choked at the very beginning of the
-			recording due to flushing of the audio buffer.
-			
-			To trigger an action by MIDI signal with this script you'll 
-			have to convert a MIDI message into an audio signal.  
-			For example by routing MIDI from other tracks via send or 
-			directly via track input and placing a ReaSynth plugin instance 
-			on the trigger track so that it can emit audio signal upon 
-			receiving a MIDI Note-On message. If MIDI signal is received 
-			directly from a MIDI input the trigger track must be armed.
-			
-			Besides monitoring signal received from other tracks the 
-			signal on the trigger track itself can be monitored being 
-			received from an audio item placed on the track. This way 
-			you'd be able to trigger actions by an audio item strategically 
-			placed on the time line.  
-			If both signal and silence triggers are enabled, at the 
-			beginning of such item one action would be triggered and 
-			immediately following its end another one would be executed.
-			Be aware that if the signal does not fall below or rise 
-			above the threshold abruptly or if the threshhold is fairly 
-			low the distance between two closest items may not suffice for 	
-			the trigger to be reset and for the script to be primed for 
-			another execution of the action which will result in the action
-			not be triggered when the playhead comes across the next item.
+	Because of the script update rate of about 30 ms which cannot 
+	be reduced due to ReaScript API constraints, the actions will 
+	be triggered either with a delay relative to the moment the 
+	threshold has been reached or crossed during recording, or with 
+	a delay or advance during playback because audio buffering allows 
+	anticipating in-project audio before the playhead. So you'll have 
+	to adjust your timing accodringly. The difference won't necessarily 
+	be 30 ms long because the script update frequency is unlikely to 
+	match the timing of the trigger appearence, so it will be either 
+	slighly smaller or greater.
+	
+	Muting the designated trigger tracks disables the triggers
+	even though they may still receive the signal.
+	
+	The most obvious use case for the script is triggering recording
+	with signal trigger and stopping recording with silence trigger.
+	However due to the inherent trigger delay mentioned above be
+	sure to adjust the recording start time so that the very first 
+	40 ms of the recording aren't cut off.
+	
+	
+	BASIC SETUP			
+	Create trigger tracks using relevant USER SETTINGS menu items
+	or one track named 'signal silence trigger'. The register of 
+	characters in the trigger track label is immaterisal, any 
+	punctuation marks are ignored, so it can be modified afterwards.
+	The trigger track is inserted after the last selected track 
+	and if none is selected - at the end of the track list.  
+	Create to the trigger track a send from another track or sends 
+	from several tracks a signal from which will serve as the trigger.
+	
+	To use signal/silence trigger when recording from external 
+	source on another track set the trigger track to receive signal 
+	from the same input as any of the recording tracks because 
+	routing signal from recording tracks via sends in this scenario 
+	won't work. Enable 'Record: disable (input monitoring only)' so 
+	that the trigger track itself doesn't record, and record arm it, 
+	its meter should be able to register the input signal.
+	
+	When trying to trigger 'Transport: Record' action by a signal
+	sent from a track with a VST instrument in order to record it live 
+	as you play the instrument from the VKB, QWERTY or MIDI Editor 
+	keyboard be sure to enable the preference  
+	**Preferences -> Plug-ins -> VST -> Don't flush synthesizer plug-ins on stop/reset**
+	so that the signal isn't choked at the very beginning of the
+	recording due to flushing of the audio buffer.
+	
+	To trigger an action by MIDI signal with this script you'll 
+	have to convert a MIDI message into an audio signal.  
+	For example by routing MIDI from other tracks via send or 
+	directly via track input and placing a ReaSynth plugin instance 
+	on the trigger track so that it can emit audio signal upon 
+	receiving a MIDI Note-On message. If MIDI signal is received 
+	directly from a MIDI input the trigger track must be armed.
+	
+	Besides monitoring signal received from other tracks the 
+	signal on the trigger track itself can be monitored being 
+	received from an audio item placed on the track. This way 
+	you'd be able to trigger actions by an audio item strategically 
+	placed on the time line.  
+	If both signal and silence triggers are enabled, at the 
+	beginning of such item one action would be triggered and 
+	immediately following its end another one would be executed.
+	Be aware that if the signal does not fall below or rise 
+	above the threshold abruptly or if the threshhold is fairly 
+	low the distance between two closest items may not suffice for 	
+	the trigger to be reset and for the script to be primed for 
+	another execution of the action which will result in the action
+	not be triggered when the playhead comes across the next item.
 
-			The USER SETTINGS can be managed and the script launched via 
-			a menu if MANAGE_SETTINGS_VIA_MENU setting is enabled 
-			USER SETTINGS section below, which is its default state. 
-			Detailed explanation of each setting see in the USER SETTINGS 
-			section.
+	The USER SETTINGS can be managed and the script launched via 
+	a menu if MANAGE_SETTINGS_VIA_MENU setting is enabled 
+	USER SETTINGS section below, which is its default state. 
+	Detailed explanation of each setting see in the USER SETTINGS 
+	section.
 
 ]]
 
