@@ -365,8 +365,8 @@ local mess = ''
 	if diff <= 0 then
 	Error_Tooltip('\n\n the file path length \n\n   exceeds the limit. \n\n', 1, 1) -- caps, spaced true
 	return
-	elseif 256-(path:len()+ext:len()) < name:len() then -- truncate file name
-	name = name:sub(1,256-(path:len()+ext:len())) -- allow only as many characters as the difference between 256 and the path+extension
+	elseif diff < name:len() then -- truncate file name
+	name = name:sub(1, diff) -- allow only as many characters as the difference between 256 and the path+extension
 	-- after truncation the file name may happen to match an existing file
 	-- if so reverse the name, not 100% failproof but the odds that the reversed file name will still clash are fairly low
 	local reversed = ''
