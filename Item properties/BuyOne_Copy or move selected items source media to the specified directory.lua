@@ -64,7 +64,7 @@ About: 	The script may be useful for quick storage of sampled
 -- Enable to have the script display settings
 -- menu before every run allowing managing
 -- them in real time
-MANAGE_SETTINGS_VIA_MENU = ""
+MANAGE_SETTINGS_VIA_MENU = "1"
 
 
 -- The setting is only relevant if SWS/S&M or
