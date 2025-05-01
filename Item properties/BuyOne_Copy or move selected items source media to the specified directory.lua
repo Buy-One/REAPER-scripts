@@ -2,8 +2,11 @@
 ReaScript name: BuyOne_Copy or move selected items source media to the specified directory.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Fixed error when settigs aren't managed via menu
+	   and no setting is enabled;
+	   #Added error messages when selected have no audio takes;
+	   #Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main=main,mediaexplorer] .
@@ -14,6 +17,14 @@ About: 	The script may be useful for quick storage of sampled
 
 	In its basic functionality the script uses destination
 	directory supplied by the user via a dialogue.
+
+	When settings UPDATE_FILE_ASSOCIATION_SEL_ITEMS and 
+	UPDATE_FILE_ASSOCIATION_ALL_ITEMS are not enabled the
+	script only targets active take in selected items. 
+	Therefore if source file only need to be copied to
+	another folder without file association update, the
+	script will have to be executed for each take in selected 
+	item if source media of all their takes need to be copied.
 
 	If the SWS/S&M extension is installed and MEDIA_EXPLORER
 	setting is enabled in the USER SETTINGS, the script will
@@ -39,7 +50,7 @@ About: 	The script may be useful for quick storage of sampled
 	The script USER SETTINGS can be managed in real time and 
 	tailored to suit the specific use case at each script
 	execution provided MANAGE_SETTINGS_VIA_MENU setting is
-	enabled in the USER SETTINGS section.				
+	enabled in the USER SETTINGS section.
 
 ]]
 
@@ -53,11 +64,11 @@ About: 	The script may be useful for quick storage of sampled
 -- Enable to have the script display settings
 -- menu before every run allowing managing
 -- them in real time
-MANAGE_SETTINGS_VIA_MENU = "1"
+MANAGE_SETTINGS_VIA_MENU = ""
 
 
 -- The setting is only relevant if SWS/S&M or
--- js_ReaScriptAPI extensions are installed, 
+-- js_ReaScriptAPI extensions are installed,
 -- to instruct the script to only work
 -- if the Media Explorer is open retrieving the
 -- destination directory path from the Media Explorer
@@ -301,7 +312,7 @@ local menu_sett = {}
 	end
 
 -- type in actual setting names
-local menu = ('USER SETTINGS'):gsub('.','%0 ')..'|(optional, details inside the script))||Update File Association For:|'
+local menu = ('USER SETTINGS'):gsub('.','%0 ')..'|(optional, details inside the script)||Update File Association For:|'
 ..(#menu_sett[2] > 0 and '#!' or menu_sett[1])..'&Selected items|' -- gray out and checkmark if next setting is enabled
 ..menu_sett[2]..'&All items with same source as selected||'
 ..((#menu_sett[1] > 0 or #menu_sett[2] > 0) and menu_sett[3] or '#')..'Delete source file from old location||'
@@ -731,6 +742,18 @@ return mess:match('Permission denied') and path..sep -- dir exists // this one i
 end
 
 
+function Audio_Take_Exists_In_Selected_Items(want_active_take)
+	for i=0, r.CountSelectedMediaItems(0)-1 do
+	local item = r.GetSelectedMediaItem(0,i)
+		if want_active_take and not r.TakeIsMIDI(r.GetActiveTake(item)) then return true
+		elseif not want_active_take then
+			for i=0, r.CountTakes(item, i)-1 do
+				if not r.TakeIsMIDI(r.GetTake(item, i)) then return true end
+			end
+		end
+	end
+end
+
 
 
 local is_new_value, scr_path, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
@@ -791,6 +814,7 @@ local dest_path
 
 local menu = #MANAGE_SETTINGS_VIA_MENU:gsub(' ','') > 0
 
+::RELOAD::
 local user_sett = menu and Settings_Management_Menu(scr_path, want_help) -- want_help nil
 
 	if menu and not user_sett
@@ -799,7 +823,7 @@ local user_sett = menu and Settings_Management_Menu(scr_path, want_help) -- want
 
 
 function validate_sett(sett, menu_sett)
-return #(menu_sett or sett):gsub(' ','') > 0
+return #(menu_sett or sett or ''):gsub(' ','') > 0
 end
 
 
@@ -807,21 +831,6 @@ UPDATE_FILE_ASSOCIATION_SEL_ITEMS = validate_sett(UPDATE_FILE_ASSOCIATION_SEL_IT
 UPDATE_FILE_ASSOCIATION_ALL_ITEMS = validate_sett(UPDATE_FILE_ASSOCIATION_ALL_ITEMS, user_sett and user_sett[2])
 DELETE_FILE_FROM_OLD_LOCATION = validate_sett(DELETE_FILE_FROM_OLD_LOCATION, user_sett and user_sett[3])
 and (UPDATE_FILE_ASSOCIATION_SEL_ITEMS or UPDATE_FILE_ASSOCIATION_ALL_ITEMS)
-
-	if not MEDIA_EXPLORER then -- extensions aren't installed or installed but MEDIA_EXPLORER setting isn't enabled
-	::RETRY::
-	dest_path = r.GetExtState(named_ID, 'LAST_USED_DEST_PATH')
-	local ret, path = r.GetUserInputs('INPUT DESTINATION DIRECTORY',1,'Last used path:,extrawidth=200',dest_path or '')
-		if not ret or #path:gsub(' ','') == 0 then return r.defer(no_undo)
-		else
-		dest_path = path
-			if not Dir_Exists(path) then
-			Error_Tooltip('\n\n invalid directory \n\n', 1, 1, x2, 30) -- caps, spaced true, y2 is 30 to prevent tooltip from blocking buttons
-			goto RETRY
-			end
-		end
-	r.SetExtState(named_ID, 'LAST_USED_DEST_PATH', dest_path, false) -- persist false
-	end
 
 
 local set_items_cnt = r.CountSelectedMediaItems(0)
@@ -841,6 +850,35 @@ local all_takes = UPDATE_FILE_ASSOCIATION_ALL_ITEMS
 			break
 			end
 		end
+		if not Audio_Take_Exists_In_Selected_Items(not all_takes) then
+		err = all_takes and 'no audio takes in selected items' or 'no active audio take \n\n    in selected items'
+		Error_Tooltip('\n\n '..err..' \n\n', 1, 1, -100) -- caps, spaced true
+			if menu then goto RELOAD
+			else return r.defer(no_undo)
+			end
+		end
+	elseif not Audio_Take_Exists_In_Selected_Items(not all_takes) then
+	err = all_takes and 'no audio takes in selected items' or 'no active audio take \n\n    in selected items'
+	Error_Tooltip('\n\n '..err..' \n\n', 1, 1, 0, 50) -- caps, spaced true
+		if menu then goto RELOAD
+		else return r.defer(no_undo)
+		end
+	end
+
+
+	if not MEDIA_EXPLORER then -- extensions aren't installed or installed but MEDIA_EXPLORER setting isn't enabled
+	::RETRY::
+	dest_path = r.GetExtState(named_ID, 'LAST_USED_DEST_PATH')
+	local ret, path = r.GetUserInputs('INPUT DESTINATION DIRECTORY',1,'Last used path:,extrawidth=200',dest_path or '')
+		if not ret or #path:gsub(' ','') == 0 then return r.defer(no_undo)
+		else
+		dest_path = path
+			if not Dir_Exists(path) then
+			Error_Tooltip('\n\n invalid directory \n\n', 1, 1, x2, 30) -- caps, spaced true, y2 is 30 to prevent tooltip from blocking buttons
+			goto RETRY
+			end
+		end
+	r.SetExtState(named_ID, 'LAST_USED_DEST_PATH', dest_path, false) -- persist false
 	end
 
 
