@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Trigger action by audio signal or silence.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Improved logic of trigger track insertion within the tracklist
 Licence: WTFPL
 REAPER: 6.71 or newer
 Extensions: SWS/S&M unless REAPER build is 6.71 or newer
@@ -565,9 +565,36 @@ end
 
 
 function Insert_Trigger_Track(label)
+-- only visible tracks are respected
 -- inserted after the last selected track or the last track if none is selected
-local last_sel_tr = r.GetSelectedTrack2(0, r.CountSelectedTracks2(0, true)-1, true) -- wantmaster true in both functions
-or r.GetTrack(0, r.GetNumTracks()-1)
+
+local sel_tr_cnt = r.CountSelectedTracks2(0, true) -- wantmaster true
+local master_tr = r.GetMasterTrack(0)
+local master_vis = r.GetMasterTrackVisibility()&1 == 1
+local last_sel_tr = sel_tr_cnt > 0 and r.GetSelectedTrack2(0, sel_tr_cnt-1, true) -- wantmaster true
+
+	if last_sel_tr == master_tr and not master_vis -- &1 is visibility in TCP, if last selected is the Master this means it's the only one selected and since it's hidden the loop below won't start
+	or last_sel_tr and r.GetMediaTrackInfo_Value(last_sel_tr, 'B_SHOWINTCP') == 0 then -- get last visible selected track
+	last_sel_tr = nil -- reset to be able to fall back on the last visible track in the tracklist
+		for i=sel_tr_cnt-2,0,-1 do -- -2 to exclude the last selected track which turned out to be hidden
+		local tr = r.GetSelectedTrack2(0, i, true)
+			if tr ~= last_sel_tr and (tr == master_tr and master_vis
+			or tr ~= master_tr and r.GetMediaTrackInfo_Value(tr, 'B_SHOWINTCP') == 1) then
+			last_sel_tr = tr break
+			end
+		end		
+	end
+	
+	if not last_sel_tr then -- if no visible selected track was found, opt for the last visible in the tracklist
+		for i=r.GetNumTracks()-1,0,-1 do
+		local tr = r.GetTrack(0,i)
+			if r.GetMediaTrackInfo_Value(tr, 'B_SHOWINTCP') == 1 then
+			last_sel_tr = tr break
+			end
+		end
+	end
+
+
 local last_sel_tr_idx = 0
 	if last_sel_tr then -- if no tracks in the project this var will be nil in which case index 0 will be used for the trig track
 	last_sel_tr_idx = r.CSurf_TrackToID(last_sel_tr, false) -- mcpView false // OR r.GetMediaTrackInfo_Value(tr, 'IP_TRACKNUMBER')
