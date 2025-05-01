@@ -5,7 +5,7 @@ Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-
 Version: 1.1
 Changelog: #Fixed error when settigs aren't managed via menu
 	   and no setting is enabled;
-	   #Added error messages when selected have no audio takes;
+	   #Added error messages when selected items have no audio takes;
 	   #Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
