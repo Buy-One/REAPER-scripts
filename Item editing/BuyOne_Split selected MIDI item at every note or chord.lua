@@ -10,6 +10,7 @@ Changelog: 1.2 	#Made the script compatible with preference
 		at the moment of the script execution
 		#Prevented closure of the MIDI Editor if it was open initially
 		#Included option to split even if notes at different pitches overlap
+		having different start positions
 		#Re-organized the code
 		#Updated GLUE_SLICES setting description
 		#Updated 'About' text to reflect the new functionality
