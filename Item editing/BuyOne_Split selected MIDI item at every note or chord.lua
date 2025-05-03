@@ -1,7 +1,7 @@
 --[[
 ReaScript name: Split selected MIDI item at every note or chord
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.3
 Changelog: 1.3 #Created error and prompt messages for cases in which the script 
 		cannot apply or which require user consent
