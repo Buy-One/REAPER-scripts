@@ -1,7 +1,7 @@
 --[[
 ReaScript name: Create pitch-rate (vari-speed) take envelope and render to new take
 Author: BenK-msx, BuyOne, Phazma
-Website: https://forum.cockos.com/member.php?u=134058
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
 Changelog: #Added a temporary bypass for 'Options: Toggle trim content behind media items when editing'
 	   in case it's enabled so it doesn't intefere
