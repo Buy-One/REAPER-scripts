@@ -6,25 +6,25 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
-About: Alternative to the native action 
-  		 'Item: Trim left edge of item to edit cursor'
-  		 which preserves fade length while the script
-  		 shortens/lengthens it following movement of
-  		 item start.
-  		 
-  		 If difference between item edge old and new 
-  		 time positions is greater than the fade length 
-  		 the original fade length is preserved, i.e.
-  		 the same fade is re-applied after trimming.
-  		 
-  		 To be able to use the script as alternative to 
-  		 the native action
-  		 'Item edit: Trim left edge of item under mouse to edit cursor'
-  		 create the following custom action:
-  		 
-  		 Custom: Trim left edge of item under mouse to edit cursor (changing fade-in length)
-  			 View: Move edit cursor to mouse cursor (no snapping)
-  			 BuyOne_Trim left edge of item to edit cursor (changing fade-in length).lua
+About: 	Alternative to the native action 
+	 'Item: Trim left edge of item to edit cursor'
+	 which preserves fade length while the script
+	 shortens/lengthens it following movement of
+	 item start.
+	 
+	 If difference between item edge old and new 
+	 time positions is greater than the fade length 
+	 the original fade length is preserved, i.e.
+	 the same fade is re-applied after trimming.
+	 
+	 To be able to use the script as alternative to 
+	 the native action
+	 'Item edit: Trim left edge of item under mouse to edit cursor'
+	 create the following custom action:
+	 
+	 Custom: Trim left edge of item under mouse to edit cursor (changing fade-in length)
+		 View: Move edit cursor to mouse cursor (no snapping)
+		 BuyOne_Trim left edge of item to edit cursor (changing fade-in length).lua
 
 ]]
 
