@@ -22,9 +22,9 @@ About: Alternative to the native action
   		 'Item edit: Trim left edge of item under mouse to edit cursor'
   		 create the following custom action:
   		 
-  		 Custom: Trim left edge of item under mouse to edit cursor (trimming fade-in)
+  		 Custom: Trim left edge of item under mouse to edit cursor (changing fade-in length)
   			 View: Move edit cursor to mouse cursor (no snapping)
-  			 BuyOne_Trim left edge of item to edit cursor (trimming fade-in).lua
+  			 BuyOne_Trim left edge of item to edit cursor (changing fade-in length).lua
 
 ]]
 
