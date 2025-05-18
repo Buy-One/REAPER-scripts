@@ -9,8 +9,8 @@ REAPER: at least v6.37 for reliable performance
 Extensions: 
 Provides: [main=main,midi_editor,mediaexplorer] .
 About: 	Keep in mind that if you undo the change produced 
-			by the script the newly created cropped version
-			of the sample file will remain on the disk.
+	by the script the newly created cropped version
+	of the sample file will remain on the disk.
 ]]
 
 
