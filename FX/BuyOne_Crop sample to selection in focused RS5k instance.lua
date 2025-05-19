@@ -319,19 +319,6 @@ local sample_end, minval, maxval = FX_GetParam(obj, fx_num, sample_end_idx)
 	Error_Tooltip('\n\n the sample length isn\'t trimmed. \n\n\t   nothing to crop to. \n\n ', 1,1) -- caps, spaced
 	return r.defer(no_undo) end
 
-
-local proj, proj_path = r.EnumProjects(-1)
-local proj_media_path = r.GetProjectPath('') -- this returns default recording path, i.e. '%USER%\Documents\REAPER Media' for unsaved projects, a dedicated ABSOLUTE path if configured in default Project Settings, or global path configured at Prefs -> General -> Paths -> Default recording path, so by itself unreliable unless validated by proj_path not being empty, i.e. saved project; for saved projects returns the project folder path unless a project dedicated media path is specified in the project settings
-local retval, proj_media_folder = r.GetSetProjectInfo_String(0, 'RECORD_PATH', '', false) -- is_set false
-local move
-
-	if #proj_path > 0 and Dir_Exists(proj_path:match('(.+)[\\/]')) and Dir_Exists(proj_media_path)
-	and proj_media_path ~= full_file_path:match('(.+)[\\/]') then
-	local mess = #proj_media_folder > 0 and space(13)..'The file is located outside\n\n   of the project dedicated media folder.\n\n'..space(6)..'Wish to move the cropped version\n\n'..space(10)..'into the project media folder?'
-	or 'The file is located outside of the project folder.\n\n'..space(11)..'Wish to move the cropped version\n\n\t'..space(4)..'into the project folder?'
-		if r.MB(mess, 'PROMPT', 4) == 6 then move = 1 end
-	end
-
 local src = r.PCM_Source_CreateFromFile(full_file_path)
 local retval, sect_offset, length, reversed = r.PCM_Source_GetSectionInfo(src)
 
@@ -344,17 +331,6 @@ r.PreventUIRefresh(1)
 
 full_file_path = Insert_Item_On_Temp_Track(want_midi_editor, tr_name, full_file_path, sample_start, length)
 r.PCM_Source_Destroy(src)
-
-	if move then
-	local f = io.open(full_file_path,'rb')
-	local data = f:read('*a')
-	os.remove(full_file_path)
-	local path = proj_media_path..proj_media_path:match('[\\/]')..full_file_path:match('[^\\/]+$') -- concatenate new location path
-	f = io.open(path,'wb')
-	f:write(data)
-	f:close()
-	full_file_path = path
-	end
 
 SetNamedConfigParm(obj, fx_num, 'FILE0', full_file_path)
 SetNamedConfigParm(obj, fx_num, 'DONE', '')
