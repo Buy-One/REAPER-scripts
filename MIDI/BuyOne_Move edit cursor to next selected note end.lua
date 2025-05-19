@@ -1,5 +1,5 @@
 --[[
-ReaScript name: BuyOne_Move edit cursor to next selected note start.lua
+ReaScript name: BuyOne_Move edit cursor to next selected note end.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
