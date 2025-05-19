@@ -9,7 +9,7 @@ REAPER: at least v5.962
 Extensions: 
 Provides: [main=midi_editor] .
 About: 	Selected notes in all MIDI channels are targeted
-			  unless Channel filter is enabled.
+	unless Channel filter is enabled.
 ]]
 
 
