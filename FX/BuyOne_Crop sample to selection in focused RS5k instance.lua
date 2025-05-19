@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Crop sample to selection in focused RS5k instance.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 1.1 #Removed redundant file PCM source destruction function which caused error
 Licence: WTFPL
 REAPER: at least v6.37 for reliable performance
 Extensions: 
@@ -275,7 +275,6 @@ pcm_src = r.GetMediaItemTake_Source(take)
 file_path = r.GetMediaSourceFileName(pcm_src, '')
 
 r.DeleteTrack(temp_tr)
-r.PCM_Source_Destroy(pcm_src)
 
 return file_path
 
