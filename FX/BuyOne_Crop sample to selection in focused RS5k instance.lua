@@ -3,12 +3,25 @@ ReaScript name: BuyOne_Crop sample to selection in focused RS5k instance.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
-Changelog: 1.1 #Removed redundant file PCM source destruction function which caused error
+Changelog: 1.1 	#Removed redundant file PCM source destruction function which caused error
+		#Removed redundant file management code
 Licence: WTFPL
 REAPER: at least v6.37 for reliable performance
 Extensions: 
 Provides: [main=main,midi_editor,mediaexplorer] .
-About: 	Keep in mind that if you undo the change produced 
+About: 	Cropped version of the file is placed in and loaded
+	to RS5k from the project folder or its dedicated 
+	media folder if specified in the project settings, 
+	provided the project is saved. Otherwise it will
+	be located in the default media directory for 
+	unsaved projects, which is either absolute path
+	specified in the default project settings under
+	Media -> Path to save media files, path specified
+	at Preferences -> General -> Paths -> Default recoring path
+	or REAPER default path %USER%\Documents\REAPER Media
+	(on Windows).
+
+	Keep in mind that if you undo the change produced 
 	by the script the newly created cropped version
 	of the sample file will remain on the disk.
 ]]
