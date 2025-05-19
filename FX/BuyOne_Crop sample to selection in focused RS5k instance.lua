@@ -334,7 +334,7 @@ local move
 	end
 
 local src = r.PCM_Source_CreateFromFile(full_file_path)
-local retval, sect_offset, length, reversed = r.PCM_Source_GetSectionInfo(src) -- if sect is false startoffs and len are 0
+local retval, sect_offset, length, reversed = r.PCM_Source_GetSectionInfo(src)
 
 -- convert into seconds based on PCM source length
 sample_start, sample_end = length*sample_start, length*sample_end
