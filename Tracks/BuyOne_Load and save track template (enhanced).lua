@@ -9,119 +9,119 @@ REAPER: at least v6.53
 Extensions: 
 Provides: [main=main,midi_editor] .
 About: 	The purpose of the script is to simplify saving track template,
-			making it similar to saving project, i.e. without having to
-			select a specific file at each save, as required by REAPER's 
-			native action, and saving automatically last loaded file instead.
+	making it similar to saving project, i.e. without having to
+	select a specific file at each save, as required by REAPER's 
+	native action, and saving automatically last loaded file instead.
 
-			Like with projects this workflow only makes sense if you work 
-			on a relatively elaborate template which takes time and thus 
-			invites periodic saves to ensure preservation of the latest 
-			changes.
+	Like with projects this workflow only makes sense if you work 
+	on a relatively elaborate template which takes time and thus 
+	invites periodic saves to ensure preservation of the latest 
+	changes.
 
-			LOADING
+	LOADING
 
-			Track templates must be loaded with this script so that
-			it stores the path of the last loaded template and is able
-			to fulfill its purpose which is re-saving a template without
-			having to each time select the destination file as required
-			by REAPER's native action 
-			'Track: Save tracks as track template...'
+	Track templates must be loaded with this script so that
+	it stores the path of the last loaded template and is able
+	to fulfill its purpose which is re-saving a template without
+	having to each time select the destination file as required
+	by REAPER's native action 
+	'Track: Save tracks as track template...'
 
-			Before any template was loaded during the current REAPER
-			session the script is pointed to /TrackTempalates folder 
-			at REAPER's resource path unless a different one has been 
-			configured with 
-			ALTERNATIVE_TRACK_TEMPLATE_PATH setting in the USER SETTINGS.
+	Before any template was loaded during the current REAPER
+	session the script is pointed to /TrackTempalates folder 
+	at REAPER's resource path unless a different one has been 
+	configured with 
+	ALTERNATIVE_TRACK_TEMPLATE_PATH setting in the USER SETTINGS.
 
-			The script keeps track of the path of the last loaded 
-			template and uses it for loading the next template and 
-			re-saving the last loaded.
+	The script keeps track of the path of the last loaded 
+	template and uses it for loading the next template and 
+	re-saving the last loaded.
 
-			To load a template submit the dialogue with the 'File name'
-			field empty. If you wish to load a template without certain
-			resource types (envelopes, items, hidden tracks), enable
-			'Exclude resources when loading' option in the dialogue to
-			call a sub-dialogue where options pertaining to loading
-			are avaliable.
+	To load a template submit the dialogue with the 'File name'
+	field empty. If you wish to load a template without certain
+	resource types (envelopes, items, hidden tracks), enable
+	'Exclude resources when loading' option in the dialogue to
+	call a sub-dialogue where options pertaining to loading
+	are avaliable.
 
-			Track template is inserted after the last selected track
-			and if no track is selected - after the last track. That's 
-			unlike REAPER native action which inserts a template after 
-			the last touched track whether selected or not which may not 
-			always be obvious although edit cursor indicator can help 
-			if enabled.
+	Track template is inserted after the last selected track
+	and if no track is selected - after the last track. That's 
+	unlike REAPER native action which inserts a template after 
+	the last touched track whether selected or not which may not 
+	always be obvious although edit cursor indicator can help 
+	if enabled.
 
-			SAVING
+	SAVING
 
-			Before any template was loaded the save destination path is
-			/TrackTempalates folder at REAPER's resource path, unless 
-			a different one has been configured with 
-			ALTERNATIVE_TRACK_TEMPLATE_PATH setting in the USER SETTINGS.
+	Before any template was loaded the save destination path is
+	/TrackTempalates folder at REAPER's resource path, unless 
+	a different one has been configured with 
+	ALTERNATIVE_TRACK_TEMPLATE_PATH setting in the USER SETTINGS.
 
-			In order to save a template before any template is loaded
-			in the current REAPER session, type the template name in the
-			'File name' field, configure settings and click OK. The template
-			will be saved at the default destination path. To save at a 
-			different location in this scenario follow the steps described 
-			in the last paragraph of this section.
+	In order to save a template before any template is loaded
+	in the current REAPER session, type the template name in the
+	'File name' field, configure settings and click OK. The template
+	will be saved at the default destination path. To save at a 
+	different location in this scenario follow the steps described 
+	in the last paragraph of this section.
 
-			Once a template has been loaded, the save destination path
-			becomes the path of the last loaded file, so a template, whether 
-			with the same name or with a different one in case it was changed 
-			manually in the dialogue, is saved at the same location on 
-			the disk the last template was loaded from.
+	Once a template has been loaded, the save destination path
+	becomes the path of the last loaded file, so a template, whether 
+	with the same name or with a different one in case it was changed 
+	manually in the dialogue, is saved at the same location on 
+	the disk the last template was loaded from.
 
-			If the template is saved with the same name as the last loaded
-			template, its file is ovewrtitten without a warning much like
-			when a project is saved, which is the whole purpose of the script, 
-			to be able to save a track template without going through 
-			additional dialogues required by the native save track template 
-			action. That's unless it was loaded without some resources, to
-			prevent its inadvertent overwriting with less content than it 
-			was originally loaded with.  
-			When trying to save a tempate with a name different from that 
-			of the last loaded one, if a template file with the same name 
-			already exists at the target path the user is presented with
-			a warning.
+	If the template is saved with the same name as the last loaded
+	template, its file is ovewrtitten without a warning much like
+	when a project is saved, which is the whole purpose of the script, 
+	to be able to save a track template without going through 
+	additional dialogues required by the native save track template 
+	action. That's unless it was loaded without some resources, to
+	prevent its inadvertent overwriting with less content than it 
+	was originally loaded with.  
+	When trying to save a tempate with a name different from that 
+	of the last loaded one, if a template file with the same name 
+	already exists at the target path the user is presented with
+	a warning.
 
-			If there're selected tracks, only these will be saved as a track 
-			template, otherwise all tracks are saved much like in case of
-			project saving.
+	If there're selected tracks, only these will be saved as a track 
+	template, otherwise all tracks are saved much like in case of
+	project saving.
 
-			The active options in the dialogue reflect the presence of 
-			objects on the tracks or within selection of tracks which are 
-			going to be saved. To disable any of the options remove the + 
-			sign from its field. Conversely, to enable one, insert any 
-			alphanumeric character in the option field.
+	The active options in the dialogue reflect the presence of 
+	objects on the tracks or within selection of tracks which are 
+	going to be saved. To disable any of the options remove the + 
+	sign from its field. Conversely, to enable one, insert any 
+	alphanumeric character in the option field.
 
-			There're 2 ways to save template at a path different from the 
-			path of the last loaded template:  
-			1. Insert full path of the file about to be created into the
-			'File name' field of the dialogue and click OK. Extension isn't 
-			necessary.  
-			2. Type the question mark ? into the 'File name' field and click 
-			OK. As a result a 'Save Project' (not 'Save track template') 
-			dialogue will pop up. This is needed to be able to store the path 
-			of the newly saved template so it can be re-saved later without 
-			selecting the file again. The file can be saved with .RPP or 
-			.RTrackTemplate extension. In case of the former it will be 
-			changed into .RTrackTemplate automatically.  
-			The drawback is that each time you save a template at a new 
-			location the saved file is added to the 'Recent projects' submenu 
-			under 'File' main menu (if recent project list is enabled at 
-			Preferences -> General -> Recent project list display button)
-			and project media folder gets created if one is configured in the 
-			project settings of project template and REAPER is set to start 
-			new project with project template, or if you have saved default 
-			project settings in which default media path is configured, or 
-			if you have configued one at  
-			Preferences -> General -> Paths -> Default recording path.  
-			If you change your mind after 'Save Project' dialogue has been 
-			called and click 'Cancel', in the next prompt which will pop up
-			titled 'REAPER Query' asking to save an unsaved project, click
-			'No' rather than 'Cancel' so that the temporary tab under which
-			'Save Project' dialogue was opened is closed and doesn't remain
-			open unnecessarily.
+	There're 2 ways to save template at a path different from the 
+	path of the last loaded template:  
+	1. Insert full path of the file about to be created into the
+	'File name' field of the dialogue and click OK. Extension isn't 
+	necessary.  
+	2. Type the question mark ? into the 'File name' field and click 
+	OK. As a result a 'Save Project' (not 'Save track template') 
+	dialogue will pop up. This is needed to be able to store the path 
+	of the newly saved template so it can be re-saved later without 
+	selecting the file again. The file can be saved with .RPP or 
+	.RTrackTemplate extension. In case of the former it will be 
+	changed into .RTrackTemplate automatically.  
+	The drawback is that each time you save a template at a new 
+	location the saved file is added to the 'Recent projects' submenu 
+	under 'File' main menu (if recent project list is enabled at 
+	Preferences -> General -> Recent project list display button)
+	and project media folder gets created if one is configured in the 
+	project settings of project template and REAPER is set to start 
+	new project with project template, or if you have saved default 
+	project settings in which default media path is configured, or 
+	if you have configued one at  
+	Preferences -> General -> Paths -> Default recording path.  
+	If you change your mind after 'Save Project' dialogue has been 
+	called and click 'Cancel', in the next prompt which will pop up
+	titled 'REAPER Query' asking to save an unsaved project, click
+	'No' rather than 'Cancel' so that the temporary tab under which
+	'Save Project' dialogue was opened is closed and doesn't remain
+	open unnecessarily.
 
 ]]
 
