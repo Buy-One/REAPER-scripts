@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Load and save track template (enhanced).lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Fixed template loading
+	   #Changed logic of 'Exclude resources' sub-dialogue behavior
 Licence: WTFPL
 REAPER: at least v6.53
 Extensions: 
@@ -878,8 +879,7 @@ local ret, output = r.GetUserInputs(title, field_cnt, field_names..',extrawidth=
 local comment_pattern = ('.-'..sep):rep(comment_field_cnt-1) -- -1 because the last comment field isn't followed by a separator
 output = #comment > 0 and output:match('(.+'..sep..')'..comment_pattern) or output -- exclude comment field(s) and include trailing separator to simplify captures in the loop below
 field_cnt = #comment > 0 and field_cnt-1 or field_cnt -- adjust for the next statement
-	if not ret or (field_cnt > 1 and output:gsub('[%s%c]','') == (sep):rep(field_cnt-1)
-	or #output:gsub('[%s%c]','') == 0) then return end
+	if not ret then return ret end
 	--[[ OR
 	-- to condition action by the type of the button pressed
 	if not ret then return 'cancel'
@@ -945,9 +945,9 @@ file_name = output_t[1] -- user submitted name
 
 	if not validate_sett(file_name) then -- empty file name submitted, LOAD track template
 	local items, env, hidden_tracks
-		if validate_sett(output_t[5]) then -- load dialogue to exclude resources from the template being loaded
+		if validate_sett(output_t[5]) then -- load sub-dialogue to exclude resources from the template being loaded
 		local output_t = GetUserInputs_Alt('Load leaving out some resources', 3, 'Exclude items,Exclude envelopes,Exclude hidden tracks','')
-			if not output_t then return r.defer(no_undo) end -- either aborted by the user or submitted empty
+			if not output_t then goto RELOAD end -- aborted by the user, return to main dialogue, proceed to file load dialogue otherwise
 		items, env, hidden_tracks = validate_sett(output_t[1]), validate_sett(output_t[2]), validate_sett(output_t[3])
 		end
 
