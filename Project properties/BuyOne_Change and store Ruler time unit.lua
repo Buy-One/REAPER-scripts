@@ -9,24 +9,24 @@ REAPER: at least v5.962
 Extensions: 
 Provides: [main=main,midi_editor] .
 About: 	The script allows changing Ruler time unit
-			from a menu and storing a specific setting
-			to be able to re-enable it after it has
-			been temporarily changed for example to
-			look up marker/region time properties in
-			seconds rather than beats.
+	from a menu and storing a specific setting
+	to be able to re-enable it after it has
+	been temporarily changed for example to
+	look up marker/region time properties in
+	seconds rather than beats.
 
-			The stored setting is project specific and can 
-			be different in each project tab just like 
-			actual Ruler time unit setting, but for it to 
-			be available to a particular project after REAPER 
-			restart the project must be saved. 	
+	The stored setting is project specific and can 
+	be different in each project tab just like 
+	actual Ruler time unit setting, but for it to 
+	be available to a particular project after REAPER 
+	restart the project must be saved. 	
 
-			Since REAPER stores last active Ruler time 
-			unit in the project file, it may differ from 
-			the setting stored by the script if the time 
-			unit active at the moment of last project save 
-			wasn't stored by the script via clicking 
-			'STORE CURRENTLY ACTIVE' menu item.
+	Since REAPER stores last active Ruler time 
+	unit in the project file, it may differ from 
+	the setting stored by the script if the time 
+	unit active at the moment of last project save 
+	wasn't stored by the script via clicking 
+	'STORE CURRENTLY ACTIVE' menu item.
 
 ]]
 
