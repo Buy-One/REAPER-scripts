@@ -14,7 +14,9 @@ REAPER: at least v5.962
 Screenshots: https://git.io/JSTkE
 About:	The feature is supported natively since REAPER 7.35.
 	Still the script may prove useful because it doesn't
-	behave exactly like the native feature.
+	behave exactly like the native feature. In particular
+	native Ripple edit doesn't respond to changes at the
+	item left edge while the script does.
 
 	An enhancement to 'Ripple edit per track' mode. 
 	As such only works when this mode is enabled. 
