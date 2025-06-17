@@ -9,72 +9,72 @@ REAPER: at least v5.962; 7.37+ for greater versatility
 Extensions: 
 Provides: [main=midi_editor] .
 About: 	The script opens a dialogue with the following options
-			which need to be activated before its execution:
+	which need to be activated before its execution:
 
-			► Step (every X grid division)  
-			Expects a number. Can be empty if 'Probability' field is enabled
-			in which case the notes will be inserted at each grid division,
-			i.e. no need to type in 1 explicitly.  
-			The step value is stored between script runs.
+	► Step (every X grid division)  
+	Expects a number. Can be empty if 'Probability' field is enabled
+	in which case the notes will be inserted at each grid division,
+	i.e. no need to type in 1 explicitly.  
+	The step value is stored between script runs.
 
-			► Reduced probability  
-			Makes the script insert notes at step defined in the 'Step' 
-			field with probability lower than 100%. To enable type in 
-			any alphanumeric character.  
-			Using reduced probability isn't recommended when the number 
-			of steps available in the target grid (original or visible) 
-			is relatively small because the likelihood of no note being 
-			eventually inserted is high.
+	► Reduced probability  
+	Makes the script insert notes at step defined in the 'Step' 
+	field with probability lower than 100%. To enable type in 
+	any alphanumeric character.  
+	Using reduced probability isn't recommended when the number 
+	of steps available in the target grid (original or visible) 
+	is relatively small because the likelihood of no note being 
+	eventually inserted is high.
 
-			► Velocity  
-			Empty - notes are inserted at MIDI Editor current default 
-			velocity, same as if drawn manually;  
-			Number - notes are inserted at the specified velocity;  
-			Range of numbers in the format X - Y, spaces around the dash 
-			and order of numbers are incosequential. If range bounds are 
-			outside of the valid velocity range of 1-127, the specified 
-			range is clamped to the standard. If range is defined, 
-			inserted notes velocity is randomized within the specified 
-			range.  
-			The velocity value is stored between script runs.
+	► Velocity  
+	Empty - notes are inserted at MIDI Editor current default 
+	velocity, same as if drawn manually;  
+	Number - notes are inserted at the specified velocity;  
+	Range of numbers in the format X - Y, spaces around the dash 
+	and order of numbers are incosequential. If range bounds are 
+	outside of the valid velocity range of 1-127, the specified 
+	range is clamped to the standard. If range is defined, 
+	inserted notes velocity is randomized within the specified 
+	range.  
+	The velocity value is stored between script runs.
 
-			► Use visible grid  
-			A conditional option only avalable in REAPER builds 7.37+ 
-			when 'Snap to visible grid' option is enabled and visible 
-			grid differs from the grid set in the MIDI Editor 'Grid:' 
-			menu.  
-			When the visible grid doesn't match the grid setting and 
-			in builds 7.37+ 'Snap to visible grid' option is disabled or 
-			'Use visible grid' option of the script isn't opted for, and 
-			in earlier builds always, the script will automatically adjust 
-			the MIDI Editor zoom level so that the visible grid matches 
-			the grid setting.  
-			Still when visible grid support is available, only straight 
-			notes can be inserted by visible grid even when triplet or 
-			dotted grid is selected in the grid setting, because this is 
-			how REAPER collapses grid in the MIDI Editor at low zoom levels.
-			To enable the option type in any alphanumeric character.  
+	► Use visible grid  
+	A conditional option only avalable in REAPER builds 7.37+ 
+	when 'Snap to visible grid' option is enabled and visible 
+	grid differs from the grid set in the MIDI Editor 'Grid:' 
+	menu.  
+	When the visible grid doesn't match the grid setting and 
+	in builds 7.37+ 'Snap to visible grid' option is disabled or 
+	'Use visible grid' option of the script isn't opted for, and 
+	in earlier builds always, the script will automatically adjust 
+	the MIDI Editor zoom level so that the visible grid matches 
+	the grid setting.  
+	Still when visible grid support is available, only straight 
+	notes can be inserted by visible grid even when triplet or 
+	dotted grid is selected in the grid setting, because this is 
+	how REAPER collapses grid in the MIDI Editor at low zoom levels.
+	To enable the option type in any alphanumeric character.  
 
-			► Within time selection  
-			A conditional option only avalable if time selection is active 
-			and it overlaps the MIDI item. To enable type in any alphanumeric 
-			character. If enabled, notes are only inserted within the time 
-			selection.
+	► Within time selection  
+	A conditional option only avalable if time selection is active 
+	and it overlaps the MIDI item. To enable type in any alphanumeric 
+	character. If enabled, notes are only inserted within the time 
+	selection.
 
-			► Between loop points  
-			A conditional option only avalable if loop points are set and 
-			the looped area overlaps the MIDI item. To enable type in any 
-			alphanumeric character. If enabled, notes are only inserted 
-			between the loop points.
+	► Between loop points  
+	A conditional option only avalable if loop points are set and 
+	the looped area overlaps the MIDI item. To enable type in any 
+	alphanumeric character. If enabled, notes are only inserted 
+	between the loop points.
 
 
-			LIMITATIONS
+	LIMITATIONS
 
-			During execution script changes default note length setting to
-			be Grid but restores it before termination. However be aware 
-			that it cannot restore 1, 2 and 4 measure note setting and if 
-			these were initially active the script will activate 1 measure 
-			straight setting in their stead.
+	During execution script changes default note length setting to
+	be Grid but restores it before termination. However be aware 
+	that it cannot restore 1, 2 and 4 measure note setting and if 
+	these were initially active the script will activate 1 measure 
+	straight setting in their stead.
 
 ]]
 
