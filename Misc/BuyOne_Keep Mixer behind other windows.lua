@@ -8,25 +8,25 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
 About:	The use case for this script is mixing with open and
-			floating Mixer and preventing the Mixer window from 
-			obscuring floating plugin windows when it or the MCP 
-			is brought into focus, by automatically pushing it to 
-			background. Because using pin in the plugin windows 
-			to make them float on top of the Mixer could get tedious 
-			when there're lots of them.
+	floating Mixer and preventing the Mixer window from 
+	obscuring floating plugin windows when it or the MCP 
+	is brought into focus, by automatically pushing it to 
+	background. Because using pin in the plugin windows 
+	to make them float on top of the Mixer could get tedious 
+	when there're lots of them.
 
-			The script doesn't differentiate between plugin and other
-			type of windows therefore all windows receive priority
-			over the Mixer window.
+	The script doesn't differentiate between plugin and other
+	type of windows therefore all windows receive priority
+	over the Mixer window.
 
-			When track label slot is activated for keyboard input the 
-			Mixer window isn't pushed to the background. The track label
-			slot can be deactivated and Mixer window sent to the background
-			with double click on another MCP, by bringing another window 
-			into focus with mouse click or by pressing Enter key.
+	When track label slot is activated for keyboard input the 
+	Mixer window isn't pushed to the background. The track label
+	slot can be deactivated and Mixer window sent to the background
+	with double click on another MCP, by bringing another window 
+	into focus with mouse click or by pressing Enter key.
 
-			Once launched the script runs in the background. To terminate
-			it launch it again.
+	Once launched the script runs in the background. To terminate
+	it launch it again.
 ]]
 
 
