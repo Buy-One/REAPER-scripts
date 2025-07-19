@@ -3,38 +3,38 @@ ReaScript name: BuyOne_Automatically increase height of selected tracks, decreas
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 2.2
-Changelog: 	2.2 #Added tacit script termination when it's relaunched 
-					 while already running, supported since REAPER v7
-					 #Added explicit setting to respect track locked height
-					 which is enabled by default
-					 #Added setting to make the script affect Master track height
-					 #Updated 'About' text
-				2.1 #Added IGNORE_OTHER_PROJECTS setting
-				2.0 #Complete code overhaul. Glitches and limitations stemming from previous design have been fixed
-				1.0 #Initial release
+Changelog: 2.2 	#Added tacit script termination when it's relaunched 
+		while already running, supported since REAPER v7
+		#Added explicit setting to respect track locked height
+		which is enabled by default
+		#Added setting to make the script affect Master track height
+		#Updated 'About' text
+	   2.1 	#Added IGNORE_OTHER_PROJECTS setting
+	   2.0 	#Complete code overhaul. Glitches and limitations stemming from previous design have been fixed
+	   1.0 	#Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 Screenshots: https://github.com/Buy-One/screenshots/blob/main/Automatically%20increase%20height%20of%20selected%20tracks%2C%20decrease%20others'.gif
 About:	The script works similalrly to the combination of preference  
-			'Always show full control panel on armed track' and option 
-			'Automatic record-arm when track selected' for any track in that 
-			it expands selected track TCP up to the size specified 
-			in the USER SETTINGS and contracts all de-selected TCPs down to the size 
-			specified in the USER SETTINGS. A similar stock feature is MCP double-click 
-			which makes the TCP of selected track expand and those of the rest contract.
+	'Always show full control panel on armed track' and option 
+	'Automatic record-arm when track selected' for any track in that 
+	it expands selected track TCP up to the size specified 
+	in the USER SETTINGS and contracts all de-selected TCPs down to the size 
+	specified in the USER SETTINGS. A similar stock feature is MCP double-click 
+	which makes the TCP of selected track expand and those of the rest contract.
 
-			After launch the script runs in the background.  
-			To stop it start it again and interact with the 'ReaScript task control' 
-			dialogue in REAPER versions older than 7, in later versions the script will be
-			terminated tacitly.
+	After launch the script runs in the background.  
+	To stop it start it again and interact with the 'ReaScript task control' 
+	dialogue in REAPER versions older than 7, in later versions the script will be
+	terminated tacitly.
 
-			If user defined MIN_HEIGHT value is smaller than the theme minimal track height, 
-			the latter will be used.
+	If user defined MIN_HEIGHT value is smaller than the theme minimal track height, 
+	the latter will be used.
 
-			Children tracks in collapsed folders are ignored.
+	Children tracks in collapsed folders are ignored.
 
-			If the script is linked to a toolbar button the latter will be lit while 
-			the script is running.
+	If the script is linked to a toolbar button the latter will be lit while 
+	the script is running.
 
 ]]
 -----------------------------------------------------------------------------
@@ -73,7 +73,7 @@ INCLUDE_FOLDER_CHILDREN = ""
 -- enabled by default to conform to earlier versions
 -- of the script where track locked height was respected
 -- by default
-RESPECT_LOCKED_TRACK_HEIGHT = "1"
+RESPECT_TRACK_LOCKED_HEIGHT = "1"
 
 
 -- If enabled by inserting any alphanumeric character 
@@ -243,7 +243,7 @@ local uppermost_tr, Y_init
 	for i = -1, r.CountTracks(0)-1 do
 	local tr = r.GetTrack(0,i) or master_tr
 		if (not AFFECT_MASTER_TRACK and tr ~= master_tr or AFFECT_MASTER_TRACK) -- master track isn't set to be affected by the script the track isn't Master or master track is supposed to be affected along with the rest
-		and (RESPECT_LOCKED_TRACK_HEIGHT and r.GetMediaTrackInfo_Value(tr, 'B_HEIGHTLOCK') == 0 or not RESPECT_LOCKED_TRACK_HEIGHT) -- track height isn't locked or locked and it's height isn't set to be respected
+		and (RESPECT_TRACK_LOCKED_HEIGHT and r.GetMediaTrackInfo_Value(tr, 'B_HEIGHTLOCK') == 0 or not RESPECT_TRACK_LOCKED_HEIGHT) -- track height isn't locked or locked and it's height isn't set to be respected
 		and All_Parent_Folders_Uncollapsed(tr) -- not child in a collapsed folder	
 		then
 		r.SetMediaTrackInfo_Value(tr, 'I_HEIGHTOVERRIDE', MIN_HEIGHT or 1)
@@ -256,7 +256,7 @@ r.TrackList_AdjustWindows(true) -- isMinor is true // updates TCP only https://f
 		for i = 0, r.CountSelectedTracks2(0, AFFECT_MASTER_TRACK)-1 do -- wantmaster arg depends on the user setting
 		local tr = r.GetSelectedTrack2(0, i, AFFECT_MASTER_TRACK) -- wantmaster arg depends on the user setting
 			if (not AFFECT_MASTER_TRACK and tr ~= master_tr or AFFECT_MASTER_TRACK) -- master track isn't set to be affected by the script the track isn't Master or master track is supposed to be affected along with the rest
-			and (RESPECT_LOCKED_TRACK_HEIGHT and r.GetMediaTrackInfo_Value(tr, 'B_HEIGHTLOCK') == 0 or not RESPECT_LOCKED_TRACK_HEIGHT) -- track height isn't locked or locked and it's height isn't set to be respected
+			and (RESPECT_TRACK_LOCKED_HEIGHT and r.GetMediaTrackInfo_Value(tr, 'B_HEIGHTLOCK') == 0 or not RESPECT_TRACK_LOCKED_HEIGHT) -- track height isn't locked or locked and it's height isn't set to be respected
 			and All_Parent_Folders_Uncollapsed(tr) -- not child in a collapsed folder
 			then
 			r.SetMediaTrackInfo_Value(tr, 'I_HEIGHTOVERRIDE', MAX_HEIGHT) -- wantmaster arg depends on the user setting
@@ -313,7 +313,7 @@ MIN_HEIGHT = (not MIN_HEIGHT or MIN_HEIGHT < theme_min_tr_height) and theme_min_
 	return r.defer(function() do return end end) end
 
 INCLUDE_FOLDER_CHILDREN = #INCLUDE_FOLDER_CHILDREN:gsub(' ','') > 0
-RESPECT_LOCKED_TRACK_HEIGHT = #RESPECT_LOCKED_TRACK_HEIGHT:gsub(' ','') > 0
+RESPECT_TRACK_LOCKED_HEIGHT = #RESPECT_TRACK_LOCKED_HEIGHT:gsub(' ','') > 0
 AFFECT_MASTER_TRACK = #AFFECT_MASTER_TRACK:gsub(' ','') > 0
 IGNORE_OTHER_PROJECTS = #IGNORE_OTHER_PROJECTS:gsub(' ','') > 0
 
