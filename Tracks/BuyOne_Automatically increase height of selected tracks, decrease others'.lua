@@ -1,35 +1,42 @@
 --[[
-ReaScript name: Automatically increase height of selected tracks, decrease others'
+ReaScript name: BuyOne_Automatically increase height of selected tracks, decrease others'.lua
 Author: BuyOne
-Website: https://forum.cockos.com/member.php?u=134058
-Version: 2.1
-Changelog: v2.1 #Added IGNORE_OTHER_PROJECTS setting
-	   v2.0 #Complete code overhaul. Glitches and limitations stemming from previous design have been fixed
+Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
+Version: 2.2
+Changelog: 	2.2 #Added tacit script termination when it's relaunched 
+					 while already running, supported since REAPER v7
+					 #Added explicit setting to respect track locked height
+					 which is enabled by default
+					 #Added setting to make the script affect Master track height
+					 #Updated 'About' text
+				2.1 #Added IGNORE_OTHER_PROJECTS setting
+				2.0 #Complete code overhaul. Glitches and limitations stemming from previous design have been fixed
+				1.0 #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 Screenshots: https://github.com/Buy-One/screenshots/blob/main/Automatically%20increase%20height%20of%20selected%20tracks%2C%20decrease%20others'.gif
 About:	The script works similalrly to the combination of preference  
-        'Always show full control panel on armed track' and option 
-	'Automatic record-arm when track selected' for any track in that 
-	it expands selected track TCP up to the size specified 
-        in the USER SETTINGS and contracts all de-selected TCPs down to the size 
-	specified in the USER SETTINGS. A similar stock feature is MCP double-click 
-	which makes the TCP of selected track expand and those of the rest contract.
+			'Always show full control panel on armed track' and option 
+			'Automatic record-arm when track selected' for any track in that 
+			it expands selected track TCP up to the size specified 
+			in the USER SETTINGS and contracts all de-selected TCPs down to the size 
+			specified in the USER SETTINGS. A similar stock feature is MCP double-click 
+			which makes the TCP of selected track expand and those of the rest contract.
 
-	After launch the script runs in the background.  
-	To stop it start it again and interact with the 'ReaScript task control' dialogue.
+			After launch the script runs in the background.  
+			To stop it start it again and interact with the 'ReaScript task control' 
+			dialogue in REAPER versions older than 7, in later versions the script will be
+			terminated tacitly.
 
-	If user defined MIN_HEIGHT value is smaller than the theme minimal track height, 
-	the latter will be used.
+			If user defined MIN_HEIGHT value is smaller than the theme minimal track height, 
+			the latter will be used.
 
-	Children tracks in collapsed folders and tracks whose height is locked 
-	are ignored.
+			Children tracks in collapsed folders are ignored.
 
-	If the script is linked to a toolbar button the latter will be lit while 
-	the script is running.
+			If the script is linked to a toolbar button the latter will be lit while 
+			the script is running.
 
 ]]
-
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
 -----------------------------------------------------------------------------
@@ -37,7 +44,7 @@ About:	The script works similalrly to the combination of preference
 -- Enable this setting by inserting any alphanumeric
 -- character between the quotation marks so the script can be used
 -- then configure the settings below
-ENABLE_SCRIPT = ""
+ENABLE_SCRIPT = "1"
 
 -- Insert values for Max and Min track heights between the quotes;
 -- if empty, invalid or 0, default to 100
@@ -58,6 +65,22 @@ MIN_HEIGHT = ""
 -- are expanded provided the folder and its subfolders
 -- are uncollapsed
 INCLUDE_FOLDER_CHILDREN = ""
+
+
+-- If enabled by inserting any alphanumeric character 
+-- between the quotes, tracks with locked height
+-- won't be affected by the script;
+-- enabled by default to conform to earlier versions
+-- of the script where track locked height was respected
+-- by default
+RESPECT_LOCKED_TRACK_HEIGHT = "1"
+
+
+-- If enabled by inserting any alphanumeric character 
+-- between the quotes Master track height will be changed
+-- when it gets selected/deselected as if it were 
+-- a regular track
+AFFECT_MASTER_TRACK = ""
 
 
 -- If enabled by inserting any alphanumeric character 
@@ -108,6 +131,11 @@ r.TrackCtl_SetToolTip(text:upper():gsub('.','%0 '), x, y, true) -- spaced out //
 end
 
 
+function no_undo()
+do return end
+end
+
+
 function Get_Track_Minimum_Height() -- may be different from 24 px in certain themes
 local tr = r.GetTrack(0,0)
 local H_orig = r.GetMediaTrackInfo_Value(tr, 'I_TCPH')
@@ -139,8 +167,8 @@ end
 function Get_Sel_Tracks()
 local GetValue = r.GetMediaTrackInfo_Value
 local t, sel_cnt = {}, 0
-	for i = 0, r.CountSelectedTracks(0)-1 do
-	local tr = r.GetSelectedTrack(0,i)
+	for i = 0, r.CountSelectedTracks2(0, AFFECT_MASTER_TRACK)-1 do -- wantmaster arg depends on the user setting
+	local tr = r.GetSelectedTrack2(0, i, AFFECT_MASTER_TRACK) -- wantmaster arg depends on the user setting
 	t[tr] = {folder=GetValue(tr, 'I_FOLDERDEPTH'), -- folder status
 	collapsed=GetValue(tr, 'I_FOLDERCOMPACT'), -- folder collapse state
 	locked_h=GetValue(tr, 'B_HEIGHTLOCK')} -- locked track height
@@ -153,7 +181,7 @@ end
 
 function Selection_Changed(sel_tr_t)
 local GetValue = r.GetMediaTrackInfo_Value
-	if r.CountSelectedTracks(0) ~= sel_tr_t.sel_cnt then return true end -- overall selection count changed
+	if r.CountSelectedTracks2(0, AFFECT_MASTER_TRACK) ~= sel_tr_t.sel_cnt then return true end -- overall selection count changed // wantmaster arg depends on the user setting
 	for tr, tr_props in pairs(sel_tr_t) do
 		if r.ValidatePtr(tr, 'MediaTrack*') and
 		( not r.IsTrackSelected(tr) -- overall sel count didn't change but selection did // validation prevents error when project is closed while the script is running
@@ -198,10 +226,13 @@ local CUST_MIN_HEIGHT = MIN_HEIGHT > theme_min_tr_height
 		end
 	end
 
+	
+local start = AFFECT_MASTER_TRACK and -1 or 0
+local master_tr = r.GetMasterTrack(0)
 local uppermost_tr, Y_init
 
-	for i = 0, r.CountTracks(0)-1 do
-	uppermost_tr = r.GetTrack(0,i)
+	for i = start, r.CountTracks(0)-1 do
+	uppermost_tr = r.GetTrack(0,i) or master_tr
 	local H = r.GetMediaTrackInfo_Value(uppermost_tr, 'I_TCPH') -- excl. envelopes as they seem useless
 	Y_init = r.GetMediaTrackInfo_Value(uppermost_tr, 'I_TCPY')
 		if Y_init >= 0 or Y_init < 0 and Y_init + H > 0 -- store to restore scroll position after setting all tracks to MIN_HEIGHT and expanding selected track(s) to MAX_HEIGHT when MIN_HEIGHT > 24 because this routine changes scroll position if track in the middle in the track list is selected // include tracks partly visible at the top of the tracklist
@@ -209,23 +240,26 @@ local uppermost_tr, Y_init
 	end
 
 	-- SET ALL TO MINIMUM HEIGHT
-	for i = 0, r.CountTracks(0)-1 do
-	local tr = r.GetTrack(0,i)
-		if All_Parent_Folders_Uncollapsed(tr) -- not child in a collapsed folder
-		and
-		r.GetMediaTrackInfo_Value(tr, 'B_HEIGHTLOCK') == 0 then -- not locked
+	for i = -1, r.CountTracks(0)-1 do
+	local tr = r.GetTrack(0,i) or master_tr
+		if (not AFFECT_MASTER_TRACK and tr ~= master_tr or AFFECT_MASTER_TRACK) -- master track isn't set to be affected by the script the track isn't Master or master track is supposed to be affected along with the rest
+		and (RESPECT_LOCKED_TRACK_HEIGHT and r.GetMediaTrackInfo_Value(tr, 'B_HEIGHTLOCK') == 0 or not RESPECT_LOCKED_TRACK_HEIGHT) -- track height isn't locked or locked and it's height isn't set to be respected
+		and All_Parent_Folders_Uncollapsed(tr) -- not child in a collapsed folder	
+		then
 		r.SetMediaTrackInfo_Value(tr, 'I_HEIGHTOVERRIDE', MIN_HEIGHT or 1)
 		end
 	end
 r.TrackList_AdjustWindows(true) -- isMinor is true // updates TCP only https://forum.cockos.com/showthread.php?t=208275
 
 	-- SET SELECTED TO MAXIMUM HEIGHT
-	if r.CountSelectedTracks(0) > 0 then --- this cond isn't really necessary as selection is checked in the MAIN() function
-		for i = 0, r.CountSelectedTracks(0)-1 do
-		local tr = r.GetSelectedTrack(0,i)
-			if All_Parent_Folders_Uncollapsed(tr) -- not child in a collapsed folder
-			and r.GetMediaTrackInfo_Value(tr, 'B_HEIGHTLOCK') == 0 then -- not locked
-			r.SetMediaTrackInfo_Value(r.GetSelectedTrack(0,i), 'I_HEIGHTOVERRIDE', MAX_HEIGHT)
+	if r.CountSelectedTracks2(0, AFFECT_MASTER_TRACK) > 0 then -- wantmaster arg depends on the user setting // this cond isn't really necessary as selection is checked in the MAIN() function
+		for i = 0, r.CountSelectedTracks2(0, AFFECT_MASTER_TRACK)-1 do -- wantmaster arg depends on the user setting
+		local tr = r.GetSelectedTrack2(0, i, AFFECT_MASTER_TRACK) -- wantmaster arg depends on the user setting
+			if (not AFFECT_MASTER_TRACK and tr ~= master_tr or AFFECT_MASTER_TRACK) -- master track isn't set to be affected by the script the track isn't Master or master track is supposed to be affected along with the rest
+			and (RESPECT_LOCKED_TRACK_HEIGHT and r.GetMediaTrackInfo_Value(tr, 'B_HEIGHTLOCK') == 0 or not RESPECT_LOCKED_TRACK_HEIGHT) -- track height isn't locked or locked and it's height isn't set to be respected
+			and All_Parent_Folders_Uncollapsed(tr) -- not child in a collapsed folder
+			then
+			r.SetMediaTrackInfo_Value(tr, 'I_HEIGHTOVERRIDE', MAX_HEIGHT) -- wantmaster arg depends on the user setting
 			end
 			if INCLUDE_FOLDER_CHILDREN then
 			Expand_Children(tr, MAX_HEIGHT)
@@ -279,6 +313,8 @@ MIN_HEIGHT = (not MIN_HEIGHT or MIN_HEIGHT < theme_min_tr_height) and theme_min_
 	return r.defer(function() do return end end) end
 
 INCLUDE_FOLDER_CHILDREN = #INCLUDE_FOLDER_CHILDREN:gsub(' ','') > 0
+RESPECT_LOCKED_TRACK_HEIGHT = #RESPECT_LOCKED_TRACK_HEIGHT:gsub(' ','') > 0
+AFFECT_MASTER_TRACK = #AFFECT_MASTER_TRACK:gsub(' ','') > 0
 IGNORE_OTHER_PROJECTS = #IGNORE_OTHER_PROJECTS:gsub(' ','') > 0
 
 local _, scr_name, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
@@ -305,7 +341,8 @@ proj = IGNORE_OTHER_PROJECTS and r.EnumProjects(-1) ~= proj and Link_To_New_Proj
 
 	if IGNORE_OTHER_PROJECTS and r.EnumProjects(-1) == proj or not IGNORE_OTHER_PROJECTS then
 	
-		if r.CountSelectedTracks(0) > 0  and ( not t or t and Selection_Changed(t) ) then
+		if r.CountSelectedTracks2(0, AFFECT_MASTER_TRACK) and ( not t or t and Selection_Changed(t) ) -- wantmaster arg depends on the user setting 
+		then
 		t = Get_Sel_Tracks()
 		Manage_Track_Heights(MIN_HEIGHT, MAX_HEIGHT, theme_min_tr_height)
 		end
@@ -321,13 +358,13 @@ r.defer(MAIN)
 end
 
 
+	if r.set_action_options then r.set_action_options(1) end
 
 MAIN()
 
 
-
 r.atexit(At_Exit_Wrapper(Re_Set_Toggle_State, sect_ID, cmd_ID, 0))
 
-do return r.defer(function() do return end end) end
+do return r.defer(no_undo) end
 
 
