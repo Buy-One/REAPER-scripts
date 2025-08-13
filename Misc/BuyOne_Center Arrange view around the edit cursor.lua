@@ -119,7 +119,7 @@ or edit_cur_pos > view_center and start_time + distance >= proj_len and ' cannot
 local xdir = edit_cur_pos < view_center and -1 or 1
 
 local i=0
-local scrolled_px, last_pos = 0
+local scrolled_px = 0
 r.PreventUIRefresh(1)
 	repeat
 	r.CSurf_OnScroll(xdir, 0) -- ydir 0
