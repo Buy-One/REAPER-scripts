@@ -9,8 +9,8 @@ REAPER: at least v5.962
 Extensions:
 Provides: [main=main,midi_editor] .
 About: 	Scrolls the Arrange view until the loop points are
-			  at its center.  
-			  If loop area is longer than the Arrange view 
+		at its center.  
+		If loop area is longer than the Arrange view 
         the script is auto-zooms out the Arrange view to it
 ]]
 
