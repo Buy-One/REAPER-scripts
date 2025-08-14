@@ -9,8 +9,8 @@ REAPER: at least v5.962
 Extensions:
 Provides: [main=main,midi_editor] .
 About: 	Scrolls the Arrange view until the time selection is
-			  at its center.  
-			  If ime selection is longer than the Arrange view 
+		at its center.  
+		If time selection is longer than the Arrange view 
         the script is auto-zooms out the Arrange view to it
 ]]
 
@@ -115,8 +115,8 @@ local start, fin = r.GetSet_LoopTimeRange(false, loop and true or false, 0, 0, f
 
 local start_time, end_time = reaper.GetSet_ArrangeView2(0, false, 0, 0) -- isSet false, screen_x_start & screen_x_end both 0 = GET
 local zoom = r.GetHZoomLevel()
-local vert_scrollbar_len = 17/zoom
-end_time = end_time - vert_scrollbar_len -- offsetting vertical scrollbar witdh included in end_rime value despite not being part of the effective Arrange width, so that center is calculated between start and end of the visible part of the Arrange
+local vert_scrollbar_width = 17/zoom
+end_time = end_time - vert_scrollbar_width -- offsetting vertical scrollbar witdh included in end_rime value despite not being part of the effective Arrange width, so that center is calculated between start and end of the visible part of the Arrange
 
 local length_diff = end_time - start_time <= fin - start -- time selection / loop is longer than visible time lime
 
@@ -143,8 +143,8 @@ local length_diff = end_time - start_time <= fin - start -- time selection / loo
 
 local mid_point = start + (fin-start)/2
 local zoom = r.GetHZoomLevel()
-local vert_scrollbar_len = 17/zoom
-end_time = end_time - vert_scrollbar_len -- offsetting vertical scrollbar witdh included in end_rime value despite not being part of the effective Arrange width, so that center is calculated between start and end of the visible part of the Arrange
+local vert_scrollbar_width = 17/zoom
+end_time = end_time - vert_scrollbar_width -- offsetting vertical scrollbar witdh included in end_rime value despite not being part of the effective Arrange width, so that center is calculated between start and end of the visible part of the Arrange
 local view_center = start_time + (end_time - start_time)/2
 local distance = view_center - mid_point
 local px_to_sroll = math.abs(distance*zoom)
