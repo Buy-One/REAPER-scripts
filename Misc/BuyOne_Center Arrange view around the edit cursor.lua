@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Center Arrange view around the edit cursor.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 1.1	#Excluded vertical scrollbar from Arrange width value
+				#Accounted for time selection and loop points in project length
+				to prevent scrolling beyond them
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions:
@@ -105,6 +107,16 @@ local zoom = r.GetHZoomLevel()
 local distance = math.abs(view_center - edit_cur_pos)
 local px_to_sroll = distance*zoom
 local proj_len = r.GetProjectLength(0)
+
+-- It's not trivial to determine available scroll space which is affected by time selection and loop points
+-- way beyond nominal project length, so account for time selection and loop points in project length value
+-- in order to minimize as much as possible scrolling beyong available scroll space which is allowed
+local loop_start, loop_end = r.GetSet_LoopTimeRange(false, true, 0, 0, false) -- isSet false, isLoop true, allowautoseek false
+local time_start, time_end = r.GetSet_LoopTimeRange(false, false, 0, 0, false) -- isSet false, isLoop false, allowautoseek false
+local loop_set, time_set = loop_start ~= loop_end, time_start ~= time_end
+local time_loop_end = loop_set and time_set and math.max(loop_end, time_end) or loop_set and loop_end or time_set and time_end
+proj_len = time_loop_end > proj_len and time_loop_end or proj_len
+
 local cannot_move = 'cannot move view any further'
 local err = (edit_cur_pos == view_center or px_to_sroll <= 16) -- scrolling will move cursor farther from the center than it already is, because horiz scroll minimum step in CSurf_OnScroll() is 16 px
 and '\tthe edit cursor \n\n is already at the center'
