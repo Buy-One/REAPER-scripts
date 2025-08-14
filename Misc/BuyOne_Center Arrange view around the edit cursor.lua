@@ -135,9 +135,8 @@ local scrolled_px = 0
 r.PreventUIRefresh(1)
 	repeat
 	r.CSurf_OnScroll(xdir, 0) -- ydir 0
-	scrolled_px = scrolled_px+16 -- horizontal scroll minimum step is 16 px
 	i=i+1
-	until scrolled_px >= px_to_sroll
+	until i*16 >= px_to_sroll -- each execution of CSurf_OnScroll() moves horiz scroll position by 16 px, so multiple by the number of loop cycles
 r.PreventUIRefresh(-1)
 
 	if xdir < 0 and start_time < distance then -- cannot scroll left past project start to bring the edit cursor to the center
