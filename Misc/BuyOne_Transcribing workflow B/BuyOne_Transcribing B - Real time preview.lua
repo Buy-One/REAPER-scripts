@@ -4,8 +4,8 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
 Changelog: 1.1	#Done away with 'ReaScript task control' dialogue when the script is re-launched
-		while already running. Relevant for users of REAPER 7.
-		#Updated 'About' text
+				while already running. Relevant for users of REAPER 7.
+				#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v6.37
 About:	The script is part of the Transcribing B workflow set of scripts
