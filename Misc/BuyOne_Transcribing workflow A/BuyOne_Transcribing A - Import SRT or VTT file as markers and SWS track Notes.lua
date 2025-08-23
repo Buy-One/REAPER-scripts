@@ -3,10 +3,10 @@ ReaScript name: BuyOne_Transcribing A - Import SRT or VTT file as markers and SW
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
-Changelog: 1.2 #Updated script name and 'About' text
-	   1.1 #Made sure that all old Notes tracks are deleted on import
-	       #Changed the behavior so that all project markers are deleted on import, not just old segment markers
-	       #Made content update more visually consistent when a user prompt is displayed on VTT file import
+Changelog: 1.2 	#Updated script name and 'About' text
+	  	   1.1 	#Made sure that all old Notes tracks are deleted on import
+				#Changed the behavior so that all project markers are deleted on import, not just old segment markers
+	      		#Made content update more visually consistent when a user prompt is displayed on VTT file import
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
