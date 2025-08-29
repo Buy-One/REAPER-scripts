@@ -10,7 +10,8 @@ Provides: [main=main,midi_editor] .
 About: 	Makes REAPER open a new tab and load last SAVED 
 		instance of the currently open project in it.
 
-		The feature was introduced natively in build 7.44
+		The feature was introduced natively via action
+		in build 7.44
 ]]
 
 
