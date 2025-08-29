@@ -238,13 +238,19 @@ r.GetSetMediaItemTakeInfo_String(take, 'P_NAME', props.file_path:match('[^\\/]+$
 Set_Item(temp_itm, 'D_FADEINLEN', 0)
 Set_Item(temp_itm, 'D_FADEOUTLEN', 0)
 r.SetMediaItemSelected(temp_itm, true) -- selected true // must be selected for Glue to work
---do return end
+
 
 r.Main_OnCommand(40362, 0) -- Item: Glue items, ignoring time selection
 
-file_path = r.GetMediaSourceFileName(src, '')
+--[[ WORKS ON WINDOWS
+local file_path = r.GetMediaSourceFileName(src, '')
 local take = r.GetActiveTake(temp_itm) -- IT SEEMS THAT CREATING AND SETTING NEW TAKE PCM SOURCE FOLLOWED BY GLUING INVALIDATES ORIGINAL TAKE POINTER, SO FOR EACH NEXT SOURCE FILE TAKE POINTER MUST BE RE-GET; GLUING WITHOUT CHANGE IN TAKE PCM SOURCE HOWEVER DOESN'T CHANGE TAKE POINTER EVEN IN MULTIPLE PASSES
-
+--]]
+--[-[ this is a version of the lines in the block comment above in an attempt to fix a bug which cannot be replicated on Windows 7 https://forum.cockos.com/showthread.php?p=2887546, https://forum.cockos.com/showthread.php?p=2887580
+local take = r.ValidatePtr(temp_itm, 'MediaItem*') and r.GetActiveTake(temp_itm) or r.GetActiveTake(r.GetSelectedMediaItem(0,0))
+local src = r.GetMediaItemTake_Source(take)
+local file_path = r.GetMediaSourceFileName(src, '')
+--]]
 return file_path, take
 
 end
