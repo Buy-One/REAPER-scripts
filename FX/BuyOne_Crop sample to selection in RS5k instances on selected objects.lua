@@ -328,8 +328,6 @@ local sel_items_t = {}
 
 local temp_tr, temp_itm, take = Insert_Item_On_Temp_Track()
 
-local src_t = {}
-
 	for obj, data in pairs(t) do -- objects loop
 		for fx_idx, props in pairs(data) do -- RS5k instances loop
 		file_path, take = Add_File_To_Temp_Item_And_Glue(temp_tr, temp_itm, take, props) -- returns path to the newly created glued file, and new take pointer after setting new take source and gluing for next loop cycle because the temp item is being re-used
