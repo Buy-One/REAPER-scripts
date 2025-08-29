@@ -8,7 +8,9 @@ Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main=main,midi_editor] .
 About: 	Makes REAPER open a new tab and load last SAVED 
-	instance of the currently open project in it.
+		instance of the currently open project in it.
+
+		The feature was introduced natively in build 7.44
 ]]
 
 
