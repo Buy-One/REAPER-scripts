@@ -4,6 +4,7 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
 Changelog: 	1.2 #Added user settings
+				#Added query of RS5k instance offline state to ignore offline instances
 				#Updated 'About' text
 			1.1 #Fixed error due to invalidation of a temporary item pointer after gluing
 Licence: WTFPL
