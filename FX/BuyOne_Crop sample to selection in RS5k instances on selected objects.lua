@@ -247,11 +247,12 @@ local file_path = r.GetMediaSourceFileName(src, '')
 local take = r.GetActiveTake(temp_itm) -- IT SEEMS THAT CREATING AND SETTING NEW TAKE PCM SOURCE FOLLOWED BY GLUING INVALIDATES ORIGINAL TAKE POINTER, SO FOR EACH NEXT SOURCE FILE TAKE POINTER MUST BE RE-GET; GLUING WITHOUT CHANGE IN TAKE PCM SOURCE HOWEVER DOESN'T CHANGE TAKE POINTER EVEN IN MULTIPLE PASSES
 --]]
 --[-[ this is a version of the lines in the block comment above in an attempt to fix a bug which cannot be replicated on Windows 7 https://forum.cockos.com/showthread.php?p=2887546, https://forum.cockos.com/showthread.php?p=2887580
-local take = r.ValidatePtr(temp_itm, 'MediaItem*') and r.GetActiveTake(temp_itm) or r.GetActiveTake(r.GetSelectedMediaItem(0,0))
+local temp_itm = r.GetSelectedMediaItem(0,0)
+local take = r.GetActiveTake(temp_itm)
 local src = r.GetMediaItemTake_Source(take)
 local file_path = r.GetMediaSourceFileName(src, '')
 --]]
-return file_path, take
+return file_path, temp_itm, take
 
 end
 
@@ -336,7 +337,7 @@ local temp_tr, temp_itm, take = Insert_Item_On_Temp_Track()
 
 	for obj, data in pairs(t) do -- objects loop
 		for fx_idx, props in pairs(data) do -- RS5k instances loop
-		file_path, take = Add_File_To_Temp_Item_And_Glue(temp_tr, temp_itm, take, props) -- returns path to the newly created glued file, and new take pointer after setting new take source and gluing for next loop cycle because the temp item is being re-used
+		file_path, temp_itm, take = Add_File_To_Temp_Item_And_Glue(temp_tr, temp_itm, take, props) -- returns path to the newly created glued file, and new take pointer after setting new take source and gluing for next loop cycle because the temp item is being re-used
 		Apply_Cropped_File_To_RS5k(obj, fx_idx, props.start_idx, props.end_idx, file_path)
 		end
 	end
