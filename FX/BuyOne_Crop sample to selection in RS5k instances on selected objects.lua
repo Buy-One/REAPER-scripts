@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Crop sample to selection in RS5k instances on selected objects.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 1.1 #Fixed error due to invalidation of a temporary item pointer after gluing
 Licence: WTFPL
 REAPER: at least v6.37 for reliable performance
 Provides: [main=main,midi_editor,mediaexplorer] .
@@ -242,16 +242,18 @@ r.SetMediaItemSelected(temp_itm, true) -- selected true // must be selected for 
 
 r.Main_OnCommand(40362, 0) -- Item: Glue items, ignoring time selection
 
---[[ WORKS ON WINDOWS
+--[[
 local file_path = r.GetMediaSourceFileName(src, '')
-local take = r.GetActiveTake(temp_itm) -- IT SEEMS THAT CREATING AND SETTING NEW TAKE PCM SOURCE FOLLOWED BY GLUING INVALIDATES ORIGINAL TAKE POINTER, SO FOR EACH NEXT SOURCE FILE TAKE POINTER MUST BE RE-GET; GLUING WITHOUT CHANGE IN TAKE PCM SOURCE HOWEVER DOESN'T CHANGE TAKE POINTER EVEN IN MULTIPLE PASSES
+local take = r.GetActiveTake(temp_itm) -- IT SEEMS THAT CREATING AND SETTING NEW TAKE PCM SOURCE FOLLOWED BY GLUING INVALIDATES ORIGINAL TAKE POINTER, SO FOR EACH NEXT SOURCE FILE TAKE POINTER MUST BE RE-GOT; GLUING WITHOUT CHANGE IN TAKE PCM SOURCE HOWEVER DOESN'T CHANGE TAKE POINTER EVEN IN MULTIPLE PASSES, BUT SEE COMMENT IMMEDIATELY BELOW
 --]]
---[-[ this is a version of the lines in the block comment above in an attempt to fix a bug which cannot be replicated on Windows 7 https://forum.cockos.com/showthread.php?p=2887546, https://forum.cockos.com/showthread.php?p=2887580
+-- this is a version of the lines in the block comment above in an attempt to fix a bug which cannot be replicated on Windows 7 Windows https://forum.cockos.com/showthread.php?p=2887546, https://forum.cockos.com/showthread.php?p=2887580
+-- apparently in some cases which i haven't run across, item pointer is invalidated after gluing
+-- so must be retrieved anew and returned to continue reuse of the temp item
 local temp_itm = r.GetSelectedMediaItem(0,0)
 local take = r.GetActiveTake(temp_itm)
 local src = r.GetMediaItemTake_Source(take)
 local file_path = r.GetMediaSourceFileName(src, '')
---]]
+
 return file_path, temp_itm, take
 
 end
