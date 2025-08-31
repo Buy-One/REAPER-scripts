@@ -51,26 +51,6 @@ do return end
 end
 
 
-function validate_sett(sett, is_literal)
--- validate setting, can be either a non-empty string or any number
--- is_literal is boolean to determine the gsub pattern
--- in case literal string is used for a setting, e.g. [[ ]]
-
--- if literal string is used for a setting it may happen to contain
--- implicit new lines which should be accounted for in evaluation
-local pattern = is_literal and '[%s%c]' or ' '
-return type(sett) == 'string' and #sett:gsub(pattern,'') > 0 or type(sett) == 'number'
-end
-
-
-function Esc(str)
-	if not str then return end -- prevents error
--- isolating the 1st return value so that if vars are initialized in a row outside of the function the next var isn't assigned the 2nd return value
-local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
-return str
-end
-
-
 function Error_Tooltip(text, caps, spaced, x2, y2, want_color, want_blink)
 -- the tooltip sticks under the mouse within Arrange
 -- but quickly disappears over the TCP, to make it stick
