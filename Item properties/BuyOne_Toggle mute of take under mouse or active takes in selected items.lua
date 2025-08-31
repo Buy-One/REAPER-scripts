@@ -9,28 +9,28 @@ REAPER: at least v5.962
 Extensions: 
 Provides: [main=main,midi_editor] .
 About: 	Out of the box REAPER doesn't provide tools to 
-  			automatically mute individual takes. It only allows
-  			having eeither the active take play or all item takes 
-  			at once. That's the gap the script aims to fill.
-  			
-  			The script only makes sense when applied
-  			to multi-take audio items in which 'Play all takes'
-  			option is enabled.  		
-  			Muting with the script allows leaving only a selection 
-  			of takes playing.  			
-  			The script first targets take under mouse cursor and
-  			if not found targets active takes in all selected items.
-  			
-  			When audio take is muted its waveform disappears.
-  			
-  			To ensure immediate effect of muting and unmuting on
-  			the playback in live setting the script is best used 
-  			with minimal buffer settings or with buffering disabled 
-  			at Preferences -> Audio -> Buffering.  
-  			For example the effect is immediate when 
-  			'Media buffer size' is set to 0 or if the preference
-  			'Disable media buffering for tracks that are selected'
-  			is enabled and the track the item belongs to is selected.
+		automatically mute individual takes. It only allows
+		having either the active take play or all item takes 
+		at once. That's the gap the script aims to fill in.
+		
+		The script only makes sense when applied
+		to multi-take audio items in which 'Play all takes'
+		option is enabled.  		
+		Muting with the script allows leaving only a selection 
+		of takes playing.  			
+		The script first targets take under mouse cursor and
+		if not found targets active takes in all selected items.
+		
+		When audio take is muted its waveform disappears.
+		
+		To ensure immediate effect of muting and unmuting on
+		the playback in live setting the script is best used 
+		with minimal buffer settings or with buffering disabled 
+		at Preferences -> Audio -> Buffering.  
+		For example the effect is immediate when 
+		'Media buffer size' is set to 0 or if the preference
+		'Disable media buffering for tracks that are selected'
+		is enabled and the track the item belongs to is selected.
 ]]
 
 
