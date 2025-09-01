@@ -1,9 +1,10 @@
 --[[
-ReaScript name: BuyOne_Crop sample to selection in RS5k instances on selected objects.lua
+ReaScript name: BuyOne_Crop sample to selection in RS5k instances.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.3
 Changelog: 	1.3 #Fixed targetting selected tracks when TARGET_ALL_TRACKS setting is not enabled
+				#Updated script name to reflect the functionality
 			1.2 #Added user settings
 				#Added query of RS5k instance offline state to ignore offline instances
 				#Updated 'About' text
