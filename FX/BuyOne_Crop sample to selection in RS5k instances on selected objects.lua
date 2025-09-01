@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Crop sample to selection in RS5k instances on selected objects.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: 	1.2 #Added user settings
+Version: 1.3
+Changelog: 	1.3 #Fixed targetting selected tracks when TARGET_ALL_TRACKS setting is not enabled
+			1.2 #Added user settings
 				#Added query of RS5k instance offline state to ignore offline instances
 				#Updated 'About' text
 			1.1 #Fixed error due to invalidation of a temporary item pointer after gluing
@@ -361,7 +362,7 @@ table.unpack(not tracks and {r.CountMediaItems, r.GetMediaItem, r.TakeFX_GetCoun
 r.TakeFX_GetNamedConfigParm, r.TakeFX_SetNamedConfigParm, r.TakeFX_GetParam,
 r.TakeFX_SetParam, r.TakeFX_GetOffline, r.TakeFX_GetEnabled, r.TakeFX_GetFXName}
 or tracks and {targ_all_trks and r.CountTracks or r.CountSelectedTracks,
-r.CountSelectedTracks and r.GetTrack or r.GetSelectedTrack, r.TrackFX_GetCount,
+targ_all_trks and r.GetTrack or r.GetSelectedTrack, r.TrackFX_GetCount,
 r.TrackFX_GetNamedConfigParm, r.TrackFX_SetNamedConfigParm, r.TrackFX_GetParam,
 r.TrackFX_SetParam, r.TrackFX_GetOffline, r.TrackFX_GetEnabled, r.TrackFX_GetFXName})
 
