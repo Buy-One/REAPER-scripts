@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Toggle mute of take under mouse or active takes in selected items.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Added error messages when script is applied exclusively to single-take items
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: 
@@ -15,9 +15,9 @@ About: 	Out of the box REAPER doesn't provide tools to
 		
 		The script only makes sense when applied
 		to multi-take audio items in which 'Play all takes'
-		option is enabled.  		
+		option is enabled.  
 		Muting with the script allows leaving only a selection 
-		of takes playing.  			
+		of takes playing.  	
 		The script first targets take under mouse cursor and
 		if not found targets active takes in all selected items.
 		
@@ -135,6 +135,7 @@ local item, take = r.GetItemFromPoint(x, y, false) -- allow_locked false
 
 local err = not take and r.CountSelectedMediaItems(0) == 0 and ' no take under mouse \n\n and no selected items'
 or item and not take and 'empty take is not supported' -- take inserted with the action 'Item: Add an empty take after/before the active take' which doesn't have a pointer
+or take and r.CountTakes(item) == 1 and '  not a multi-take item \n\n use native mute instead'
 
 	if err then
 	Error_Tooltip('\n\n '..err..' \n\n', 1, 1, 10) -- caps, spaced true, x is 10 to move the tooltip away from under the cursor because it blocks clicks while stays on
@@ -155,9 +156,9 @@ local count, undo = 0, ''
 	-- and IsMediaItemSelected() instead
 	-- https://forum.cockos.com/showthread.php?p=2807092#post2807092
 		for i=0, r.CountMediaItems(0)-1 do
-		local item = r.GetMediaItem(0,i)
+		local item = r.GetMediaItem(0,i)			
 		local take = r.GetActiveTake(item)
-			if take and r.IsMediaItemSelected(item) then -- if take was inserted with the action 'Item: Add an empty take after/before the active take' or the item is an empty one, take doesn't have a pointer
+			if take and r.CountTakes(item) > 1 and r.IsMediaItemSelected(item) then -- if take was inserted with the action 'Item: Add an empty take after/before the active take' or the item is an empty one, take doesn't have a pointer
 			Un_Mute_Take(take, scr_name)
 			count = count+1
 			end
@@ -166,7 +167,7 @@ local count, undo = 0, ''
 	end
 
 	if not take and count == 0 then
-	Error_Tooltip('\n\n no valid active takes \n\n    in selected items \n\n', 1, 1) -- caps, spaced true
+	Error_Tooltip('\n\n no valid active takes \n\n    in selected items, \n\n or no multi-take items \n\n', 1, 1) -- caps, spaced true
 	r.Undo_EndBlock(r.Undo_CanUndo2(0) or '', -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar
 	return r.defer(no_undo)
 	end
