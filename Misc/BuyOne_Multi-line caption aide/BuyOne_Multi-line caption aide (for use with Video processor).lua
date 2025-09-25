@@ -8,387 +8,387 @@ Licence: WTFPL
 REAPER: at least v6.37
 Extensions:
 About:	If 'Overlay: Text/Timecode' preset is enabled
-			in the Video processor inserted in a take FX chain
-			it retreives take name and displays it within the 
-			Video window. It also supports multi-line text,
-			however there's no straigtforward way to make
-			the take name multi-line for the Video processor.
-			One way is to type in the caption directly into
-			the preset code using new line characters \n, however
-			this isn't always convenient. Inserting new line
-			characters into take names is only possible via 
-			ReaScript API, and that's what this script is for.   
-			In the meantime a feature request has been submitted
-			https://forums.cockos.com/showthread.php?t=293211
+		in the Video processor inserted in a take FX chain
+		it retreives take name and displays it within the 
+		Video window. It also supports multi-line text,
+		however there's no straigtforward way to make
+		the take name multi-line for the Video processor.
+		One way is to type in the caption directly into
+		the preset code using new line characters \n, however
+		this isn't always convenient. Inserting new line
+		characters into take names is only possible via 
+		ReaScript API, and that's what this script is for.   
+		In the meantime a feature request has been submitted
+		https://forums.cockos.com/showthread.php?t=293211
 
-			Alternative way of creating multi-line captions is
-			using multi-take items in which 'Play all takes' 
-			option is enabled, name of each take represents a line 
-			in the caption and FX chain of each such take includes
-			Video processor plugin with enabled  
-			'Overlay: Text/Timecode' preset. The script automatically
-			enables 'Play all takes' setting in the target item
-			when a multi-take caption is created.
+		Alternative way of creating multi-line captions is
+		using multi-take items in which 'Play all takes' 
+		option is enabled, name of each take represents a line 
+		in the caption and FX chain of each such take includes
+		Video processor plugin with enabled  
+		'Overlay: Text/Timecode' preset. The script automatically
+		enables 'Play all takes' setting in the target item
+		when a multi-take caption is created.
 
-			The script offers automated way of creation and management
-			of multi-line captions of either of these types.
+		The script offers automated way of creation and management
+		of multi-line captions of either of these types.
 
-			Note that in REAPER take name length limit is 512 bytes
-			or 512 Basic Latin characters + spaces + new line 
-			characters. Text written in alphabets other than Basic 
-			Latin where some or all characters are multi-byte will
-			hit this limit sooner.
-
-
-			MENU
-
-			It offers 16 operations.
-
-			====================================================
-			For single take multi-line captions (Type 1):
-
-			1. Convert between OPERATOR and line break in names of 
-			active takes in selected items
-			2. Clear line break in names of active takes in selected 
-			items
-			3. Replace with the OPERATOR line break in names of active
-			takes in selected items
-			4. Edit caption
-
-			For multi-take multi-line captions (Type 2):
-
-			1. Split active take names at the OPERATOR into multiple 
-			takes adding new takes as necessary
-			2. Merge names of multiple takes into multi-line name of
-			the active take removing redundant takes
-			3. Merge names of multiple takes into the name of the
-			active take separating with the OPERATOR and removing
-			redundant takes
-			4. Activate 1st take with Video processor and preset
-			in selected items
-			5. Offset lines vertically in Video processor instances
-			in multi-take items starting from active take
-			6a. Lower line of active take in 1st selected item by 0.001
-			6b. Raise line of active take in 1st selected item by 0.001
-			6c. Lower all lines from active take in selected items by 0.001
-			6d. Raise all lines from active take in selected items by 0.001
-			7. Edit caption
-
-			Insert Video processor and apply the preset to active/all 
-			takes in selected items.
-			Activate Video processor in active/all takes in selected
-			items (statring from active take)
-			Set bottommost (or only) line Y coordinate in selected items
-			=====================================================
-
-			Type 1 caption menu item 1 'Convert between OPERATOR and
-			line break in names of active takes in selected items' 
-			also works to convert line breaks back to the OPERATOR 
-			and thus duplicates the operation performed by the Type 1 
-			menu item 3 'Replace line break with the OPERATOR in names 
-			of active takes in selected items', provided there's no 
-			OPERATOR, otherwise operation 1 will be activated.    
-			Save for the 'Edit caption' operation and operations 
-			6a, 6b, all operations target all selected items. 
-			Whether only active or all takes in selected items 
-			or all takes starting from the active one are targeted 
-			by Type 1 caption operations 1-3 and by the operations 
-			'Insert Video processor and apply the preset to active/all 
-			takes in selected items'  
-			AND  
-			'Active Video processor in active/all takes in selected
-			items (statring from active take)'  
-			depends on the TARGET_ALL_ITEM_TAKES setting which is 
-			also available in the menu as 'Target all takes / all 
-			takes starting from active (toggle)'.
-			
-			Type 2 menu operation 4 'Activate 1st take with Video 
-			processor and preset in selected items' is meant to
-			prepare items for operations 6c and 6d to allow changing
-			Y coordinate of multiple captions at once. 
-			If in multi-take items the last valid take is selected,
-			the line associated with it will be the only line whose 
-			Y coordinate will be changed with the operations 6 c and 6d.
-			
-			Type 2 operations 6a - 6d can be applied to Type 1 
-			captions as well.
-						
-			With the operation   
-			'Activate Video processor in active/all takes in 
-			selected items (statring from active take)'  
-			Video processor instance is inserted after the last 
-			Video processor instance, if any, otherwise it's 
-			inserted in the first slot of take FX chain.
-			
-			The operation 
-			'Set bottommost (or only) line Y coordinate in selected items'
-			is geared towards applying a uniform Y coordinate 
-			to the bottommost line in multiple multi-line captions 
-			at once, represented by selected items. When Type 2 
-			captions are affected by the operation, it must be 
-			followed by operation 5 'Offset lines vertically in 
-			Video processor instances in multi-take items starting 
-			from active take' to make other lines lineed up relative 
-			to the new Y coordinate of the bottommost line.			
-			
-			Type 1 and Type 2 operations menus can be collapsed into
-			a sub-menu by clicking their title.
+		Note that in REAPER take name length limit is 512 bytes
+		or 512 Basic Latin characters + spaces + new line 
+		characters. Text written in alphabets other than Basic 
+		Latin where some or all characters are multi-byte will
+		hit this limit sooner.
 
 
-			OPERATOR
+		MENU
 
-			In order to split a take name into lines, in the take
-			name insert a character designated as the OPERATOR 
-			in the USER SETTINGS below, select the item the take 
-			belongs to having this take active and click menu item 1. 
-			In Type 1 caption mode each instance of the OPERATOR 
-			will be removed from the take name and replaced with an 
-			invisible new line character, and in Type 2 caption mode
-			its name will be split into names of multiple takes which
-			will be created as necessary, existing takes won't be
-			re-used.   
-			While adding the operator to take names it's advised 
-			to not precede new line text with with spaces because 
-			this will cause slight shift of the line text from the 
-			center position due to presence of space at its start. 
-			On the other nand the space will ensure that 
-			the last word of the top line and the first word of the 
-			bottom line remain visibly separated in the take name.
+		It offers 16 operations.
 
-			Multiple operators which follow each other without gaps
-			are ignored, only one operator is respected between 
-			adjacent characters. In Type 2 caption mode they're ignored 
-			because in REAPER builds older than 7.46 the built-in 
-			'Overlay: Text/Timecode preset' instead of an empty line, 
-			fashioned by adjacent new line characters converted from 
-			the operators, displays random Unicode characters when 
-			the content is retrieved from a take name, see  
-			https://forum.cockos.com/showthread.php?t=302761
-			In an empty line supported by the script, adjacent 
-			OPERATOR instances must be separated by at least a single 
-			space.
+		====================================================
+		For single take multi-line captions (Type 1):
 
+		1. Convert between OPERATOR and line break in names of 
+		active takes in selected items
+		2. Clear line break in names of active takes in selected 
+		items
+		3. Replace with the OPERATOR line break in names of active
+		takes in selected items
+		4. Edit caption
 
-			OVERLAY PRESET
+		For multi-take multi-line captions (Type 2):
 
-			By default the script implies usage of the stock
-			'Overlay: Text/Timecode' preset to display captions.  
-			OVERLAY_PRESET setting in the USER SETTING below allows
-			defining a custom overlay preset which the script will
-			use. See NOTES REGARDING TYPE 1 and 2 below.
-	
+		1. Split active take names at the OPERATOR into multiple 
+		takes adding new takes as necessary
+		2. Merge names of multiple takes into multi-line name of
+		the active take removing redundant takes
+		3. Merge names of multiple takes into the name of the
+		active take separating with the OPERATOR and removing
+		redundant takes
+		4. Activate 1st take with Video processor and preset
+		in selected items
+		5. Offset lines vertically in Video processor instances
+		in multi-take items starting from active take
+		6a. Lower line of active take in 1st selected item by 0.001
+		6b. Raise line of active take in 1st selected item by 0.001
+		6c. Lower all lines from active take in selected items by 0.001
+		6d. Raise all lines from active take in selected items by 0.001
+		7. Edit caption
 
-			NOTES REGARDING TYPE 1 (single take multi-line captions)
+		Insert Video processor and apply the preset to active/all 
+		takes in selected items.
+		Activate Video processor in active/all takes in selected
+		items (statring from active take)
+		Set bottommost (or only) line Y coordinate in selected items
+		=====================================================
 
-			The stock 'Overlay: Text/Timecode' preset does support
-			multi-line captions but it centers the text as a single
-			unit, so each line starts at the same X coordinate on the
-			screen, i.e.
-			My line
-			My second line
-			My line after the second
-
-			To have lines centered individually use a mod of the 
-			stock preset whose code is provided at the bottom of this
-			script. Paste the code into the Video processor instance,
-			hit Ctrl/Cmd + S to store it, save as a named preset
-			and specify this preset name in the OVERLAY_PRESET 
-			setting of the USER SETTINGS below. Alternatively import
-			the preset dump file  
-			'Overlay_Text-Timecode (centered multi-lines).RPL' 
-			located in the script folder.  
-			The resulting multi-line caption will look like so
-			(the following may not display correctly within the 
-			ReaScript IDE)
-			         My line
-			      My second line
-			My line after the second		
-
-
-			NOTES REGARDING TYPE 2 (multi-take multi-line captions)
-			
-			All operations bar operation 1 'Split' support empty take 
-			names, which are nevertheless not recommended for reasons
-			described in the OPERATOR paragraph above.
-
-			All operations specific to the Type 2 caption, bar 'Edit
-			caption', require presence of an enabled Video processor 
-			instance named 'Caption' and the overlay preset in the 
-			FX chain of the target takes. If either of these 
-			conditions isn't met the item won't be recognized
-			by the script as a multi-take caption source.  
-			When a Video processor instance is inserted with the 
-			operation 'Insert Video processor and apply the preset 
-			to active takes in selected items' the script automatically 
-			names it 'Caption'.  
-			The script is designed to work with the built-in 
-			'Overlay: Text/Timecode' preset or its derivatives 
-			assuming that the parameter names, their order and the 
-			code part which calculates font size ('text height' 
-			parameter), text background size ('bg pad' parameter)
-			and caption Y coordinate ('y position' parameter) are 
-			identical to the built-in overlay preset.  
-			If you use a custom preset where these are different, 
-			offsetting lines of multi-take caption with menu items 
-			5, 6a-6d won't work, but the script can be customized 
-			to work with your particular preset.
-
-			Type 2 caption can have lines formatted differently. 
-			After changing their text and/or background size, 
-			execute operation 5 'Offset lines vertically in Video 
-			processor instances in multi-take items starting from 
-			active take' to re-calculte their relative vertical 
-			position to fix overlaps or gaps.  
-			It also allows placing captions at different spots on
-			the screen.  
-			Type 1 captions can be included in multi-take items 
-			of Type 2 caption however the Caption editor is only 
-			able to load one type of caption.
-
-			The basic sequence of actions for creating a mutli-take
-			multi-line caption is as follows:
-
-			Format a take name, having separated the prospect lines
-			with the OPERATOR. Select the item keeping this take active.
-			From the script menu run:  
-			1) Insert Video processor and apply the preset to active takes 
-			in selected items.  
-			2) 1. Split active take names at the OPERATOR into multiple 
-			takes adding new takes as necessary.  
-			3) 4. Offset lines vertically in Video processor instances 
-			in multi-take items starting from active take
-
-			Afterwards each take name can be split again as many times
-			as needed.
-
-			Alternatively open Type 2 caption editor and use it to 
-			create a multi-line caption (see next paragraph). The take 
-			name in this case may be initially empty and the FX chain may 
-			not include a Video processor instance.
-
-			Operations 6a and 6b are meant for easy adjustment of lines
-			vertical offset in case there're gaps between their 
-			backgrounds after execution of the operation 5, which in 
-			principle should not happen. Operations 6a and 6b can be 
-			used with single take multi-line captions as well but this 
-			is probably unneceasary.
+		Type 1 caption menu item 1 'Convert between OPERATOR and
+		line break in names of active takes in selected items' 
+		also works to convert line breaks back to the OPERATOR 
+		and thus duplicates the operation performed by the Type 1 
+		menu item 3 'Replace line break with the OPERATOR in names 
+		of active takes in selected items', provided there's no 
+		OPERATOR, otherwise operation 1 will be activated.    
+		Save for the 'Edit caption' operation and operations 
+		6a, 6b, all operations target all selected items. 
+		Whether only active or all takes in selected items 
+		or all takes starting from the active one are targeted 
+		by Type 1 caption operations 1-3 and by the operations 
+		'Insert Video processor and apply the preset to active/all 
+		takes in selected items'  
+		AND  
+		'Active Video processor in active/all takes in selected
+		items (statring from active take)'  
+		depends on the TARGET_ALL_ITEM_TAKES setting which is 
+		also available in the menu as 'Target all takes / all 
+		takes starting from active (toggle)'.
+		
+		Type 2 menu operation 4 'Activate 1st take with Video 
+		processor and preset in selected items' is meant to
+		prepare items for operations 6c and 6d to allow changing
+		Y coordinate of multiple captions at once. 
+		If in multi-take items the last valid take is selected,
+		the line associated with it will be the only line whose 
+		Y coordinate will be changed with the operations 6 c and 6d.
+		
+		Type 2 operations 6a - 6d can be applied to Type 1 
+		captions as well.
+					
+		With the operation   
+		'Activate Video processor in active/all takes in 
+		selected items (statring from active take)'  
+		Video processor instance is inserted after the last 
+		Video processor instance, if any, otherwise it's 
+		inserted in the first slot of take FX chain.
+		
+		The operation 
+		'Set bottommost (or only) line Y coordinate in selected items'
+		is geared towards applying a uniform Y coordinate 
+		to the bottommost line in multiple multi-line captions 
+		at once, represented by selected items. When Type 2 
+		captions are affected by the operation, it must be 
+		followed by operation 5 'Offset lines vertically in 
+		Video processor instances in multi-take items starting 
+		from active take' to make other lines lineed up relative 
+		to the new Y coordinate of the bottommost line.			
+		
+		Type 1 and Type 2 operations menus can be collapsed into
+		a sub-menu by clicking their title.
 
 
-			CAPTION EDITOR
+		OPERATOR
 
-			Multi-line captions of both types can be managed with the 
-			editor accessible from the menu items 'Edit caption' 
-			numbered either 4 and 7 depending on the caption type.
-			Maximum number of lines it can handle is 15.  
-			With Type 2 caption the limit can be overcome in two ways: 
-			1) by editing the first 15 lines, then setting the 16th take 
-			active an editing the next batch of lines; 
-			2) by converting some of the takes into Type 1 multi-line
-			captions which are supported within Type 2 caption item, 
-			but again no more than 15 lines per Type 1 caption because 
-			that's the maximum the editor can handle.  
-			Type 1 caption will have to be converted into Type 2 to
-			overcome the limit.  
-			For manual take by take editing no such limit applies 
-			of course.
+		In order to split a take name into lines, in the take
+		name insert a character designated as the OPERATOR 
+		in the USER SETTINGS below, select the item the take 
+		belongs to having this take active and click menu item 1. 
+		In Type 1 caption mode each instance of the OPERATOR 
+		will be removed from the take name and replaced with an 
+		invisible new line character, and in Type 2 caption mode
+		its name will be split into names of multiple takes which
+		will be created as necessary, existing takes won't be
+		re-used.   
+		While adding the operator to take names it's advised 
+		to not precede new line text with with spaces because 
+		this will cause slight shift of the line text from the 
+		center position due to presence of space at its start. 
+		On the other nand the space will ensure that 
+		the last word of the top line and the first word of the 
+		bottom line remain visibly separated in the take name.
 
-			Type 1 caption editor is populated with multi-line name 
-			of the active take. Type 2 caption editor is populated
-			with names of all takes statring from the active one, hence
-			if you wish all lines to be affected by the edits, be sure 
-			to set active the take associated with the topmost line 
-			before opening the editor.  
-			The editor will only load names of takes which have active 
-			Video processor with the overlay preset in their FX chain. 
-			The editor is only able to load caption content from the 1st 
-			selected item.  
-			If a Type 2 caption multi-take item includes takes 
-			containing Type 1 caption, i.e. those which unclude at least 
-			one new line character converted from the OPERATOR, Type 2 
-			caption editor will ignore them. These can only be edited 
-			with Type 1 caption editor.  
-			Type 2 caption editor can also be called when the selected
-			item only contains a single take and no take name or no video
-			processor instance, so that a multi-line caption can be 
-			created using the editor rather than the menu operations. 
-			In this case the Video processor instance witt he overlay 
-			preset will be inserted after the editor is submitted with 
-			text.  
-			Likewise if Type 1 caption is created from an empty take
-			using the caption editor, the video processor with the 
-			overlay preset will be inserted in its FX chain once the 
-			caption text is applied to the take.
+		Multiple operators which follow each other without gaps
+		are ignored, only one operator is respected between 
+		adjacent characters. In Type 2 caption mode they're ignored 
+		because in REAPER builds older than 7.46 the built-in 
+		'Overlay: Text/Timecode preset' instead of an empty line, 
+		fashioned by adjacent new line characters converted from 
+		the operators, displays random Unicode characters when 
+		the content is retrieved from a take name, see  
+		https://forum.cockos.com/showthread.php?t=302761
+		In an empty line supported by the script, adjacent 
+		OPERATOR instances must be separated by at least a single 
+		space.
 
-			To remove a line while keeping its placeholder and position
-			within the multi-line caption, replace it with space.
-			To delete a line from the caption leave its field in the 
-			editor completely empty. With Type 1 caption this means 
-			deletion of the line original text. If the editor is 
-			submitted with text of all lines of Type 1 multi-line caption 
-			removed, the actual take name isn't cleared and the end 
-			result depends on LINE_REMOVAL_MODE setting.  
-			With Type 2 caption the text of a line whose field is 
-			submitted empty isn't deleted from the source take name 
-			and the end result of the operation depends on the 
-			LINE_REMOVAL_MODE setting which can be either bypassed 
-			Video processor instance, Video processor instance set 
-			offline, deleted Video processor instance or deleted 
-			source take. Be aware that if ALL lines are removed 
-			through bypassing the Video processor instances or setting
-			them offline, ghost text may appear in the Video window
-			in the original caption's place in REAPER builds older
-			than 7.46 for reasons described in the OPERATOR paragraph 
-			above.
 
-			To create a new line insert the character defined as the 
-			OPERATOR in the USER SETTINGS below anywhere within the 
-			text of any of the current lines and click OK, the editor
-			will be reloaded with new lines already generated,
-			e.g. (assuming the operator is \n, default):
+		OVERLAY PRESET
 
-			Source:  
-			LINE 1	\nmy line one  
-			LINE 2	my \nline two\n
+		By default the script implies usage of the stock
+		'Overlay: Text/Timecode' preset to display captions.  
+		OVERLAY_PRESET setting in the USER SETTING below allows
+		defining a custom overlay preset which the script will
+		use. See NOTES REGARDING TYPE 1 and 2 below.
 
-			Result:  
-			LINE 1	(empty line)  
-			LINE 2	my line one  
-			LINE 3	my  
-			LINE 4	line two  
-			LINE 5	(empty line)
 
-			The editor is only reloaded when an operator is detected
-			in its fields. Otherwise clicking OK will apply the edited
-			caption to the source item.  
-			Type 2 caption editor automatically creates takes for newly 
-			added lines. When the editor content is submitted, lines are 
-			automatically offset vertically resolving any overlaps or 
-			gaps resulted from removal or addition of lines. However the 
-			lines are only offset up to the active take, so if the active 
-			take wasn't the topmost you might need to additionally 
-			re-calculate their vertical position with the operation 5 
-			'Offset lines 	vertically in Video processor instances 
-			in multi-take items starting from active take'
-			having set the topmost take active beforehand.
+		NOTES REGARDING TYPE 1 (single take multi-line captions)
 
-			If all lines in Type 2 caption are disabled, the editor
-			won't load. If they were disabled through bypassing Video
-			processor instances or setting them offline, for the 
-			editor to load enable at least one line with  
-			'Activate video processor in active takes in selected items'
-			operation.
+		The stock 'Overlay: Text/Timecode' preset does support
+		multi-line captions but it centers the text as a single
+		unit, so each line starts at the same X coordinate on the
+		screen, i.e.
+		My line
+		My second line
+		My line after the second
 
-			Scratch field is meant for temporary storage of pieces of
-			text in the process of caption editing.
-			
-			For quicker access to the caption editor you can use
-			BuyOne_Multi-line caption edtor (for use with Video processor).lua
-			script which doesn't require loading the menu first.
-			
-			Watch demonstration of the script functionality in
-			Single take multi-line caption (Type 1) demo.mp4
-			Multi-take multi-line caption (Type 2) demo.mp4
-			located inside the script folder.
+		To have lines centered individually use a mod of the 
+		stock preset whose code is provided at the bottom of this
+		script. Paste the code into the Video processor instance,
+		hit Ctrl/Cmd + S to store it, save as a named preset
+		and specify this preset name in the OVERLAY_PRESET 
+		setting of the USER SETTINGS below. Alternatively import
+		the preset dump file  
+		'Overlay_Text-Timecode (centered multi-lines).RPL' 
+		located in the script folder.  
+		The resulting multi-line caption will look like so
+		(the following may not display correctly within the 
+		ReaScript IDE)
+				 My line
+			  My second line
+		My line after the second		
+
+
+		NOTES REGARDING TYPE 2 (multi-take multi-line captions)
+		
+		All operations bar operation 1 'Split' support empty take 
+		names, which are nevertheless not recommended for reasons
+		described in the OPERATOR paragraph above.
+
+		All operations specific to the Type 2 caption, bar 'Edit
+		caption', require presence of an enabled Video processor 
+		instance named 'Caption' and the overlay preset in the 
+		FX chain of the target takes. If either of these 
+		conditions isn't met the item won't be recognized
+		by the script as a multi-take caption source.  
+		When a Video processor instance is inserted with the 
+		operation 'Insert Video processor and apply the preset 
+		to active takes in selected items' the script automatically 
+		names it 'Caption'.  
+		The script is designed to work with the built-in 
+		'Overlay: Text/Timecode' preset or its derivatives 
+		assuming that the parameter names, their order and the 
+		code part which calculates font size ('text height' 
+		parameter), text background size ('bg pad' parameter)
+		and caption Y coordinate ('y position' parameter) are 
+		identical to the built-in overlay preset.  
+		If you use a custom preset where these are different, 
+		offsetting lines of multi-take caption with menu items 
+		5, 6a-6d won't work, but the script can be customized 
+		to work with your particular preset.
+
+		Type 2 caption can have lines formatted differently. 
+		After changing their text and/or background size, 
+		execute operation 5 'Offset lines vertically in Video 
+		processor instances in multi-take items starting from 
+		active take' to re-calculte their relative vertical 
+		position to fix overlaps or gaps.  
+		It also allows placing captions at different spots on
+		the screen.  
+		Type 1 captions can be included in multi-take items 
+		of Type 2 caption however the Caption editor is only 
+		able to load one type of caption.
+
+		The basic sequence of actions for creating a mutli-take
+		multi-line caption is as follows:
+
+		Format a take name, having separated the prospect lines
+		with the OPERATOR. Select the item keeping this take active.
+		From the script menu run:  
+		1) Insert Video processor and apply the preset to active takes 
+		in selected items.  
+		2) 1. Split active take names at the OPERATOR into multiple 
+		takes adding new takes as necessary.  
+		3) 4. Offset lines vertically in Video processor instances 
+		in multi-take items starting from active take
+
+		Afterwards each take name can be split again as many times
+		as needed.
+
+		Alternatively open Type 2 caption editor and use it to 
+		create a multi-line caption (see next paragraph). The take 
+		name in this case may be initially empty and the FX chain may 
+		not include a Video processor instance.
+
+		Operations 6a and 6b are meant for easy adjustment of lines
+		vertical offset in case there're gaps between their 
+		backgrounds after execution of the operation 5, which in 
+		principle should not happen. Operations 6a and 6b can be 
+		used with single take multi-line captions as well but this 
+		is probably unneceasary.
+
+
+		CAPTION EDITOR
+
+		Multi-line captions of both types can be managed with the 
+		editor accessible from the menu items 'Edit caption' 
+		numbered either 4 and 7 depending on the caption type.
+		Maximum number of lines it can handle is 15.  
+		With Type 2 caption the limit can be overcome in two ways: 
+		1) by editing the first 15 lines, then setting the 16th take 
+		active an editing the next batch of lines; 
+		2) by converting some of the takes into Type 1 multi-line
+		captions which are supported within Type 2 caption item, 
+		but again no more than 15 lines per Type 1 caption because 
+		that's the maximum the editor can handle.  
+		Type 1 caption will have to be converted into Type 2 to
+		overcome the limit.  
+		For manual take by take editing no such limit applies 
+		of course.
+
+		Type 1 caption editor is populated with multi-line name 
+		of the active take. Type 2 caption editor is populated
+		with names of all takes statring from the active one, hence
+		if you wish all lines to be affected by the edits, be sure 
+		to set active the take associated with the topmost line 
+		before opening the editor.  
+		The editor will only load names of takes which have active 
+		Video processor with the overlay preset in their FX chain. 
+		The editor is only able to load caption content from the 1st 
+		selected item.  
+		If a Type 2 caption multi-take item includes takes 
+		containing Type 1 caption, i.e. those which unclude at least 
+		one new line character converted from the OPERATOR, Type 2 
+		caption editor will ignore them. These can only be edited 
+		with Type 1 caption editor.  
+		Type 2 caption editor can also be called when the selected
+		item only contains a single take and no take name or no video
+		processor instance, so that a multi-line caption can be 
+		created using the editor rather than the menu operations. 
+		In this case the Video processor instance witt he overlay 
+		preset will be inserted after the editor is submitted with 
+		text.  
+		Likewise if Type 1 caption is created from an empty take
+		using the caption editor, the video processor with the 
+		overlay preset will be inserted in its FX chain once the 
+		caption text is applied to the take.
+
+		To remove a line while keeping its placeholder and position
+		within the multi-line caption, replace it with space.
+		To delete a line from the caption leave its field in the 
+		editor completely empty. With Type 1 caption this means 
+		deletion of the line original text. If the editor is 
+		submitted with text of all lines of Type 1 multi-line caption 
+		removed, the actual take name isn't cleared and the end 
+		result depends on LINE_REMOVAL_MODE setting.  
+		With Type 2 caption the text of a line whose field is 
+		submitted empty isn't deleted from the source take name 
+		and the end result of the operation depends on the 
+		LINE_REMOVAL_MODE setting which can be either bypassed 
+		Video processor instance, Video processor instance set 
+		offline, deleted Video processor instance or deleted 
+		source take. Be aware that if ALL lines are removed 
+		through bypassing the Video processor instances or setting
+		them offline, ghost text may appear in the Video window
+		in the original caption's place in REAPER builds older
+		than 7.46 for reasons described in the OPERATOR paragraph 
+		above.
+
+		To create a new line insert the character defined as the 
+		OPERATOR in the USER SETTINGS below anywhere within the 
+		text of any of the current lines and click OK, the editor
+		will be reloaded with new lines already generated,
+		e.g. (assuming the operator is \n, default):
+
+		Source:  
+		LINE 1	\nmy line one  
+		LINE 2	my \nline two\n
+
+		Result:  
+		LINE 1	(empty line)  
+		LINE 2	my line one  
+		LINE 3	my  
+		LINE 4	line two  
+		LINE 5	(empty line)
+
+		The editor is only reloaded when an operator is detected
+		in its fields. Otherwise clicking OK will apply the edited
+		caption to the source item.  
+		Type 2 caption editor automatically creates takes for newly 
+		added lines. When the editor content is submitted, lines are 
+		automatically offset vertically resolving any overlaps or 
+		gaps resulted from removal or addition of lines. However the 
+		lines are only offset up to the active take, so if the active 
+		take wasn't the topmost you might need to additionally 
+		re-calculate their vertical position with the operation 5 
+		'Offset lines 	vertically in Video processor instances 
+		in multi-take items starting from active take'
+		having set the topmost take active beforehand.
+
+		If all lines in Type 2 caption are disabled, the editor
+		won't load. If they were disabled through bypassing Video
+		processor instances or setting them offline, for the 
+		editor to load enable at least one line with  
+		'Activate video processor in active takes in selected items'
+		operation.
+
+		Scratch field is meant for temporary storage of pieces of
+		text in the process of caption editing.
+		
+		For quicker access to the caption editor you can use
+		BuyOne_Multi-line caption edtor (for use with Video processor).lua
+		script which doesn't require loading the menu first.
+		
+		Watch demonstration of the script functionality in
+		Single take multi-line caption (Type 1) demo.mp4
+		Multi-take multi-line caption (Type 2) demo.mp4
+		located inside the script folder.
 
 ]]
 
