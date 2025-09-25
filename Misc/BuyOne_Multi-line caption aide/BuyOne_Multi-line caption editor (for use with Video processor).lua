@@ -8,21 +8,21 @@ Licence: WTFPL
 REAPER: at least v6.37
 Extensions: 
 About:	This script is ancillary to 
-			BuyOne_Multi-line caption aide (for use with Video processor).lua
-			
-			The only difference in functionality of the caption 
-			editor called by this script from the caption editor 
-			accessible from the main script is that unlike in
-			the main script, where type of the editor (single or
-			multi-take caption editor) depends on the clicked menu 
-			item, here it depends on the state of 'Play all takes' 
-			option in the target item properties. When it's enabled, 
-			Type 2 caption editor is loaded. So if you begin 
-			creation of Type 2 multi-line caption with this script
-			make sure this option in the item properties is enabled.
-			
-			The concept and caption editor workflow are the same
-			as described in the 'About' section of the main script.
+		BuyOne_Multi-line caption aide (for use with Video processor).lua
+		
+		The only difference in functionality of the caption 
+		editor called by this script from the caption editor 
+		accessible from the main script is that unlike in
+		the main script, where type of the editor (single or
+		multi-take caption editor) depends on the clicked menu 
+		item, here it depends on the state of 'Play all takes' 
+		option in the target item properties. When it's enabled, 
+		Type 2 caption editor is loaded. So if you begin 
+		creation of Type 2 multi-line caption with this script
+		make sure this option in the item properties is enabled.
+		
+		The concept and caption editor workflow are the same
+		as described in the 'About' section of the main script.
 
 ]]
 
