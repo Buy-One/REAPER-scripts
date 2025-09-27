@@ -430,7 +430,7 @@ TARGET_ALL_ITEM_TAKES = ""
 -- preset if you're using a custom one;
 -- if empty or only contains spaces the stock
 -- preset 'Overlay: Text/Timecode' will be used
-OVERLAY_PRESET = "Overlay: Text/Timecode"
+OVERLAY_PRESET = ""
 
 
 -- For Type 2 caption the setting determines how caption
