@@ -44,13 +44,13 @@ About:	The script moves active take up/down within selected items.
 		instances so the active take is sure to reach the bottom, e.g.
 		
 		Custom: Move active takes to bottom
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
 			...
 
 		2. By enabling FINITE_MOVEMENT setting dynamically via an 
@@ -65,13 +65,13 @@ About:	The script moves active take up/down within selected items.
 			Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.
 			Script: BuyOne_Move active take up-down within selected items - FINITE_MOVEMENT setting.lua
 			Action: Skip next action if CC parameter >0/mid
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
 			...
 			Action: Skip next action if CC parameter >0/mid
 			Script: BuyOne_Move active take up-down within selected items - FINITE_MOVEMENT setting.lua
