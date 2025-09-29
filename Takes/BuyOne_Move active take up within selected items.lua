@@ -8,31 +8,31 @@ Licence: WTFPL
 REAPER: at least v5.962
 About:	The script moves active take up/down within selected items.
 
-			REAPER only offers a stock action to move active take to top:
-			Item: Move active takes to top			
+		REAPER only offers a stock action to move active take to top:
+		Item: Move active takes to top
 
-			The active take movement wraps around, i.e. once it reaches 
-			the topmost position it moves to bottom. This mode can be 
-			disabled with the FINITE_MOVEMENT setting below.
+		The active take movement wraps around, i.e. once it reaches 
+		the topmost position it moves to bottom. This mode can be 
+		disabled with the FINITE_MOVEMENT setting below.
 
-			Items grouped with selected items are affected as well
-			if 'Item grouping' option is enabled in REAPER and unless 
-			IGNORE_GROUPED_ITEMS setting is enabled in the script
-			USER SETTINGS. So you can make the script ignore grouped 
-			items by either disabling REAPER's option or by enabling
-			the said script setting.
+		Items grouped with selected items are affected as well
+		if 'Item grouping' option is enabled in REAPER and unless 
+		IGNORE_GROUPED_ITEMS setting is enabled in the script
+		USER SETTINGS. So you can make the script ignore grouped 
+		items by either disabling REAPER's option or by enabling
+		the said script setting.
 
-			The script can be used alongside its counterpart
-			'BuyOne_Move active take down within selected items.lua'
-			within a custom action mapped to a mousewheel, so that
-			direction of take movement depends on the mousewheel 
-			direction:
+		The script can be used alongside its counterpart
+		'BuyOne_Move active take down within selected items.lua'
+		within a custom action mapped to a mousewheel, so that
+		direction of take movement depends on the mousewheel 
+		direction:
 
-			Custom: Move active take up or down within selected items:
-				Action: Skip next action if CC parameter <0/mid
-				BuyOne_Move active take up within selected items.lua
-				Action: Skip next action if CC parameter >0/mid
-				BuyOne_Move active take down within selected items.lua
+		Custom: Move active take up or down within selected items:
+			Action: Skip next action if CC parameter <0/mid
+			BuyOne_Move active take up within selected items.lua
+			Action: Skip next action if CC parameter >0/mid
+			BuyOne_Move active take down within selected items.lua
 
 ]]
 
