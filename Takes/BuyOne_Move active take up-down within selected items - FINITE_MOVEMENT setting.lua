@@ -16,13 +16,13 @@ About:	The script is an ancillary script mainly for
 			Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.
 			Script: BuyOne_Move active take up-down within selected items - FINITE_MOVEMENT setting.lua
 			Action: Skip next action if CC parameter >0/mid
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
-			Script: BuyOne_Move active take up within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
+			Script: BuyOne_Move active take down within selected items.lua
 			...
 			Action: Skip next action if CC parameter >0/mid
 			Script: BuyOne_Move active take up-down within selected items - FINITE_MOVEMENT setting.lua
