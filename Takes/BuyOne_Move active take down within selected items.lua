@@ -328,14 +328,17 @@ end
 
 
 function process(item, down)
+local result
 	if IGNORE_LOCKED_ITEMS and r.GetMediaItemInfo_Value(item, 'C_LOCK')&1 ~= 1
 	or not IGNORE_LOCKED_ITEMS then
 	r.SelectAllMediaItems(0, false) -- deselect all
 	r.SetMediaItemSelected(item, true) -- selected true
 		if not invalid_takes_excess(item) then
 		Move_Active_Take_Within_Item(item, down)
+		result = 1
 		end
 	end
+return result
 end
 
 
@@ -345,7 +348,7 @@ local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.
 local scr_name = scr_name:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
 
 ----------------
---		scr_name = 'down within selected items' ---------------- NAME TESTING
+--		scr_name = 'up within selected items' ---------------- NAME TESTING
 ----------------
 
 local up, down = scr_name:match('up within selected items'), scr_name:match('down within selected items')
@@ -401,11 +404,16 @@ local allow_sel_empty_takes = GetToggle(0, 41355) == 1 -- Options: Allow selecti
 
 	if grouping_on then ACT(1156, 0) end -- disable so that grouped items are not affected by actions inside Move_Active_Take_Within_Item() if IGNORE_GROUPED_ITEMS is enabled or so that they can be processed separately if IGNORE_GROUPED_ITEMS is not enabled, because when 'Item grouping' option is enabled actions affect all grouped items at once and the script produces flawed result
 
+local result
 	for k, item in ipairs(sel_itms) do
-	process(item, down)
+		if process(item, down) then
+		result = 1
+		end
 		if sel_itms[item] then -- process items grouped with the current
 			for k, item in ipairs(sel_itms[item]) do
-			process(item, down)
+				if process(item, down) then
+				result = 1
+				end
 			end
 		end
 	end
