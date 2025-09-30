@@ -3,10 +3,13 @@ ReaScript name: BuyOne_Move active take up within selected items.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
-Changelog: #Initial release
+Changelog:	#Covered more cases with error messages
+			#Made error message conditions more specific
+			#Made undo point name more specific
+			#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
-About:	The script moves active take up/down within selected items.
+About:	The script moves active take up within selected items.
 
 		REAPER only offers a stock action to move active take to top:
 		Item: Move active takes to top
@@ -15,12 +18,15 @@ About:	The script moves active take up/down within selected items.
 		the topmost position it moves to bottom. This mode can be 
 		disabled with the FINITE_MOVEMENT setting below.
 
-		Items grouped with selected items are affected as well
-		if 'Item grouping' option is enabled in REAPER and unless 
-		IGNORE_GROUPED_ITEMS setting is enabled in the script
+		Non-selected items grouped with selected items are affected 
+		as well if 'Item grouping' option is enabled in REAPER and 
+		unless IGNORE_GROUPED_ITEMS setting is enabled in the script
 		USER SETTINGS. So you can make the script ignore grouped 
 		items by either disabling REAPER's option or by enabling
-		the said script setting.
+		the said script setting.  
+		If selected items are locked and IGNORE_LOCKED_ITEMS 
+		setting is enabled, non-selected items grouped with them 
+		will not be processed even if not locked.
 
 		The script can be used alongside its counterpart
 		'BuyOne_Move active take down within selected items.lua'
@@ -208,7 +214,7 @@ local fin, idx
 		for i=1, fin do
 		local take = r.GetTake(item, idx)
 			if take then
-			Activate(r.GetTake(item, idx))
+			Activate(take)
 			else
 			ACT(45000+idx, 0) -- use command ID of the action 'Take: Set 1st take active' to calculate command ID corresponding to the active take index when take is an empty take inserted with 'Item: Add an empty take before/after the active take' which doesn't have a pointer so cannot be set active with API
 			end
@@ -280,14 +286,17 @@ end
 
 
 function process(item, down)
+local result
 	if IGNORE_LOCKED_ITEMS and r.GetMediaItemInfo_Value(item, 'C_LOCK')&1 ~= 1
 	or not IGNORE_LOCKED_ITEMS then
 	r.SelectAllMediaItems(0, false) -- deselect all
 	r.SetMediaItemSelected(item, true) -- selected true
 		if not invalid_takes_excess(item) then
 		Move_Active_Take_Within_Item(item, down)
+		result = 1
 		end
 	end
+return result
 end
 
 
@@ -304,12 +313,16 @@ local up, down = scr_name:match('up within selected items'), scr_name:match('dow
 
 local ACT, GetToggle = r.Main_OnCommand, r.GetToggleCommandStateEx
 IGNORE_LOCKED_ITEMS = IGNORE_LOCKED_ITEMS:match('%S+')
+IGNORE_GROUPED_ITEMS = IGNORE_GROUPED_ITEMS:match('%S+')
+local grouping_on = GetToggle(0, 1156) == 1 -- Options: Toggle item grouping and track media/razor edit grouping
 
 local cnt = r.CountSelectedMediaItems(0)
 local item = r.GetSelectedMediaItem(0,0)
+
 local err = not up and not down and 'invalid script name' or cnt == 0 and 'no selected items'
-or cnt == 1 and (invalid_takes_excess(item) and '     item contains \n\n    excessive number \n\n of unsupported takes'
-or IGNORE_LOCKED_ITEMS and r.GetMediaItemInfo_Value(item, 'C_LOCK')&1 == 1 and 'locked item')
+or cnt == 1 and (IGNORE_LOCKED_ITEMS and r.GetMediaItemInfo_Value(item, 'C_LOCK')&1 == 1 and 'locked item' -- grouped items will be ignored in this case so their own lock state is irrelevant
+or (not grouping_on or IGNORE_GROUPED_ITEMS) and invalid_takes_excess(item) -- accointing for the grouping settings because if grouped items are respected the excess may not apply to them
+and '     item contains \n\n    excessive number \n\n of unsupported takes')
 
 	if err then
 	Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced true
@@ -319,9 +332,6 @@ or IGNORE_LOCKED_ITEMS and r.GetMediaItemInfo_Value(item, 'C_LOCK')&1 == 1 and '
 local section, key = 'Move active take up-down within selected items', 'FINITE MOVEMENT'
 local finite_movement = r.HasExtState(section, key) -- ext state is created with Move active take up-down within selected items - FINITE_MOVEMENT setting.lua script
 FINITE_MOVEMENT = finite_movement or FINITE_MOVEMENT:match('%S+')
-IGNORE_GROUPED_ITEMS = IGNORE_GROUPED_ITEMS:match('%S+')
-
-local grouping_on = GetToggle(0, 1156) == 1 -- Options: Toggle item grouping and track media/razor edit grouping
 
 local sel_itms, locked = {}, 0
 	for i=0, r.CountMediaItems(0)-1 do
@@ -352,11 +362,16 @@ local allow_sel_empty_takes = GetToggle(0, 41355) == 1 -- Options: Allow selecti
 
 	if grouping_on then ACT(1156, 0) end -- disable so that grouped items are not affected by actions inside Move_Active_Take_Within_Item() if IGNORE_GROUPED_ITEMS is enabled or so that they can be processed separately if IGNORE_GROUPED_ITEMS is not enabled, because when 'Item grouping' option is enabled actions affect all grouped items at once and the script produces flawed result
 
+local result
 	for k, item in ipairs(sel_itms) do
-	process(item, down)
+		if process(item, down) then
+		result = 1
+		end
 		if sel_itms[item] then -- process items grouped with the current
 			for k, item in ipairs(sel_itms[item]) do
-			process(item, down)
+				if process(item, down) then
+				result = 1
+				end
 			end
 		end
 	end
@@ -371,6 +386,15 @@ r.SelectAllMediaItems(0, false) -- deselect all
 	if grouping_on then ACT(1156, 0) end -- toggle to re-enabled, restoring original state
 
 r.PreventUIRefresh(-1)
+	
+	if not result then
+	Error_Tooltip('\n\n\tno item was processed, \n\n'
+	..'  either because of lock state \n\n or excess of unsupported takes \n\n', 1, 1) -- caps, spaced true
+	r.Undo_EndBlock(r.Undo_CanUndo2(0) or '', -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar; must be followed by 'return r.defer(no_undo)' to exit script
+	return r.defer(no_undo)	
+	end
+
+scr_name = IGNORE_GROUPED_ITEMS and scr_name or scr_name:gsub('selected', '%0 and grouped')
 r.Undo_EndBlock(scr_name, -1)
 
 
