@@ -350,7 +350,7 @@ IGNORE_LOCKED_ITEMS = IGNORE_LOCKED_ITEMS:match('%S+')
 local cnt = r.CountSelectedMediaItems(0)
 local item = r.GetSelectedMediaItem(0,0)
 local err = not up and not down and 'invalid script name' or cnt == 0 and 'no selected items'
-or cnt == 1 and (invalid_takes_excess(item) and 'item contains \n\n excessive number \n\n of usupported takes'
+or cnt == 1 and (invalid_takes_excess(item) and '     item contains \n\n    excessive number \n\n of unsupported takes'
 or IGNORE_LOCKED_ITEMS and r.GetMediaItemInfo_Value(item, 'C_LOCK')&1 == 1 and 'locked item')
 
 	if err then
