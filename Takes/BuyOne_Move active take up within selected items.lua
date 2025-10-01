@@ -2,11 +2,13 @@
 ReaScript name: BuyOne_Move active take up within selected items.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog:	#Covered more cases with error messages
-			#Made error message conditions more specific
-			#Made undo point name more specific
-			#Updated 'About' text
+Version: 1.2
+Changelog:	1.2 #Impoved script performance within custom action when
+				multiple instances run in close succession
+			1.1 #Covered more cases with error messages
+				 #Made error message conditions more specific
+				 #Made undo point name more specific
+				 #Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script moves active take up within selected items.
@@ -316,6 +318,9 @@ IGNORE_LOCKED_ITEMS = IGNORE_LOCKED_ITEMS:match('%S+')
 IGNORE_GROUPED_ITEMS = IGNORE_GROUPED_ITEMS:match('%S+')
 local grouping_on = GetToggle(0, 1156) == 1 -- Options: Toggle item grouping and track media/razor edit grouping
 
+local section, key = 'Move active take up-down within selected items', 'FINITE MOVEMENT'
+local finite_movement = r.HasExtState(section, key) -- ext state is created with Move active take up-down within selected items - FINITE_MOVEMENT setting.lua script
+
 local cnt = r.CountSelectedMediaItems(0)
 local item = r.GetSelectedMediaItem(0,0)
 
@@ -325,12 +330,10 @@ or (not grouping_on or IGNORE_GROUPED_ITEMS) and invalid_takes_excess(item) -- a
 and '     item contains \n\n    excessive number \n\n of unsupported takes')
 
 	if err then
-	Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced true
-	return r.defer(no_undo)
-	end
+	Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced true	
+		if not finite_movement then r.defer(no_undo) end -- only run defer to prevent generic undo point creation when the script isn't likely to be executed within a custom action where 'Move active take up-down within selected items - FINITE_MOVEMENT setting.lua' storing 'finite_movement' value is supposed to be executed as well, because with many instances inside the custom action each next instance will fire off before the defer loop started by previous instance has run its course causing 'ReaScript control task' dialogue to show up
+	return end
 
-local section, key = 'Move active take up-down within selected items', 'FINITE MOVEMENT'
-local finite_movement = r.HasExtState(section, key) -- ext state is created with Move active take up-down within selected items - FINITE_MOVEMENT setting.lua script
 FINITE_MOVEMENT = finite_movement or FINITE_MOVEMENT:match('%S+')
 
 local sel_itms, locked = {}, 0
@@ -350,8 +353,8 @@ local sel_itms, locked = {}, 0
 
 	if #sel_itms == locked then
 	Error_Tooltip('\n\n locked items \n\n', 1, 1) -- caps, spaced true
-	return r.defer(no_undo)
-	end
+		if not finite_movement then r.defer(no_undo) end -- see explanation in error message above
+	return end
 
 
 r.PreventUIRefresh(1)
@@ -391,12 +394,8 @@ r.PreventUIRefresh(-1)
 	Error_Tooltip('\n\n\tno item was processed, \n\n'
 	..'  either because of lock state \n\n or excess of unsupported takes \n\n', 1, 1) -- caps, spaced true
 	r.Undo_EndBlock(r.Undo_CanUndo2(0) or '', -1) -- prevent display of the generic 'ReaScript: Run' message in the Undo readout generated when the script is aborted following Undo_BeginBlock() (to display an error for example), this is done by getting the name of the last undo point to keep displaying it, if empty space is used instead the undo point name disappears from the readout in the main menu bar; must be followed by 'return r.defer(no_undo)' to exit script
-	return r.defer(no_undo)	
-	end
+		if not finite_movement then r.defer(no_undo) end -- see explanation in error message above
+	return end
 
 scr_name = IGNORE_GROUPED_ITEMS and scr_name or scr_name:gsub('selected', '%0 and grouped')
 r.Undo_EndBlock(scr_name, -1)
-
-
-
-
