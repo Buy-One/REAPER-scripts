@@ -3,7 +3,7 @@ ReaScript name: BuyOne_Move active take down within selected items.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
-Changelog:	1.2 #Impoved script performance within custom action when
+Changelog:	1.2 #Improved script performance within custom action when
 				multiple instances run in close succession
 			1.1 #Covered more cases with error messages
 				#Made error message conditions more specific
