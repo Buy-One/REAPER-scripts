@@ -4,13 +4,13 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.3
 Changelog:	1.3 #Further optimized the script for use within custom actions
-					 #Updated 'About' text
-				1.2 #Improved script performance within custom action when
-					  multiple instances run in close succession
-				1.1 #Covered more cases with error messages
-					 #Made error message conditions more specific
-					 #Made undo point name more specific
-					 #Updated 'About' text
+				#Updated 'About' text
+			1.2 #Improved script performance within custom action when
+				multiple instances run in close succession
+			1.1 #Covered more cases with error messages
+				#Made error message conditions more specific
+				#Made undo point name more specific
+				#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script moves active take up/down within selected items.
