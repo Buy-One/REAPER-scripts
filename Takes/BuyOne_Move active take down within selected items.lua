@@ -2,16 +2,18 @@
 ReaScript name: BuyOne_Move active take down within selected items.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog:	1.2 #Improved script performance within custom action when
-				multiple instances run in close succession
-			1.1 #Covered more cases with error messages
-				#Made error message conditions more specific
-				#Made undo point name more specific
-				#Updated 'About' text
+Version: 1.3
+Changelog:	1.3 #Further optimized the script for use within custom actions
+					 #Updated 'About' text
+				1.2 #Improved script performance within custom action when
+					  multiple instances run in close succession
+				1.1 #Covered more cases with error messages
+					 #Made error message conditions more specific
+					 #Made undo point name more specific
+					 #Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
-About:	The script moves active take down within selected items.
+About:	The script moves active take up/down within selected items.
 
 		REAPER only offers a stock action to move active take to top:
 		Item: Move active takes to top			
@@ -53,14 +55,33 @@ About:	The script moves active take down within selected items.
 		
 		Custom: Move active takes to bottom
 			Script: BuyOne_Move active take down within selected items.lua
+			Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.
 			Script: BuyOne_Move active take down within selected items.lua
+			Action: Skip next action if CC parameter >0/mid
 			Script: BuyOne_Move active take down within selected items.lua
+			Action: Skip next action if CC parameter >0/mid
 			Script: BuyOne_Move active take down within selected items.lua
+			Action: Skip next action if CC parameter >0/mid
 			Script: BuyOne_Move active take down within selected items.lua
+			Action: Skip next action if CC parameter >0/mid
 			Script: BuyOne_Move active take down within selected items.lua
+			Action: Skip next action if CC parameter >0/mid
+			Script: BuyOne_Move active take down within selected items.lua
+			Action: Skip next action if CC parameter >0/mid
 			Script: BuyOne_Move active take down within selected items.lua
 			...
 
+		
+		Add as many pairs of
+		
+			Action: Skip next action if CC parameter >0/mid
+			Script: BuyOne_Move active take down within selected items.lua
+		
+		as needed.  
+		If the first instance of the script throws an error the following
+		instances aren't executed.
+		
+		
 		2. By enabling FINITE_MOVEMENT setting dynamically via an 
 		ancillary script
 		'BuyOne_Move active take up-down within selected items - FINITE_MOVEMENT setting.lua'
@@ -69,22 +90,40 @@ About:	The script moves active take down within selected items.
 		of this script instances so the active take is sure to reach 
 		the bottom, e.g.
 
-		Custom: Move active takes to bottom
+		Custom: Move active takes to bottom MAIN
 			Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.
 			Script: BuyOne_Move active take up-down within selected items - FINITE_MOVEMENT setting.lua
 			Action: Skip next action if CC parameter >0/mid
 			Script: BuyOne_Move active take up-down within selected items - FINITE_MOVEMENT setting.lua
-			Script: BuyOne_Move active take down within selected items.lua
-			Script: BuyOne_Move active take down within selected items.lua
-			Script: BuyOne_Move active take down within selected items.lua
-			Script: BuyOne_Move active take down within selected items.lua
-			Script: BuyOne_Move active take down within selected items.lua
-			Script: BuyOne_Move active take down within selected items.lua
-			Script: BuyOne_Move active take down within selected items.lua
-			...
+			------- NESTED CUSTOM ACTION -------
+				Custom: Move active takes to bottom NESTED
+					Script: BuyOne_Move active take up-down within selected items.lua
+					Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.
+					Script: BuyOne_Move active take down within selected items.lua
+					Action: Skip next action if CC parameter >0/mid
+					Script: BuyOne_Move active take down within selected items.lua
+					Action: Skip next action if CC parameter >0/mid
+					Script: BuyOne_Move active take down within selected items.lua
+					Action: Skip next action if CC parameter >0/mid
+					Script: BuyOne_Move active take down within selected items.lua
+					Action: Skip next action if CC parameter >0/mid
+					Script: BuyOne_Move active take down within selected items.lua
+					Action: Skip next action if CC parameter >0/mid
+					Script: BuyOne_Move active take down within selected items.lua
+				  ...
+			------- END OF NESTED CUSTOM ACTION -------
 			Action: Skip next action if CC parameter >0/mid
 			Script: BuyOne_Move active take up-down within selected items - FINITE_MOVEMENT setting.lua
 
+
+		Add in the nested custom action as many pairs of
+
+			Action: Skip next action if CC parameter >0/mid
+			Script: BuyOne_Move active take down within selected items.lua
+
+		as needed.  
+		If the first instance of the script throws an error the following
+		instances in the nested custom action aren't executed.		
 ]]
 
 -----------------------------------------------------------------------------
@@ -351,10 +390,13 @@ local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.
 local scr_name = scr_name:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
 
 ----------------
---		scr_name = 'up within selected items' ---------------- NAME TESTING
+--		scr_name = 'up/down within selected items' ---------------- NAME TESTING
 ----------------
 
 local up, down = scr_name:match('up within selected items'), scr_name:match('down within selected items')
+
+local SetToggle = r.SetToggleCommandState
+SetToggle(sect_ID, cmd_ID, 1) -- set to On to prevent excution of next action or another instance of this script within custom action if the script throws an error, because the toggle state will remain On (custom action structure see in 'About' text in the script header), meant to prevent triggering of 'ReaScript control task' by execution of r.defer(no_undo) in several isnatnces of the script in close succession when the error message is generated by the script, because the speed of execution is greater than once in 30 ms which is the defer loop update cycle, resulting in following instance of the script being triggered while the current one is still running (in defer loop)
 
 local ACT, GetToggle = r.Main_OnCommand, r.GetToggleCommandStateEx
 IGNORE_LOCKED_ITEMS = IGNORE_LOCKED_ITEMS:match('%S+')
@@ -440,6 +482,7 @@ r.PreventUIRefresh(-1)
 		if not finite_movement then r.defer(no_undo) end -- see explanation in error message above
 	return end
 
+SetToggle(sect_ID, cmd_ID, 0) -- reset toggle state set at the beginning of the script
 scr_name = IGNORE_GROUPED_ITEMS and scr_name or scr_name:gsub('selected', '%0 and grouped')
 r.Undo_EndBlock(scr_name, -1)
 
