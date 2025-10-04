@@ -7,22 +7,22 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is an alternative to REAPER's native action
-  			'Take: Duplicate active take'   
-  			which places the duplicate at the very bottom in contrast
-  			to which the script places one immediately above the active
-        take.
-  
-  			Non-selected items grouped with selected items are affected 
-  			as well if 'Item grouping' option is enabled in REAPER and 
-  			unless IGNORE_GROUPED_ITEMS setting is enabled in the script
-  			USER SETTINGS. So you can make the script ignore grouped 
-  			items by either disabling REAPER's option or by enabling
-  			the said script setting.  
-  			If selected items are locked and IGNORE_LOCKED_ITEMS 
-  			setting is enabled, non-selected items grouped with them 
-  			will not be processed even if not locked.
-  
-  			Empty takes aren't supported.
+		'Take: Duplicate active take'   
+		which places the duplicate at the very bottom in contrast
+		to which the script places one immediately above the active
+		take.
+
+		Non-selected items grouped with selected items are affected 
+		as well if 'Item grouping' option is enabled in REAPER and 
+		unless IGNORE_GROUPED_ITEMS setting is enabled in the script
+		USER SETTINGS. So you can make the script ignore grouped 
+		items by either disabling REAPER's option or by enabling
+		the said script setting.  
+		If selected items are locked and IGNORE_LOCKED_ITEMS 
+		setting is enabled, non-selected items grouped with them 
+		will not be processed even if not locked.
+
+		Empty takes aren't supported.
 
 ]]
 
