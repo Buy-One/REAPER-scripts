@@ -440,11 +440,8 @@ r.Undo_BeginBlock()
 		if not vis_env or env ~= vis_env or vis_cnt > 1 then -- only execute if menu item of an envelope other than currently visible has been clicked or when all envelopes are hidden or when more than one is visible, i.e. do not execute if menu item of the currently exclusively visible envelope has been clicked so it's not toggled to hidden
 		Toggle_Env_State(env, 1, vis_cnt == 1 and vis) -- attr argument is 1 - visibility // vis_cnt == 1 cond ensures that visibility is toggled only if the envelope is exclusively visible, while if more envelopes are visible, after all get hidden the visibility of the envelope of the clicked menu item is restored, i.e. it's not toggled to hidden or remains hidden with the rest
 		end
-
-	local name = select(2, r.GetEnvelopeName(env))
-
 	Select_Envelope(env) -- select visible envelope
-
+	local name = select(2, r.GetEnvelopeName(env))
 	undo = (vis_cnt > 1 and 'Leave ' or 'Set ')..(take and 'take' or 'track')..' "'..name..'" envelope exclusively visible'
 	end
 
