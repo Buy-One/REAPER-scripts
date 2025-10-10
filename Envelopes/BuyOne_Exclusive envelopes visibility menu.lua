@@ -52,7 +52,6 @@ About: 	Inspired by actions introduced in build 7.47
 -- the setting can be managed directly from the menu
 KEEP_OPEN = "1"
 
-
 -----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
 -----------------------------------------------------------------------------
