@@ -414,15 +414,15 @@ local output = Reload_Menu_at_Same_Pos(obj_name..'||'..keep_open..bypass..armed.
 
 	if output == 0 then return r.defer(no_undo) end
 
-local vis_env_name = vis_env and select(2, r.GetEnvelopeName(vis_env)) or 'NAME' -- or 'vis_cnt == 1' inetead of 'vis_env' // if no envelope is visible add placeholder which in the undo point name will be replaced with the actual name of the envelope set to be visible
-local undo = 'Set "'..vis_env_name..(take and '" take' or '" track')..' envelope '
+local undo
 
 r.Undo_BeginBlock()
 
 	if output == 2 then
 	KEEP_OPEN = Toggle_Setting_From_Menu('KEEP_OPEN', scr_path)
 	elseif output < 5 then
-	undo = undo:gsub('Set', '%0 visible')
+	local vis_env_name = select(2, r.GetEnvelopeName(vis_env)) -- or 'vis_cnt == 1' instead of 'vis_env' // vis_env var here will always be valid because when no envelope is visible, toggle bypass and toggle arming menu items are grayed out
+	undo = 'Toggle '..(take and 'take' or 'track')..' "'..vis_env_name..'" envelope '
 		if output == 3 then -- toggle bypass
 		Toggle_Env_State(vis_env, 2, is_unbypassed) -- attr argument is 2 - bypass
 		undo = undo..(is_unbypassed and 'bypassed' or 'unbypassed')
@@ -440,18 +440,12 @@ r.Undo_BeginBlock()
 		if not vis_env or env ~= vis_env or vis_cnt > 1 then -- only execute if menu item of an envelope other than currently visible has been clicked or when all envelopes are hidden or when more than one is visible, i.e. do not execute if menu item of the currently exclusively visible envelope has been clicked so it's not toggled to hidden
 		Toggle_Env_State(env, 1, vis_cnt == 1 and vis) -- attr argument is 1 - visibility // vis_cnt == 1 cond ensures that visibility is toggled only if the envelope is exclusively visible, while if more envelopes are visible, after all get hidden the visibility of the envelope of the clicked menu item is restored, i.e. it's not toggled to hidden or remains hidden with the rest
 		end
-	local name = vis_env_name
-		if undo:match('NAME') or vis_env ~= env then -- if initially no envelope was visible or many were visible and the envelope of the clicked menu item is not the envelope retrieved as vis_env above
-		name = select(2, r.GetEnvelopeName(env))
-		end
+
+	local name = select(2, r.GetEnvelopeName(env))
 
 	Select_Envelope(env) -- select visible envelope
 
-	undo = vis_cnt > 1 and 'Set '..(take and 'take' or 'track')..' envelopes hidden except "'..name..'"'
-	or undo..(vis_cnt == 1 and (vis and 'hidden' or 'visible') or vis_cnt == 0 and 'visible')
-		if name then -- replace name placeholder when no envelope was initially visible
-		undo = undo:gsub('NAME', name)
-		end
+	undo = (vis_cnt > 1 and 'Leave ' or 'Set ')..(take and 'take' or 'track')..' "'..name..'" envelope exclusively visible'
 	end
 
 r.Undo_EndBlock(undo, -1)
