@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Exclusive envelopes visibility menu.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 	#Optimized code
+			#Improved undo point creation consistency
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: 
@@ -381,10 +382,10 @@ local menu, vis_cnt = '', 0
 -- exclusively visible as it may not match the envelope of the clicked menu item
 -- if more than one envelope is visible or none is,
 -- meant mainly for bypass and arm toggle menu items
-local vis_env
+local vis_env, vis_env_name
 	for k, v in ipairs(env_t) do
 		if Get_Env_State(v.env, 1) then -- attr argument is 1 - visibility
-		vis_env = v.env
+		vis_env, vis_env_name = v.env, v.name
 		break end
 	end
 
@@ -416,12 +417,14 @@ local output = Reload_Menu_at_Same_Pos(obj_name..'||'..keep_open..bypass..armed.
 
 local undo
 
-r.Undo_BeginBlock()
+	if output > 2 then -- ensures creation of an undo point when envelope state is changed from the menu after KEEP_OPEN setting is toggled
+	r.Undo_BeginBlock()
+	end
 
 	if output == 2 then
 	KEEP_OPEN = Toggle_Setting_From_Menu('KEEP_OPEN', scr_path)
 	elseif output < 5 then
-	local vis_env_name = select(2, r.GetEnvelopeName(vis_env)) -- or 'vis_cnt == 1' instead of 'vis_env' // vis_env var here will always be valid because when no envelope is visible, toggle bypass and toggle arming menu items are grayed out
+	-- vis_env and vis_env_name var here will always be valid because when no envelope is visible, toggle bypass and toggle arming menu items are grayed out
 	undo = 'Toggle '..(take and 'take' or 'track')..' "'..vis_env_name..'" envelope '
 		if output == 3 then -- toggle bypass
 		Toggle_Env_State(vis_env, 2, is_unbypassed) -- attr argument is 2 - bypass
@@ -432,22 +435,27 @@ r.Undo_BeginBlock()
 		end
 	else -- toggle visibility
 	output = output-4 -- offset first 3 menu items
-	local env = env_t[output].env
-	local vis = Get_Env_State(env, 1) -- attr argument is 1 - visibility // evaluate whether visible, before hiding all
+	local env = env_t[output].env	
 		if vis_env and env ~= vis_env or vis_cnt > 1	then
 		Toggle_Env_State(env_t, 1) -- attr argument is 1 - visibility, vis arg is nil - hide condition
 		end
 		if not vis_env or env ~= vis_env or vis_cnt > 1 then -- only execute if menu item of an envelope other than currently visible has been clicked or when all envelopes are hidden or when more than one is visible, i.e. do not execute if menu item of the currently exclusively visible envelope has been clicked so it's not toggled to hidden
+		local vis = Get_Env_State(env, 1) -- attr argument is 1 - visibility // evaluate whether visible
 		Toggle_Env_State(env, 1, vis_cnt == 1 and vis) -- attr argument is 1 - visibility // vis_cnt == 1 cond ensures that visibility is toggled only if the envelope is exclusively visible, while if more envelopes are visible, after all get hidden the visibility of the envelope of the clicked menu item is restored, i.e. it's not toggled to hidden or remains hidden with the rest
 		end
 	Select_Envelope(env) -- select visible envelope
-	local name = select(2, r.GetEnvelopeName(env))
+	local name = env_t[output].name
 	undo = (vis_cnt > 1 and 'Leave ' or 'Set ')..(take and 'take' or 'track')..' "'..name..'" envelope exclusively visible'
 	end
 
-r.Undo_EndBlock(undo, -1)
+	if undo then -- OR if output > 2 // ensures creation of an undo point when envelope state is changed from the menu after KEEP_OPEN setting is toggled
+	r.Undo_EndBlock(undo, -1)
+	end
 
 	if output > 0 and KEEP_OPEN then goto RELOAD end
+
+
+
 
 
 
