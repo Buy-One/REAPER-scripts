@@ -9,29 +9,29 @@ REAPER: at least v5.962
 Extensions: 
 Provides: [main=main,midi_editor] .
 About: 	Inspired by actions introduced in build 7.47
-			Track: Hide envelope, display next/previous envelope on same track (cycle)
-			but works slightly differently and supports
-			take envelopes.
-					
-			The script doesn't allow making multiple envelopes 
-			of the same object visible at once.  
-			If multiple envelopes have been made visible manually, 
-			the script will hide all and unhide the first hidden 
-			envelope which preceded the first visible one.  
-			If no such envelope is found, i.e. all active envelopes 
-			are initially visible, the script will leave the very 
-			last one unhidden.  
-			If no envelope is visible and there's only one active
-			envelope the script will unhide it.
-			
-			The object targeting priority is as follows: 
-			take under mouse
-			track under mouse
-			parent take of the selected take envelope
-			parent track of the selected track envelope
-			active take of selected item
-			selected track
-			last touched track
+		Track: Hide envelope, display next/previous envelope on same track (cycle)
+		but works slightly differently and supports
+		take envelopes.
+				
+		The script doesn't allow making multiple envelopes 
+		of the same object visible at once.  
+		If multiple envelopes have been made visible manually, 
+		the script will hide all and unhide the first hidden 
+		envelope which preceded the first visible one.  
+		If no such envelope is found, i.e. all active envelopes 
+		are initially visible, the script will leave the very 
+		last one unhidden.  
+		If no envelope is visible and there's only one active
+		envelope the script will unhide it.
+		
+		The object targeting priority is as follows: 
+		take under mouse
+		track under mouse
+		parent take of the selected take envelope
+		parent track of the selected track envelope
+		active take of selected item
+		selected track
+		last touched track
 ]]
 
 
