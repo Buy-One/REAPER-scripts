@@ -447,8 +447,7 @@ local stock, multi_line = OVERLAY_PRESET == 'Overlay: Text/Timecode', OVERLAY_PR
 		-- the shadow is provided by the 2nd instance
 		-- only values different from the default 'Overlay: Text/Timecode' preset are included
 		-- 1 - y pos, 2 - x pos, 4 - text bright, 5 - text alpha, 6 - bg bright, 7 - bg alpha, 8 - fit bg to text
-		local t = {[0] = {[6]=0, [7]=1, [8]=1}, 
-		[1] = {[1]=stock and 0.953 or 0.9368, [2]=stock and 0.5029 or 0.5023, [4]=0.6, [5]=0.5, [6]=0, [7]=0}}
+		local t = {[0] = {[6]=0, [7]=1, [8]=1}, [1] = {[1]=0.953, [2]=0.502, [4]=0.6, [5]=0.5, [6]=0, [7]=0}}
 			for fx_idx, vals_t in pairs(t) do
 				for parm_idx, val in pairs(vals_t) do
 				SetParam(obj, fx_idx+input_fx_idx, parm_idx, val)
