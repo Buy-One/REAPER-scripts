@@ -275,7 +275,7 @@ OVERLAY_PRESET = ""
 -- "Overlay: Text/Timecode" preset or the one which supports
 -- centered multi-lines and is named 
 -- "Overlay: Text/Timecode (centered multi-lines)"
--- see OVERLAY_PRESET paragraph in the 'About' text 
+-- see 'OVERLAY PRESET' paragraph in the 'About' text 
 -- in the script header
 TEXT_WITH_SHADOW = ""
 
