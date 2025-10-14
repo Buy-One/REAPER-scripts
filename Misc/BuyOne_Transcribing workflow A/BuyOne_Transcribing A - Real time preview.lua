@@ -2,183 +2,221 @@
 ReaScript name: BuyOne_Transcribing A - Real time preview.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.7
-Changelog:  1.7	#Done away with 'ReaScript task control' dialogue when the script is re-launched
-		while already running. Relevant for users of REAPER 7.
-		#Updated 'About' text
-  	    1.6 #Added TEXT_WITH_SHADOW setting
-		#Updated script name
-  	    1.5 #Fixed duplication of preview items when there're gaps between segments					
-		#Made the script ignore non-segment markers following segment markers
-		#Segments with no transcript no longer affect timing of preview item creation
-		#Changed the location of preview items when the transport is stopped
-		so that they're created for the segment immediately at the edit cursor rather than the next one
-		#Made preview item creation more consistent with the original concept
-		#Updated 'About' text
- 	    1.4 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
- 	    1.3 #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
- 	    1.2 #Included explicit undo point creation mechanism when a new preview item is placed on the preview track
-		#Fixed error when the project is reloaded while the script is running
-		#Optimized Video processor source track creation function
-		#Added OVERLAY_PRESET setting validation
-		#Updated About text
- 	    1.1 #Added overlay preset availability evaluation in builds 7.20 and newer
-		#Optimized undo point creation in cases where overlay preset isn't found
-		#Fixed error when the preview track is deleted manually before the script is terminated
+Version: 1.8
+Changelog: 1.8 #Included a version of the stock 'Overlay: Text/Timecode' preset in which
+					each line of a multi-line caption is centered independently
+					#Added support for this version in a caption with shadow
+					#Simplified OVERLAY_PRESET default setting
+					#Updated 'About' text
+			  1.7	#Done away with 'ReaScript task control' dialogue when the script is re-launched
+					while already running. Relevant for users of REAPER 7.03+
+					#Updated 'About' text
+			  1.6 #Added TEXT_WITH_SHADOW setting
+					#Updated script name
+			  1.5 #Fixed duplication of preview items when there're gaps between segments					
+					#Made the script ignore non-segment markers following segment markers
+					#Segments with no transcript no longer affect timing of preview item creation
+					#Changed the location of preview items when the transport is stopped
+					so that they're created for the segment immediately at the edit cursor rather than the next one
+					#Made preview item creation more consistent with the original concept
+					#Updated 'About' text
+			  1.4 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
+			  1.3 #Added character escaping to NOTES_TRACK_NAME setting evaluation to prevent errors caused unascaped characters
+			  1.2 #Included explicit undo point creation mechanism when a new preview item is placed on the preview track
+					#Fixed error when the project is reloaded while the script is running
+					#Optimized Video processor source track creation function
+					#Added OVERLAY_PRESET setting validation
+					#Updated About text
+			  1.1 #Added overlay preset availability evaluation in builds 7.20 and newer
+					#Optimized undo point creation in cases where overlay preset isn't found
+					#Fixed error when the preview track is deleted manually before the script is terminated
 Licence: WTFPL
 REAPER: at least v6.37
 Extensions: SWS/S&M
 About:	The script is part of the Transcribing A workflow set of scripts
-	alongside 
-	BuyOne_Transcribing A - Create and manage segments (MAIN).lua  
-	BuyOne_Transcribing A - Format converter.lua  
-	BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua  
-	BuyOne_Transcribing A - Prepare transcript for rendering.lua  
-	BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua  
-	BuyOne_Transcribing A - Go to segment marker.lua
-	BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua  
-	BuyOne_Transcribing A - Offset position of markers in time selection by specified amount.lua  
-	BuyOne_Transcribing A - Search or replace text in the transcript.lua
-	
-	meant to display the transcript segment by segment in real time
-	while REAPER is in play mode or when the edit cursor is located
-	within segment markers.			
+			alongside 
+			BuyOne_Transcribing A - Create and manage segments (MAIN).lua  
+			BuyOne_Transcribing A - Format converter.lua  
+			BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua  
+			BuyOne_Transcribing A - Prepare transcript for rendering.lua  
+			BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua  
+			BuyOne_Transcribing A - Go to segment marker.lua
+			BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua  
+			BuyOne_Transcribing A - Offset position of markers in time selection by specified amount.lua  
+			BuyOne_Transcribing A - Search or replace text in the transcript.lua
+			
+			meant to display the transcript segment by segment in real time
+			while REAPER is in play mode or when the edit cursor is located
+			within segment markers.			
+		
+			The original transcript is retrieved from the Notes of tracks
+			whose name is defined in the NOTES_TRACK_NAME setting and is 
+			reproduced segment by segment in the Notes of a track defined 
+			in the PREVIEW_TRACK_NAME setting. 
+			
+			When the script is launched the SWS Notes window is auto-opened
+			being focused on the preview track unless it's already open and
+			unless INSERT_PREVIEW_ITEMS setting is enabled.
+			
+			If INSERT_PREVIEW_ITEMS setting is enabled, on the preview track 
+			an empty item is placed with an instance of the Video processor 
+			plugin inserted in its FX chain with the preset defined in the 
+			OVERLAY_PRESET setting activated to be able to preview the transcript 
+			segment by segment within video context when Video window is open. 
+			The segment text is fed into the item name (see 'OVERLAY PRESET'
+			paragraph below).  
+			To have text displayed within the Video window the location of the 
+			preview track relative to the track with the video item must follow 
+			the 'Video item visibility' setting at Project settings -> Video tab.
+			The preview items are added dynamically to accommodate segment
+			which follows the currently active segment determined by the 
+			location of the edit or play cursor relative to the segment start 
+			marker. Therefore while the transport is in play mode, in order to 
+			insert a preview item for a particular segment without waiting until 
+			it'll be added in the course of the playback, move the edit cursor 
+			to the location immediately preceding the segment start marker.  
+			This mechanism of proactive preview item creation has been devised 
+			to overcome Video processor limitation which prevents it from 
+			processing changes in track/take names as soon as the change occurs 
+			so it must be allowed to process the content in advance. They're
+			created dynamically to be able to reflect any changes made to the
+			transcript in real time.  
+			If everything functions properly, during playback there should be 
+			no more than 2 preview items on the prevew track at any given moment, 
+			one for the current and another for the next segment. There'll be 
+			only 1 when the last segment is being played and when the cursor 
+			is located to the left of the very first segment marker.	 
+			When the transport is stopped, in order to have a preview item 
+			created for a particular segment place the edit cursor directly 
+			within the bounds of the relevant segment region, i.e. at its start
+			marker or between its start and end markers. In this scenario it's
+			possible to prevew the transcript within video context simply by 
+			repeatedly running the custom actions 
+			'Custom: Transcribing - Move loop points to next/previous segment'
+			(included with the script set 
+			in the file 'Transcribing workflow custom actions.ReaperKeyMap' )
+			for instance by clicking the buttons linked to them on the 
+			'Transcribing A toolbar' whose ReaperMenu file can be generated
+			with  
+			'BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua'
+			script.
+			
+			The script relies on markers location to display segment text.
+			If segment start marker time stamp contained in the marker's name 
+			doesn't match its actual position on the time line, a message 
+			stating the fact will be displayed in the preview track Notes 
+			instead of the actual segment transcript, if any.  
+			Preview items for such segments and for segments with no segment
+			transcript are not created.  
+			The length of the preview items is determined by the distance 
+			between current segment start marker and the next valid marker.			
+			If segment end marker time stamp contained in the marker's name
+			doesn't match its actual position, the preview item will still be
+			created but its length will be limited by such marker regardless
+			of the end time stamp listed in the segment data in the Notes, 
+			if any. When such marker is passed by the play or edit cursor 
+			the message stating its position and time stamp mismatch will 
+			be displayed in the preview track Notes.  
+			If there's no explicit segment end marker, the preview item will
+			extend to the start marker of the next valid segment.  
+			Non-segment markers (those which don't contain in their name 
+			a time stamp in the format supported by Transcribing set of scripts) 
+			are ignored.  
+			The duration of a segment transcript display in the Notes 
+			of the preview track is independent of the preview items length
+			and of gaps between segments and lasts until the next segment
+			start marker comes along. For this reason viewing transcript
+			in the preview track Notes isn't very suitable for working with 
+			video where timely going out of captions may be important.  
+			If you're not sure whether all current segment markers positions
+			match time stamps in the transcript or their own time stamps 
+			included in their names, run the script
+			'BuyOne_Transcribing A - Prepare transcript for rendering.lua'
+			to re-create the marker array. Then the render track created by
+			that script can be deleted. Or use the script
+			'BuyOne_Transcribing A - Create and manage segments (MAIN).lua'
+			in 'Batch segment update' mode described in par. F of its 'About' 
+			text. 
+			
+			The script must run in the background which it will after the 
+			initial launch. To terminate the script, launch it again. In
+			case you run a REAPER version older than 7.03 
+			'ReaScript task control' dialogue which will pop up.
+			Click 'Terminate instances' button in the dialogue. Before 
+			doing this it's recommended to checkmark 
+			'Remember my answer for this script' option so that from then 
+			on the script is terminated automatically.
+			
+			While the script runs a toolbar button linked to it is lit and 
+			a menu item is ticked.
+			
+			The script only works under the project tab it's originally been
+			launched under. To use it in another project tab terminate it 
+			and re-launch under it.  
+			
+			For preview another script can be used, which is
+			'BuyOne_Transcribing A - Prepare transcript for rendering.lua'
+			however it's not as flexible as this one, because it recreates
+			all segment markers from scratch based on the Notes content
+			and ignores segments with no transcript. If segments have been
+			updated it will have to be run again to recreate markers based
+			on the updated Notes data.  
+			On the other hand this script creates redundant undo points each
+			time a new preview item is inserted which cannot be prevented 
+			and which increase and lengthen the undo history unnecessarily. 
+			So it may be a good idea to use it in a project copy rathen than 
+			directly in the main project. 
+			
+			
+			OVERLAY PRESET
 
-	The original transcript is retrieved from the Notes of tracks
-	whose name is defined in the NOTES_TRACK_NAME setting and is 
-	reproduced segment by segment in the Notes of a track defined 
-	in the PREVIEW_TRACK_NAME setting. 
-	
-	When the script is launched the SWS Notes window is auto-opened
-	being focused on the preview track unless it's already open and
-	unless INSERT_PREVIEW_ITEMS setting is enabled.
-	
-	If INSERT_PREVIEW_ITEMS setting is enabled, on the preview track 
-	an empty item is placed with an instance of the Video processor 
-	plugin inserted in its FX chain with the preset defined in the 
-	OVERLAY_PRESET setting activated to be able to preview the transcript 
-	segment by segment within video context when Video window is open. 
-	The segment text is fed into the item name.  
-	To have text displayed within the Video window the location of the 
-	preview track relative to the track with the video item must follow 
-	the 'Video item visibility' setting at Project settings -> Video tab.
-	The preview items are added dynamically to accommodate segment
-	which follows the currently active segment determined by the 
-	location of the edit or play cursor relative to the segment start 
-	marker. Therefore while the transport is in play mode, in order to 
-	insert a preview item for a particular segment without waiting until 
-	it'll be added in the course of the playback, move the edit cursor 
-	to the location immediately preceding the segment start marker.  
-	This mechanism of proactive preview item creation has been devised 
-	to overcome Video processor limitation which prevents it from 
-	processing changes in track/take names as soon as the change occurs 
-	so it must be allowed to process the content in advance. They're
-	created dynamically to be able to reflect any changes made to the
-	transcript in real time.  
-	If everything functions properly, during playback there should be 
-	no more than 2 preview items on the prevew track at any given moment, 
-	one for the current and another for the next segment. There'll be 
-	only 1 when the last segment is being played and when the cursor 
-	is located to the left of the very first segment marker.	 
-	When the transport is stopped, in order to have a preview item 
-	created for a particular segment place the edit cursor directly 
-	within the bounds of the relevant segment region, i.e. at its start
-	marker or between its start and end markers. In this scenario it's
-	possible to prevew the transcript within video context simply by 
-	repeatedly running the custom actions  
-	'Custom: Transcribing - Move loop points to next/previous segment'
-	(included with the script set 
-	in the file 'Transcribing workflow custom actions.ReaperKeyMap' )
-	for instance by clicking the buttons linked to them on the 
-	'Transcribing A toolbar' whose ReaperMenu file can be generated
-	with  
-	'BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua'
-	script.
-	
-	The script relies on markers location to display segment text.
-	If segment start marker time stamp contained in the marker's name 
-	doesn't match its actual position on the time line, a message 
-	stating the fact will be displayed in the preview track Notes 
-	instead of the actual segment transcript, if any.  
-	Preview items for such segments and for segments with no segment
-	transcript are not created.  
-	The length of the preview items is determined by the distance 
-	between current segment start marker and the next valid marker.			
-	If segment end marker time stamp contained in the marker's name
-	doesn't match its actual position, the preview item will still be
-	created but its length will be limited by such marker regardless
-	of the end time stamp listed in the segment data in the Notes, 
-	if any. When such marker is passed by the play or edit cursor 
-	the message stating its position and time stamp mismatch will 
-	be displayed in the preview track Notes.  
-	If there's no explicit segment end marker, the preview item will
-	extend to the start marker of the next valid segment.  
-	Non-segment markers (those which don't contain in their name 
-	a time stamp in the format supported by Transcribing set of scripts) 
-	are ignored.  
-	The duration of a segment transcript display in the Notes 
-	of the preview track is independent of the preview items length
-	and of gaps between segments and lasts until the next segment
-	start marker comes along. For this reason viewing transcript
-	in the preview track Notes isn't very suitable for working with 
-	video where timely going out of captions may be important.  
-	If you're not sure whether all current segment markers positions
-	match time stamps in the transcript or their own time stamps 
-	included in their names, run the script
-	'BuyOne_Transcribing A - Prepare transcript for rendering.lua'
-	to re-create the marker array. Then the render track created by
-	that script can be deleted. Or use the script
-	'BuyOne_Transcribing A - Create and manage segments (MAIN).lua'
-	in 'Batch segment update' mode described in par. F of its 'About' 
-	text. 
-	
-	The script must run in the background which it will after the 
-	initial launch. To terminate the script, launch it again. In
-	case you run a REAPER version older than 7 
-	'ReaScript task control' dialogue which will pop up.
-	Click 'Terminate instances' button in the dialogue. Before 
-	doing this it's recommended to checkmark 
-	'Remember my answer for this script' option so that from then 
-	on the script is terminated automatically.
-	
-	While the script runs a toolbar button linked to it is lit and 
-	a menu item is ticked.
-	
-	The script only works under the project tab it's originally been
-	launched under. To use it in another project tab terminate it 
-	and re-launch under it.  
-	
-	For preview another script can be used, which is
-	'BuyOne_Transcribing A - Prepare transcript for rendering.lua'
-	however it's not as flexible as this one, because it recreates
-	all segment markers from scratch based on the Notes content
-	and ignores segments with no transcript. If segments have been
-	updated it will have to be run again to recreate markers based
-	on the updated Notes data.  
-	On the other hand this script creates redundant undo points each
-	time a new preview item is inserted which cannot be prevented 
-	and which increase and lengthen the undo history unnecessarily. 
-	So it may be a good idea to use it in a project copy rathen than 
-	directly in the main project. 
-	
-	
-	IMPORTANT
-	
-	BE AWARE THAT SWS NOTES CHANGES WHICH IMMEDIATELY PRECEDE
-	OR FOLLOW REAPER STATE CHANGE WILL GET UNDONE IF SUCH REAPER 
-	STATE CHANGE IS UNDONE.
-	This has been reported to the SWS team
-	https://github.com/reaper-oss/sws/issues/1880
-	https://github.com/reaper-oss/sws/issues/1812
-	https://github.com/reaper-oss/sws/issues/1743
-	THEREFORE SAVING OFTEN IS SO MUCH MORE IMPORTANT BEACAUSE IT WILL
-	ALLOW RESTORATION OF NOTES CHANGES LOST AFTER UNDO, BY MEANS 
-	OF PROJECT RELOAD.
-	ALTERNATIVELY, IF PREVIOUS STATE CAN BE RESTORED WITHOUT RESORTING
-	TO UNDO IT'S ADVISED TO OPT FOR THIS METHOD.
-	
-	Watch demo 'Transcribing B - 6. Real time preview.mp4' which comes 
-	with the set of scripts
+			By default the script implies usage of the stock
+			'Overlay: Text/Timecode' preset to display transcript segments.  
+			OVERLAY_PRESET setting in the USER SETTING below allows
+			defining a custom overlay preset which the script will
+			use.  
+			The stock 'Overlay: Text/Timecode' preset does support
+			multi-line captions but it centers the text as a single
+			unit, so each line starts at the same X coordinate on the
+			screen, i.e.
+			My line
+			My second line
+			My line after the second
+
+			To have lines centered individually use a mod of the 
+			stock preset whose code is provided at the bottom of this
+			script. Paste the code into the Video processor instance,
+			hit Ctrl/Cmd + S to store it, save as a named preset
+			and specify this preset name in the OVERLAY_PRESET 
+			setting of the USER SETTINGS below. Alternatively import
+			the preset dump file  
+			'Overlay_Text-Timecode (centered multi-lines).RPL' 
+			located in the script folder.  
+			The resulting multi-line caption will look like so
+			(the following may not display correctly within the 
+			ReaScript IDE)
+			         My line
+			      My second line
+			My line after the second	
+			
+			
+			IMPORTANT
+			
+			BE AWARE THAT SWS NOTES CHANGES WHICH IMMEDIATELY PRECEDE
+			OR FOLLOW REAPER STATE CHANGE WILL GET UNDONE IF SUCH REAPER 
+			STATE CHANGE IS UNDONE.
+			This has been reported to the SWS team
+			https://github.com/reaper-oss/sws/issues/1880
+			https://github.com/reaper-oss/sws/issues/1812
+			https://github.com/reaper-oss/sws/issues/1743
+			THEREFORE SAVING OFTEN IS SO MUCH MORE IMPORTANT BEACAUSE IT WILL
+			ALLOW RESTORATION OF NOTES CHANGES LOST AFTER UNDO, BY MEANS 
+			OF PROJECT RELOAD.
+			ALTERNATIVELY, IF PREVIOUS STATE CAN BE RESTORED WITHOUT RESORTING
+			TO UNDO IT'S ADVISED TO OPT FOR THIS METHOD.
+			
+			Watch demo 'Transcribing A - 6. Real time preview.mp4' which comes 
+			with the set of scripts
 
 ]]
 
@@ -220,21 +258,25 @@ INSERT_PREVIEW_ITEMS = "1"
 
 
 -- Only relevant if INSERT_PREVIEW_ITEMS setting is enabled;
--- if you use the default "Overlay: Text/Timecode" preset
--- of the Video processor to preview transcript in video
--- context, keep this setting as is;
+-- if empty, the script will use the Video processor stock
+-- "Overlay: Text/Timecode" preset to create transcript
+-- preview in video context;
 -- if you use a customized version of this preset, specify
 -- its name in this setting between the quotes,
 -- it's advised that the customized preset name be different
--- from the default one, otherwise its settings may get
+-- from the stock one, otherwise its settings may get
 -- affected by the script
-OVERLAY_PRESET = "Overlay: Text/Timecode"
+OVERLAY_PRESET = ""
 
 
 -- Enable by inserting any alphanumeric character between
 -- the quotes;
--- only relevant if OVERLAY_PRESET setting is the default
--- "Overlay: Text/Timecode" preset
+-- only relevant if OVERLAY_PRESET setting is the stock
+-- "Overlay: Text/Timecode" preset or the one which supports
+-- centered multi-lines and is named 
+-- "Overlay: Text/Timecode (centered multi-lines)"
+-- see OVERLAY_PRESET paragraph in the 'About' text 
+-- in the script header
 TEXT_WITH_SHADOW = ""
 
 
@@ -396,15 +438,17 @@ function Aplly_Video_Proc_Settings(obj, OVERLAY_PRESET, TEXT_WITH_SHADOW)
 local track, take = r.ValidatePtr(obj,'MediaTrack*'), r.ValidatePtr(obj,'MediaItem_Take*')
 local SetParam = track and r.TrackFX_SetParam or take and r.TakeFX_SetParam
 local input_fx_idx = track and 0x1000000 or 0
--- only set parameters if the preset is default because in the user version
--- everything will be set within the preset itself
-	if OVERLAY_PRESET == 'Overlay: Text/Timecode' then		
+-- only set parameters if the preset is stock or its multi-line version 
+-- because in the user's own version everything will be set within the preset itself
+local stock, multi_line = OVERLAY_PRESET == 'Overlay: Text/Timecode', OVERLAY_PRESET == 'Overlay: Text/Timecode (centered multi-lines)'
+	if stock or multi_line then
 		if TEXT_WITH_SHADOW then
 		-- table for overlay version with shadow which requires two Video proc instances
 		-- the shadow is provided by the 2nd instance
 		-- only values different from the default 'Overlay: Text/Timecode' preset are included
 		-- 1 - y pos, 2 - x pos, 4 - text bright, 5 - text alpha, 6 - bg bright, 7 - bg alpha, 8 - fit bg to text
-		local t = {[0] = {[6]=0, [7]=1, [8]=1}, [1] = {[1]=0.953, [2]=0.504, [4]=0.6, [5]=0.5, [6]=0, [7]=0}}
+		local t = {[0] = {[6]=0, [7]=1, [8]=1}, 
+		[1] = {[1]=stock and 0.953 or 0.9368, [2]=stock and 0.5029 or 0.5023, [4]=0.6, [5]=0.5, [6]=0, [7]=0}}
 			for fx_idx, vals_t in pairs(t) do
 				for parm_idx, val in pairs(vals_t) do
 				SetParam(obj, fx_idx+input_fx_idx, parm_idx, val)
@@ -434,7 +478,7 @@ function Insert_Video_Proc_Src_Track(OVERLAY_PRESET, TEXT_WITH_SHADOW)
 r.PreventUIRefresh(1)
 
 	local function apply_overlay_preset(tr, newer_build)
-	local show = not newer_build and r.TrackFX_Show(tr, 0x1000000, 3) -- showFlag 3 show floating window // in builds older than 7.20 in order to successfully apply Video proc preset the plugin UI must be opened
+	local show = not newer_build and r.TrackFX_Show(tr, 0x1000000, 3) -- showFlag 3 show floating window // in builds older than 7.20 in order to successfully apply Video proc preset the plugin UI must be opened https://forum.cockos.com/showthread.php?t=293212
 	local ok = r.TrackFX_SetPreset(tr, 0x1000000, OVERLAY_PRESET) -- fx 0
 		if not ok then return end -- overlay reset not found
 		
@@ -466,14 +510,14 @@ local newer_build = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 7.20
 				if vid_proc then
 					if overlay then return tr
 					else
-					local ok = apply_overlay_preset(tr, newer_build)
+					local ok = apply_overlay_preset(tr, newer_build, TEXT_WITH_SHADOW)
 						if not ok then return 
 						else return tr
 						end
 					end
 				else
 				r.TrackFX_AddByName(tr, 'Video processor', true, -1000-0x1000000) -- recFX true, instantiate -1000 first fx slot in the input fx chain
-				local ok = apply_overlay_preset(tr, newer_build)
+				local ok = apply_overlay_preset(tr, newer_build, TEXT_WITH_SHADOW)
 					if not ok then return 
 					else return tr
 					end
@@ -489,10 +533,11 @@ r.SetMediaTrackInfo_Value(tr, 'B_SHOWINTCP', 0) -- hide in TCP
 local retval, fx_name = r.TrackFX_GetNamedConfigParm(tr, 0x1000000, 'fx_name')
 	if not retval or fx_name ~= 'Video processor' then
 	r.TrackFX_AddByName(tr, 'Video processor', true, -1000-0x1000000) -- recFX true, instantiate -1000 first fx slot in the input fx chain
+	local second_inst = TEXT_WITH_SHADOW and r.TrackFX_AddByName(tr, 'Video processor', true, -1001-0x1000000) -- for shadow two instances are required
 	end
 local ret, preset = r.TrackFX_GetPreset(tr, 0x1000000, '') -- fx 0
 	if preset ~= OVERLAY_PRESET then -- apply
-	local ok = apply_overlay_preset(tr, newer_build)
+	local ok = apply_overlay_preset(tr, newer_build, TEXT_WITH_SHADOW)
 		if not ok or ok and newer_build then -- deleting track if not found in any build and if found in newer builds because in this case the track was only needed to check availability of the preset
 		r.DeleteTrack(tr)
 		return ok and newer_build end -- in newer builds returning true if found to prevent triggering error message outside, in older builds the return value will always be false which will trigger the error message informing that the preset wasn't found
@@ -591,7 +636,8 @@ local take = r.AddTakeToMediaItem(item)
 	local copy = TEXT_WITH_SHADOW and r.TakeFX_CopyToTake(take, 0, take, 1, false) -- ismove false
 	end
 
--- only runs if OVERLAY_PRESET is the default overlay preset
+-- only runs if OVERLAY_PRESET is the default overlay preset or custom centered multi-lines preset
+-- whose code is included at the end of this script
 Aplly_Video_Proc_Settings(take, OVERLAY_PRESET, TEXT_WITH_SHADOW)
 
 local len = mrkr_t[next_pos] and mrkr_t[next_pos]-next_pos -- if next_pos is the last marker position, mrkr_t[next_pos] will be invalid
@@ -894,11 +940,11 @@ end
 
 NOTES_TRACK_NAME = #NOTES_TRACK_NAME:gsub(' ','') > 0 and NOTES_TRACK_NAME
 PREVIEW_TRACK_NAME = #PREVIEW_TRACK_NAME:gsub(' ','') > 0 and PREVIEW_TRACK_NAME
+OVERLAY_PRESET = #OVERLAY_PRESET:gsub('[%s%c]','') > 0 and OVERLAY_PRESET or 'Overlay: Text/Timecode'
 
 local err = not r.NF_SetSWSTrackNotes and 'SWS extension isn\'t installed'
 or not NOTES_TRACK_NAME and 'NOTES_TRACK_NAME \n\n   setting is empty'
 or not PREVIEW_TRACK_NAME and 'PREVIEW_TRACK_NAME \n\n   setting is empty'
-or #OVERLAY_PRESET:gsub('[%s%c]','') == 0 and 'OVERLAY_PRESET setting is empty'
 
 	if err then
 	Error_Tooltip("\n\n "..err.." \n\n", 1, 1) -- caps, spaced true
@@ -922,7 +968,8 @@ r.Undo_BeginBlock()
 preview_tr = Get_Or_Create_Preview_Track(PREVIEW_TRACK_NAME)
 
 INSERT_PREVIEW_ITEMS = #INSERT_PREVIEW_ITEMS:gsub(' ','') > 0
-TEXT_WITH_SHADOW = OVERLAY_PRESET == "Overlay: Text/Timecode" and #TEXT_WITH_SHADOW:gsub(' ','') > 0
+TEXT_WITH_SHADOW = (OVERLAY_PRESET == 'Overlay: Text/Timecode' or OVERLAY_PRESET == 'Overlay: Text/Timecode (centered multi-lines') 
+and #TEXT_WITH_SHADOW:gsub(' ','') > 0
 
 	if INSERT_PREVIEW_ITEMS then
 	src_tr = Insert_Video_Proc_Src_Track(OVERLAY_PRESET, TEXT_WITH_SHADOW)
@@ -957,6 +1004,214 @@ r.atexit(Wrapper(Re_Set_Toggle_State, sect_ID, cmd_ID, 0, preview_tr, src_tr))
 
 
 
+
+--[[ VIDEO PROCESSOR PRESET CODE
+
+-------------------- COPY FROM NEXT LINE ---------------------
+// Overlay: Text/Timecode (centered multi-lines)
+// Mod of the stock preset to make multi-lines
+// effected by new line character '\n', centered
+// relative to each other instead of all being
+// justified to the same x coordinate
+// Example:
+/*
+Stock
+
+    my line one
+    my line one one
+    my line one one one
+
+This preset
+
+        my line one
+      my line one one
+    my line one one one
+
+*/
+// To create visibly empty lines use space,
+// genuinely empty lines aren't recognized
+
+
+
+/////////////// CODE START ///////////////
+
+
+// Insert your text if not fetched from
+// track or take name
+#text="";
+// Font name can be changed, i.e.
+// Times New Roman, Verdana, Courier New, Tahoma
+font="Arial";
+
+
+/////////////// MAIN CODE ///////////////
+
+//@param1:size 'text height' 0.05 0.01 0.2 0.1 0.001
+//@param2:ypos 'y position' 0.95 0 1 0.5 0.01
+//@param3:xpos 'x position' 0.5 0 1 0.5 0.01
+//@param4:border 'bg pad' 0.1 0 1 0.5 0.01
+//@param5:fgc 'text bright' 1.0 0 1 0.5 0.01
+//@param6:fga 'text alpha' 1.0 0 1 0.5 0.01
+//@param7:bgc 'bg bright' 0.75 0 1 0.5 0.01
+//@param8:bga 'bg alpha' 0.5 0 1 0.5 0.01
+//@param9:bgfit 'fit bg to text' 0 0 1 0.5 1
+//@param10:ignoreinput 'ignore input' 0 0 1 0.5 1
+
+//@param12:tc 'show timecode' 0 0 1 0.5 1
+//@param13:tcdf 'dropframe timecode' 0 0 1 0.5 1
+
+input = ignoreinput ? -2:0;
+project_wh_valid===0 ? input_info(input,project_w,project_h);
+gfx_a2=0;
+gfx_blit(input,1);
+gfx_setfont(size*project_h,font);
+tc>0.5 ? (
+  t = floor((project_time + project_timeoffs) * framerate + 0.0000001);
+  f = ceil(framerate);
+  tcdf > 0.5 && f != framerate ? (
+    period = floor(framerate * 600);
+    ds = floor(framerate * 60);
+    ds > 0 ? t += 18 * ((t / period)|0) + ((((t%period)-2)/ds)|0)*2;
+  );
+  sprintf(#text,"%02d:%02d:%02d:%02d",(t/(f*3600))|0,(t/(f*60))%60,(t/f)%60,t%f);
+) : strcmp(#text,"")==0 ? input_get_name(-1,#text);
+
+
+/////////////// MOD START ///////////////
+
+function split_string_at_new_line_char(str)
+(
+  str_len = strlen(str); // store source string length
+  count = 0;
+  offset = 0;
+  substr_len = 1;
+  while(
+    // Keep scanning and storing substring to memory address until \n comes along
+    strcpy_substr(count, str, offset, substr_len);
+    single_new_line_char = substr_len == 1 && match("\n", count);
+    found = match("*\n", count); // operators + and +? work as well
+      // If the substring sarts with a new line char
+      // it immediately follows the preceding new line character
+      // of the previous capture and will be included in the current capture
+      // at its start, so skip it because it will throw off calculations
+      single_new_line_char ? (
+      offset += substr_len;
+      substr_len = 0;
+      ) :
+      ( found || offset + substr_len == str_len) ? ( // \n is found in the substring or end of the source string
+        // Strip trailing new line char from the substring if found, i.e. not if the end of the string,
+        // resaving it at the same address
+        trim = found ? substr_len-1 : substr_len;
+        strcpy_substr(count, str, offset, trim);
+        // Increment count to advance to next memory address for storage,
+        // the value will also be used to iterate over them in a loop
+        // to display the stored substrings
+        count += 1;
+        // Update offset to restart scanning from the last position
+        offset += substr_len;
+        // Reset to start the scanning from the 1st subtring byte,
+        // will be incremented below
+        substr_len = 0;
+      );
+    // Constantly increment by 1 to advance within the source string towards its end
+    substr_len += 1;
+    // Continue looping as long as this is true
+    offset + substr_len <= str_len;
+  );
+  count;
+);
+
+
+function get_longest_str_idx(array_st, array_end)
+// Couldn't make it work with while() loop
+(
+// First find the greatest length value
+range = array_end-array_st;
+i = array_st;
+  loop(range,
+  a = strlen(i);
+  mx = max(a, mx);
+  i+=1;
+  );
+// Now find the index of memory address
+// where the longest string is stored
+i = array_st;
+  loop(range,
+  // If string length happens to be equal to mx value, store its index
+  // otherwise maintain ogirinal mx value
+  mx = strlen(i) == mx ? i : mx;
+  i+=1;
+  );
+  mx;
+);
+
+// Split the text, store substrings and get
+// line count
+count = split_string_at_new_line_char(#text);
+// Get the longest line so that the backround
+// is only shrunk with 'fit bg to text'
+// as much as this line width allows
+mx = get_longest_str_idx(0, count);
+// Print the longest line
+// to be able to get its dimensions
+sprintf(#text,"%s",mx);
+// Get the longest line width and height,
+// height can be taken from any line
+// because they're all affected by the same
+// 'text height' parameter
+gfx_str_measure(#text,txtw_mx,txth);
+// Multiply line height by the number of lines
+// to be used in background height calculation
+// so that the background covers all
+txth*=count;
+
+// Calculate and draw background
+// using the longest string width;
+// this is the original code where txtw
+// variable is substrituted with txtw_mx
+b = (border*txth)|0;
+yt = ((project_h - txth - b*2)*ypos)|0;
+xp = (xpos * (project_w-txtw_mx))|0;
+gfx_set(bgc,bgc,bgc,bga);
+bga>0?gfx_fillrect(bgfit?xp-b:0, yt, bgfit?txtw_mx+b*2:project_w, txth+b*2);
+gfx_set(fgc,fgc,fgc,fga);
+
+// Draw text lines
+
+i=count-1; // -1 because string address indexing starts from 0
+y_offset = 0;
+
+loop(count,
+
+  sprintf(#text,"%s",i);
+  gfx_str_measure(#text,txtw,txth);
+
+  // Only calculate x coordinate for the longest line,
+  // calculating the x coordinate for other lines
+  // relative to it so that when lines are moved from the center
+  // with 'x position' parameter, they remain centered
+  // relative to each other;
+  xp = (xpos * (project_w-txtw_mx))|0;
+  x_offset = txtw !== txtw_mx ? (txtw_mx-txtw)/2;
+  // OR
+  // x_offset = i !== mx ? (txtw_mx-txtw)/2;
+
+  gfx_str_draw(#text, xp+x_offset, yt+b+txth*(count-1)-y_offset);
+
+  // Keep incrementing so that each next line
+  // is drawn above the current one;
+  // empty strings wouldn't affect the offset calculation
+  // because their txth value is 0
+  y_offset+=txth;
+  // Iterating in reverse because y coordinate offsetting
+  // must start from the bottommost line which is the line
+  // last captured inside split_string_at_new_line_char()
+  i-=1;
+);
+-------------------- COPY UNTIL THE PREVIOUS LINE ---------------------
+
+
+]]
 
 
 
