@@ -2,95 +2,132 @@
 ReaScript name: BuyOne_Transcribing A - Prepare transcript for rendering.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.5
-Changelog: 1.5 #Remade the options menu
-	       #Added TEXT_WITH_SHADOW setting
-	       #Fixed error message when RENDER_TRACK_NAME setting is empty for video rendering
-	       #Updated script name
-	   1.4 #Fixed bug of not respecting gaps between segments in preparation for video rendering
-	       #Ensured that when preparing for audio rendering only segment markers are left on the timeline
-	       #Added OVERLAY_PRESET setting validation
-	       #Updated About text
-	   1.3 #Added character escaping to RENDER_TRACK_NAME setting evaluation
-	       to prevent errors caused unascaped characters
-	   1.2 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
-	   1.1 #Added character escaping to NOTES_TRACK_NAME setting evaluation 
-	       to prevent errors caused unascaped characters
+Version: 1.6
+Changelog: 1.6 #Included a version of the stock 'Overlay: Text/Timecode' preset in which
+					each line of a multi-line caption is centered independently
+					#Added support for this version in a caption with shadow
+					#Simplified OVERLAY_PRESET default setting
+					#Updated 'About' text
+			  1.5 #Remade the options menu
+					#Added TEXT_WITH_SHADOW setting
+					#Fixed error message when RENDER_TRACK_NAME setting is empty for video rendering					
+					#Updated script name
+			  1.4 #Fixed bug of not respecting gaps between segments in preparation for video rendering
+					#Ensured that when preparing for audio rendering only segment markers are left on the timeline
+					#Added OVERLAY_PRESET setting validation
+					#Updated About text
+			  1.3 #Added character escaping to RENDER_TRACK_NAME setting evaluation
+					to prevent errors caused unascaped characters
+			  1.2 #Fixed time stamp formatting as hours:minutes:seconds.milliseconds
+			  1.1 #Added character escaping to NOTES_TRACK_NAME setting evaluation 
+					to prevent errors caused unascaped characters
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
 About:	The script is part of the Transcribing A workflow set of scripts
-	alongside
-	BuyOne_Transcribing A - Create and manage segments (MAIN).lua  
-	BuyOne_Transcribing A - Real time preview.lua  
-	BuyOne_Transcribing A - Format converter.lua  
-	BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua  
-	BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua  
-	BuyOne_Transcribing A - Go to segment marker.lua
-	BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua  
-	BuyOne_Transcribing A - Offset position of markers in time selection by specified amount.lua  
-	BuyOne_Transcribing A - Search or replace text in the transcript.lua
-	
-	It's purpose is to allow embedding transcript in a video file or
-	audio file.
-	
-	V I D E O
-	
-	If VIDEO option is chosen by the user in the pop-up menu the script
-	creates a new track named as specified in the RENDER_TRACK_NAME
-	setting and inserts on it items with Video processor plugin 
-	at markers which correspond to segments start and having segment 
-	transcript included in their take names in order to display 
-	the transcript within video context.  
-	The script deletes from the project all segment markers, i.e. 
-	those bearing in their name a time stamp in the format supported 
-	by the set Transcribing scripts, and then creates them from scratch
-	taking their positions from the transcript time stamps. Existing 
-	markers whose name don't conform to the format supported by the 
-	Transcribing scripts set are left intact.  
-	The items are only inserted for segments with text.  
-	All formatting markup is cleared except for the new line tag <n> 
-	supported by this set of scripts and the Video processor 
-	'Overlay: Text/Timecode' preset.
-	
-	The said render track must be placed above the track with the 
-	video item.  
+			alongside
+			BuyOne_Transcribing A - Create and manage segments (MAIN).lua  
+			BuyOne_Transcribing A - Real time preview.lua  
+			BuyOne_Transcribing A - Format converter.lua  
+			BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua  
+			BuyOne_Transcribing A - Select Notes track based on marker at edit cursor.lua  
+			BuyOne_Transcribing A - Go to segment marker.lua
+			BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua  
+			BuyOne_Transcribing A - Offset position of markers in time selection by specified amount.lua  
+			BuyOne_Transcribing A - Search or replace text in the transcript.lua
+			
+			It's purpose is to allow embedding transcript in a video file or
+			audio file.
 
-	When the items are created they become locked so in order to manually
-	delete them they must be unlocked first. Or the render track itself
-	can be deleted without unlocking the items beforehand.  
-	
-	Once set up the video can be rendered out as normal.
-	
-	A U D I O
-	
-	If AUDIO option is selected the script deletes from the project all 
-	markers and then creates segment markers from scratch taking their 
-	positions from the segment start time stamps of the transcript.  
-	
-	The transcript of each segment is added to the corresponding marker
-	name. All new line tags <n> supported by this set of scripts and 
-	all other formatting markup supported by the SRT or VTT formats is 
-	cleared.  
-	If 'With chapter tags' option is enabled before opting for AUDIO
-	option, in each segment marker the transcript will be preceded with
-	'CHAP' tag and will be recognized as a chapter by media players which 
-	support it. To have chapter tags embedded in the file the output format
-	must be mp3, flac, ogg or opus and 'Add new metadata' option must be 
-	enabled in the Render window.  
-	To embed the segment markers with the transcript inside files in formats 
-	which don't support 'CHAP' tag such as wav, instead of enabling the 
-	metadata select 'Markers only' option from the drop-down menu at the 
-	bottom of the Render window. Adding chapter tag in this case is 
-	unnecessary.
-	
-	The menu options can be triggered from keyboard by hitting the key
-	which corresponds to the first character of the menu item.
-	
-	This script along with  
-	'BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua'
-	can be used to embed 3d party SRT/VTT subtitles in a video/audio 
-	file.
+			V I D E O
+
+			If VIDEO option is chosen by the user in the pop-up menu the script
+			creates a new track named as specified in the RENDER_TRACK_NAME
+			setting and inserts on it items with Video processor plugin 
+			at markers which correspond to segments start and having segment 
+			transcript included in their take names in order to display 
+			the transcript within video context.  
+			The script deletes from the project all segment markers, i.e. 
+			those bearing in their name a time stamp in the format supported 
+			by the set Transcribing scripts, and then creates them from scratch
+			taking their positions from the transcript time stamps. Existing 
+			markers whose name don't conform to the format supported by the 
+			Transcribing scripts set are left intact.  
+			The items are only inserted for segments with text.  
+			All formatting markup is cleared except for the new line tag <n> 
+			supported by this set of scripts and the Video processor 
+			'Overlay: Text/Timecode' preset.
+			
+			The said render track must be placed above the track with the 
+			video item.  
+
+			When the items are created they become locked so in order to manually
+			delete them they must be unlocked first. Or the render track itself
+			can be deleted without unlocking the items beforehand.  
+			
+			Once set up the video can be rendered out as normal.
+
+			A U D I O
+
+			If AUDIO option is selected the script deletes from the project all 
+			markers and then creates segment markers from scratch taking their 
+			positions from the segment start time stamps of the transcript.  
+
+			The transcript of each segment is added to the corresponding marker
+			name. All new line tags <n> supported by this set of scripts and 
+			all other formatting markup supported by the SRT or VTT formats is 
+			cleared.  
+			If 'With chapter tags' option is enabled before opting for AUDIO
+			option, in each segment marker the transcript will be preceded with
+			'CHAP' tag and will be recognized as a chapter by media players which 
+			support it. To have chapter tags embedded in the file the output format
+			must be mp3, flac, ogg or opus and 'Add new metadata' option must be 
+			enabled in the Render window.  
+			To embed the segment markers with the transcript inside files in formats 
+			which don't support 'CHAP' tag such as wav, instead of enabling the 
+			metadata select 'Markers only' option from the drop-down menu at the 
+			bottom of the Render window. Adding chapter tag in this case is 
+			unnecessary.
+
+			The menu options can be triggered from keyboard by hitting the key
+			which corresponds to the first character of the menu item.
+
+			This script along with  
+			'BuyOne_Transcribing A - Import SRT or VTT file as markers and SWS track Notes.lua'
+			can be used to embed 3d party SRT/VTT subtitles in a video/audio 
+			file.
+
+			O V E R L A Y  P R E S E T
+
+			By default the script implies usage of the stock
+			'Overlay: Text/Timecode' preset to display transcript segments.  
+			OVERLAY_PRESET setting in the USER SETTING below allows
+			defining a custom overlay preset which the script will
+			use.  
+			The stock 'Overlay: Text/Timecode' preset does support
+			multi-line captions but it centers the text as a single
+			unit, so each line starts at the same X coordinate on the
+			screen, i.e.
+			My line
+			My second line
+			My line after the second
+
+			To have lines centered individually use a mod of the 
+			stock preset whose code is provided at the bottom of this
+			script. Paste the code into the Video processor instance,
+			hit Ctrl/Cmd + S to store it, save as a named preset
+			and specify this preset name in the OVERLAY_PRESET 
+			setting of the USER SETTINGS below. Alternatively import
+			the preset dump file  
+			'Overlay_Text-Timecode (centered multi-lines).RPL' 
+			located in the script folder.  
+			The resulting multi-line caption will look like so
+			(the following may not display correctly within the 
+			ReaScript IDE)
+			         My line
+			      My second line
+			My line after the second
+
 ]]
 
 -----------------------------------------------------------------------------
@@ -115,21 +152,24 @@ RENDER_TRACK_NAME = "RENDER"
 
 -- The setting is only relevant if preparing for video
 -- rendering;
--- if you use the default "Overlay: Text/Timecode" preset
--- of the Video processor to preview transcript in video
--- context, keep this setting as is;
+-- if empty, the script will use the Video processor stock
+-- "Overlay: Text/Timecode" preset to create transcript
+-- preview in video context;
 -- if you use a customized version of this preset, specify
 -- its name in this setting between the quotes,
 -- it's advised that the customized preset name be different
--- from the default one, otherwise its settings may get
+-- from the stock one, otherwise its settings may get
 -- affected by the script
-OVERLAY_PRESET = "Overlay: Text/Timecode"
+OVERLAY_PRESET = ""
 
 -- Enable by inserting any alphanumeric character between
--- the quotes,
--- only relevant if video rendering is selected from in
--- options menu and OVERLAY_PRESET setting is the default
--- "Overlay: Text/Timecode" preset
+-- the quotes;
+-- only relevant if OVERLAY_PRESET setting is the stock
+-- "Overlay: Text/Timecode" preset or the one which supports
+-- centered multi-lines and is named 
+-- "Overlay: Text/Timecode (centered multi-lines)"
+-- see 'OVERLAY PRESET' paragraph in the 'About' text 
+-- in the script header
 TEXT_WITH_SHADOW = ""
 
 -----------------------------------------------------------------------------
@@ -412,17 +452,17 @@ function Insert_Items_At_Markers(rend_tr, notes_t, NOTES_TRACK_NAME, OVERLAY_PRE
 		local ok = r.TakeFX_SetPreset(take, 0, OVERLAY_PRESET) -- fx 0
 
 			if not ok then return end -- preset wasn't found
-
-			-- only set parameters if the preset is default because in the user version
-			-- everything will be set within the preset itself
-			if OVERLAY_PRESET == 'Overlay: Text/Timecode' then	
+			-- only set parameters if the preset is stock or its multi-line version 
+			-- because in the user's own version everything will be set within the preset itself
+			local stock, multi_line = OVERLAY_PRESET == 'Overlay: Text/Timecode', OVERLAY_PRESET == 'Overlay: Text/Timecode (centered multi-lines)'
+			if stock or multi_line then
 				if TEXT_WITH_SHADOW then
 				r.TakeFX_CopyToTake(take, 0, take, 1, false) -- ismove false // add another instance
 				-- table for overlay version with shadow which requires two Video proc instances
 				-- the shadow is provided by the 2nd instance
 				-- only values different from the default 'Overlay: Text/Timecode' preset are included
 				-- 1 - y pos, 2 - x pos, 4 - text bright, 5 - text alpha, 6 - bg bright, 7 - bg alpha, 8 - fit bg to text
-				local t = {[0] = {[6]=0, [7]=1, [8]=1}, [1] = {[1]=0.953, [2]=0.504, [4]=0.6, [5]=0.5, [6]=0, [7]=0}}
+				local t = {[0] = {[6]=0, [7]=1, [8]=1}, [1] = {[1]=0.953, [2]=0.502, [4]=0.6, [5]=0.5, [6]=0, [7]=0}}
 					for fx_idx, vals_t in pairs(t) do
 						for parm_idx, val in pairs(vals_t) do
 						r.TakeFX_SetParam(take, fx_idx, parm_idx, val)
@@ -579,7 +619,7 @@ end
 
 NOTES_TRACK_NAME = #NOTES_TRACK_NAME:gsub(' ','') > 0 and NOTES_TRACK_NAME
 RENDER_TRACK_NAME = #RENDER_TRACK_NAME:gsub(' ','') > 0 and RENDER_TRACK_NAME
-TEXT_WITH_SHADOW = OVERLAY_PRESET == "Overlay: Text/Timecode" and #TEXT_WITH_SHADOW:gsub(' ','') > 0
+OVERLAY_PRESET = #OVERLAY_PRESET:gsub('[%s%c]','') > 0 and OVERLAY_PRESET or 'Overlay: Text/Timecode'
 
 local err = not r.NF_GetSWSTrackNotes and 'SWS extension isn\'t installed'
 or not NOTES_TRACK_NAME and 'NOTES_TRACK_NAME \n\n   setting is empty'
@@ -591,6 +631,9 @@ or not NOTES_TRACK_NAME and 'NOTES_TRACK_NAME \n\n   setting is empty'
 local notes_t = Get_Notes(NOTES_TRACK_NAME)
 
 	if not notes_t then return r.defer(no_undo) end
+	
+TEXT_WITH_SHADOW = (OVERLAY_PRESET == 'Overlay: Text/Timecode' or OVERLAY_PRESET == 'Overlay: Text/Timecode (centered multi-lines)') 
+and #TEXT_WITH_SHADOW:gsub(' ','') > 0
 
 ::RELOAD::
 local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
