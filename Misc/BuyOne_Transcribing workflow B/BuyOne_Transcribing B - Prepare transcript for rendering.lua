@@ -2,78 +2,114 @@
 ReaScript name: BuyOne_Transcribing B - Prepare transcript for rendering.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 1.1 #Included a version of the stock 'Overlay: Text/Timecode' preset in which
+					each line of a multi-line caption is centered independently
+					#Added support for this version in a caption with shadow
+					#Simplified OVERLAY_PRESET default setting
+					#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is part of the Transcribing B workflow set of scripts
-	alongside
-	BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
-	BuyOne_Transcribing B - Real time preview.lua  
-	BuyOne_Transcribing B - Format converter.lua  
-	BuyOne_Transcribing B - Import SRT or VTT file as regions.lua 
-	BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
-	BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
-	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua  
-	BuyOne_Transcribing B - Replace text in the transcript.lua
-	
-	Its purpose is to allow embedding transcript in a video file or
-	audio file.
-	
-	V I D E O
-	
-	If VIDEO option is chosen by the user in the pop-up menu the script
-	creates a new track named as specified in the RENDER_TRACK_NAME
-	setting and inserts on it items with Video processor plugin 
-	at regions which correspond to segments and having segment 
-	transcript included in their take names in order to display 
-	the transcript within video context.  
-	The script deletes from the project all segment regions with no
-	transcript to only insert items for segments with text. Existing 
-	markers and non-segment regions are left intact.  
-	New line tag <n> supported by this set of scripts is converted into
-	a new line character which is recognized by 'Overlay: Text/Timecode' 
-	preset of the Video processor.
-	
-	The said render track must be placed above the track with the 
-	video item.  
+			alongside
+			BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
+			BuyOne_Transcribing B - Real time preview.lua  
+			BuyOne_Transcribing B - Format converter.lua  
+			BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
+			BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
+			BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
+			BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua  
+			BuyOne_Transcribing B - Replace text in the transcript.lua
+			
+			Its purpose is to allow embedding transcript in a video file or
+			audio file.
+			
+			V I D E O
+			
+			If VIDEO option is chosen by the user in the pop-up menu the script
+			creates a new track named as specified in the RENDER_TRACK_NAME
+			setting and inserts on it items with Video processor plugin 
+			at regions which correspond to segments and having segment 
+			transcript included in their take names in order to display 
+			the transcript within video context.  
+			The script deletes from the project all segment regions with no
+			transcript to only insert items for segments with text. Existing 
+			markers and non-segment regions are left intact.  
+			New line tag <n> supported by this set of scripts is converted into
+			a new line character which is recognized by 'Overlay: Text/Timecode' 
+			preset of the Video processor.
+			
+			The said render track must be placed above the track with the 
+			video item.  
 
-	When the items are created they become locked so in order to manually
-	delete them they must be unlocked first. Or the render track itself
-	can be deleted without unlocking the items beforehand.  
-	
-	Once set up the video can be rendered out as normal.
-	
-	A U D I O
-	
-	If AUDIO option is selected the script deletes from the project all 
-	markers and segment regions, and then creates markers taking their 
-	positions from original segment regions. Non-segment regions are 
-	left intact.
-	
-	The transcript of each segment is added to the corresponding marker
-	name. All new line tags <n> supported by this set of scripts and 
-	all other formatting markup supported by the SRT or VTT formats is 
-	cleared.  
-	If 'With chapter tags' option is enabled before opting for AUDIO
-	option, in each created marker the transcript will be preceded with
-	'CHAP' tag and will be recognized as a chapter by media players which 
-	support it. To have chapter tags embedded in the file the output format
-	must be mp3, flac, ogg or opus and 'Add new metadata' option must be 
-	enabled in the Render window.  
-	To embed the segment markers with the transcript inside files in formats 
-	which don't support 'CHAP' tag such as wav, instead of enabling the 
-	metadata select 'Markers only' option from the drop-down menu at the 
-	bottom of the Render window. Adding chapter tag in this case is 
-	unnecessary.
-	
-	The menu options can be triggered from keyboard by hitting the key
-	which corresponds to the first character of the menu item.
-	
-	This script along with  
-	'BuyOne_Transcribing B - Import SRT or VTT file as markers and SWS track Notes.lua'
-	can be used to embed 3d party SRT/VTT subtitles in a video/audio 
-	file.
+			When the items are created they become locked so in order to manually
+			delete them they must be unlocked first. Or the render track itself
+			can be deleted without unlocking the items beforehand.  
+			
+			Once set up the video can be rendered out as normal.
+			
+			A U D I O
+			
+			If AUDIO option is selected the script deletes from the project all 
+			markers and segment regions, and then creates markers taking their 
+			positions from original segment regions. Non-segment regions are 
+			left intact.
+			
+			The transcript of each segment is added to the corresponding marker
+			name. All new line tags <n> supported by this set of scripts and 
+			all other formatting markup supported by the SRT or VTT formats is 
+			cleared.  
+			If 'With chapter tags' option is enabled before opting for AUDIO
+			option, in each created marker the transcript will be preceded with
+			'CHAP' tag and will be recognized as a chapter by media players which 
+			support it. To have chapter tags embedded in the file the output format
+			must be mp3, flac, ogg or opus and 'Add new metadata' option must be 
+			enabled in the Render window.  
+			To embed the segment markers with the transcript inside files in formats 
+			which don't support 'CHAP' tag such as wav, instead of enabling the 
+			metadata select 'Markers only' option from the drop-down menu at the 
+			bottom of the Render window. Adding chapter tag in this case is 
+			unnecessary.
+			
+			The menu options can be triggered from keyboard by hitting the key
+			which corresponds to the first character of the menu item.
+			
+			This script along with  
+			'BuyOne_Transcribing B - Import SRT or VTT file as markers and SWS track Notes.lua'
+			can be used to embed 3d party SRT/VTT subtitles in a video/audio 
+			file.
+			
+			
+			O V E R L A Y  P R E S E T
+
+			By default the script implies usage of the stock
+			'Overlay: Text/Timecode' preset to display transcript segments.  
+			OVERLAY_PRESET setting in the USER SETTING below allows
+			defining a custom overlay preset which the script will
+			use.  
+			The stock 'Overlay: Text/Timecode' preset does support
+			multi-line captions but it centers the text as a single
+			unit, so each line starts at the same X coordinate on the
+			screen, i.e.
+			My line
+			My second line
+			My line after the second
+
+			To have lines centered individually use a mod of the 
+			stock preset whose code is provided at the bottom of this
+			script. Paste the code into the Video processor instance,
+			hit Ctrl/Cmd + S to store it, save as a named preset
+			and specify this preset name in the OVERLAY_PRESET 
+			setting of the USER SETTINGS below. Alternatively import
+			the preset dump file  
+			'Overlay_Text-Timecode (centered multi-lines).RPL' 
+			located in the script folder.  
+			The resulting multi-line caption will look like so
+			(the following may not display correctly within the 
+			ReaScript IDE)
+			         My line
+			      My second line
+			My line after the second
 ]]
 
 -----------------------------------------------------------------------------
@@ -96,20 +132,24 @@ SEGMENT_REGION_COLOR = "#b564a6"
 -- create it automatically
 RENDER_TRACK_NAME = "RENDER"
 
--- If you use the default "Overlay: Text/Timecode" preset
--- of the Video processor to preview transcript in video
--- context, keep this setting as is;
+-- If empty, the script will use the Video processor stock
+-- "Overlay: Text/Timecode" preset to create transcript
+-- preview in video context;
 -- if you use a customized version of this preset, specify
--- its name in this setting between the quotes;
+-- its name in this setting between the quotes,
 -- it's advised that the customized preset name be different
--- from the default one, otherwise its settings may get
+-- from the stock one, otherwise its settings may get
 -- affected by the script
 OVERLAY_PRESET = "Overlay: Text/Timecode"
 
 -- Enable by inserting any alphanumeric character between
 -- the quotes;
--- only relevant if OVERLAY_PRESET setting is the default
--- "Overlay: Text/Timecode" preset
+-- only relevant if OVERLAY_PRESET setting is the stock
+-- "Overlay: Text/Timecode" preset or the one which supports
+-- centered multi-lines and is named 
+-- "Overlay: Text/Timecode (centered multi-lines)"
+-- see 'OVERLAY PRESET' paragraph in the 'About' text 
+-- in the script header
 TEXT_WITH_SHADOW = ""
 
 -----------------------------------------------------------------------------
@@ -386,10 +426,10 @@ function Insert_Items_At_Regions(rend_tr, reg_t, reg_color, OVERLAY_PRESET, TEXT
 		local ok = r.TakeFX_SetPreset(take, 0, OVERLAY_PRESET) -- fx 0
 
 			if not ok then return end -- preset wasn't found
-
-			-- only set parameters if the preset is default because in the user version
-			-- everything will be set within the preset itself
-			if OVERLAY_PRESET == 'Overlay: Text/Timecode' then
+			-- only set parameters if the preset is stock or its multi-line version 
+			-- because in the user's own version everything will be set within the preset itself
+			local stock, multi_line = OVERLAY_PRESET == 'Overlay: Text/Timecode', OVERLAY_PRESET == 'Overlay: Text/Timecode (centered multi-lines)'
+			if stock or multi_line then
 				if TEXT_WITH_SHADOW then
 				r.TakeFX_CopyToTake(take, 0, take, 1, false) -- ismove false // add another instance
 				-- table for overlay version with shadow which requires two Video proc instances
@@ -488,7 +528,6 @@ local err = 'the segment_region_color \n\n'
 err = #SEGMENT_REGION_COLOR:gsub(' ','') == 0 and err..'\t  setting is empty'
 or not REG_COLOR and err..'\t setting is invalid'
 or #RENDER_TRACK_NAME:gsub(' ','') == 0 and 'RENDER_TRACK_NAME \n\n   setting is empty'
-or #OVERLAY_PRESET:gsub('[%s%c]','') == 0 and 'OVERLAY_PRESET setting is empty'
 
 	if err then
 	Error_Tooltip("\n\n "..err.." \n\n", 1, 1) -- caps, spaced true
@@ -507,7 +546,9 @@ or not Get_Transcript(REG_COLOR|0x1000000, 1) and 'no segment regions \n\n   wit
 
 
 REG_COLOR = REG_COLOR|0x1000000 -- convert color to the native format returned by object functions
-TEXT_WITH_SHADOW = OVERLAY_PRESET == "Overlay: Text/Timecode" and #TEXT_WITH_SHADOW:gsub(' ','') > 0
+OVERLAY_PRESET = #OVERLAY_PRESET:gsub('[%s%c]','') > 0 and OVERLAY_PRESET or 'Overlay: Text/Timecode'
+TEXT_WITH_SHADOW = (OVERLAY_PRESET == 'Overlay: Text/Timecode' or OVERLAY_PRESET == 'Overlay: Text/Timecode (centered multi-lines)') 
+and #TEXT_WITH_SHADOW:gsub(' ','') > 0
 
 ::RELOAD::
 local is_new_value, scr_name, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
@@ -583,6 +624,214 @@ Error_Tooltip('')	-- undo the 'process underway' tooltip
 
 r.Undo_EndBlock('Transcribing B: Prepare transcript for rendering', -1)
 
+
+--[[ VIDEO PROCESSOR PRESET CODE
+
+-------------------- COPY FROM NEXT LINE ---------------------
+// Overlay: Text/Timecode (centered multi-lines)
+// Mod of the stock preset to make multi-lines
+// effected by new line character '\n', centered
+// relative to each other instead of all being
+// justified to the same x coordinate
+// Example:
+/*
+Stock
+
+    my line one
+    my line one one
+    my line one one one
+
+This preset
+
+        my line one
+      my line one one
+    my line one one one
+
+*/
+// To create visibly empty lines use space,
+// genuinely empty lines aren't recognized
+
+
+
+/////////////// CODE START ///////////////
+
+
+// Insert your text if not fetched from
+// track or take name
+#text="";
+// Font name can be changed, i.e.
+// Times New Roman, Verdana, Courier New, Tahoma
+font="Arial";
+
+
+/////////////// MAIN CODE ///////////////
+
+//@param1:size 'text height' 0.05 0.01 0.2 0.1 0.001
+//@param2:ypos 'y position' 0.95 0 1 0.5 0.01
+//@param3:xpos 'x position' 0.5 0 1 0.5 0.01
+//@param4:border 'bg pad' 0.1 0 1 0.5 0.01
+//@param5:fgc 'text bright' 1.0 0 1 0.5 0.01
+//@param6:fga 'text alpha' 1.0 0 1 0.5 0.01
+//@param7:bgc 'bg bright' 0.75 0 1 0.5 0.01
+//@param8:bga 'bg alpha' 0.5 0 1 0.5 0.01
+//@param9:bgfit 'fit bg to text' 0 0 1 0.5 1
+//@param10:ignoreinput 'ignore input' 0 0 1 0.5 1
+
+//@param12:tc 'show timecode' 0 0 1 0.5 1
+//@param13:tcdf 'dropframe timecode' 0 0 1 0.5 1
+
+input = ignoreinput ? -2:0;
+project_wh_valid===0 ? input_info(input,project_w,project_h);
+gfx_a2=0;
+gfx_blit(input,1);
+gfx_setfont(size*project_h,font);
+tc>0.5 ? (
+  t = floor((project_time + project_timeoffs) * framerate + 0.0000001);
+  f = ceil(framerate);
+  tcdf > 0.5 && f != framerate ? (
+    period = floor(framerate * 600);
+    ds = floor(framerate * 60);
+    ds > 0 ? t += 18 * ((t / period)|0) + ((((t%period)-2)/ds)|0)*2;
+  );
+  sprintf(#text,"%02d:%02d:%02d:%02d",(t/(f*3600))|0,(t/(f*60))%60,(t/f)%60,t%f);
+) : strcmp(#text,"")==0 ? input_get_name(-1,#text);
+
+
+/////////////// MOD START ///////////////
+
+function split_string_at_new_line_char(str)
+(
+  str_len = strlen(str); // store source string length
+  count = 0;
+  offset = 0;
+  substr_len = 1;
+  while(
+    // Keep scanning and storing substring to memory address until \n comes along
+    strcpy_substr(count, str, offset, substr_len);
+    single_new_line_char = substr_len == 1 && match("\n", count);
+    found = match("*\n", count); // operators + and +? work as well
+      // If the substring sarts with a new line char
+      // it immediately follows the preceding new line character
+      // of the previous capture and will be included in the current capture
+      // at its start, so skip it because it will throw off calculations
+      single_new_line_char ? (
+      offset += substr_len;
+      substr_len = 0;
+      ) :
+      ( found || offset + substr_len == str_len) ? ( // \n is found in the substring or end of the source string
+        // Strip trailing new line char from the substring if found, i.e. not if the end of the string,
+        // resaving it at the same address
+        trim = found ? substr_len-1 : substr_len;
+        strcpy_substr(count, str, offset, trim);
+        // Increment count to advance to next memory address for storage,
+        // the value will also be used to iterate over them in a loop
+        // to display the stored substrings
+        count += 1;
+        // Update offset to restart scanning from the last position
+        offset += substr_len;
+        // Reset to start the scanning from the 1st subtring byte,
+        // will be incremented below
+        substr_len = 0;
+      );
+    // Constantly increment by 1 to advance within the source string towards its end
+    substr_len += 1;
+    // Continue looping as long as this is true
+    offset + substr_len <= str_len;
+  );
+  count;
+);
+
+
+function get_longest_str_idx(array_st, array_end)
+// Couldn't make it work with while() loop
+(
+// First find the greatest length value
+range = array_end-array_st;
+i = array_st;
+  loop(range,
+  a = strlen(i);
+  mx = max(a, mx);
+  i+=1;
+  );
+// Now find the index of memory address
+// where the longest string is stored
+i = array_st;
+  loop(range,
+  // If string length happens to be equal to mx value, store its index
+  // otherwise maintain ogirinal mx value
+  mx = strlen(i) == mx ? i : mx;
+  i+=1;
+  );
+  mx;
+);
+
+// Split the text, store substrings and get
+// line count
+count = split_string_at_new_line_char(#text);
+// Get the longest line so that the backround
+// is only shrunk with 'fit bg to text'
+// as much as this line width allows
+mx = get_longest_str_idx(0, count);
+// Print the longest line
+// to be able to get its dimensions
+sprintf(#text,"%s",mx);
+// Get the longest line width and height,
+// height can be taken from any line
+// because they're all affected by the same
+// 'text height' parameter
+gfx_str_measure(#text,txtw_mx,txth);
+// Multiply line height by the number of lines
+// to be used in background height calculation
+// so that the background covers all
+txth*=count;
+
+// Calculate and draw background
+// using the longest string width;
+// this is the original code where txtw
+// variable is substrituted with txtw_mx
+b = (border*txth)|0;
+yt = ((project_h - txth - b*2)*ypos)|0;
+xp = (xpos * (project_w-txtw_mx))|0;
+gfx_set(bgc,bgc,bgc,bga);
+bga>0?gfx_fillrect(bgfit?xp-b:0, yt, bgfit?txtw_mx+b*2:project_w, txth+b*2);
+gfx_set(fgc,fgc,fgc,fga);
+
+// Draw text lines
+
+i=count-1; // -1 because string address indexing starts from 0
+y_offset = 0;
+
+loop(count,
+
+  sprintf(#text,"%s",i);
+  gfx_str_measure(#text,txtw,txth);
+
+  // Only calculate x coordinate for the longest line,
+  // calculating the x coordinate for other lines
+  // relative to it so that when lines are moved from the center
+  // with 'x position' parameter, they remain centered
+  // relative to each other;
+  xp = (xpos * (project_w-txtw_mx))|0;
+  x_offset = txtw !== txtw_mx ? (txtw_mx-txtw)/2;
+  // OR
+  // x_offset = i !== mx ? (txtw_mx-txtw)/2;
+
+  gfx_str_draw(#text, xp+x_offset, yt+b+txth*(count-1)-y_offset);
+
+  // Keep incrementing so that each next line
+  // is drawn above the current one;
+  // empty strings wouldn't affect the offset calculation
+  // because their txth value is 0
+  y_offset+=txth;
+  // Iterating in reverse because y coordinate offsetting
+  // must start from the bottommost line which is the line
+  // last captured inside split_string_at_new_line_char()
+  i-=1;
+);
+-------------------- COPY UNTIL THE PREVIOUS LINE ---------------------
+
+
+]]
 
 
 
