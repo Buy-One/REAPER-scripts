@@ -4,112 +4,112 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
 Changelog: 1.1 #Included a version of the stock 'Overlay: Text/Timecode' preset in which
-					each line of a multi-line caption is centered independently
-					#Added support for this version in a caption with shadow
-					#Simplified OVERLAY_PRESET default setting
-					#Updated 'About' text
+				each line of a multi-line caption is centered independently
+				#Added support for this version in a caption with shadow
+				#Simplified OVERLAY_PRESET default setting
+				#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is part of the Transcribing B workflow set of scripts
-			alongside
-			BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
-			BuyOne_Transcribing B - Real time preview.lua  
-			BuyOne_Transcribing B - Format converter.lua  
-			BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
-			BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
-			BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
-			BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua  
-			BuyOne_Transcribing B - Replace text in the transcript.lua
-			
-			Its purpose is to allow embedding transcript in a video file or
-			audio file.
-			
-			V I D E O
-			
-			If VIDEO option is chosen by the user in the pop-up menu the script
-			creates a new track named as specified in the RENDER_TRACK_NAME
-			setting and inserts on it items with Video processor plugin 
-			at regions which correspond to segments and having segment 
-			transcript included in their take names in order to display 
-			the transcript within video context.  
-			The script deletes from the project all segment regions with no
-			transcript to only insert items for segments with text. Existing 
-			markers and non-segment regions are left intact.  
-			New line tag <n> supported by this set of scripts is converted into
-			a new line character which is recognized by 'Overlay: Text/Timecode' 
-			preset of the Video processor.
-			
-			The said render track must be placed above the track with the 
-			video item.  
+		alongside
+		BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
+		BuyOne_Transcribing B - Real time preview.lua  
+		BuyOne_Transcribing B - Format converter.lua  
+		BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
+		BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua  
+		BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
+		BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua  
+		BuyOne_Transcribing B - Replace text in the transcript.lua
+		
+		Its purpose is to allow embedding transcript in a video file or
+		audio file.
+		
+		V I D E O
+		
+		If VIDEO option is chosen by the user in the pop-up menu the script
+		creates a new track named as specified in the RENDER_TRACK_NAME
+		setting and inserts on it items with Video processor plugin 
+		at regions which correspond to segments and having segment 
+		transcript included in their take names in order to display 
+		the transcript within video context.  
+		The script deletes from the project all segment regions with no
+		transcript to only insert items for segments with text. Existing 
+		markers and non-segment regions are left intact.  
+		New line tag <n> supported by this set of scripts is converted into
+		a new line character which is recognized by 'Overlay: Text/Timecode' 
+		preset of the Video processor.
+		
+		The said render track must be placed above the track with the 
+		video item.  
 
-			When the items are created they become locked so in order to manually
-			delete them they must be unlocked first. Or the render track itself
-			can be deleted without unlocking the items beforehand.  
-			
-			Once set up the video can be rendered out as normal.
-			
-			A U D I O
-			
-			If AUDIO option is selected the script deletes from the project all 
-			markers and segment regions, and then creates markers taking their 
-			positions from original segment regions. Non-segment regions are 
-			left intact.
-			
-			The transcript of each segment is added to the corresponding marker
-			name. All new line tags <n> supported by this set of scripts and 
-			all other formatting markup supported by the SRT or VTT formats is 
-			cleared.  
-			If 'With chapter tags' option is enabled before opting for AUDIO
-			option, in each created marker the transcript will be preceded with
-			'CHAP' tag and will be recognized as a chapter by media players which 
-			support it. To have chapter tags embedded in the file the output format
-			must be mp3, flac, ogg or opus and 'Add new metadata' option must be 
-			enabled in the Render window.  
-			To embed the segment markers with the transcript inside files in formats 
-			which don't support 'CHAP' tag such as wav, instead of enabling the 
-			metadata select 'Markers only' option from the drop-down menu at the 
-			bottom of the Render window. Adding chapter tag in this case is 
-			unnecessary.
-			
-			The menu options can be triggered from keyboard by hitting the key
-			which corresponds to the first character of the menu item.
-			
-			This script along with  
-			'BuyOne_Transcribing B - Import SRT or VTT file as markers and SWS track Notes.lua'
-			can be used to embed 3d party SRT/VTT subtitles in a video/audio 
-			file.
-			
-			
-			O V E R L A Y  P R E S E T
+		When the items are created they become locked so in order to manually
+		delete them they must be unlocked first. Or the render track itself
+		can be deleted without unlocking the items beforehand.  
+		
+		Once set up the video can be rendered out as normal.
+		
+		A U D I O
+		
+		If AUDIO option is selected the script deletes from the project all 
+		markers and segment regions, and then creates markers taking their 
+		positions from original segment regions. Non-segment regions are 
+		left intact.
+		
+		The transcript of each segment is added to the corresponding marker
+		name. All new line tags <n> supported by this set of scripts and 
+		all other formatting markup supported by the SRT or VTT formats is 
+		cleared.  
+		If 'With chapter tags' option is enabled before opting for AUDIO
+		option, in each created marker the transcript will be preceded with
+		'CHAP' tag and will be recognized as a chapter by media players which 
+		support it. To have chapter tags embedded in the file the output format
+		must be mp3, flac, ogg or opus and 'Add new metadata' option must be 
+		enabled in the Render window.  
+		To embed the segment markers with the transcript inside files in formats 
+		which don't support 'CHAP' tag such as wav, instead of enabling the 
+		metadata select 'Markers only' option from the drop-down menu at the 
+		bottom of the Render window. Adding chapter tag in this case is 
+		unnecessary.
+		
+		The menu options can be triggered from keyboard by hitting the key
+		which corresponds to the first character of the menu item.
+		
+		This script along with  
+		'BuyOne_Transcribing B - Import SRT or VTT file as markers and SWS track Notes.lua'
+		can be used to embed 3d party SRT/VTT subtitles in a video/audio 
+		file.
+		
+		
+		O V E R L A Y  P R E S E T
 
-			By default the script implies usage of the stock
-			'Overlay: Text/Timecode' preset to display transcript segments.  
-			OVERLAY_PRESET setting in the USER SETTING below allows
-			defining a custom overlay preset which the script will
-			use.  
-			The stock 'Overlay: Text/Timecode' preset does support
-			multi-line captions but it centers the text as a single
-			unit, so each line starts at the same X coordinate on the
-			screen, i.e.
-			My line
-			My second line
-			My line after the second
+		By default the script implies usage of the stock
+		'Overlay: Text/Timecode' preset to display transcript segments.  
+		OVERLAY_PRESET setting in the USER SETTING below allows
+		defining a custom overlay preset which the script will
+		use.  
+		The stock 'Overlay: Text/Timecode' preset does support
+		multi-line captions but it centers the text as a single
+		unit, so each line starts at the same X coordinate on the
+		screen, i.e.
+		My line
+		My second line
+		My line after the second
 
-			To have lines centered individually use a mod of the 
-			stock preset whose code is provided at the bottom of this
-			script. Paste the code into the Video processor instance,
-			hit Ctrl/Cmd + S to store it, save as a named preset
-			and specify this preset name in the OVERLAY_PRESET 
-			setting of the USER SETTINGS below. Alternatively import
-			the preset dump file  
-			'Overlay_Text-Timecode (centered multi-lines).RPL' 
-			located in the script folder.  
-			The resulting multi-line caption will look like so
-			(the following may not display correctly within the 
-			ReaScript IDE)
-			         My line
-			      My second line
-			My line after the second
+		To have lines centered individually use a mod of the 
+		stock preset whose code is provided at the bottom of this
+		script. Paste the code into the Video processor instance,
+		hit Ctrl/Cmd + S to store it, save as a named preset
+		and specify this preset name in the OVERLAY_PRESET 
+		setting of the USER SETTINGS below. Alternatively import
+		the preset dump file  
+		'Overlay_Text-Timecode (centered multi-lines).RPL' 
+		located in the script folder.  
+		The resulting multi-line caption will look like so
+		(the following may not display correctly within the 
+		ReaScript IDE)
+				 My line
+			  My second line
+		My line after the second
 ]]
 
 -----------------------------------------------------------------------------
@@ -140,7 +140,7 @@ RENDER_TRACK_NAME = "RENDER"
 -- it's advised that the customized preset name be different
 -- from the stock one, otherwise its settings may get
 -- affected by the script
-OVERLAY_PRESET = "Overlay: Text/Timecode"
+OVERLAY_PRESET = ""
 
 -- Enable by inserting any alphanumeric character between
 -- the quotes;
