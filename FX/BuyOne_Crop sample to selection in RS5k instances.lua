@@ -2,45 +2,46 @@
 ReaScript name: BuyOne_Crop sample to selection in RS5k instances.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
-Changelog: 	1.3 #Fixed targetting selected tracks when TARGET_ALL_TRACKS setting is not enabled
-				#Updated script name to reflect the functionality
-			1.2 #Added user settings
-				#Added query of RS5k instance offline state to ignore offline instances
-				#Updated 'About' text
-			1.1 #Fixed error due to invalidation of a temporary item pointer after gluing
+Version: 1.4
+Changelog: 	1.4 #Added support for offline RS5k instances and a setting to ignore them
+				1.3 #Fixed targetting selected tracks when TARGET_ALL_TRACKS setting is not enabled
+					 #Updated script name to reflect the functionality
+				1.2 #Added user settings
+					 #Added query of RS5k instance offline state to ignore offline instances
+					 #Updated 'About' text
+				1.1 #Fixed error due to invalidation of a temporary item pointer after gluing
 Licence: WTFPL
 REAPER: at least v6.37 for reliable performance
 Provides: [main=main,midi_editor,mediaexplorer] .
 About: 	Object is either track or item or active take
-		in a multi-take item.  
-		Priority is given to selected tracks. If no track 
-		is selected and TARGET_ALL_TRACKS setting isn't enabled
-		a prompt will offer to target selected items if any 
-		are selected.  
-		In tracks, only main FX chain is targeted, input FX
-		chain is ignored.  
-		FX containers aren't supported. To target RS5k 
-		instances inside containers use script 
-		BuyOne_Crop sample to selection in focused RS5k instance.lua
-		which obviously is able to affect one RS5k instance
-		at a time.
+			in a multi-take item.  
+			Priority is given to selected tracks. If no track 
+			is selected and TARGET_ALL_TRACKS setting isn't enabled
+			a prompt will offer to target selected items if any 
+			are selected.  
+			In tracks, only main FX chain is targeted, input FX
+			chain is ignored.  
+			FX containers aren't supported. To target RS5k 
+			instances inside containers use script 
+			BuyOne_Crop sample to selection in focused RS5k instance.lua
+			which obviously is able to affect one RS5k instance
+			at a time.
 
-		Cropped versions of the files are placed in and loaded
-		to RS5k from the project folder or its dedicated 
-		media folder if specified in the project settings, 
-		provided the project is saved. Otherwise it will
-		be located in the default media directory for 
-		unsaved projects, which is either absolute path
-		specified in the default project settings under
-		Media -> Path to save media files, path specified
-		at Preferences -> General -> Paths -> Default recording path
-		or REAPER default path %USER%\Documents\REAPER Media
-		(on Windows).
-		
-		Keep in mind that if you undo the change produced 
-		by the script the newly created cropped versions
-		of the sample files will remain on the disk.
+			Cropped versions of the files are placed in and loaded
+			to RS5k from the project folder or its dedicated 
+			media folder if specified in the project settings, 
+			provided the project is saved. Otherwise it will
+			be located in the default media directory for 
+			unsaved projects, which is either absolute path
+			specified in the default project settings under
+			Media -> Path to save media files, path specified
+			at Preferences -> General -> Paths -> Default recording path
+			or REAPER default path %USER%\Documents\REAPER Media
+			(on Windows).
+			
+			Keep in mind that if you undo the change produced 
+			by the script the newly created cropped versions
+			of the sample files will remain on the disk.
 ]]
 
 
@@ -56,16 +57,23 @@ About: 	Object is either track or item or active take
 -- of selected objects
 TARGET_ALL_TRACKS = ""
 
+
 -- Enable so that tracks hidden in the Arrange
 -- are also targeted by the script when TARGET_ALL_TRACKS
 -- setting is enabled above
 TARGET_HIDDEN_TRACKS = ""
 
+
 -- Enable for the script to ignore
 -- bypassed RS5k instances both individually
 -- and as part of bypassed track FX chain;
--- offline instances are always ignored
 IGNORE_BYPASSED_INSTANCES = ""
+
+
+-- Enable for the script to ignore
+-- offline RS5k instances
+IGNORE_OFFLINE_INSTANCES = ""
+
 
 -- Enable so that after cropping the
 -- new files bear source RS5k instance name
@@ -86,8 +94,9 @@ function Msg(...)
 -- so vararg must not be allowed to end with nil when multiple
 -- arguments are passed, i.e. always end with a caption
 	if #Debug:gsub(' ','') > 0 then -- declared outside of the function, allows to only didplay output when true without the need to comment the function out when not needed, borrowed from spk77
-	local t = {...}
-	local str = #t == 1 and tostring(t[1])..'\n' or not t[1] and 'nil\n' or ''
+	local t = {...} -- constucting table this way, i.e. by packing, allows getting table length even if it contains nils
+--	local str = #t == 1 and tostring(t[1])..'\n' or not t[1] and 'nil\n' or ''
+	local str = #t < 2 and tostring(t[1])..'\n' or ''
 		if #t > 1 then -- OR if #str == 0
 			for i=1,#t,2 do
 				if i > #t then break end
@@ -335,6 +344,7 @@ end
 local targ_all_trks = validate_sett(TARGET_ALL_TRACKS)
 TARGET_HIDDEN_TRACKS = validate_sett(TARGET_HIDDEN_TRACKS)
 IGNORE_BYPASSED_INSTANCES = validate_sett(IGNORE_BYPASSED_INSTANCES)
+IGNORE_OFFLINE_INSTANCES = validate_sett(IGNORE_OFFLINE_INSTANCES)
 USE_INSTANCE_NAME = validate_sett(USE_INSTANCE_NAME)
 
 
@@ -358,14 +368,14 @@ local sel_itms_cnt = r.CountSelectedMediaItems(0)
 
 local tracks = targ_all_trks or r.CountSelectedTracks(0) > 0
 CountObjects, GetObject, CountFX, GetNamedConfigParm, SetNamedConfigParm,
-FX_GetParam, FX_SetParam, FX_Offline, FX_Enabled, FX_GetName =
+FX_GetParam, FX_SetParam, FX_GetOffline, FX_SetOffline, FX_Enabled, FX_GetName =
 table.unpack(not tracks and {r.CountMediaItems, r.GetMediaItem, r.TakeFX_GetCount,
 r.TakeFX_GetNamedConfigParm, r.TakeFX_SetNamedConfigParm, r.TakeFX_GetParam,
-r.TakeFX_SetParam, r.TakeFX_GetOffline, r.TakeFX_GetEnabled, r.TakeFX_GetFXName}
+r.TakeFX_SetParam, r.TakeFX_GetOffline, r.TakeFX_SetOffline, r.TakeFX_GetEnabled, r.TakeFX_GetFXName}
 or tracks and {targ_all_trks and r.CountTracks or r.CountSelectedTracks,
 targ_all_trks and r.GetTrack or r.GetSelectedTrack, r.TrackFX_GetCount,
 r.TrackFX_GetNamedConfigParm, r.TrackFX_SetNamedConfigParm, r.TrackFX_GetParam,
-r.TrackFX_SetParam, r.TrackFX_GetOffline, r.TrackFX_GetEnabled, r.TrackFX_GetFXName})
+r.TrackFX_SetParam, r.TrackFX_GetOffline, r.TrackFX_SetOffline, r.TrackFX_GetEnabled, r.TrackFX_GetFXName})
 
 local t = {}
 local sample_start_idx, sample_end_idx
@@ -380,22 +390,40 @@ local vis_cnt, unbypassed_cnt = 0, 0
 		obj = tracks and obj or r.GetActiveTake(obj)
 		local fx_chain_ON = tracks and r.GetMediaTrackInfo_Value(obj, 'I_FXEN') == 1
 			if not IGNORE_BYPASSED_INSTANCES or fx_chain_ON then
-				for fx_idx=0, CountFX(obj)-1 do
-				local offline = FX_Offline(obj, fx_idx)
+				for fx_idx=0, CountFX(obj)-1 do	
 				local unbypassed = FX_Enabled(obj, fx_idx)
-					if not offline and (not IGNORE_BYPASSED_INSTANCES or unbypassed) then -- when plugin is offline its parameter return values are either 0.0 or -1.0 (only tested with RS5k), failed to determine what the specific value depends on
-					unbypassed_cnt = unbypassed_cnt+1
+				local offline = FX_GetOffline(obj, fx_idx)
+					if (not IGNORE_BYPASSED_INSTANCES or unbypassed) or (not IGNORE_OFFLINE_INSTANCES or not offline) 
+					then -- when plugin is offline its parameter return values are either 0.0 or -1.0 (only tested with RS5k), failed to determine what the specific value depends on
 					local ret, orig_name = GetNamedConfigParm(obj, fx_idx, 'fx_name')
 					local RS5k = orig_name:match('ReaSamplOmatic5000')
 						if not RS5k -- REAPER build older than 6.37 or plugin name changed in the FX browser
 						or not sample_start_idx and not sample_end_idx -- no RS5k instances have been detected yet or vars have been reset during evaluation of the previous plugin which isn't RS5k
 						then
+							-- parameter properties aren't returned if plugin is offline
+							-- which will prevent plugin identity validation in builds 
+							-- not supporting original plugin name lookup
+							-- so set it temporarily online
+							if offline then FX_SetOffline(obj, fx_idx, not offline) end
 						-- validating plugin identity concurrently with getting its parameter indices
 						-- if return values are nil, the plugin is not RS5k
 						sample_start_idx = Get_FX_Parm_By_Name_Or_Ident(obj, fx_idx, 'Sample start offset', '_Sample_start_offset', nil) -- want_input_fx nil
 						sample_end_idx = Get_FX_Parm_By_Name_Or_Ident(obj, fx_idx, 'Sample end offset', '_Sample_end_offset', nil)
+							if offline then FX_SetOffline(obj, fx_idx, offline) end -- re-store original offline state
 						end
+						
+						-- count for error messages
+						if RS5k or sample_start_idx and sample_end_idx then
+						unbypassed_cnt = (not IGNORE_BYPASSED_INSTANCES or unbypassed) and unbypassed_cnt+1 or unbypassed_cnt
+						online_cnt = (not IGNORE_OFFLINE_INSTANCES or not offline) and online_cnt+1 or online_cnt
+						RS5k_cnt = RS5k_cnt+1
+						end
+						
+						-- if respected, set the offline RS5k instance temporarily online to get the data
+						if offline and not IGNORE_OFFLINE_INSTANCES then FX_SetOffline(obj, fx_idx, not offline) end
+					
 					local retval, full_file_path = GetNamedConfigParm(obj, fx_idx, "FILE"..(0))
+					
 						if (RS5k or sample_start_idx and sample_end_idx) and retval then -- likely RS5k instance and it's not empty // if original name can be validated, sample_start_idx and end_parm_idx vars will have already been retrieved when the first instance was detected, if it cannot be validated sample_start_idx and sample_end_idx vars will be retrieved again, so they always belong to RS5k and indicate its presence
 						-- these values are percentage of the file length on scale of 0-1
 						-- so must be converted into sec after getting file PCM source length
@@ -404,26 +432,28 @@ local vis_cnt, unbypassed_cnt = 0, 0
 							if sample_start > 0 or sample_end < 1 then -- only store if sample is trimmed, i.e. selection is active
 								if not t[obj] then t[obj] = {} end
 							local ret, name = FX_GetName(obj, fx_idx)
-							t[obj][fx_idx] = {start=sample_start, ['end']=sample_end, file_path=full_file_path, start_idx=sample_start_idx, end_idx=sample_end_idx, name=name} -- storing sample start/end parameter indices within the table because if last plugin in the chain is not RS5k sample_start_idx and sample_end_idx vars will be reset to nil in the plugin identity evaluation above and will be unusable in the main loop below
+							t[obj][fx_idx] = {start=sample_start, ['end']=sample_end, file_path=full_file_path, start_idx=sample_start_idx, end_idx=sample_end_idx, name=name, offline=offline} -- storing sample start/end parameter indices within the table because if last plugin in the chain is not RS5k sample_start_idx and sample_end_idx vars will be reset to nil in the plugin identity evaluation above and will be unusable in the main loop below
 							end
 						end
+						-- set the originally offline RS5k instance back offline
+						if offline and not IGNORE_OFFLINE_INSTANCES then FX_SetOffline(obj, fx_idx, offline) end
 					end
 				end
 			end
 		end
 	end
 
+local err = 'all rs5k instances \n\n seem to be '
 local err = targ_all_trks and not TARGET_HIDDEN_TRACKS and vis_cnt == 0 and 'no visible tracks'
-or IGNORE_BYPASSED_INSTANCES and unbypassed_cnt == 0 and ' all rs5k instances \n\n seem to be bypassed'
+or RS5k_cnt == 0 and 'no RSk5 instances were found'
+or IGNORE_BYPASSED_INSTANCES and unbypassed_cnt == 0 and ' '..err..'bypassed'
+or IGNORE_OFFLINE_INSTANCES and online_cnt == 0 and err..'offline'
+or IGNORE_BYPASSED_INSTANCES and IGNORE_OFFLINE_INSTANCES and unbypassed_cnt+online_cnt==RS5k_cnt
+and err..'either \n\n bypassed or offline'
+or not next(t) and '    couldn\'t find rsk5 instances \n\n populated with a trimmed sample'
 
 	if err then
 	Error_Tooltip('\n\n '..err..' \n\n', 1,1) -- caps, spaced
-	return r.defer(no_undo)
-	end
-
-	if not next(t) then
-	Error_Tooltip('\n\n    couldn\'t find rsk5 instances \n\n populated with a trimmed sample \n\n'
-	..'\t  or they\'re all offline \n\n', 1,1) -- caps, spaced
 	return r.defer(no_undo)
 	end
 
@@ -443,8 +473,14 @@ local temp_tr, temp_itm, take = Insert_Item_On_Temp_Track()
 
 	for obj, data in pairs(t) do -- objects loop
 		for fx_idx, props in pairs(data) do -- RS5k instances loop
+			if not IGNORE_OFFLINE_INSTANCES and props.offline then -- set RS5k instance temporarily online to process
+			FX_SetOffline(obj, fx_idx, false) -- offline false
+			end
 		file_path, temp_itm, take = Add_File_To_Temp_Item_And_Glue(temp_tr, temp_itm, take, props) -- returns path to the newly created glued file, new take and item pointers after setting new take source and gluing for next loop cycle because the temp item is being re-used
 		Apply_Cropped_File_To_RS5k(obj, fx_idx, props.start_idx, props.end_idx, file_path)
+			if not IGNORE_OFFLINE_INSTANCES and props.offline then -- restore original offline state
+			FX_SetOffline(obj, fx_idx, true) -- offline true
+			end
 		end
 	end
 
