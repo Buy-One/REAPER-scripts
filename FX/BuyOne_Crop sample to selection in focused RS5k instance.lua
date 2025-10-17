@@ -3,7 +3,7 @@ ReaScript name: BuyOne_Crop sample to selection in focused RS5k instance.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
-Changelog: 1.2 #Added support for offline RS5k instances
+Changelog: 	1.2 #Added support for offline RS5k instances
 			1.1 #Removed redundant file PCM source destruction function which caused error
 				#Removed redundant file management code
 				#Updated 'About' text
