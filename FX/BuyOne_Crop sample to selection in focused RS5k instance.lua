@@ -2,28 +2,30 @@
 ReaScript name: BuyOne_Crop sample to selection in focused RS5k instance.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: 1.1 	#Removed redundant file PCM source destruction function which caused error
-		#Removed redundant file management code
+Version: 1.2
+Changelog: 1.2 #Added support for offline RS5k instances
+			1.1 #Removed redundant file PCM source destruction function which caused error
+				#Removed redundant file management code
+				#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v6.37 for reliable performance
 Extensions: 
 Provides: [main=main,midi_editor,mediaexplorer] .
 About: 	Cropped version of the file is placed in and loaded
-	to RS5k from the project folder or its dedicated 
-	media folder if specified in the project settings, 
-	provided the project is saved. Otherwise it will
-	be located in the default media directory for 
-	unsaved projects, which is either absolute path
-	specified in the default project settings under
-	Media -> Path to save media files, path specified
-	at Preferences -> General -> Paths -> Default recoring path
-	or REAPER default path %USER%\Documents\REAPER Media
-	(on Windows).
+		to RS5k from the project folder or its dedicated 
+		media folder if specified in the project settings, 
+		provided the project is saved. Otherwise it will
+		be located in the default media directory for 
+		unsaved projects, which is either absolute path
+		specified in the default project settings under
+		Media -> Path to save media files, path specified
+		at Preferences -> General -> Paths -> Default recoring path
+		or REAPER default path %USER%\Documents\REAPER Media
+		(on Windows).
 
-	Keep in mind that if you undo the change produced 
-	by the script the newly created cropped version
-	of the sample file will remain on the disk.
+		Keep in mind that if you undo the change produced 
+		by the script the newly created cropped version
+		of the sample file will remain on the disk.
 ]]
 
 
@@ -36,8 +38,9 @@ function Msg(...)
 -- so vararg must not be allowed to end with nil when multiple
 -- arguments are passed, i.e. always end with a caption
 	if #Debug:gsub(' ','') > 0 then -- declared outside of the function, allows to only didplay output when true without the need to comment the function out when not needed, borrowed from spk77
-	local t = {...}
-	local str = #t == 1 and tostring(t[1])..'\n' or not t[1] and 'nil\n' or ''
+	local t = {...} -- constucting table this way, i.e. by packing, allows getting table length even if it contains nils
+--	local str = #t == 1 and tostring(t[1])..'\n' or not t[1] and 'nil\n' or ''
+	local str = #t < 2 and tostring(t[1])..'\n' or ''
 		if #t > 1 then -- OR if #str == 0
 			for i=1,#t,2 do
 				if i > #t then break end
@@ -242,7 +245,7 @@ local FX_CountParm, FX_GetParamName, FX_GetParamIdent = table.unpack(take and {r
 		local retval, name = FX_GetParamName(obj, fx_idx, i)
 		local retval, ident = table.unpack(_6_37 and {FX_GetParamIdent(obj, fx_idx, i)} or {})
 			if parm_name and name == parm_name
-			or parm_ident and ident:match(parm_ident) -- without escaping because they're unlikely to include special characters, but worth being watchful
+			or parm_ident and ident:match(parm_ident) -- without escaping because they're unlikely to include special characters, but worth being watchful; and using string.match because returned identifiers incluse param index, i.e. 1:_identifier
 			then return i end
 		end
 	end
@@ -284,6 +287,7 @@ Set_Item(temp_itm, 'D_FADEINLEN', 0)
 Set_Item(temp_itm, 'D_FADEOUTLEN', 0)
 r.SetMediaItemSelected(temp_itm, true) -- selected true // must be selected for Glue to work
 r.Main_OnCommand(40362, 0) -- Item: Glue items, ignoring time selection
+-- the following apparently works because afer gluing take pointer is preserved
 pcm_src = r.GetMediaItemTake_Source(take)
 file_path = r.GetMediaSourceFileName(pcm_src, '')
 
@@ -307,12 +311,23 @@ or not retval) and 'no focused fx' or not fx_name:match('ReaSamplOmatic5000') an
 	return r.defer(no_undo) end
 
 local obj = take or tr
-GetNamedConfigParm, SetNamedConfigParm, FX_GetParam, FX_SetParam = table.unpack(take and {r.TakeFX_GetNamedConfigParm, r.TakeFX_SetNamedConfigParm, r.TakeFX_GetParam, r.TakeFX_SetParam} or tr and {r.TrackFX_GetNamedConfigParm, r.TrackFX_SetNamedConfigParm, r.TrackFX_GetParam, r.TrackFX_SetParam})
+GetNamedConfigParm, SetNamedConfigParm, FX_GetOffline, FX_SetOffline, FX_GetParam, FX_SetParam = table.unpack(take and {r.TakeFX_GetNamedConfigParm, r.TakeFX_SetNamedConfigParm, r.TakeFX_GetOffline, r.TakeFX_SetOffline, r.TakeFX_GetParam, r.TakeFX_SetParam} or tr and {r.TrackFX_GetNamedConfigParm, r.TrackFX_SetNamedConfigParm, r.TrackFX_GetOffline, 
+r.TrackFX_SetOffline, r.TrackFX_GetParam, r.TrackFX_SetParam})
+
+local offline = FX_GetOffline(obj, fx_num)
+
+	if offline and r.MB('Wish to set the instance online?','PROPMT',4) == 6 then
+	FX_SetOffline(obj, fx_num, not offline)
+	end
 
 local retval, full_file_path = GetNamedConfigParm(obj, fx_num, "FILE"..(0))
 
 	if not retval then
-	Error_Tooltip('\n\n rs5k is empty \n\n ', 1,1) -- caps, spaced
+		if not offline then
+		Error_Tooltip('\n\n rs5k is empty \n\n ', 1,1) -- caps, spaced
+		else 
+		FX_SetOffline(obj, fx_num, offline) 
+		end
 	return r.defer(no_undo) end
 
 
@@ -321,6 +336,7 @@ local sample_end_idx = Get_FX_Parm_By_Name_Or_Ident(obj, fx_num, 'Sample end off
 
 	if not sample_start_idx or not sample_end_idx then
 	Error_Tooltip('\n\n couldn\'t retrieve plugin info \n\n ', 1,1) -- caps, spaced
+		if offline then FX_SetOffline(obj, fx_num, offline) end
 	return r.defer(no_undo) end
 
 -- these values are percentage of the file length on scale of 0-1
@@ -330,7 +346,9 @@ local sample_end, minval, maxval = FX_GetParam(obj, fx_num, sample_end_idx)
 
 	if sample_start == 0 and sample_end == 1 then
 	Error_Tooltip('\n\n the sample length isn\'t trimmed. \n\n\t   nothing to crop to. \n\n ', 1,1) -- caps, spaced
+		if offline then FX_SetOffline(obj, fx_num, offline) end
 	return r.defer(no_undo) end
+
 
 local src = r.PCM_Source_CreateFromFile(full_file_path)
 local retval, sect_offset, length, reversed = r.PCM_Source_GetSectionInfo(src)
@@ -349,6 +367,7 @@ SetNamedConfigParm(obj, fx_num, 'FILE0', full_file_path)
 SetNamedConfigParm(obj, fx_num, 'DONE', '')
 FX_SetParam(obj, fx_num, sample_start_idx, 0)
 FX_SetParam(obj, fx_num, sample_end_idx, 1)
+	if offline then FX_SetOffline(obj, fx_num, offline) end
 
 r.PreventUIRefresh(-1)
 r.Undo_EndBlock('Crop sample to selection in focused RS5k instance', -1)
