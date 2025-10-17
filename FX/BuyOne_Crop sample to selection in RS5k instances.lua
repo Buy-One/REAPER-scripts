@@ -4,44 +4,44 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.4
 Changelog: 	1.4 #Added support for offline RS5k instances and a setting to ignore them
-				1.3 #Fixed targetting selected tracks when TARGET_ALL_TRACKS setting is not enabled
-					 #Updated script name to reflect the functionality
-				1.2 #Added user settings
-					 #Added query of RS5k instance offline state to ignore offline instances
-					 #Updated 'About' text
-				1.1 #Fixed error due to invalidation of a temporary item pointer after gluing
+			1.3 #Fixed targetting selected tracks when TARGET_ALL_TRACKS setting is not enabled
+				#Updated script name to reflect the functionality
+			1.2 #Added user settings
+				#Added query of RS5k instance offline state to ignore offline instances
+				#Updated 'About' text
+			1.1 #Fixed error due to invalidation of a temporary item pointer after gluing
 Licence: WTFPL
 REAPER: at least v6.37 for reliable performance
 Provides: [main=main,midi_editor,mediaexplorer] .
 About: 	Object is either track or item or active take
-			in a multi-take item.  
-			Priority is given to selected tracks. If no track 
-			is selected and TARGET_ALL_TRACKS setting isn't enabled
-			a prompt will offer to target selected items if any 
-			are selected.  
-			In tracks, only main FX chain is targeted, input FX
-			chain is ignored.  
-			FX containers aren't supported. To target RS5k 
-			instances inside containers use script 
-			BuyOne_Crop sample to selection in focused RS5k instance.lua
-			which obviously is able to affect one RS5k instance
-			at a time.
+		in a multi-take item.  
+		Priority is given to selected tracks. If no track 
+		is selected and TARGET_ALL_TRACKS setting isn't enabled
+		a prompt will offer to target selected items if any 
+		are selected.  
+		In tracks, only main FX chain is targeted, input FX
+		chain is ignored.  
+		FX containers aren't supported. To target RS5k 
+		instances inside containers use script 
+		BuyOne_Crop sample to selection in focused RS5k instance.lua
+		which obviously is able to affect one RS5k instance
+		at a time.
 
-			Cropped versions of the files are placed in and loaded
-			to RS5k from the project folder or its dedicated 
-			media folder if specified in the project settings, 
-			provided the project is saved. Otherwise it will
-			be located in the default media directory for 
-			unsaved projects, which is either absolute path
-			specified in the default project settings under
-			Media -> Path to save media files, path specified
-			at Preferences -> General -> Paths -> Default recording path
-			or REAPER default path %USER%\Documents\REAPER Media
-			(on Windows).
-			
-			Keep in mind that if you undo the change produced 
-			by the script the newly created cropped versions
-			of the sample files will remain on the disk.
+		Cropped versions of the files are placed in and loaded
+		to RS5k from the project folder or its dedicated 
+		media folder if specified in the project settings, 
+		provided the project is saved. Otherwise it will
+		be located in the default media directory for 
+		unsaved projects, which is either absolute path
+		specified in the default project settings under
+		Media -> Path to save media files, path specified
+		at Preferences -> General -> Paths -> Default recording path
+		or REAPER default path %USER%\Documents\REAPER Media
+		(on Windows).
+		
+		Keep in mind that if you undo the change produced 
+		by the script the newly created cropped versions
+		of the sample files will remain on the disk.
 ]]
 
 
