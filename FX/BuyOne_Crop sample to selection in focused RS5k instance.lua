@@ -2,11 +2,12 @@
 ReaScript name: BuyOne_Crop sample to selection in focused RS5k instance.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: 	1.2 #Added support for offline RS5k instances
-			1.1 #Removed redundant file PCM source destruction function which caused error
-				#Removed redundant file management code
-				#Updated 'About' text
+Version: 1.3
+Changelog: 1.3 #Improved reliability
+		   1.2 #Added support for offline RS5k instances
+		   1.1 #Removed redundant file PCM source destruction function which caused error
+			   #Removed redundant file management code
+			   #Updated 'About' text
 Licence: WTFPL
 REAPER: at least v6.37 for reliable performance
 Extensions: 
@@ -287,7 +288,11 @@ Set_Item(temp_itm, 'D_FADEINLEN', 0)
 Set_Item(temp_itm, 'D_FADEOUTLEN', 0)
 r.SetMediaItemSelected(temp_itm, true) -- selected true // must be selected for Glue to work
 r.Main_OnCommand(40362, 0) -- Item: Glue items, ignoring time selection
--- the following apparently works because afer gluing take pointer is preserved
+-- afer gluing take pointer seems to be preserved, 
+-- but in case it's not, which may happen, tetrieve it again
+	if not take then 
+	take = r.GetActiveTake(r.GetSelectedMediaItem(0,0))
+	end
 pcm_src = r.GetMediaItemTake_Source(take)
 file_path = r.GetMediaSourceFileName(pcm_src, '')
 
