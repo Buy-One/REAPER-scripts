@@ -2,9 +2,13 @@
 ReaScript name: BuyOne_Exclusive envelopes visibility menu.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: 	#Optimized code
-			#Improved undo point creation consistency
+Version: 1.2
+Changelog: 1.2 	#Fixed display of Master track title in the menu
+				#Fixed detection of inactive hidden track envelopes
+				#Added sanitazation of menu special characters from FX envelope names 
+				to prevent inteferenece with the menu structure and appearance
+		   1.1 	#Optimized code
+				#Improved undo point creation consistency
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: 
@@ -246,18 +250,32 @@ local env = r.GetSelectedEnvelope(0)
 end
 
 
+function sanitize_string_for_menu(name) -- used in Get_Active_Envelopes()
+-- stripping leading !, #, < and > and replacing all instances of | with slash
+-- so that being menu special characters they don't affect 
+-- the way string is displayed in the menu
+return (name:sub(1,1):match('[!#<>]+') and name:sub(2) or name):gsub('|', '/')
+end
+
 
 function Get_Active_Envelopes(obj)
+
 	local function get_hidden_built_in_track_env(env)
-	local env_name_t = {VOLENV='', VOLENV2='', VOLENV3='', PANENV='', PANENV2='',
-	DUALPANENVL='', DUALPANENV='', DUALPANENVL2='', DUALPANENV2='', WIDTHENV='',
-	WIDTHENV2='', MUTEENV='', AUXVOLENV='', AUXPANENV='', AUXMUTEENV='', PARMENV='', TEMPOENVEX=''}
+	local env_name_t = {
+	-- regular track
+	Volume='', ['Volume (Pre-FX)']='', ['Trim Volume']='', ['Send Volume']='', 
+	Pan='', ['Pan (Pre-FX)']='', ['Pan (Left)']='', ['Pan (Right)']='', ['Send Pan']='', 
+	Width='', ['Width (Pre-FX)']='', Mute='', ['Send Mute']='',
+	 -- master track
+	Playrate='', --['Tempo map']='' -- excluding tempo map envelope because when inactive and has no points at all it cannot be opened even though the chunk is there
+	}
 	local ret, env_name = r.GetEnvelopeName(env)
 		if env_name_t[env_name] then
 		local retval, chunk = r.GetEnvelopeStateChunk(env, '', false) -- isundo false
 			if not chunk:match('\nPT %d') then return env end
 		end
 	end
+
 local tr, take = r.ValidatePtr(obj, 'MediaTrack*'), r.ValidatePtr(obj, 'MediaItem_Take*')
 local Count_Envs, GetEnv = table.unpack(take and {r.CountTakeEnvelopes, r.GetTakeEnvelope}
 or tr and {r.CountTrackEnvelopes, r.GetTrackEnvelope})
@@ -265,9 +283,10 @@ or tr and {r.CountTrackEnvelopes, r.GetTrackEnvelope})
 local t = {}
 	for i=0, Count_Envs(obj)-1 do
 	local env = GetEnv(obj, i)
-		if r.CountEnvelopePoints(env) > 0 or get_hidden_built_in_track_env(env) then -- validation of fx envelopes in REAPER builds prior to 7.06 // SUCH VALIDATION IS ALWAYS TRUE FOR VALID TRACK FX ENVELOPES AND ALL TAKE ENVELOPES REGARDLESS OF VISIBILITY, FOR VISIBLE BUILT-IN TRACK ENVELOPES REGARDLESS OF PRESENCE OF USER CREATED POINTS AND FOR HIDDEN BUILT-IN TRACK ENVELOPES WHICH HAVE USER CREATED POINTS; FOR TRACK BUILT-IN ENVELOPES WITHOUT USER CREATED POINTS HIDDEN PROGRAMMATICALLY IT'S FALSE THEREFORE THEY MUST BE VALIDATED VIA CHUNK IN WHICH CASE IT LACKS PT (point) ATTRIBUTE i.e. 'not env_chunk:match('\nPT %d')', BECAUSE EVEN THOUGH IN THE ENVELOPE MANAGER THEY'RE NOT MARKED AS ACTIVE WHILE BEING HIDDEN, FUNCTIONS DO RETURN THEIR POINTER, HIDDEN VIA THE ENVELOPE MANAGER SUCH ENVELOPES BECOME INVALID
+		if 
+		r.CountEnvelopePoints(env) > 0 or get_hidden_built_in_track_env(env)	then -- validation of fx envelopes in REAPER builds prior to 7.06 when ghost envelopes would be detected for fx parameters for which parameter modulation was enabled at least once // SUCH VALIDATION IS ALWAYS TRUE FOR VALID TRACK FX ENVELOPES AND ALL TAKE ENVELOPES REGARDLESS OF VISIBILITY, FOR VISIBLE BUILT-IN TRACK ENVELOPES REGARDLESS OF PRESENCE OF USER CREATED POINTS AND FOR HIDDEN BUILT-IN TRACK ENVELOPES WHICH HAVE USER CREATED POINTS; FOR TRACK BUILT-IN ENVELOPES WITHOUT USER CREATED POINTS HIDDEN PROGRAMMATICALLY IT'S FALSE THEREFORE THEY MUST BE VALIDATED VIA CHUNK IN WHICH CASE IT LACKS PT (point) ATTRIBUTE i.e. 'not env_chunk:match('\nPT %d')', BECAUSE EVEN THOUGH IN THE ENVELOPE MANAGER THEY'RE NOT MARKED AS ACTIVE WHILE BEING HIDDEN, FUNCTIONS DO RETURN THEIR POINTER, HIDDEN VIA THE ENVELOPE MANAGER SUCH ENVELOPES MAY BECOME INVALID
 		local ret, name = r.GetEnvelopeName(env)
-		t[#t+1] = {name=name, env=env}
+		t[#t+1] = {name=sanitize_string_for_menu(name), env=env} -- removing menu special characters from envelope name, relevant for fx parameter envelopes because fx parameter names can be aliased by user
 		end
 	end
 return t
@@ -400,12 +419,13 @@ local is_armed = vis_cnt == 1 and Get_Env_State(vis_env, 3) -- attr argument is 
 	end
 
 local GetObjName = take and r.GetSetMediaItemTakeInfo_String or tr and r.GetSetMediaTrackInfo_String
-local ret, obj_name = GetObjName(take or tr, 'P_NAME', '', false) -- setNewValue false
--- when track is named, its index is added to 'Track' label,
+local ret, obj_name = GetObjName(take or tr, 'P_NAME', '', false) -- setNewValue false // for Master track returns empty string
+-- when track is named, its index is added to 'Track' label, 
 -- otherwise index is used instead of the name
 local tr_idx = tr and r.CSurf_TrackToID(tr, false) -- mcpView false
 local obj_name = (take and 'Take: ' or tr and 'Track'..(#obj_name > 0 and ' '..tr_idx or '')..': ')
 ..(#obj_name > 0 and obj_name or tr and tr_idx or 'No name') -- mcpView false
+local obj_name = tr_idx == 0 and 'Master track' or obj_name
 local bypass = grayout(vis_cnt, not is_unbypassed, 'Toggle bypass of the visible envelope') -- gray out when more than 1 envelope is visible because the action is only applicable to a single visible envelope
 local armed = grayout(vis_cnt, is_armed, 'Toggle arming of the visible envelope') -- gray out when more than 1 envelope is visible because the action is only applicable to a single visible envelope
 --local output = Show_Menu_Dialogue(obj_name..'||'..bypass..armed..menu)
@@ -453,9 +473,6 @@ local undo
 	end
 
 	if output > 0 and KEEP_OPEN then goto RELOAD end
-
-
-
 
 
 
