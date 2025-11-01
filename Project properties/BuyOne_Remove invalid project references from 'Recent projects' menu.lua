@@ -7,8 +7,12 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	Cleans 'Recent projects' menu from invalid file references.			
-  			REAPER only allows cleaning the menu project by project
-  			and only at an attempt to open them.
+		REAPER only allows cleaning the menu project by project
+		and only at an attempt to open them.
+
+		The feature was introduced natively in build 7.50:
+		* add action (under 'Recent project list display' button on Preferences > General) 
+		to remove missing projects from recent project list
 ]]
 
 
