@@ -295,7 +295,7 @@ function Toggle_Env_State(arg, attr, state)
 -- attr is integer:
 -- 1 - visibility, 2 - bypass state, 3 - armed state
 -- state: nil - set the state signified by attr argument of all envelopes to off, true/false - toggle
-local old_build = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.99 -- changes produced with the function GetSetEnvelopeInfo_String() aren't registered so undo point cannot be created, bug report https://forum.cockos.com/showthread.php?t=303814, and toggling must be done via a chunk, or with actions listed above that require selecting envelope which may not be the optimal solution, so using build number with a leeway until fixed
+local old_build = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.50 -- in older builds changes produced with the function GetSetEnvelopeInfo_String() doesn't make envelope dirty so change isn't registered and undo point cannot be created, bug report https://forum.cockos.com/showthread.php?t=303814, and toggling must be done via a chunk, or with actions listed above that require selecting envelope which may not be the optimal solution
 local attr = attr == 1 and (old_build and 'VIS' or 'VISIBLE') or attr == 2 and (old_build and 'ACT' or 'ACTIVE')
 or attr == 3 and 'ARM' -- same in chunk and as a function attribute
 local t, env = type(arg) == 'table' and arg, r.ValidatePtr(arg, 'TrackEnvelope*') and arg
