@@ -2,9 +2,10 @@
 ReaScript name: BuyOne_Exclusive envelopes visibility menu.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: 1.2 	#Fixed display of Master track title in the menu
-				#Fixed detection of inactive hidden track envelopes
+Version: 1.3
+Changelog: 1.3 	#Added sanitazation of object labels displayed in the menu
+		   1.2 	#Fixed display of Master track title in the menu
+			   	#Fixed detection of inactive hidden track envelopes
 				#Added sanitazation of menu special characters from FX envelope names 
 				to prevent inteferenece with the menu structure and appearance
 		   1.1 	#Optimized code
@@ -14,36 +15,36 @@ REAPER: at least v5.962
 Extensions: 
 Provides: [main=main,midi_editor] .
 About: 	Inspired by actions introduced in build 7.47
-		Track: Hide envelope, display next/previous envelope on same track (cycle)
-		
-		The menu is designed to toggle exclusive visibility 
-		of active envelopes, so that only one envelope is
-		visible at a time.  			
-		The script doesn't allow making multiple envelopes 
-		of the same object visible at once.  
-		If multiple envelopes have been made visible manually, 
-		clicking one visible envelope menu item hides all other 
-		visible envelopes while the envelope of the clicked menu 
-		item remains visible.  
-		In REAPER when an armed envelope is bypassed, it's 
-		automatically unarmed, therefore a checkmark will be 
-		cleared from  
-		'Toggle arming of the visible envelope' menu item when 
-		'Toggle bypass of the visible envelope' menu item is clicked
-		And vice versa, when a bypassed envelope is armed, it's 
-		automatically unbypassed, therefore a checkmark will be 
-		cleared from 
-		'Toggle bypass of the visible envelope' menu item when 
-		'Toggle arming of the visible envelope' menu item is clicked
-		
-		The object targeting priority is as follows: 
-		take under mouse
-		track under mouse
-		parent take of the selected take envelope
-		parent track of the selected track envelope
-		active take of selected item
-		selected track
-		last touched track
+			Track: Hide envelope, display next/previous envelope on same track (cycle)
+			
+			The menu is designed to toggle exclusive visibility 
+			of active envelopes, so that only one envelope is
+			visible at a time.  			
+			The script doesn't allow making multiple envelopes 
+			of the same object visible at once.  
+			If multiple envelopes have been made visible manually, 
+			clicking one visible envelope menu item hides all other 
+			visible envelopes while the envelope of the clicked menu 
+			item remains visible.  
+			In REAPER when an armed envelope is bypassed, it's 
+			automatically unarmed, therefore a checkmark will be 
+			cleared from  
+			'Toggle arming of the visible envelope' menu item when 
+			'Toggle bypass of the visible envelope' menu item is clicked
+			And vice versa, when a bypassed envelope is armed, it's 
+			automatically unbypassed, therefore a checkmark will be 
+			cleared from 
+			'Toggle bypass of the visible envelope' menu item when 
+			'Toggle arming of the visible envelope' menu item is clicked
+			
+			The object targeting priority is as follows: 
+			take under mouse
+			track under mouse
+			parent take of the selected take envelope
+			parent track of the selected track envelope
+			active take of selected item
+			selected track
+			last touched track
 ]]
 
 
@@ -250,11 +251,11 @@ local env = r.GetSelectedEnvelope(0)
 end
 
 
-function sanitize_string_for_menu(name) -- used in Get_Active_Envelopes()
--- stripping leading !, #, < and > and replacing all instances of | with slash
+function sanitize_string_for_menu(name) -- used in Get_Active_Envelopes() and in main routine
+-- stripping leading !, #, < and > and replacing all instances of |
 -- so that being menu special characters they don't affect 
 -- the way string is displayed in the menu
-return (name:sub(1,1):match('[!#<>]+') and name:sub(2) or name):gsub('|', '/')
+return (name:sub(1,1):match('[!#<>]+') and name:sub(2) or name):gsub('|', '_')
 end
 
 
@@ -425,7 +426,7 @@ local ret, obj_name = GetObjName(take or tr, 'P_NAME', '', false) -- setNewValue
 local tr_idx = tr and r.CSurf_TrackToID(tr, false) -- mcpView false
 local obj_name = (take and 'Take: ' or tr and 'Track'..(#obj_name > 0 and ' '..tr_idx or '')..': ')
 ..(#obj_name > 0 and obj_name or tr and tr_idx or 'No name') -- mcpView false
-local obj_name = tr_idx == 0 and 'Master track' or obj_name
+local obj_name = tr_idx == 0 and 'Master track' or sanitize_string_for_menu(obj_name)
 local bypass = grayout(vis_cnt, not is_unbypassed, 'Toggle bypass of the visible envelope') -- gray out when more than 1 envelope is visible because the action is only applicable to a single visible envelope
 local armed = grayout(vis_cnt, is_armed, 'Toggle arming of the visible envelope') -- gray out when more than 1 envelope is visible because the action is only applicable to a single visible envelope
 --local output = Show_Menu_Dialogue(obj_name..'||'..bypass..armed..menu)
