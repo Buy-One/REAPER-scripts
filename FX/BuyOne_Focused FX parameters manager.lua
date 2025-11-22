@@ -9,128 +9,128 @@ REAPER: 7.06+ is recommended for full functionality
 Extensions: SWS/S&M recommended for reliablity
 Provides: [main=main,midi_editor] .
 About: 	The script is desined to allow management of multiple 
-			FX parameter aliases and visibility in TCP from a single 
-			persistent menu, which is more convenient than jumping 
-			between submenus using REAPER native interface and having 
-			to re-open them after each click.
+		FX parameter aliases and visibility in TCP from a single 
+		persistent menu, which is more convenient than jumping 
+		between submenus using REAPER native interface and having 
+		to re-open them after each click.
 
-			Admittedly management of multiple parameters visibility
-			in TCP is already possible from the Envelope Manager
-			and FX parameter list of FX inside containers accessible
-			under PARAM button. So if parameter visibility is the only
-			property you're interested in, this script is likely
-			redundant.
+		Admittedly management of multiple parameters visibility
+		in TCP is already possible from the Envelope Manager
+		and FX parameter list of FX inside containers accessible
+		under PARAM button. So if parameter visibility is the only
+		property you're interested in, this script is likely
+		redundant.
 
-			To enable/disable a parameter for being shown in the TCP
-			(relevant to FX and FX containers in the main FX chain) or
-			to be mapped across all containers (relevant to FX and FX 
-			containers located inside container), click its item in the 
-			menu to (un)checkmark it.  
-			If 'Edit parameter name' option is enabled clicking a parameter 
-			menu item will allow aliasing its name via the editor. Clicking
-			in this case doesn't affect menu item checkmarking. To restore 
-			original parameter name in the menu submit the editor empty, 
-			which is supported in REAPER builds 6.37+.			
+		To enable/disable a parameter for being shown in the TCP
+		(relevant to FX and FX containers in the main FX chain) or
+		to be mapped across all containers (relevant to FX and FX 
+		containers located inside container), click its item in the 
+		menu to (un)checkmark it.  
+		If 'Edit parameter name' option is enabled clicking a parameter 
+		menu item will allow aliasing its name via the editor. Clicking
+		in this case doesn't affect menu item checkmarking. To restore 
+		original parameter name in the menu submit the editor empty, 
+		which is supported in REAPER builds 6.37+.			
 
-			Thus parameter names of FX and FX containers in the main 
-			FX chain are checkmarked on menu load if these parameters are 
-			shown in the TCP while for FX inside containers they're checkmarked 
-			if they're mapped across the entire container hierarchy up to 
-			the outermost container, i.e. the one belonging to the main 
-			FX chain.  
-			Parameters of FX inside containers shown in the TCP are marked
-			with additional indicator following parameter name in the menu.
-			Aliased parameter names are preceded with a dot, this applies 
-			to paremeters of all FX regardless of their location.
+		Thus parameter names of FX and FX containers in the main 
+		FX chain are checkmarked on menu load if these parameters are 
+		shown in the TCP while for FX inside containers they're checkmarked 
+		if they're mapped across the entire container hierarchy up to 
+		the outermost container, i.e. the one belonging to the main 
+		FX chain.  
+		Parameters of FX inside containers shown in the TCP are marked
+		with additional indicator following parameter name in the menu.
+		Aliased parameter names are preceded with a dot, this applies 
+		to paremeters of all FX regardless of their location.
 
-			In order to apply parameter alias or restore its original name 
-			(in supported REAPER builds) its item in the menu doesn't require 
-			(un)ckeckmarking.  
-			Applying parameter alias or restoring original parameter name 
-			(in supported REAPER builds) of container FX parameters mapped 
-			across the entire container hierarchy applies/restores it within 
-			this scope as well, unless 'Apply parameter names locally' option 
-			is enabled.
+		In order to apply parameter alias or restore its original name 
+		(in supported REAPER builds) its item in the menu doesn't require 
+		(un)ckeckmarking.  
+		Applying parameter alias or restoring original parameter name 
+		(in supported REAPER builds) of container FX parameters mapped 
+		across the entire container hierarchy applies/restores it within 
+		this scope as well, unless 'Apply parameter names locally' option 
+		is enabled.
 
-			To apply choices click APPLY menu item. While user defines their
-			choices the choices are stored in the memory until APPLY is executed 
-			or the menu is exited.  
-			APPLY menu item will be disabled if there's no difference between 
-			parameters current state (usually right after applying user choices)
-			and user choices or user choices haven't been stored yet.
+		To apply choices click APPLY menu item. While user defines their
+		choices the choices are stored in the memory until APPLY is executed 
+		or the menu is exited.  
+		APPLY menu item will be disabled if there's no difference between 
+		parameters current state (usually right after applying user choices)
+		and user choices or user choices haven't been stored yet.
 
-			OPTIONS submenu
+		OPTIONS submenu
 
-			- Edit parameter names - click to enable parameter name aliasing,
-			to call parameter name editor click its menu item; the option is
-			enabled by default and cannot be disabled for focused FX instance
-			in the main take or track input FX chain because parameter aliasing
-			is the only meaningful operation.
+		- Edit parameter names - click to enable parameter name aliasing,
+		to call parameter name editor click its menu item; the option is
+		enabled by default and cannot be disabled for focused FX instance
+		in the main take or track input FX chain because parameter aliasing
+		is the only meaningful operation.
 
-			- Apply parameter names locally - only relevant for FX inside
-			containers mapped across the entire container hierarchy; enable to 
-			apply parameter alias to FX own parameter list only; when disabled, 
-			the alias is applied across the entire container hierarchy; aliases
-			of non-mapped parameters are always applied locally; the option is 
-			disabled for FX in the main FX chain.
+		- Apply parameter names locally - only relevant for FX inside
+		containers mapped across the entire container hierarchy; enable to 
+		apply parameter alias to FX own parameter list only; when disabled, 
+		the alias is applied across the entire container hierarchy; aliases
+		of non-mapped parameters are always applied locally; the option is 
+		disabled for FX in the main FX chain.
 
-			- Show/Hide container FX parameters in TCP - click to activate
-			the feature of setting container FX parameters for being shown/hidden
-			in the TCP (see explanation below); the option is disabled for FX 
-			in the main FX chain.
+		- Show/Hide container FX parameters in TCP - click to activate
+		the feature of setting container FX parameters for being shown/hidden
+		in the TCP (see explanation below); the option is disabled for FX 
+		in the main FX chain.
 
-			- View current state / View last user choices - click to view the 
-			current parameters state and switch back to view last user choices
-			for the the plugin / FX container currently in focus;  
-			when the menu is switched to 'current state', no management 
-			operations are possible because this is purely monitoring mode to 
-			compare user choices with parameters current state; the option is 
-			disabled when user choices don't differ from the current state;
-			on load this option automatically switches to 'View last user choices'
-
-
-			Unlike parameter user choices whose storage in between script 
-			executions depends on KEEP_USER_CHOICES setting below, options are 
-			stored in the memory for the duration of REAPER session and recalled 
-			at each script execution.
+		- View current state / View last user choices - click to view the 
+		current parameters state and switch back to view last user choices
+		for the the plugin / FX container currently in focus;  
+		when the menu is switched to 'current state', no management 
+		operations are possible because this is purely monitoring mode to 
+		compare user choices with parameters current state; the option is 
+		disabled when user choices don't differ from the current state;
+		on load this option automatically switches to 'View last user choices'
 
 
-			SHOWING/HIDING CONTAINER FX PAREMETERS IN THE TCP
-
-			Unlike with FX in the main FX chain, for FX inside containers
-			(un)chekmarking parameters in the menu doesn't prime them for 
-			being shown/hidden in the TCP but rather for being mapped across 
-			the entire container hierarchy. In order to be able to set them
-			shown/hidden in the TCP enable the option  
-			'Show/Hide container FX parameters in TCP'  
-			in the OPTIONS submenu.  
-			When enabled, parameters already mapped across container
-			hierarchy can be shown/hidden in the TCP, while parameters not yet 
-			mapped across containers can be mapped and shown in one go.			
-			Unchecking parameters in the menu will not affect their mapped state, 
-			only their visibility in the TCP.  			
-			When the menu is auto-reloaded after user choices have been applied
-			with the APPLY button, names of all parameters mapped across
-			container hierarchy will be checkmarked (as they're designed to be)
-			while presence of the indicator reflecting parameter visibility in 
-			the TCP will depend on the results of the operation just performed.
-			!!! While the option is enabled aliases can only be applied/cleared
-			along with parameter visibility state. To be able to apply aliases 
-			only it must stay disabled.
+		Unlike parameter user choices whose storage in between script 
+		executions depends on KEEP_USER_CHOICES setting below, options are 
+		stored in the memory for the duration of REAPER session and recalled 
+		at each script execution.
 
 
-			The script doesn't support hash (#) and exclamation mark (!) 
-			as a leading character in default paremeter names because they will 
-			interfere with the menu functionality. So if these are present, they 
-			will be stripped off. These characters are however supported 
-			in parameter aliases.  
-			For the same reason the pipe (|) character is replaced with slash (/)
-			in default parameter names and in aliases created using REAPER's 
-			built-in 'Alias parameter' functionality, but they're not supported 
-			in aliases created with this script.
+		SHOWING/HIDING CONTAINER FX PAREMETERS IN THE TCP
 
-			Where more than one option is supported option status numeric
-			indicators are displayed in the OPTIONS submenu title.
+		Unlike with FX in the main FX chain, for FX inside containers
+		(un)chekmarking parameters in the menu doesn't prime them for 
+		being shown/hidden in the TCP but rather for being mapped across 
+		the entire container hierarchy. In order to be able to set them
+		shown/hidden in the TCP enable the option  
+		'Show/Hide container FX parameters in TCP'  
+		in the OPTIONS submenu.  
+		When enabled, parameters already mapped across container
+		hierarchy can be shown/hidden in the TCP, while parameters not yet 
+		mapped across containers can be mapped and shown in one go.			
+		Unchecking parameters in the menu will not affect their mapped state, 
+		only their visibility in the TCP.  			
+		When the menu is auto-reloaded after user choices have been applied
+		with the APPLY button, names of all parameters mapped across
+		container hierarchy will be checkmarked (as they're designed to be)
+		while presence of the indicator reflecting parameter visibility in 
+		the TCP will depend on the results of the operation just performed.
+		!!! While the option is enabled aliases can only be applied/cleared
+		along with parameter visibility state. To be able to apply aliases 
+		only it must stay disabled.
+
+
+		The script doesn't support hash (#) and exclamation mark (!) 
+		as a leading character in default paremeter names because they will 
+		interfere with the menu functionality. So if these are present, they 
+		will be stripped off. These characters are however supported 
+		in parameter aliases.  
+		For the same reason the pipe (|) character is replaced with slash (/)
+		in default parameter names and in aliases created using REAPER's 
+		built-in 'Alias parameter' functionality, but they're not supported 
+		in aliases created with this script.
+
+		Where more than one option is supported option status numeric
+		indicators are displayed in the OPTIONS submenu title.
 
 ]]
 
