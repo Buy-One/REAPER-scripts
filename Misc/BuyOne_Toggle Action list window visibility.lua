@@ -2,34 +2,36 @@
 ReaScript name: BuyOne_Toggle Action list window visibility.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 1.1 #Added support for floating docker 
+					and accounted for various docking scenarios
+					#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI
 Provides: [main=main,midi_editor] .
 About:	The script provides the ability to toggle
-		the Action list window, which is not possible
-		with the action 'Show action list' because
-		it doesn't allow closing the window. A floating
-		Action list window can be closed with Esc key
-		but a docked window can't. This script covers
-		both cases.
+			the Action list window, which is not possible
+			with the action 'Show action list' because
+			it doesn't allow closing the window. A floating
+			Action list window can be closed with Esc key
+			but a docked window can't. This script covers
+			both cases.
 
-		If the window is open and docked in a closed docker
-		the script will open the docker along with all
-		other open docked windows.  
-		If the window is closed and docked in a closed split
-		docker the script will open the window along with other 
-		open windows docked on the same side of the split.
+			If the window is docked in a closed docker
+			the script will open the docker along with all
+			other open windows docked in the same docker. 
+			And if the docker is split, only open windows 
+			on the same side of the split as the Action list 
+			window will be shown along with it.
 
-		In order to be able to toggle the Action list
-		window regardless of the mouse cursor focus
-		bind this script to a shortcut having selected
-		Global+text fields option in the Scope drop-down
-		menu of keyboard shorcut assignment dialogue.
-		Otherwise you will have to bring REAPER main window
-		into focus in order for the shortcut to be registered.
+			In order to be able to toggle the Action list
+			window regardless of the mouse cursor focus
+			bind this script to a shortcut having selected
+			Global+text fields option in the Scope drop-down
+			menu of keyboard shorcut assignment dialogue.
+			Otherwise you will have to bring REAPER main window
+			into focus in order for the shortcut to be registered.
 
 ]]
 
@@ -217,6 +219,57 @@ local wnd, retval, title = wnd
 end
 
 
+function Is_Wnd_Docked_In_Floating_Docker(hwnd)
+-- hwnd is window handle which can be obtained with
+-- Find_Window_SWS() or reaper.JS_Window_Find()
+-- unlike Is_Wnd_Docked_In_Floating_Docker1() this function
+-- only works for open windows, because hwnd
+-- must be valid;
+-- the window can be opened in a closed floating docker
+-- https://github.com/Buy-One/Dox/blob/main/reaper.ini%20toolbars%20and%20dockers
+-- returns nil if window is not docked in the floating docker
+
+local dockermode, isFloatingDocker = r.DockIsChildOfDock(hwnd)
+
+	if isFloatingDocker then
+		for line in io.lines(r.get_ini_file()) do -- determine dockermode status
+		local status = line:match('^dockermode'..dockermode..'=(%d+)')
+			if status then
+			return status+0 < 90000 and 1 -- i.e. 32768 or 32770, open floating docker
+			or 2 -- i.e. 98304 or 98306, closed floating docker
+			end
+		end
+	end
+
+end
+
+
+function Close_Action_List(sws, js, hwnd)
+	if sws then
+	r.BR_Win32_SendMessage(hwnd, 0x0010, 0, 0) -- 0x0010 WM_CLOSE; 0x0002 WM_DESTROY contributes to creation of ghost windows if followed by window toggle action, doesn't destroy floating window; 0x0012 WM_QUIT leaves tab if window is docked and doesn't set toggle state to off
+	else
+	r.JS_WindowMessage_Send(hwnd, 'WM_CLOSE', 0, 0, 0, 0)
+	end
+-- https://ecs.syr.edu/faculty/fawcett/Handouts/CoreTechnologies/windowsprogramming/WinUser.h
+end
+
+
+local function wrapper(func,...)
+-- https://forums.cockos.com/showthread.php?t=218805 Lokasenna
+local t = {...}
+return function() func(table.unpack(t)) end
+end
+
+
+function monitor_toggle_state(GetToggleState, show_act_lst)
+	if GetToggleState(0, show_act_lst) == 0 then
+	r.Main_OnCommand(show_act_lst, 0) -- toggle On
+	return
+	end
+r.defer(wrapper(monitor_toggle_state, GetToggleState, show_act_lst))
+end
+
+
 
 
 local sws, js = r.BR_Win32_SendMessage, r.JS_WindowMessage_Send
@@ -243,6 +296,18 @@ local is_off = GetToggleState(0, show_act_lst) == 0
 	local dock_open = GetToggleState(0, show_docker) == 1
 
 		if action_list and (not is_docked or dock_open) then -- visible, floating or docked in an open docker, hide
+
+		-- Determine if the window while being open (handle is valid) 
+		-- is attached to a closed floating docker
+		-- in which case WM_CLOSE will close it in the docker instead of making the docker
+		-- visible and the script will have to be run twice in order to show the window,
+		-- so if this is the case, close it and then re-open witin one script execution;
+		-- if using function which requires window handle, the evaluation must be done
+		-- before closure, otherwise the handle will become invalid,
+		-- if using function which requires window reaper.ini identifier, 
+		-- the evaluation can be done after closure
+		local status = Is_Wnd_Docked_In_Floating_Docker(action_list) -- floating docker status 1 open, 2 closed, nil - window is not docked in the floating docker		
+
 		-- WM_DESTROY message alone doesn't work for a floating window, causes creation
 		-- of window duplicates when it's re-opened with action,
 		-- works for docked window but decolorizes window background,
@@ -259,15 +324,17 @@ local is_off = GetToggleState(0, show_act_lst) == 0
 		-- the solution for both docked and undocked window is use of WM_CLOSE message alone
 		-- instead of WM_DESTROY or in combination with SW_HIDE
 
-		if sws then
-		r.BR_Win32_SendMessage(action_list, 0x0010, 0, 0) -- 0x0002 WM_DESTROY or 0x0010 WM_CLOSE; 0x0012 WM_QUIT leaves tab if window is docked and doesn't set toggle state to off; 0x0018 WM_SHOWWINDOW
-		else
-		r.JS_WindowMessage_Send(action_list, 'WM_CLOSE', 0, 0, 0, 0)
-		end
-	-- https://ecs.syr.edu/faculty/fawcett/Handouts/CoreTechnologies/windowsprogramming/WinUser.h
+		Close_Action_List(sws, js, action_list)
 
-		elseif action_list then -- invisible, likely because of being docked in a closed dock, in which case window toggle state wasn't set to Off so cannot be toggled to On right away, window handle is valid, show
-		r.Main_OnCommand(show_docker, 0)
+			if status and status == 2 then -- re-open the window docked in the closed floating docker which will cause the docker to open as well; after WM_CLOSE the window toggle state is set to Off BUT not fast enough for the script, hence the defer function to monitor toggle state change and then trigger re-opening
+			monitor_toggle_state(GetToggleState, show_act_lst)
+			end
+
+		elseif action_list then -- open but invisible, likely because of being docked in a closed docker, in which case window toggle state wasn't set to Off so cannot be toggled to On right away, therefore first close and then re-open; this is preferable over toggling the docker open with the action 'View: Show docker' because the action opens all dockers, including floating, while toggling the window open - only opens the docker it's attached to
+
+		Close_Action_List(sws, js, action_list)		
+		monitor_toggle_state(GetToggleState, show_act_lst) -- after WM_CLOSE the window toggle state is set to Off BUT not fast enough for the script, hence the defer function to monitor toggle state change and then trigger re-opening
+
 		end
 
 	end
