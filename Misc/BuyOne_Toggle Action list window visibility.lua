@@ -3,35 +3,35 @@ ReaScript name: BuyOne_Toggle Action list window visibility.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
-Changelog: 1.1 #Added support for floating docker 
-					and accounted for various docking scenarios
-					#Updated 'About' text
+Changelog: 1.1 	#Added support for floating docker 
+				and accounted for various docking scenarios
+				#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI
 Provides: [main=main,midi_editor] .
 About:	The script provides the ability to toggle
-			the Action list window, which is not possible
-			with the action 'Show action list' because
-			it doesn't allow closing the window. A floating
-			Action list window can be closed with Esc key
-			but a docked window can't. This script covers
-			both cases.
+		the Action list window, which is not possible
+		with the action 'Show action list' because
+		it doesn't allow closing the window. A floating
+		Action list window can be closed with Esc key
+		but a docked window can't. This script covers
+		both cases.
 
-			If the window is docked in a closed docker
-			the script will open the docker along with all
-			other open windows docked in the same docker. 
-			And if the docker is split, only open windows 
-			on the same side of the split as the Action list 
-			window will be shown along with it.
+		If the window is docked in a closed docker
+		the script will open the docker along with all
+		other open windows docked in the same docker. 
+		And if the docker is split, only open windows 
+		on the same side of the split as the Action list 
+		window will be shown along with it.
 
-			In order to be able to toggle the Action list
-			window regardless of the mouse cursor focus
-			bind this script to a shortcut having selected
-			Global+text fields option in the Scope drop-down
-			menu of keyboard shorcut assignment dialogue.
-			Otherwise you will have to bring REAPER main window
-			into focus in order for the shortcut to be registered.
+		In order to be able to toggle the Action list
+		window regardless of the mouse cursor focus
+		bind this script to a shortcut having selected
+		Global+text fields option in the Scope drop-down
+		menu of keyboard shorcut assignment dialogue.
+		Otherwise you will have to bring REAPER main window
+		into focus in order for the shortcut to be registered.
 
 ]]
 
