@@ -284,6 +284,11 @@ local show_act_lst = 40605 -- Show action list
 local show_docker = 40279 -- View: Show docker
 local is_off = GetToggleState(0, show_act_lst) == 0
 
+-- What's unique about Action list window is that unlike with other windows
+-- the associated action 'Show action list' toggle state
+-- doesn't change when the docker the window is docked at is closed,
+-- it only does when the window itself is closed
+
 	if is_off then -- true when the window itself is closed, NOT a dock it's attached to; the condition also applies to scenario when not only the window is closed but the dock it's docked at as well
 
 	r.Main_OnCommand(show_act_lst, 0) -- toggle On
