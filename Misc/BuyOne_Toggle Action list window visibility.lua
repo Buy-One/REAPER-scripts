@@ -299,7 +299,10 @@ local is_off = GetToggleState(0, show_act_lst) == 0
 
 		-- Determine if the window while being open (handle is valid) 
 		-- is attached to a closed floating docker
-		-- in which case WM_CLOSE will close it in the docker instead of making the docker
+		-- in which case dock_open var will be true because closing the floating docker
+		-- while other dockers remain open won't change 'View: Show docker' action toggle state
+		-- but the action list window will be invisible;
+		-- WM_CLOSE will close it in the docker instead of making the docker
 		-- visible and the script will have to be run twice in order to show the window,
 		-- so if this is the case, close it and then re-open witin one script execution;
 		-- if using function which requires window handle, the evaluation must be done
@@ -330,7 +333,7 @@ local is_off = GetToggleState(0, show_act_lst) == 0
 			monitor_toggle_state(GetToggleState, show_act_lst)
 			end
 
-		elseif action_list then -- open but invisible, likely because of being docked in a closed docker, in which case window toggle state wasn't set to Off so cannot be toggled to On right away, therefore first close and then re-open; this is preferable over toggling the docker open with the action 'View: Show docker' because the action opens all dockers, including floating, while toggling the window open - only opens the docker it's attached to
+		elseif action_list then -- open but invisible, likely because of being docked in a closed side docker, in which case window toggle state wasn't set to Off so cannot be toggled to On right away, therefore first close and then re-open; this is preferable over toggling the docker open with the action 'View: Show docker' because the action opens all dockers, including floating, while toggling the window open - only opens the docker it's attached to
 
 		Close_Action_List(sws, js, action_list)		
 		monitor_toggle_state(GetToggleState, show_act_lst) -- after WM_CLOSE the window toggle state is set to Off BUT not fast enough for the script, hence the defer function to monitor toggle state change and then trigger re-opening
