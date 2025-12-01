@@ -9,18 +9,18 @@ REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI
 Provides: [main=main,midi_editor] .
 About:	If the Media Explorer is closed, the script opens 
-			it and brings its search field into focus for keyboard 
-			input.  
-			If the Media Explorer is already open it only brings 
-			its search field into focus.
-			
-			In order to be able to run the script regardless 
-			of the mouse cursor focus bind this script to a 
-			shortcut having selected 'Global+text fields' option 
-			in the Scope drop-down menu of keyboard shorcut 
-			assignment dialogue.  
-			Otherwise you will have to bring REAPER main window
-			into focus in order for the shortcut to be registered.
+		it and brings its search field into focus for keyboard 
+		input.  
+		If the Media Explorer is already open it only brings 
+		its search field into focus.
+		
+		In order to be able to run the script regardless 
+		of the mouse cursor focus bind this script to a 
+		shortcut having selected 'Global+text fields' option 
+		in the Scope drop-down menu of keyboard shorcut 
+		assignment dialogue.  
+		Otherwise you will have to bring REAPER main window
+		into focus in order for the shortcut to be registered.
 ]]
 
 
