@@ -9,13 +9,13 @@ REAPER: at least v7.46
 Extensions: 
 Provides: [main=main,midi_editor] .
 About: 	The script makes the project timebase menu, 
-			available since build 7.46 under a transport button
-			in v7 themes, accessible for users of v4 - v6 
-			themes as well but without making it embedded 
-			in the transport.
-			
-			FYI, besides v7 themes the built-in menu is also 
-			accessible by default in classic, v2 and v3 themes.
+		available since build 7.46 under a transport button
+		in v7 themes, accessible for users of v4 - v6 
+		themes as well but without making it embedded 
+		in the transport.
+		
+		FYI, besides v7 themes the built-in menu is also 
+		accessible by default in classic, v2 and v3 themes.
 ]]
 
 -----------------------------------------------------------------------------
