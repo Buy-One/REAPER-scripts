@@ -115,10 +115,9 @@ or DISPLAY_OVER_TRANSPORT:match('%S+') and not info:match('trans') and 'not tran
 t.menu[5] = (reaper.GetSetProjectInfo(0, 'PROJECT_TIMEBASE_FLAGS', 0, false)&1 == 1 and '|!' or '|')..t.menu[5]
 
 local output = Show_Menu_Dialogue(table.concat(t.menu,'|'))
-local act = reaper.Main_OnCommand
 
 	if output > 0 then
-	act(t.cmdID[output], 0)
+	reaper.Main_OnCommand(t.cmdID[output], 0)
 	end
 
 return reaper.defer(function() do return end end)
