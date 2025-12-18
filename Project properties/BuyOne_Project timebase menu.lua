@@ -72,6 +72,13 @@ return reaper.GetToggleCommandStateEx(0, cmdID) == 1 and '!' or ''
 end
 
 
+-- in theory instead of the script a toolbar could be populated 
+-- with these actions and then called as a menu with 'Toolbars: Show toolbar X as menu'
+-- action but it wouldn't behave exactly like the built-in menu,
+-- item 2 would get checkmarked concurrently with item 4
+-- and item 5 wouldn't get checkmarked at all because the action
+-- it's linked to isn't a toggle;
+-- the script solves these shortcomings
 local t = {menu = {
 'Project timebase: time',
 'Project timebase: beats (position, length, rate)',
