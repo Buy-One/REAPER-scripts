@@ -76,7 +76,7 @@ MW_REVERSE = ""
 -- is allocated;
 -- such scroll speed presets are activated by positioning the mouse cursor
 -- within the zone allocated to it starting from the TCP rightwards if the 
--- TCP is displayed on the left sight of the Arrange view and leftwards, if
+-- TCP is displayed on the left side of the Arrange view and leftwards, if
 -- its displayed on the right side, in which case the zones are aligned in 
 -- reversed order, i.e. SPEED_4 -> SPEED_1;
 -- the zones are valid across the entire screen hight within their limits on
