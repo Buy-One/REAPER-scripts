@@ -4,49 +4,49 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.6
 Changelog: v1.6 #Set up limitation to script functionality in cases where extensions aren't installed
-		#Updated About and USER SETTINGS text accordingly
-	   v1.5 #Fixed REAPER version evaluation
-	   v1.4 #Updated info text in the USER SETTINGS
-	   v1.3 #Updated info text in the USER SETTINGS
-	   v1.2 #Fixed scroll when the mouse is over the TCP displayed on the right side of the Arrange
-		view at certain horizontal scroll position
-	   v1.1 #Removed limitation on using Ctrl+Shift modifier when extensions aren't installed
+				#Updated About and USER SETTINGS text accordingly
+		   v1.5 #Fixed REAPER version evaluation
+		   v1.4 #Updated info text in the USER SETTINGS
+		   v1.3 #Updated info text in the USER SETTINGS
+		   v1.2 #Fixed scroll when the mouse is over the TCP displayed on the right side of the Arrange
+			view at certain horizontal scroll position
+		   v1.1 #Removed limitation on using Ctrl+Shift modifier when extensions aren't installed
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI recommended
 About: 	Alternative to the native 'View: Scroll vertically (MIDI CC relative/mousewheel)' 
        	which doesn't allow variable scroll step size and scrolls exactly
        	by tracks although not very precise when tracks have different heights,
-   	and certainly doesn't support multi-speed functionality.
-
-	The script offers 4 scroll speed presets. The active scroll preset is
-	determined by the position of the mouse cursor within the Arrange view, 
-	which is divided into as many zones as there're enabled presets minus 1, 
-	since the 1st enabled preset, whatever it is, is always hard linked 
-	to the TCP and will only be activated when the mouse cursor hovers over 
-	the track list.  
-	For example if presets 1, 3 and 4 are enabled, the 1st preset will 
-	work over the TCP, the 3d will work within the 1st half of the Arrange 
-	view and the 4th - within the 2nd half of the Arrange view; when presets
-	3 and 4 are enabled, preset 3 will be activated when the mouse cursor
-	is over the TCP while preset 4 - while it's placed anywhere within 
-	the Arrange view which in this case becomes a single zone. 
+	   	and certainly doesn't support multi-speed functionality.
 	
-	If zoning doesn't work accurately on Mac, submit a bug report at the 
-	addresses listed in the Website tag above and this will be looked into.
-	
-	Bind to mousewheel (optionally with modifiers).  
-	
-	With vertical mousewheel the default direction is up - up, down - down,
-	to reverse the direction enable MW_REVERSE setting in the USER SETTINGS.
-	
-	If the script doesn't work accurately on Mac, submit a bug report at the 
-	addresses listed in the Website tag above and this will be looked into.
-	
-	CAVEAT
-	
-	If neither SWS/S&M or js_ReaScriptAPI extension is installed the script
-	doesn't support HORIZ_ZONES setting.
+		The script offers 4 scroll speed presets. The active scroll preset is
+		determined by the position of the mouse cursor within the Arrange view, 
+		which is divided into as many zones as there're enabled presets minus 1, 
+		since the 1st enabled preset, whatever it is, is always hard linked 
+		to the TCP and will only be activated when the mouse cursor hovers over 
+		the track list.  
+		For example if presets 1, 3 and 4 are enabled, the 1st preset will 
+		work over the TCP, the 3d will work within the 1st half of the Arrange 
+		view and the 4th - within the 2nd half of the Arrange view; when presets
+		3 and 4 are enabled, preset 3 will be activated when the mouse cursor
+		is over the TCP while preset 4 - while it's placed anywhere within 
+		the Arrange view which in this case becomes a single zone. 
+		
+		If zoning doesn't work accurately on Mac, submit a bug report at the 
+		addresses listed in the Website tag above and this will be looked into.
+		
+		Bind to mousewheel (optionally with modifiers).  
+		
+		With vertical mousewheel the default direction is up - up, down - down,
+		to reverse the direction enable MW_REVERSE setting in the USER SETTINGS.
+		
+		If the script doesn't work accurately on Mac, submit a bug report at the 
+		addresses listed in the Website tag above and this will be looked into.
+		
+		CAVEAT
+		
+		If neither SWS/S&M or js_ReaScriptAPI extension is installed the script
+		doesn't support HORIZ_ZONES setting.
 
 ]]
 
