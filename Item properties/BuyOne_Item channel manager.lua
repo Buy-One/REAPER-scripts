@@ -23,7 +23,9 @@ About: 	The script is geared towards helping tp manage
 		SO THE STEREO IMAGE WILL HAVE TO BE RESTORED BY 
 		MANUAL PANNING OF THE TAKES, WHICH, DEPENDING 
 		ON THE CURCUMSTANCE, MAY NOT BE AN OPTIMAL 
-		SOLUTION.
+		SOLUTION.  
+		TO PRESERVE STEREO IMAGE ENABLE CHANNELS AS 
+		CHANNEL PAIRS.
 
 		The script first looks for item under mouse cursor, 
 		if not found looks for selected items. Take under
