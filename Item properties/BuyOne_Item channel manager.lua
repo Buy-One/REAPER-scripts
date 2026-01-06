@@ -9,300 +9,300 @@ REAPER: at least v5.962
 Extensions: 
 Provides: [main=main,midi_editor] .
 About: 	The script is geared towards helping tp manage
-			multi-channel audio media files treating their
-			channels as takes within item. Simultaneous
-			playback of several channels represented by takes
-			is achieved by enabling 'Play all takes' setting
-			in the Media Item Properties which is ensured
-			by the script when a channel is added/removed.
+		multi-channel audio media files treating their
+		channels as takes within item. Simultaneous
+		playback of several channels represented by takes
+		is achieved by enabling 'Play all takes' setting
+		in the Media Item Properties which is ensured
+		by the script when a channel is added/removed.
 
-			IF SOME CHANNELS IN THE MEDIA FILE ARE PANNED, 
-			WHEN THEY'RE ADDED BY THE SCRIPT AS TAKES TO AN 
-			ITEM THE ORIGINAL STEREO OR SURROUND IMAGE IS NOT 
-			PRESERVED, BECAUSE TAKES ARE PANNED DEAD CENTER, 
-			SO THE STEREO IMAGE WILL HAVE TO BE RESTORED BY 
-			MANUAL PANNING OF THE TAKES, WHICH, DEPENDING 
-			ON THE CURCUMSTANCE, MAY NOT BE AN OPTIMAL 
-			SOLUTION.
+		IF SOME CHANNELS IN THE MEDIA FILE ARE PANNED, 
+		WHEN THEY'RE ADDED BY THE SCRIPT AS TAKES TO AN 
+		ITEM THE ORIGINAL STEREO OR SURROUND IMAGE IS NOT 
+		PRESERVED, BECAUSE TAKES ARE PANNED DEAD CENTER, 
+		SO THE STEREO IMAGE WILL HAVE TO BE RESTORED BY 
+		MANUAL PANNING OF THE TAKES, WHICH, DEPENDING 
+		ON THE CURCUMSTANCE, MAY NOT BE AN OPTIMAL 
+		SOLUTION.
 
-			The script first looks for item under mouse cursor, 
-			if not found looks for selected items. Take under
-			mouse is ignored, therefore even in item under mouse
-			the script affects all valid takes or the active take
-			if settings 3 or 4 (see below) are enabled.
+		The script first looks for item under mouse cursor, 
+		if not found looks for selected items. Take under
+		mouse is ignored, therefore even in item under mouse
+		the script affects all valid takes or the active take
+		if settings 3 or 4 (see below) are enabled.
 
-			The main menu lists numbers of all channels available
-			in the media source of item under mouse or selected.
-			Numbers of channels active within takes are checkmarked.
-			When setting 3 is enabled (see next) only number of
-			channel enabled in the active take is checkmarked and
-			if in active takes in different selected items different
-			channel is enabled, no channel menu item is checkmarked.
-			When setting 5 is enabled the main menu only lists the
-			checkmarked number(s) of channel or channel pair 
-			currently enabled in the active take and numbers of 
-			channels immediately preceding and following (if any) 
-			these channel or channel pair.
-
-
-			SETTINGS SUBMENU
-
-			1. Include locked items
-			2. Respect 2 channel items
-			3. Change active take channel
-				4. Randomize channel Uniformly
-			5. Add/remove/replace 2nd channel in the active take
-			6. Allow different take count in multi-item selection
-
-			These correspond to the settings in the USER SETTINGS 
-			section of the script. When their state is changed via 
-			the menu, it's also updated within the script.  
-			Settings 3 and 5 are mutually exclusive and can be 
-			disabled completely.
-			Setting 4 is only accessible when setting 3 is enabled
-			and it modifies behavior of 'Randomize' actions accessible 
-			in the main menu.
-			Setting 6 is only displayed in the menu for reference
-			of its state, being grayed out. The actual setting can
-			only be changed directly within the script in the USER
-			SETTINGS as ALLOW_DIFFERENT_TAKE_COUNT.
-
-			WHAT'S NOT SUPPORTED (depending on the settings)
-
-			locked items, unless setting 1, i.e. INCLUDE_LOCKED_ITEMS, 
-			is enabled;	
-			single take non-audio items;
-			items with audio takes having mono media source;
-			items with takes having stereo media source unless setting 2, 
-			i.e. RESPECT_2_CHANNEL_ITEMS, is enabled;
-			* multi-take items whose audio takes have different media source;
-			* selection of multiple items with different take count
-			unless ALLOW_DIFFERENT_TAKE_COUNT setting is enabled;
-			* selection of multiple items with different take media 
-			source channel count;
-			* selection of multiple items with different set of active 
-			channels in takes (the order of takes is immaterial as long 
-			as the set of active channels is the same, active channels
-			outside of media source channel range are ignored);
-			** active take in which over 2 channels are displayed 
-			simultaneously;
-			** active take in which number of enabled channel is outside 
-			of the media source channel range
-
-			* Limitations marked with a single asterisk DON'T apply 
-			when settings 3 or 4, i.e. CHANGE_ACTIVE_TAKE_CHANNEL or 
-			ADD_REMOVE_REPLACE_2nd_CHANNEL_IN_ACTIVE_TAKE, are enabled.
-			** Limitations marked with a double asterisk ONLY apply 
-			when setting 4, i.e. ADD_REMOVE_REPLACE_2nd_CHANNEL_IN_ACTIVE_TAKE,
-			is enabled.  
-			If all the above conditions for multiple items selection 
-			are met but the order of takes in terms of enabled channel 
-			differ in different items or ALLOW_DIFFERENT_TAKE_COUNT 
-			setting is enabled and item take counts differ, the take 
-			submenu will not be displayed.  
-			The take submenu is also not displayed when settings 3 or 4
-			are enabled.
-
-			So basically multiple item selection is only supported when 
-			items have identical take count (unless 
-			ALLOW_DIFFERENT_TAKE_COUNT setting is enabled), identical 
-			media source channel count, and channels having the same 
-			indices being active in takes regardless of the takes own 
-			order within each item.  
-			The actual take media source can be different in each item as 
-			long as it's common to all takes within the same item.  
-			When settings 3 or 4 are enabled the limtations not marked with 
-			asterisks only apply to active takes. In this case the script 
-			only cares that media source channel count and active channel
-			(when setting 4 is enabled) in all active takes be identical, 
-			it ignores all other item properties. When setting 3 is enabled
-			and active channels in active takes of selected items differ
-			no menu item representing channel is checkmarked.  		
-
-			In multi-item selection the properties of the first valid item 
-			with the greatest variety of active channels are determinative. 
-			Valid item is one which can be managed by the script and which 
-			isn't necessarily the first item in selection.  
-			ITEMS WHOSE PROPERTIES DON'T CONFORM TO THE FIRST VALID ITEM ARE 
-			DESELECTED FOR CLARITY.
-
-			The script affects channels of the same number in all selected 
-			items.
-			Channels whose number is outside of the media source channel 
-			range are ignored by the script, BUT the takes in which they're
-			enabled are still included in the item take count.
-
-			Non-audio takes are ignored by the script unless they're active
-			and chosen script operation or a setting targets active takes. 
-			The script displays an error message when no active take can be 
-			affected by its operation.
+		The main menu lists numbers of all channels available
+		in the media source of item under mouse or selected.
+		Numbers of channels active within takes are checkmarked.
+		When setting 3 is enabled (see next) only number of
+		channel enabled in the active take is checkmarked and
+		if in active takes in different selected items different
+		channel is enabled, no channel menu item is checkmarked.
+		When setting 5 is enabled the main menu only lists the
+		checkmarked number(s) of channel or channel pair 
+		currently enabled in the active take and numbers of 
+		channels immediately preceding and following (if any) 
+		these channel or channel pair.
 
 
-			M A I N  F U N C T I O N S
+		SETTINGS SUBMENU
+
+		1. Include locked items
+		2. Respect 2 channel items
+		3. Change active take channel
+			4. Randomize channel Uniformly
+		5. Add/remove/replace 2nd channel in the active take
+		6. Allow different take count in multi-item selection
+
+		These correspond to the settings in the USER SETTINGS 
+		section of the script. When their state is changed via 
+		the menu, it's also updated within the script.  
+		Settings 3 and 5 are mutually exclusive and can be 
+		disabled completely.
+		Setting 4 is only accessible when setting 3 is enabled
+		and it modifies behavior of 'Randomize' actions accessible 
+		in the main menu.
+		Setting 6 is only displayed in the menu for reference
+		of its state, being grayed out. The actual setting can
+		only be changed directly within the script in the USER
+		SETTINGS as ALLOW_DIFFERENT_TAKE_COUNT.
+
+		WHAT'S NOT SUPPORTED (depending on the settings)
+
+		locked items, unless setting 1, i.e. INCLUDE_LOCKED_ITEMS, 
+		is enabled;	
+		single take non-audio items;
+		items with audio takes having mono media source;
+		items with takes having stereo media source unless setting 2, 
+		i.e. RESPECT_2_CHANNEL_ITEMS, is enabled;
+		* multi-take items whose audio takes have different media source;
+		* selection of multiple items with different take count
+		unless ALLOW_DIFFERENT_TAKE_COUNT setting is enabled;
+		* selection of multiple items with different take media 
+		source channel count;
+		* selection of multiple items with different set of active 
+		channels in takes (the order of takes is immaterial as long 
+		as the set of active channels is the same, active channels
+		outside of media source channel range are ignored);
+		** active take in which over 2 channels are displayed 
+		simultaneously;
+		** active take in which number of enabled channel is outside 
+		of the media source channel range
+
+		* Limitations marked with a single asterisk DON'T apply 
+		when settings 3 or 4, i.e. CHANGE_ACTIVE_TAKE_CHANNEL or 
+		ADD_REMOVE_REPLACE_2nd_CHANNEL_IN_ACTIVE_TAKE, are enabled.
+		** Limitations marked with a double asterisk ONLY apply 
+		when setting 4, i.e. ADD_REMOVE_REPLACE_2nd_CHANNEL_IN_ACTIVE_TAKE,
+		is enabled.  
+		If all the above conditions for multiple items selection 
+		are met but the order of takes in terms of enabled channel 
+		differ in different items or ALLOW_DIFFERENT_TAKE_COUNT 
+		setting is enabled and item take counts differ, the take 
+		submenu will not be displayed.  
+		The take submenu is also not displayed when settings 3 or 4
+		are enabled.
+
+		So basically multiple item selection is only supported when 
+		items have identical take count (unless 
+		ALLOW_DIFFERENT_TAKE_COUNT setting is enabled), identical 
+		media source channel count, and channels having the same 
+		indices being active in takes regardless of the takes own 
+		order within each item.  
+		The actual take media source can be different in each item as 
+		long as it's common to all takes within the same item.  
+		When settings 3 or 4 are enabled the limtations not marked with 
+		asterisks only apply to active takes. In this case the script 
+		only cares that media source channel count and active channel
+		(when setting 4 is enabled) in all active takes be identical, 
+		it ignores all other item properties. When setting 3 is enabled
+		and active channels in active takes of selected items differ
+		no menu item representing channel is checkmarked.  		
+
+		In multi-item selection the properties of the first valid item 
+		with the greatest variety of active channels are determinative. 
+		Valid item is one which can be managed by the script and which 
+		isn't necessarily the first item in selection.  
+		ITEMS WHOSE PROPERTIES DON'T CONFORM TO THE FIRST VALID ITEM ARE 
+		DESELECTED FOR CLARITY.
+
+		The script affects channels of the same number in all selected 
+		items.
+		Channels whose number is outside of the media source channel 
+		range are ignored by the script, BUT the takes in which they're
+		enabled are still included in the item take count.
+
+		Non-audio takes are ignored by the script unless they're active
+		and chosen script operation or a setting targets active takes. 
+		The script displays an error message when no active take can be 
+		affected by its operation.
 
 
-			ADDING/REMOVING CHANNELS
-
-			A channel is added as a new item take where the specific 
-			channel is enabled when a non-ckeckmarked menu item 
-			corresponding to the schannel number is clicked and 
-			checkmarked. The placement of the new take within the item 
-			follows ascending order of channel numbers taking into 
-			account channels enabled in other takes.  
-			In an item only contains takes where all channels are 
-			enabled (Normal and Reverse Stereo channel modes) UNLESS 
-			the media source channel count is 2 (provided setting 2 
-			is enabled) or such take volume is at or below -96 dB,
-			and/or where number of the enabled channel is outside of
-			the media source channel range (which is possible, i.e. 
-			channel 10 is enabled for a media source with only 5 
-			channels which results in lack of waveform display within 
-			the take), the specific channel will be applied to the 
-			first of such takes and no new take will be created.			
-
-			A channel is removed when the menu item corresponding to
-			the channel number is uncheckmarked. All instances of such
-			channel are removed from the item. If such channel is active
-			as a single channel within take, the entire take is removed
-			unless it's the only take within the selected item. If the 
-			channel is part of an active channel pair, such channel is 
-			removed from the channel pair and the second channel is left 
-			intact within the take.  
-			A channel is not removed when it's active in item's only 
-			take as mentioned above (because this will mean deletion 
-			of the item itself) and if after its deletion no audio take 
-			will remain within the item.  
-			Channel is also not removed when the take it's active in is 
-			muted, i.e. its volume is at or below -96 dB.  
-			Takes in which all channels are enabled (i.e. channel modes 
-			Normal and Reverse stereo) of a media source whose total 
-			channel count exceeds 2 are ignored. Although having such 
-			takes within item would be counter-productive, unless it's 
-			volume is turned off, because some channels are likely to have 
-			duplicates among other takes where a single channel is active.
-
-			When a channel is added or removed and there're more than one
-			take in the item the script makes sure that 'Play all takes' 
-			setting is enabled in the item properties.
+		M A I N  F U N C T I O N S
 
 
-			CHANGING CHANNEL IN ACTIVE TAKE
+		ADDING/REMOVING CHANNELS
 
-			To change active channel in active takes, setting 3,
-			CHANGE_ACTIVE_TAKE_CHANNEL, must be enabled.  
-			A channel in an active take is replaced when a menu item 
-			corresponding to another channel is clicked and gets 
-			checkmarked. The initial channel mode of the active take 
-			is immaterial.  
-			If take channel mode is a channel pair, L/R downmix, Normal 
-			or Reverse stereo (the last two modes only if take media 
-			source channel count is 2 and setting 2, 
-			RESPECT_2_CHANNEL_ITEMS, is enabled) under which two menu 
-			items are checkmarked, a channel can also be changed by 
-			clicking one of the checkmarked menu items in which case 
-			the channel corresponding TO THE CLICKED menu item 
-			IS LEFT ACTIVE BY ITSELF in the take while the second 
-			channel is removed (which may seem counter-intuitive 
-			because usually one expects the checkmarked item to get 
-			unchecked as a result of a click rather than remain 
-			checkmarked, but this is meant to be consistent with the 
-			operation applicable to changing a single channel).  
-			When in different items included in multiple item selection 
-			different channel is enabled in the active take, no menu 
-			item is checkmarked, so channels can only be changed to 
-			a single one even for takes with enabled channel pairs if
-			such are included in selection.
+		A channel is added as a new item take where the specific 
+		channel is enabled when a non-ckeckmarked menu item 
+		corresponding to the schannel number is clicked and 
+		checkmarked. The placement of the new take within the item 
+		follows ascending order of channel numbers taking into 
+		account channels enabled in other takes.  
+		In an item only contains takes where all channels are 
+		enabled (Normal and Reverse Stereo channel modes) UNLESS 
+		the media source channel count is 2 (provided setting 2 
+		is enabled) or such take volume is at or below -96 dB,
+		and/or where number of the enabled channel is outside of
+		the media source channel range (which is possible, i.e. 
+		channel 10 is enabled for a media source with only 5 
+		channels which results in lack of waveform display within 
+		the take), the specific channel will be applied to the 
+		first of such takes and no new take will be created.			
 
+		A channel is removed when the menu item corresponding to
+		the channel number is uncheckmarked. All instances of such
+		channel are removed from the item. If such channel is active
+		as a single channel within take, the entire take is removed
+		unless it's the only take within the selected item. If the 
+		channel is part of an active channel pair, such channel is 
+		removed from the channel pair and the second channel is left 
+		intact within the take.  
+		A channel is not removed when it's active in item's only 
+		take as mentioned above (because this will mean deletion 
+		of the item itself) and if after its deletion no audio take 
+		will remain within the item.  
+		Channel is also not removed when the take it's active in is 
+		muted, i.e. its volume is at or below -96 dB.  
+		Takes in which all channels are enabled (i.e. channel modes 
+		Normal and Reverse stereo) of a media source whose total 
+		channel count exceeds 2 are ignored. Although having such 
+		takes within item would be counter-productive, unless it's 
+		volume is turned off, because some channels are likely to have 
+		duplicates among other takes where a single channel is active.
 
-			ADDING/REMOVING/REPLACING SECOND CHANNEL IN ACTIVE TAKE
-
-			To add/remove/replace second channel in active takes, 
-			setting 4, ADD_REMOVE_REPLACE_2nd_CHANNEL_IN_ACTIVE_TAKE 
-			must be enabled.  
-			A second channel is added to a take whose channel mode 
-			is set to a single channel. To add a second channel click
-			the menu item which immediately precedes or follows the
-			checkmarked menu item that corresponds to the currently
-			active channel. 	
-			A second channel is replaced in a take whose channel mode 
-			is set to channel pair (stereo) or L/R downmix. Its 
-			channel mode can also be set to Normal or Reverse stereo 
-			provided its media source only has two channels and 
-			setting 2, RESPECT_2_CHANNEL_ITEMS is enabled. To replace
-			one of the two channels click menu item which immediately 
-			precedes the checkmarked menu item that sorresponds to the 
-			left stereo channel of the active channel pair or follows 
-			the checkmarked menu item that corresponds to the right 
-			stereo channel of the active channel pair.  
-			A second channel is removed in a take whose channel mode 
-			is set to a channel pair (stereo) or to L/R downmix. Its
-			channel mode can also be set to Normal or Reverse stereo 
-			provided its media source only has two channels and 
-			setting 2, RESPECT_2_CHANNEL_ITEMS is enabled. To remove 
-			one of the two channels click the checkmarked menu item 
-			which corresponds to the left or the right channel of the
-			currenly active channel pair to uncheckmark it.
+		When a channel is added or removed and there're more than one
+		take in the item the script makes sure that 'Play all takes' 
+		setting is enabled in the item properties.
 
 
-			ADDITIONAL ACTIONS
+		CHANGING CHANNEL IN ACTIVE TAKE
 
-			Toggle mute/solo
-
-			Toggle active audio take mute - a take is considered muted 
-			when its volume is at -96 dB or lower, so when the volume is 
-			heigher it's set to be much lower, i.e. the take gets muted, 
-			and when it's at -96 dB or lower the original volume is 
-			resrored if the take was originally muted with the script, 
-			otherwise it will be set at 0 dB.
-
-			Toggle active audio take solo - the same logic as above applies 
-			to all item takes bar the active one; the active take is soloed,
-			regadless of its own volume, when volume of at least one other 
-			item take is above -96 dB, i.e. all other takes get muted, 
-			otherwise they're unmuted which is tantamount to the active 
-			take being unsoloed; if active take was muted manually in which
-			case the script has no knowledge of its original volume, its 
-			volume is restored to 0 dB; if all item takes are muted, 
-			uncluding the active take, the latter is soloed, i.e. unmuted, 
-			while all other takes remain muted.
-
-			The mute actions will only work if the channel enabled in the 
-			active takes is within the media source channel range.
-
-
-			Move up/down
-
-			Move active audio take up/down - the movement is finite, i.e.
-			when a take reaches the topmost/buttommost take lane, it 
-			cannot be moved any further in the same direction, no 
-			wrap-around.
+		To change active channel in active takes, setting 3,
+		CHANGE_ACTIVE_TAKE_CHANNEL, must be enabled.  
+		A channel in an active take is replaced when a menu item 
+		corresponding to another channel is clicked and gets 
+		checkmarked. The initial channel mode of the active take 
+		is immaterial.  
+		If take channel mode is a channel pair, L/R downmix, Normal 
+		or Reverse stereo (the last two modes only if take media 
+		source channel count is 2 and setting 2, 
+		RESPECT_2_CHANNEL_ITEMS, is enabled) under which two menu 
+		items are checkmarked, a channel can also be changed by 
+		clicking one of the checkmarked menu items in which case 
+		the channel corresponding TO THE CLICKED menu item 
+		IS LEFT ACTIVE BY ITSELF in the take while the second 
+		channel is removed (which may seem counter-intuitive 
+		because usually one expects the checkmarked item to get 
+		unchecked as a result of a click rather than remain 
+		checkmarked, but this is meant to be consistent with the 
+		operation applicable to changing a single channel).  
+		When in different items included in multiple item selection 
+		different channel is enabled in the active take, no menu 
+		item is checkmarked, so channels can only be changed to 
+		a single one even for takes with enabled channel pairs if
+		such are included in selection.
 
 
-			Randomize channel (pair)
+		ADDING/REMOVING/REPLACING SECOND CHANNEL IN ACTIVE TAKE
 
-			Randomize active audio take channel - the action is only 
-			available when setting 3 is enabled. In multi-item selection
-			by default channel is randomized for each active take 
-			separately. When setting 4 is enabled an indicator (U) is
-			tagged on to the action name in the menu denoting uniform
-			randomization for all active takes in multi-item selection, 
-			i.e. setting all of them to a channel by the same random number.  
-			Subject to randomization are only channels of media sources 
-			whose channel count is greater than 2.
+		To add/remove/replace second channel in active takes, 
+		setting 4, ADD_REMOVE_REPLACE_2nd_CHANNEL_IN_ACTIVE_TAKE 
+		must be enabled.  
+		A second channel is added to a take whose channel mode 
+		is set to a single channel. To add a second channel click
+		the menu item which immediately precedes or follows the
+		checkmarked menu item that corresponds to the currently
+		active channel. 	
+		A second channel is replaced in a take whose channel mode 
+		is set to channel pair (stereo) or L/R downmix. Its 
+		channel mode can also be set to Normal or Reverse stereo 
+		provided its media source only has two channels and 
+		setting 2, RESPECT_2_CHANNEL_ITEMS is enabled. To replace
+		one of the two channels click menu item which immediately 
+		precedes the checkmarked menu item that sorresponds to the 
+		left stereo channel of the active channel pair or follows 
+		the checkmarked menu item that corresponds to the right 
+		stereo channel of the active channel pair.  
+		A second channel is removed in a take whose channel mode 
+		is set to a channel pair (stereo) or to L/R downmix. Its
+		channel mode can also be set to Normal or Reverse stereo 
+		provided its media source only has two channels and 
+		setting 2, RESPECT_2_CHANNEL_ITEMS is enabled. To remove 
+		one of the two channels click the checkmarked menu item 
+		which corresponds to the left or the right channel of the
+		currenly active channel pair to uncheckmark it.
 
-			Randomize active audio take channel pair - same as above
-			except that instead of individual channels channel pairs are 
-			randomized and applied. Subject to randomization are only 
-			channels of media sources whose channel count is greater 
-			than 3.
 
-			Muted active takes, i.e. whose volume is at or below -96 dB, 
-			and non-audio takes are ignored.
+		ADDITIONAL ACTIONS
+
+		Toggle mute/solo
+
+		Toggle active audio take mute - a take is considered muted 
+		when its volume is at -96 dB or lower, so when the volume is 
+		heigher it's set to be much lower, i.e. the take gets muted, 
+		and when it's at -96 dB or lower the original volume is 
+		resrored if the take was originally muted with the script, 
+		otherwise it will be set at 0 dB.
+
+		Toggle active audio take solo - the same logic as above applies 
+		to all item takes bar the active one; the active take is soloed,
+		regadless of its own volume, when volume of at least one other 
+		item take is above -96 dB, i.e. all other takes get muted, 
+		otherwise they're unmuted which is tantamount to the active 
+		take being unsoloed; if active take was muted manually in which
+		case the script has no knowledge of its original volume, its 
+		volume is restored to 0 dB; if all item takes are muted, 
+		uncluding the active take, the latter is soloed, i.e. unmuted, 
+		while all other takes remain muted.
+
+		The mute actions will only work if the channel enabled in the 
+		active takes is within the media source channel range.
 
 
-			Characters in the menu marked with underscore work as quick
-			access shorcuts so the menu items can be triggered from 
-			keyboard while the menu they belong to is focused.
+		Move up/down
+
+		Move active audio take up/down - the movement is finite, i.e.
+		when a take reaches the topmost/buttommost take lane, it 
+		cannot be moved any further in the same direction, no 
+		wrap-around.
+
+
+		Randomize channel (pair)
+
+		Randomize active audio take channel - the action is only 
+		available when setting 3 is enabled. In multi-item selection
+		by default channel is randomized for each active take 
+		separately. When setting 4 is enabled an indicator (U) is
+		tagged on to the action name in the menu denoting uniform
+		randomization for all active takes in multi-item selection, 
+		i.e. setting all of them to a channel by the same random number.  
+		Subject to randomization are only channels of media sources 
+		whose channel count is greater than 2.
+
+		Randomize active audio take channel pair - same as above
+		except that instead of individual channels channel pairs are 
+		randomized and applied. Subject to randomization are only 
+		channels of media sources whose channel count is greater 
+		than 3.
+
+		Muted active takes, i.e. whose volume is at or below -96 dB, 
+		and non-audio takes are ignored.
+
+
+		Characters in the menu marked with underscore work as quick
+		access shorcuts so the menu items can be triggered from 
+		keyboard while the menu they belong to is focused.
 
 ]]
 
