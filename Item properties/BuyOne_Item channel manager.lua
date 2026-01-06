@@ -1239,7 +1239,7 @@ or no_valid_takes and 'no valid other takes to mute' or ' no valid active take')
 	if err then
 	Error_Tooltip('\n\n '..err..' \n\n', 1, 1, x, -200) -- caps, spaced true
 	-- make the error message stick for half a second, because when the menu loads it may get obscured by it
-	pause(0.5)
+	pause(2)
 	return end
 
 	local function unmute(take, _96dB)
@@ -1345,7 +1345,7 @@ or proceed == terminal_pos and ' all active audio takes \n\n'..(' '):rep(down an
 	if err then
 	Error_Tooltip('\n\n '..err..' \n\n', 1, 1, x, -200) -- caps, spaced true
 	-- make the error message stick for half a second, because when the menu loads it may get obscured by it
-	pause(0.5)
+	pause(2)
 	return end
 
 r.Undo_BeginBlock()
@@ -1471,7 +1471,7 @@ or proceed_cnt <= few_ch_cnt+muted_cnt and 'no compatible active take'
 	if err then
 	Error_Tooltip('\n\n '..err..' \n\n', 1, 1, x, -200) -- caps, spaced true
 	-- make the error message stick for half a second, because when the menu loads it may get obscured by it
-	pause(0.5)
+	pause(2)
 	return end
 
 math.randomseed(math.floor(r.time_precise())*1000) -- seems to facilitate greater randomization at fast rate thanks to milliseconds count; math.floor() because the seeding number must be integer	// MUST BE RUN ONCE BEFORE THE MAIN LOOP BELOW, because if run for each take the generated random number will be the same for all
@@ -1576,7 +1576,7 @@ or proceed_cntr == 0 and 'can\'t remove the only audio take'
 	if err then
 	Error_Tooltip('\n\n '..err..' \n\n', 1, 1, x, -200) -- caps, spaced true
 	-- make the error message stick for half a second, because when the menu loads it may get obscured by it
-	pause(0.5)
+	pause(2)
 	return end
 
 r.Undo_BeginBlock()
@@ -1850,7 +1850,7 @@ local proceed
 	local alt = #itm_t > 1 and 's are empty' or ' is empty'
 	Error_Tooltip('\n\n can\'t change channel to itself \n\n\t    or take'..alt..' \n\n', 1, 1, x, -200) -- caps, spaced true
 	-- make the error message stick for half a second, because when the menu loads it may get obscured by it
-	pause(0.5)
+	pause(2)
 	return end
 
 r.Undo_BeginBlock()
@@ -1895,7 +1895,7 @@ local proceed
 	local alt = #itm_t > 1 and 's are empty' or ' is empty'
 	Error_Tooltip('\n\n can\'t remove the only channel \n\n\t    or take'..alt..' \n\n', 1, 1, x, -200) -- caps, spaced true
 	-- make the error message stick for half a second, because when the menu loads it may get obscured by it
-	pause(0.5)
+	pause(2)
 	return end
 
 r.Undo_BeginBlock()
