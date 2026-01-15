@@ -56,7 +56,7 @@ About:	Designed for either horizontal scrolling or moving loop
 	Length of a dotted note is equivalent to the length of 3 notes 
 	of a shorter duration, e.g. 1 dotted = 3/2, 1/2 dotted = 3/4, 
 	1/4 dotted = 3/8 etc. To combine several dotted notes multiply 
-	the nominator by the number of such notes, e.g. 
+	the numerator by the number of such notes, e.g. 
 	9/2 = 3 dotted whole notes (3 x 3/2), 
 	12/4 = 4 dotted half notes (4 x 3/4), 
 	6/8 = 2 dotted quarter notes (2 x 3/8). 
