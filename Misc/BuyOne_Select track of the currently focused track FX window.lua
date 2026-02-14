@@ -2,8 +2,8 @@
 ReaScript name: Select track of the currently focused track FX window
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: Initial release
+Version: 1.1
+Changelog: 1.1 Fixed js_ReaScriptAPI extension accesibility test
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: js_ReaScriptAPI
@@ -107,7 +107,7 @@ SCROLL_2TRACK = #SCROLL_2TRACK:gsub(' ','') > 0
 
 	if Script_Not_Enabled(ENABLE_SCRIPT) then
 	return r.defer(function() do return end end)
-	elseif not r.APIExists('JS_Window_GetForeground') then
+	elseif not reaper.JS_Window_GetForeground then
 	r.MB('   The script requires js_ReaScriptAPI\n\n        which isn\'t currently installed.\n\nAfter clicking OK the link will be provided.','ERROR',0)
 	Msg('https://github.com/juliansader/ReaExtensions/tree/master/js_ReaScriptAPI', r.ClearConsole())
 	return r.defer(function() do return end end)
