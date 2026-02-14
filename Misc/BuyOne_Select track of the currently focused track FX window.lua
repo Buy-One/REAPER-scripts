@@ -107,7 +107,7 @@ SCROLL_2TRACK = #SCROLL_2TRACK:gsub(' ','') > 0
 
 	if Script_Not_Enabled(ENABLE_SCRIPT) then
 	return r.defer(function() do return end end)
-	elseif not reaper.JS_Window_GetForeground then
+	elseif not r.JS_Window_GetForeground then
 	r.MB('   The script requires js_ReaScriptAPI\n\n        which isn\'t currently installed.\n\nAfter clicking OK the link will be provided.','ERROR',0)
 	Msg('https://github.com/juliansader/ReaExtensions/tree/master/js_ReaScriptAPI', r.ClearConsole())
 	return r.defer(function() do return end end)
