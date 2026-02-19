@@ -9,31 +9,31 @@ REAPER: at least v5.962
 Extensions: SWS/S&M recommended for greater reliability
 Provides: [main=main,midi_editor] .
 About: 	The script is meant to complement REAPER built-in
-  			functionality of moving media to the project 
-  			directory which ignores image files used in item
-  			notes and as track icons and only respects video take 
-  			source image files.
-  
-  			The script moves image files used in the current
-  			project to the location in the project directory, which 
-  			is either project media path or a dedicated folder if 
-  			specified in the IMAGE_DIRECTORY setting.
-  
-  			By default the script targets item notes image files. 
-  			If HANDLE_VIDEO_TAKE_IMAGE_SOURCES setting is enabled
-  			video take image source files are handled as well.
-  			If INCLUDE_TRACK_ICONS setting is enabled track icon files
-  			are handles too.  
-  
-  			Image files located in the /Data folder in REAPER resource 
-  			directory are ignored by the script.
-  
-  			If file path happens to exceed the limit of 256 characters 
-  			the file name will be truncated as much as possible to fit 
-  			within the limit. File name collisions are resolved by adding
-  			a numeric prefix to the file being copied/moved.
-  
-  			See USER SETTINGS below.
+		functionality of moving media to the project 
+		directory which ignores image files used in item
+		notes and as track icons and only respects video take 
+		source image files.
+
+		The script moves image files used in the current
+		project to the location in the project directory, which 
+		is either project media path or a dedicated folder if 
+		specified in the IMAGE_DIRECTORY setting.
+
+		By default the script targets item notes image files. 
+		If HANDLE_VIDEO_TAKE_IMAGE_SOURCES setting is enabled
+		video take image source files are handled as well.
+		If INCLUDE_TRACK_ICONS setting is enabled track icon files
+		are handles too.  
+
+		Image files located in the /Data folder in REAPER resource 
+		directory are ignored by the script.
+
+		If file path happens to exceed the limit of 256 characters 
+		the file name will be truncated as much as possible to fit 
+		within the limit. File name collisions are resolved by adding
+		a numeric prefix to the file being copied/moved.
+
+		See USER SETTINGS below.
 ]]
 
 -----------------------------------------------------------------------------
