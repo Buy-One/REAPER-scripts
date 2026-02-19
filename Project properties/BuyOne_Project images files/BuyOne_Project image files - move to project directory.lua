@@ -730,7 +730,7 @@ function MANAGE(keyword)
 -- and does cleanup in project media directory
 -- the script adheres to this rule
 
-local move, copy, cleanup = keyword == 'move to', keyword == 'copy to', keyword == 'remove from'
+local move, copy, cleanup = keyword == 'move to', keyword == 'copy to', keyword:match('remove')
 local retval, proj_path = r.EnumProjects(-1) -- -1 current project
 local sep = proj_path:match('[\\/]')
 -- for saved project returns setting at 'Project settings -> Path to save media files'
@@ -1029,7 +1029,7 @@ local scr_name = scr_name:match('[^\\/]+_(.+)%.%w+') -- without path, scripter n
  -- scr_name = '' -------------- NAME TESTING
 ------------------------------------------------------
 
-local keyword = Invalid_Script_Name(scr_name,'copy to','move to','remove from')
+local keyword = Invalid_Script_Name(scr_name,'copy to','move to','remove unused from')
 
 	if not keyword then return r.defer(no_undo) end
 
