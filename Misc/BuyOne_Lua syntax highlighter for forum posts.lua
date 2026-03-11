@@ -2,54 +2,60 @@
 ReaScript name: BuyOne_Lua syntax highlighter for forum posts.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.3
-Changelog:  1.3 #Optimized preliminary evaluation of the input string
-		#Fixed formatting of nested REAPER and user fuctions
-		#Fixed some corner cases in user function formatting
-	    1.2 #Fixed last line capture if the INPUT setting closure is located 
-		on the last line of the string rather than on the next line
-	    1.1 #Fixed last line capture if the script is run from inside REAPER
-		#Made sure that the item with the output is placed on the same track 
-		as the item with the input when the script is run from inside REAPER
+Version: 1.4
+Changelog: 1.4 	#Added support for retrieving original code from the clipboard
+				#Updated 'About' text
+		   1.3 	#Optimized preliminary evaluation of the input string
+				#Fixed formatting of nested REAPER and user fuctions
+				#Fixed some corner cases in user function formatting
+		   1.2	#Fixed last line capture if the INPUT setting closure is located 
+				on the last line of the string rather than on the next line
+		   1.1 	#Fixed last line capture if the script is run from inside REAPER
+				#Made sure that the item with the output is placed on the same track 
+				as the item with the input when the script is run from inside REAPER
 Licence: WTFPL
 REAPER: at least v5.0
 Extensions: SWS/S&M recommended but not mandatory
 About: 	The script formats Lua code with syntax highlighting for posting
-	on Cockos offical forum http://forum.cockos.com
+		on Cockos offical forum http://forum.cockos.com
 
-	If the script is run from inside REAPER it retrieves the original code
-	from the selected item notes and outputs formatted code into the notes
-	of a new item automatically placed next to the original one. 
-	If SWS/S&M extension is installed it also stores the formatted code
-	in the clipboard so no need to copy it manually from the item notes
-	which pop up.
+		If the script is run from inside REAPER it EITHER retrieves the original 
+		code from the selected item notes and outputs formatted code into the 
+		notes of a new item automatically placed next to the original one, OR,
+		if SWS/S&M extension is installed, and selected item notes are empty
+		it retrieves the original code from the clipboard and outputs it into
+		the notes of the same selected item. In both cases there should be 
+		a selected item.   
+		If SWS/S&M extension is installed it also stores the formatted code
+		in the clipboard so no need to copy it manually from the item notes
+		which pop up.
 
-	If the script isn't run from inside REAPER it looks for the original code
-	in the INPUT setting of the USER SETTINGS and outputs the formatted code
-	to a file named FORMATTED CODE.txt at the path specified in the
-	OUTPUT_FILE_PATH setting of the USER SETTINGS or, if no path is specified,
-	the formatted code is output directly to a console.
+		If the script isn't run from inside REAPER it looks for the original code
+		in the INPUT setting of the USER SETTINGS and outputs the formatted code
+		to a file named FORMATTED CODE.txt at the path specified in the
+		OUTPUT_FILE_PATH setting of the USER SETTINGS or, if no path is specified,
+		the formatted code is output directly to a console.
 
-	If block comments or multi-line literal strings are malformed, all code
-	following thereafter is colored with block comment or literal string 
-	color respectively. Also an error will be raised to alert about the fact.
+		If block comments or multi-line literal strings are malformed, all code
+		following thereafter is colored with block comment or literal string 
+		color respectively. Also an error will be raised to alert about the fact.
 
-	The script seems to work well with minified code but hasn't been tested 
-	extensively in this respect and wasn't designed to support it to begin with.
+		The script seems to work well with minified code but hasn't been tested 
+		extensively in this respect and wasn't designed to support it to begin with.
 
-	The only inconvenience in using the sctipt is that after formatting, the code
-	becomes pretty much uneditable inside the forum post editor and to update
-	the code in the forum post after editing, it must be run through this script
-	again.		
-	
-	!!!! Formatting may take a while, especially when all USER SETTINGS are
-	enabled and the code is relatively long, so have patience.
-	If the script is run within REAPER its finishing will be indicated by 
-	creation of an item with the formatted code.
-	
-	The resulting code is wrapped between [CODE][/CODE] tags and is ready 
-	to be posted. These tags are necessary to preserve spaces within the code
-	otherwise multiple spaces will be reduced to a single one.
+		The only inconvenience in using the sctipt is that after formatting, the code
+		becomes pretty much uneditable inside the forum post editor and to update
+		the code in the forum post after editing, it must be run through this script
+		again.		
+		
+		!!!! Formatting may take a while, especially when all USER SETTINGS are
+		enabled and the code is relatively long, so have patience.
+		If the script is run within REAPER its finishing will be indicated by 
+		creation of an item with the formatted code.
+		
+		The resulting code is wrapped between [CODE][/CODE] tags and is ready 
+		to be posted. These tags are necessary to preserve spaces within the code
+		otherwise multiple spaces will be reduced to a single one.
 
 ]]
 
@@ -1145,7 +1151,7 @@ local item = r.GetSelectedMediaItem(0,0)
 
 local ret, code = r.GetSetMediaItemInfo_String(item, 'P_NOTES', '', false) -- isSet false
 
-return code:gsub('\r','') -- removing carriage return which is auto-added to the notes
+return code
 
 end
 
@@ -1188,21 +1194,24 @@ end
 function Display_Formatted_Code_In_Item_Notes(code)
 
 local item = r.GetSelectedMediaItem(0,0)
-	if item then
-	local item_fin = r.GetMediaItemInfo_Value(item, 'D_POSITION') + r.GetMediaItemInfo_Value(item, 'D_LENGTH')
-	r.SetEditCurPos(item_fin, true, false) -- moveview true, seekplay false
+	if item then -- either re-using the original item with the original code, if present, or there should be a selected item as a target for formatted code
+	local ret, notes = r.GetSetMediaItemInfo_String(item, 'P_NOTES', '', false) -- isSet false
 	local act = r.Main_OnCommand
+		if notes:match('%S') then -- if items notes are not empty, containing original code, otherwise the selected item will be re-used because the original code was retrieved from the clipboard
+		local item_fin = r.GetMediaItemInfo_Value(item, 'D_POSITION') + r.GetMediaItemInfo_Value(item, 'D_LENGTH')
+		r.SetEditCurPos(item_fin, true, false) -- moveview true, seekplay false		
 		local itm_tr = r.GetMediaItemTrack(item)
-		-- make the item track last touched because a copy is pasted to the last touched
-		if r.GetLastTouchedTrack() ~= itm_tr then
-		r.PreventUIRefresh(1)
-		local t = re_store_sel_trks() -- store
-		act(40914, 0) -- Track: Set first selected track as last touched track
-		re_store_sel_trks(t) -- restore
-		r.PreventUIRefresh(-1)
+			-- make the item track last touched because a copy is pasted to the last touched
+			if r.GetLastTouchedTrack() ~= itm_tr then
+			r.PreventUIRefresh(1)
+			local t = re_store_sel_trks() -- store
+			act(40914, 0) -- Track: Set first selected track as last touched track
+			re_store_sel_trks(t) -- restore
+			r.PreventUIRefresh(-1)
+			end		
+		act(40698, 0) -- Edit: Copy items
+		act(42398, 0) -- Item: Paste items/tracks
 		end
-	act(40698, 0) -- Edit: Copy items
-	act(42398, 0) -- Item: Paste items/tracks
 	local item = r.GetSelectedMediaItem(0,0) -- pasted copy
 	r.GetSetMediaItemInfo_String(item, 'P_NOTES', '', true) -- isSet true, delete the original code
 	r.GetSetMediaItemInfo_String(item, 'P_NOTES', code, true) -- isSet true, insert formatted code
@@ -1413,7 +1422,10 @@ local err2 = '\tthe input seems \n\n to be already formatted '
 
 	if reaper then
 	INPUT = Get_Code_From_Item_Notes()
-		if not INPUT then return r.defer(no_undo) end
+		if not INPUT then return r.defer(no_undo)
+		elseif not INPUT:match('%S') and r.CF_GetClipboard then -- item noes are empty
+		INPUT = r.CF_GetClipboard()
+		end
 	end
 
 -- add trailing new line if absent so that pattern in INPUT:gmatch() 
@@ -1422,14 +1434,14 @@ local err2 = '\tthe input seems \n\n to be already formatted '
 -- to the last line of the input code
 INPUT = INPUT:sub(-1) ~= '\n' and INPUT..'\n' or INPUT
 	
-local is_formatted_code = select(2,INPUT:gsub('%[color=".-"%].-%[/color%]','%0'))
-local err = #INPUT:gsub('[%s%c]','') == 0 and err1 or is_formatted_code > 0 and err2
+local is_formatted_code = INPUT:match('%[color=".-"%].-%[/color%]')
+local err = INPUT:match('%[color=".-"%].-%[/color%]') and err2 or #INPUT:gsub('[%s%c]','') == 0 and err1
 local wait_mess = 'the input is being formatted. \n\n\t\tplease wait...'
 local path
 
 	if err then
 		if reaper then
-		Error_Tooltip('\n\n '..err..'\n\n', 1, 1, -200, y2) -- caps, spaced true, x2 -200
+		Error_Tooltip('\n\n '..err..' \n\n', 1, 1, -200, y2) -- caps, spaced true, x2 -200
 		else -- if run outside of REAPER
 		print('\n'..err:gsub('%s+', ' '):upper()) -- replace multiple spaces designed for message display in REAPER with a single space; the leading new line char makes part of the script path show up in the error message if error() function is used; line breaks are ignored by native error and assert functions
 		end
@@ -1455,6 +1467,7 @@ local path
 
 
 -- split into lines
+INPUT = INPUT:gsub('\r','') -- removing carriage returns which are auto-added to the notes and in the clipboard
 local lines_t = {}
 	for line in INPUT:gmatch('(.-)\n') do -- respecting empty lines
 		if line then
