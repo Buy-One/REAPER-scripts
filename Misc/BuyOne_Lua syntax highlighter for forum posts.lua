@@ -1614,7 +1614,6 @@ local link = '[url="https://github.com/Buy-One/REAPER-scripts/blob/main/Misc/'
 ..'BuyOne_Lua%20syntax%20highlighter%20for%20forum%20posts.lua"][i][size="1"]'
 ..'Formatted with Lua syntax highlighter[/size][/i][/url]'
 local code_form = '[CODE]\n'..table.concat(lines_t,'\n')..'\n[/CODE]\n'..link
-local code_form = '[CODE]\n'..table.concat(lines_t,'\n')..'\n[/CODE]\n'..link
 
 
 -- generate warning if color associated with extra formatting is used for another element
