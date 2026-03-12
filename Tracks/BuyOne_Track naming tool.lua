@@ -9,141 +9,141 @@ REAPER: at least v5.962
 Extensions: 
 Provides: [main=main,midi_editor] .
 About: 	The script was inspied by DiGiCo Digital Mixing Console
-			Channel Name utility
-			https://www.digico.org/DiGiCo_Manuals/SD_Software_Reference_V2.pdf#page=10
-			OR  
-			https://digico.biz/wp-content/uploads/2022/03/SD-Quantum-Software-Reference-Issue-E-V1528.pdf#page=15
+		Channel Name utility
+		https://www.digico.org/DiGiCo_Manuals/SD_Software_Reference_V2.pdf#page=10
+		OR  
+		https://digico.biz/wp-content/uploads/2022/03/SD-Quantum-Software-Reference-Issue-E-V1528.pdf#page=15
 
-			https://youtu.be/v0R1jz2v2Us?t=179
-			
-			and is designed to facilitate quick labeling of tracks with
-			predefined labels.
+		https://youtu.be/v0R1jz2v2Us?t=179
+		
+		and is designed to facilitate quick labeling of tracks with
+		predefined labels.
 
-			Labels are applied to selected tracks or to a newly 
-			inserted track via clicking a label in the categories menu.
-
-
-			T H E  S E T T I N G S
-
-			1. Replace label
-			2. Add label
-				a. prepend
-				b. append
-
-			Settings 1 and 2 are mutually exclusive. Options a. and b.
-			of the setting 2. determine where the added label is placed
-			relative to the current track label. When settin 1 is enabled
-			they're grayed out.
-
-			3. Define initial numeral for auto-enumeration 
-			in multi-track selection:
-				a. prepend to label
-				b. append to label
-
-			Setting 3 allows defining initial numeral of numeric sequence
-			to be applied to a track label in multi-track selection. To define 
-			one, click the menu item to call a dialogue. To clear a defined 
-			numeral submit empty dialogue. If no numeral is defined the setting 
-			is ignored, options a. and b. are grayed out. It's also ignored 
-			when a numeral from default DIGITS category is applied.
-			Options a. and b. determine where the numeral is added to the
-			original track label. The options are toggles and mutually 
-			exclusive when at least one of them is enabled, i.e. both can be
-			disabled to turn the Initial numeral setting off without having
-			to remove the actual numeral.  
-			If this setting isn't used, enumeration will have to be done after 
-			label from the categories menu is applied, i.e. in two steps, first 
-			apply label, then apply number from DIGITS category.
+		Labels are applied to selected tracks or to a newly 
+		inserted track via clicking a label in the categories menu.
 
 
-			Settings 1, 2 and 3 are ignored when brackets are applied from 
-			default SEPARATORS / BRACKETS category, because brackets are 
-			applied around the current track label.
+		T H E  S E T T I N G S
+
+		1. Replace label
+		2. Add label
+			a. prepend
+			b. append
+
+		Settings 1 and 2 are mutually exclusive. Options a. and b.
+		of the setting 2. determine where the added label is placed
+		relative to the current track label. When settin 1 is enabled
+		they're grayed out.
+
+		3. Define initial numeral for auto-enumeration 
+		in multi-track selection:
+			a. prepend to label
+			b. append to label
+
+		Setting 3 allows defining initial numeral of numeric sequence
+		to be applied to a track label in multi-track selection. To define 
+		one, click the menu item to call a dialogue. To clear a defined 
+		numeral submit empty dialogue. If no numeral is defined the setting 
+		is ignored, options a. and b. are grayed out. It's also ignored 
+		when a numeral from default DIGITS category is applied.
+		Options a. and b. determine where the numeral is added to the
+		original track label. The options are toggles and mutually 
+		exclusive when at least one of them is enabled, i.e. both can be
+		disabled to turn the Initial numeral setting off without having
+		to remove the actual numeral.  
+		If this setting isn't used, enumeration will have to be done after 
+		label from the categories menu is applied, i.e. in two steps, first 
+		apply label, then apply number from DIGITS category.
 
 
-			4. Change DIGITS order of magnitude: 1
-
-			The setting is cyclic where repeated clicks change order of 
-			magnitude of numbers included in the default DIGITS category
-			from 1 to 100, except 0, and allow applynig numeric sequences 
-			above 9 to multi-track selections.
-
-			5. Capitalize
-
-			When enabled, labels are applied to tracks in all caps. The 
-			register of actual labels in the menu however doesn;t change.
-
-			6. Create new track with label
-
-			When enabled, track selection is ignored, settings 1-3 get grayed 
-			out as irrelevant. New track is created in response to clicking 
-			a label in the menu.
-
-			7. Edit lists
-
-			The setting changes the script mode of operation from applying
-			labels to their editing. When enabled, settings 1-6,8-10 are 
-			grayed out and clicking a label in the category menu calls a 
-			dialogue where the label can be modified and new labels can be 
-			added. For label list formatting rules see the descripton of 
-			CATEGORIES setting in the USER SETTINGS below. To remove a 
-			clicked label submit the dialogue empty. Be aware that labels
-			containing commas, if any, in the editor are wrapped in
-			quoation marks as required by the label list formatting rules
-			so when submitted back to the menu they're treated as a single 
-			label rather than as several comma separated ones.  
-			Submitting the dialogue, results in updating the category list 
-			in the CATEGORIES setting within the script.  
-			Only user categories defined in the CATEGORIES setting are 
-			editable so if that setting is empty or otherwise unreadable,
-			in which case default categories are loaded, '7. Edit lists'
-			menu item is grayed out.
+		Settings 1, 2 and 3 are ignored when brackets are applied from 
+		default SEPARATORS / BRACKETS category, because brackets are 
+		applied around the current track label.
 
 
-			8. Store settings as default
+		4. Change DIGITS order of magnitude: 1
 
-			Allows storing current settings as script default to be used
-			for every new project.
-			When settings current state is identical to defaults the menu
-			item is grayed out.
+		The setting is cyclic where repeated clicks change order of 
+		magnitude of numbers included in the default DIGITS category
+		from 1 to 100, except 0, and allow applynig numeric sequences 
+		above 9 to multi-track selections.
+
+		5. Capitalize
+
+		When enabled, labels are applied to tracks in all caps. The 
+		register of actual labels in the menu however doesn;t change.
+
+		6. Create new track with label
+
+		When enabled, track selection is ignored, settings 1-3 get grayed 
+		out as irrelevant. New track is created in response to clicking 
+		a label in the menu.
+
+		7. Edit lists
+
+		The setting changes the script mode of operation from applying
+		labels to their editing. When enabled, settings 1-6,8-10 are 
+		grayed out and clicking a label in the category menu calls a 
+		dialogue where the label can be modified and new labels can be 
+		added. For label list formatting rules see the descripton of 
+		CATEGORIES setting in the USER SETTINGS below. To remove a 
+		clicked label submit the dialogue empty. Be aware that labels
+		containing commas, if any, in the editor are wrapped in
+		quoation marks as required by the label list formatting rules
+		so when submitted back to the menu they're treated as a single 
+		label rather than as several comma separated ones.  
+		Submitting the dialogue, results in updating the category list 
+		in the CATEGORIES setting within the script.  
+		Only user categories defined in the CATEGORIES setting are 
+		editable so if that setting is empty or otherwise unreadable,
+		in which case default categories are loaded, '7. Edit lists'
+		menu item is grayed out.
 
 
-			9. Reset to defaults
+		8. Store settings as default
 
-			Script defaults are:
-			Setting 1 is enabled 
-			Option b. of Setting 2 is enabled
-			Setting 4 value is 1
-			The settings are listed in the main menu
-
-			If you stored your own defaults with option 8 above, that's what
-			the settings will be reset to.  
-			When settings current state is identical to defaults the menu
-			item is grayed out.
+		Allows storing current settings as script default to be used
+		for every new project.
+		When settings current state is identical to defaults the menu
+		item is grayed out.
 
 
-			10. Undo
+		9. Reset to defaults
 
-			Undo only works for undo points created by the script and the 
-			menu item is grayed out when the latest undo point wasn't created 
-			by it.
+		Script defaults are:
+		Setting 1 is enabled 
+		Option b. of Setting 2 is enabled
+		Setting 4 value is 1
+		The settings are listed in the main menu
 
-			MOVE SETTINGS TO SUBMENU
+		If you stored your own defaults with option 8 above, that's what
+		the settings will be reset to.  
+		When settings current state is identical to defaults the menu
+		item is grayed out.
 
-			The option allows moving settings 1-9 into a submenu so that
-			there's more space for label categories on the screen.
+
+		10. Undo
+
+		Undo only works for undo points created by the script and the 
+		menu item is grayed out when the latest undo point wasn't created 
+		by it.
+
+		MOVE SETTINGS TO SUBMENU
+
+		The option allows moving settings 1-9 into a submenu so that
+		there's more space for label categories on the screen.
 
 
-			The script stores the state of settings 
-			1, 2(a, b), 3(a,b), 4, 5, 6 during session and in between
-			project sessions.		
+		The script stores the state of settings 
+		1, 2(a, b), 3(a,b), 4, 5, 6 during session and in between
+		project sessions.		
 
-			Categories DIGITS, CHANNELS and SEPARATORS / BRACKETS are
-			fixed and available regardless of presence of user defined 
-			label categories.
+		Categories DIGITS, CHANNELS and SEPARATORS / BRACKETS are
+		fixed and available regardless of presence of user defined 
+		label categories.
 
-			Use CATEGORIES setting in the USER SETTINGS below to define 
-			custom track label categories.
+		Use CATEGORIES setting in the USER SETTINGS below to define 
+		custom track label categories.
 
 ]]
 
