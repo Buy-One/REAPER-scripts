@@ -13,7 +13,7 @@ About: 	The script was inspied by DiGiCo Digital Mixing Console
 		https://www.digico.org/DiGiCo_Manuals/SD_Software_Reference_V2.pdf#page=10
 		OR  
 		https://digico.biz/wp-content/uploads/2022/03/SD-Quantum-Software-Reference-Issue-E-V1528.pdf#page=15
-
+        AND
 		https://youtu.be/v0R1jz2v2Us?t=179
 		
 		and is designed to facilitate quick labeling of tracks with
