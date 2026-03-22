@@ -6,22 +6,22 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v7.62
-Provides: [main=main,midi_editor] .
+Provides: 	[main=main,midi_editor] .
 			. > BuyOne_Sort visible Ruler lanes by the earliest visible marker, region in ascending order.lua
 			. > BuyOne_Sort visible Ruler lanes by the earliest visible marker, region in descending order.lua
 About: 	If this script name is suffixed with META, when executed
-			it will automatically spawn all individual scripts included
-			in the package into the directory of the META script and will
-			import them into the Action list from that directory.
+		it will automatically spawn all individual scripts included
+		in the package into the directory of the META script and will
+		import them into the Action list from that directory.
 
-			If there's no META suffix in this script name it will perfom
-			the operation indicated in its name.
+		If there's no META suffix in this script name it will perfom
+		the operation indicated in its name.
 
-			Ascending order means that the lane associated with the
-			earliest region/marker is placed at the top and so on.
+		Ascending order means that the lane associated with the
+		earliest region/marker is placed at the top and so on.
 
-			Descending order means that the lane associated with the
-			earliest region/marker is placed at the bottom.
+		Descending order means that the lane associated with the
+		earliest region/marker is placed at the bottom.
 
 ]]
 
