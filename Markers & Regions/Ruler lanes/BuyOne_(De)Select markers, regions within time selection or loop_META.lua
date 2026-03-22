@@ -6,7 +6,7 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v7.62
-Provides: [main=main,midi_editor] .
+Provides: 	[main=main,midi_editor] .
 			. > BuyOne_Select visible markers, regions within time selection.lua
 			. > BuyOne_Select visible markers, regions within loop.lua
 			. > BuyOne_Deselect markers within time selection.lua
@@ -14,34 +14,34 @@ Provides: [main=main,midi_editor] .
 			. > BuyOne_Deselect markers within loop.lua
 			. > BuyOne_Deselect regions within loop.lua
 About: 	If this script name is suffixed with META, when
-			executed it will automatically spawn all individual
-			scripts included in the package into the directory
-			of the META script and will import them into the
-			Action list from that directory.
+		executed it will automatically spawn all individual
+		scripts included in the package into the directory
+		of the META script and will import them into the
+		Action list from that directory.
 
-			If there's no META suffix in this script name it will
-			perfom the operation indicated in its name.
+		If there's no META suffix in this script name it will
+		perfom the operation indicated in its name.
 
-			A marker is considered located within time selection
-			or loop (depending on the script name) when its
-			position falls between their start and end points
-			or coincides with their start point.
+		A marker is considered located within time selection
+		or loop (depending on the script name) when its
+		position falls between their start and end points
+		or coincides with their start point.
 
-			A region is considered located within time selection
-			or loop (depending on the script name) when its
-			start or end falls between their start and end points
-			or when its start coincides with their start point.
-			
-			'Deselect' scripts deselect markers/regions on visible
-			as well as on hidden lanes.  
-			Markers/regions on locked lanes can be DEselected but
-			not selected.
+		A region is considered located within time selection
+		or loop (depending on the script name) when its
+		start or end falls between their start and end points
+		or when its start coincides with their start point.
+		
+		'Deselect' scripts deselect markers/regions on visible
+		as well as on hidden lanes.  
+		Markers/regions on locked lanes can be DEselected but
+		not selected.
 
-			The script doesn't create undo point because change
-			in marker / region selection isn't recongnized by REAPER
-			as project change. And undoing is not advised because
-			of Ruler lanes reset bug as of build 7.65
-			https://forum.cockos.com/showpost.php?p=2929395&postcount=8
+		The script doesn't create undo point because change
+		in marker / region selection isn't recongnized by REAPER
+		as project change. And undoing is not advised because
+		of Ruler lanes reset bug as of build 7.65
+		https://forum.cockos.com/showpost.php?p=2929395&postcount=8
 
 ]]
 
