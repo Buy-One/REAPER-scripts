@@ -6,32 +6,32 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v7.62
-Provides: [main=main,midi_editor] .
+Provides: 	[main=main,midi_editor] .
 			. > BuyOne_Insert marker on a new lane at the bottom.lua
 			. > BuyOne_Insert region on a new lane at the bottom.lua
 			. > BuyOne_Insert marker on a new lane at the top.lua
 			. > BuyOne_Insert region on a new lane at the top.lua
 About: 	If this script name is suffixed with META, when executed 
-			it will automatically spawn all individual scripts included 
-			in the package into the directory of the META script and will 
-			import them into the Action list from that directory.
+		it will automatically spawn all individual scripts included 
+		in the package into the directory of the META script and will 
+		import them into the Action list from that directory.
 
-			If there's no META suffix in this script name it will perfom 
-			the operation indicated in its name.
+		If there's no META suffix in this script name it will perfom 
+		the operation indicated in its name.
 
-			If this script is designed to insert a marker, a marker
-			is inserted at mouse cursor unless the mouse cursor
-			is outside of the Arrange area, i.e. hovers over 
-			a TCP, MCP, Ruler, a toolbar button, a menu, or the Action 
-			list etc., in which case the marker is inserted at 
-			at the edit cursor.
+		If this script is designed to insert a marker, a marker
+		is inserted at mouse cursor unless the mouse cursor
+		is outside of the Arrange area, i.e. hovers over 
+		a TCP, MCP, Ruler, a toolbar button, a menu, or the Action 
+		list etc., in which case the marker is inserted at 
+		at the edit cursor.
 
-			If this script is designed to insert a region, a region
-			is always inserted at time selection provided there's
-			one.
+		If this script is designed to insert a region, a region
+		is always inserted at time selection provided there's
+		one.
 
-			The new lane is added beneath all the current lanes.
-	
+		The new lane is added beneath all the current lanes.
+
 ]]
 
 
