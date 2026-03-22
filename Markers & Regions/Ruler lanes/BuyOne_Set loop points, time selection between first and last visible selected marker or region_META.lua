@@ -6,27 +6,27 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v7.62
-Provides: [main=main,midi_editor] .
+Provides: 	[main=main,midi_editor] .
 			. > BuyOne_Set time selection between first and last visible selected marker or region.lua
 			. > BuyOne_Set loop points between first and last visible selected marker or region.lua
 About: 	If this script name is suffixed with META, when 
-			executed it will automatically spawn all individual 
-			scripts included in the package into the directory 
-			of the META script and will import them into the 
-			Action list from that directory.
+		executed it will automatically spawn all individual 
+		scripts included in the package into the directory 
+		of the META script and will import them into the 
+		Action list from that directory.
 
-			If there's no META suffix in this script name it will 
-			perfom the operation indicated in its name.
+		If there's no META suffix in this script name it will 
+		perfom the operation indicated in its name.
 
-			If only region is selected, time selection or loop points 
-			(depending on the script name) are set to that region.
-			Otherwise they're always set between end of one region
-			and start of another region.
+		If only region is selected, time selection or loop points 
+		(depending on the script name) are set to that region.
+		Otherwise they're always set between end of one region
+		and start of another region.
 
-			As of build 7.65 due to a bug, undoing setting time selection / 
-			loop points may result in visual reset of the Ruler lanes 
-			fixable by manual resizing of the Ruler
-			https://forum.cockos.com/showpost.php?p=2929395&postcount=8
+		As of build 7.65 due to a bug, undoing setting time selection / 
+		loop points may result in visual reset of the Ruler lanes 
+		fixable by manual resizing of the Ruler
+		https://forum.cockos.com/showpost.php?p=2929395&postcount=8
 
 ]]
 
