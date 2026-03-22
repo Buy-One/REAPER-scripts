@@ -7,55 +7,55 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v7.62
 Provides: 	[main=main,midi_editor] .
-				. > BuyOne_Save Ruler lanes visibility set 1.lua
-				. > BuyOne_Save Ruler lanes visibility set 2.lua
-				. > BuyOne_Save Ruler lanes visibility set 3.lua
-				. > BuyOne_Save Ruler lanes visibility set 4.lua
-				. > BuyOne_Save Ruler lanes visibility set 5.lua
-				. > BuyOne_Save Ruler lanes visibility set 6.lua
-				. > BuyOne_Recall Ruler lanes visibility set 1.lua
-				. > BuyOne_Recall Ruler lanes visibility set 2.lua
-				. > BuyOne_Recall Ruler lanes visibility set 3.lua
-				. > BuyOne_Recall Ruler lanes visibility set 4.lua
-				. > BuyOne_Recall Ruler lanes visibility set 5.lua
-				. > BuyOne_Recall Ruler lanes visibility set 6.lua
-				. > BuyOne_Save and recall Ruler lanes visibility sets (menu).lua
+			. > BuyOne_Save Ruler lanes visibility set 1.lua
+			. > BuyOne_Save Ruler lanes visibility set 2.lua
+			. > BuyOne_Save Ruler lanes visibility set 3.lua
+			. > BuyOne_Save Ruler lanes visibility set 4.lua
+			. > BuyOne_Save Ruler lanes visibility set 5.lua
+			. > BuyOne_Save Ruler lanes visibility set 6.lua
+			. > BuyOne_Recall Ruler lanes visibility set 1.lua
+			. > BuyOne_Recall Ruler lanes visibility set 2.lua
+			. > BuyOne_Recall Ruler lanes visibility set 3.lua
+			. > BuyOne_Recall Ruler lanes visibility set 4.lua
+			. > BuyOne_Recall Ruler lanes visibility set 5.lua
+			. > BuyOne_Recall Ruler lanes visibility set 6.lua
+			. > BuyOne_Save and recall Ruler lanes visibility sets (menu).lua
 About: 	If this script name is suffixed with META, when 
-			executed it will automatically spawn all individual 
-			scripts included in the package into the directory 
-			of the META script and will import them into the 
-			Action list from that directory.
+		executed it will automatically spawn all individual 
+		scripts included in the package into the directory 
+		of the META script and will import them into the 
+		Action list from that directory.
 
-			If there's no META suffix in this script name it will 
-			perfom the operation indicated in its name.
+		If there's no META suffix in this script name it will 
+		perfom the operation indicated in its name.
 
-			To save a lane visibility set select at least one
-			marker/region on lanes you wish to save into a set.
+		To save a lane visibility set select at least one
+		marker/region on lanes you wish to save into a set.
 
-			Lane storage is based on custom lane names, because
-			these are the only property which lends lane a unique 
-			identity. Fo this reason unnamed lanes cannot be saved 
-			into a set and it's strongly advised to avoid giving
-			same names to different lanes, because on set recall
-			all lanes which match the saved name will be shown,
-			even if only one such lane was targeted at the storage
-			stage.  
-			Renaming lanes saved in a set is also discouraged 
-			because these won't be recalled. Or after renaming one
-			the set must be re-saved.  
-			Lanes order isn't saved with a set, they load in their
-			current relative order determined inside Ruler Lane Manager.
+		Lane storage is based on custom lane names, because
+		these are the only property which lends lane a unique 
+		identity. Fo this reason unnamed lanes cannot be saved 
+		into a set and it's strongly advised to avoid giving
+		same names to different lanes, because on set recall
+		all lanes which match the saved name will be shown,
+		even if only one such lane was targeted at the storage
+		stage.  
+		Renaming lanes saved in a set is also discouraged 
+		because these won't be recalled. Or after renaming one
+		the set must be re-saved.  
+		Lanes order isn't saved with a set, they load in their
+		current relative order determined inside Ruler Lane Manager.
 
-			Sets are project specific. To make sure new or updated 
-			set is retained for future use the project must be saved.
+		Sets are project specific. To make sure new or updated 
+		set is retained for future use the project must be saved.
 
-			If you need more than 6 sets, add as many script name
-			entries to the list under 'Provides:' tag in the META 
-			script header copying the format of other entries, and 
-			execute it so it spawns new files. However for the script  
-			BuyOne_Save and recall Ruler lanes visibility sets (menu).lua
-			to include more sets, modification of the code is
-			required.
+		If you need more than 6 sets, add as many script name
+		entries to the list under 'Provides:' tag in the META 
+		script header copying the format of other entries, and 
+		execute it so it spawns new files. However for the script  
+		BuyOne_Save and recall Ruler lanes visibility sets (menu).lua
+		to include more sets, modification of the code is
+		required.
 ]]
 
 
