@@ -1,35 +1,35 @@
 --[[
-ReaScript name: BuyOne_Move lanes of selected markers, regions up or down one visible lane_META.lua
+ReaScript name: BuyOne_Move lanes of selected markers, regions up or down one visible lane_META.lua (2 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v7.62
-Provides: [main=main,midi_editor] .
+Provides: 	[main=main,midi_editor] .
 			. > BuyOne_Move lanes of selected markers, regions up one visible non-locked lane.lua
 			. > BuyOne_Move lanes of selected markers, regions down one visible non-locked lane.lua
 About: 	If this script name is suffixed with META, when 
-			executed it will automatically spawn all individual 
-			scripts included in the package into the directory 
-			of the META script and will import them into the 
-			Action list from that directory.
+		executed it will automatically spawn all individual 
+		scripts included in the package into the directory 
+		of the META script and will import them into the 
+		Action list from that directory.
 
-			If there's no META suffix in this script name it will 
-			perfom the operation indicated in its name.
+		If there's no META suffix in this script name it will 
+		perfom the operation indicated in its name.
 
-			When multiple markers/regions are selected on different
-			lanes, a lane can be moved further as long as there're 
-			no selected objects on the next lane in the direction 
-			of the movement (up or down).   
-			For example when moving up and markers/regions are 
-			selected on lanes 1 and 3, the lane 3 can still be moved 
-			up to the position of lane 2, while lane 1 will remain 
-			put because it cannot be moved past the topmost position. 
-			Once lane 3 has been moved up to position 2 it cannot 
-			be moved further because positon 1 is already occupied 
-			by lane with another selected marker/region.  
-			Same logic applies mutatis mutandis when moving lanes down.
+		When multiple markers/regions are selected on different
+		lanes, a lane can be moved further as long as there're 
+		no selected objects on the next lane in the direction 
+		of the movement (up or down).   
+		For example when moving up and markers/regions are 
+		selected on lanes 1 and 3, the lane 3 can still be moved 
+		up to the position of lane 2, while lane 1 will remain 
+		put because it cannot be moved past the topmost position. 
+		Once lane 3 has been moved up to position 2 it cannot 
+		be moved further because positon 1 is already occupied 
+		by lane with another selected marker/region.  
+		Same logic applies mutatis mutandis when moving lanes down.
 
 ]]
 
@@ -333,7 +333,6 @@ local t = {history={}}
 	local obj = r.GetRegionOrMarker(0, i, '') -- guidStr is empty string, i.e. getting by index
 	local lane_idx = Get(0, obj, 'I_LANENUMBER')
 	local lane_vis = GetSet(0, 'RULER_LANE_HIDDEN:'..lane_idx, 0, false) == 0 -- isSet false // the attribute works without the colon as well // essentially redundant because B_VISIBLE is also false when the entire lane is hidden
---	local lane_locked = GetSet(0, 'RULER_LANE_LOCKED:'..lane_idx, 0, false) == 1 -- // IRRELEVANT BECAUSE LANES ARE MOVED AND NOT OBJECTS
 		if lane_vis and Get(0, obj, 'B_VISIBLE') == 1 and Get(0, obj, 'B_UISEL') == 1 --and not lane_locked
 		and not t.history[lane_idx]
 		then
