@@ -6,17 +6,17 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v7.62
-Provides: [main=main,midi_editor] .
+Provides: 	[main=main,midi_editor] .
 			. > BuyOne_Move visible selected markers and regions to a new lane at the bottom.lua
 			. > BuyOne_Move visible selected markers and regions to a new lane at the top.lua
 About: 	If this script name is suffixed with META, when 
-			executed it will automatically spawn all individual 
-			scripts included in the package into the directory 
-			of the META script and will import them into the 
-			Action list from that directory.
+		executed it will automatically spawn all individual 
+		scripts included in the package into the directory 
+		of the META script and will import them into the 
+		Action list from that directory.
 
-			If there's no META suffix in this script name it will 
-			perfom the operation indicated in its name.
+		If there's no META suffix in this script name it will 
+		perfom the operation indicated in its name.
 
 ]]
 
