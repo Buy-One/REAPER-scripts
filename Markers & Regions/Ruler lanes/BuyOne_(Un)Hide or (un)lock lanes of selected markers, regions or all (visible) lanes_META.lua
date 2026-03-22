@@ -345,6 +345,7 @@ local t = {}
 	
 		if only and (hide and lane_vis or not hide and not lane_vis) then -- only var goes along with markers var, hidden lanes are supported, the action (hide/unhide) is determined in the main routine
 		t[lane_idx] = t[lane_idx] or {}
+		table.insert(t[lane_idx], obj) -- store objects to deselect them on lanes bound to be hidden
 		local vis = Get(0, obj, 'B_HIDDEN') == 0 -- independent of lane visibility status, unlike B_VISIBLE
 		local reg = Get(0, obj, 'B_ISREGION') == 1
 			if vis and reg then
@@ -387,6 +388,10 @@ local t = {}
 			if r and m or not r and not m
 			or markers and r or not markers and m then
 			t[lane_idx] = nil -- invalidate lane with incompatible content
+			elseif hide then -- deselect objects on lanes bound to be hidden
+				for k, obj in ipairs(obj_type_t) do	
+				reaper.SetRegionOrMarkerInfo_Value(0, obj, 'B_UISEL', 0) -- using full reaper field name here, because r is taken above
+				end
 			end
 		end
 	elseif without then	
