@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Keep Mixer behind other windows.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Fixed crash on MacOS and Lunix when invalid window handle is encountered
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M
@@ -106,7 +106,9 @@ last_focused = focused_wnd ~= mixer and parent ~= mixer and focused_wnd or last_
 	local retval, lt, t, rt, b = r.BR_Win32_GetWindowRect(mixer)
 	local main = r.BR_Win32_HwndToString(r.GetMainHwnd())
 	r.BR_Win32_SetWindowPos(mixer, main, lt, t, rt-lt, b-t, 0) -- flags are 0, not needed, but if they were used they should have been 0x0001 SWP_NOSIZE to retain the current size ignoring the width and height values, e.g. r.BR_Win32_SetWindowPos(mixer, main, lt, t, 0, 0, 0x0001)
-	r.BR_Win32_SetFocus(last_focused) -- restore focus to the window which was in focus immediately before the Mixer
+		if r.ValidatePtr(last_focused, 'HWND') then
+		r.BR_Win32_SetFocus(last_focused) -- restore focus to the window which was in focus immediately before the Mixer
+		end
 	end
 r.defer(run)
 end
