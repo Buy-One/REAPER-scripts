@@ -7,42 +7,42 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v7.62
 Provides: 	[main=main,midi_editor] .
-				. > BuyOne_Hide lanes of selected markers, regions.lua
-				. > BuyOne_Lock lanes of selected markers, regions.lua
-				. > BuyOne_Unlock lanes of selected markers, regions.lua
-				. > BuyOne_Toggle lock lanes of selected markers, regions.lua
-				. > BuyOne_Hide all Ruler lanes.lua
-				. > BuyOne_Unhide all Ruler lanes.lua
-				. > BuyOne_Lock all visible Ruler lanes.lua
-				. > BuyOne_Unlock all visible Ruler lanes.lua
-				. > BuyOne_Toggle lock all visible Ruler lanes.lua
-				. > BuyOne_Hide empty Ruler lanes.lua
-				. > BuyOne_Hide markers only Ruler lanes
-				. > BuyOne_Hide regions only Ruler lanes
-				. > BuyOne_Unhide markers only Ruler lanes
-				. > BuyOne_Unhide regions only Ruler lanes
-				. > BuyOne_Hide non-empty lanes without selected markers, regions
-				. > BuyOne_Lock non-empty lanes without selected markers, regions
-				. > BuyOne_Unlock non-empty lanes without selected markers, regions
-				. > BuyOne_Toggle lock non-empty lanes without selected markers, regions
+			. > BuyOne_Hide lanes of selected markers, regions.lua
+			. > BuyOne_Lock lanes of selected markers, regions.lua
+			. > BuyOne_Unlock lanes of selected markers, regions.lua
+			. > BuyOne_Toggle lock lanes of selected markers, regions.lua
+			. > BuyOne_Hide all Ruler lanes.lua
+			. > BuyOne_Unhide all Ruler lanes.lua
+			. > BuyOne_Lock all visible Ruler lanes.lua
+			. > BuyOne_Unlock all visible Ruler lanes.lua
+			. > BuyOne_Toggle lock all visible Ruler lanes.lua
+			. > BuyOne_Hide empty Ruler lanes.lua
+			. > BuyOne_Hide markers only Ruler lanes
+			. > BuyOne_Hide regions only Ruler lanes
+			. > BuyOne_Unhide markers only Ruler lanes
+			. > BuyOne_Unhide regions only Ruler lanes
+			. > BuyOne_Hide non-empty lanes without selected markers, regions
+			. > BuyOne_Lock non-empty lanes without selected markers, regions
+			. > BuyOne_Unlock non-empty lanes without selected markers, regions
+			. > BuyOne_Toggle lock non-empty lanes without selected markers, regions
 About: 	If this script name is suffixed with META, when 
-			executed it will automatically spawn all individual 
-			scripts included in the package into the directory 
-			of the META script and will import them into the 
-			Action list from that directory.
+		executed it will automatically spawn all individual 
+		scripts included in the package into the directory 
+		of the META script and will import them into the 
+		Action list from that directory.
 
-			If there's no META suffix in this script name it will 
-			perfom the operation indicated in its name.
+		If there's no META suffix in this script name it will 
+		perfom the operation indicated in its name.
 
-			In 'Toggle lock' scripts locking is toggled to off
-			if at least one lane is locked.
-			
-			In '(Unhide) markers/regions only Ruler lanes' scripts
-			a lane is valid as long as the object of the corresponding
-			type isn't hidden on it, i.e. if all markers are hidden
-			on a markers only lane, then even though there're no regions 
-			on it, such lane still won't be considered valid for the 
-			script.
+		In 'Toggle lock' scripts locking is toggled to off
+		if at least one lane is locked.
+		
+		In '(Unhide) markers/regions only Ruler lanes' scripts
+		a lane is valid as long as the object of the corresponding
+		type isn't hidden on it, i.e. if all markers are hidden
+		on a markers only lane, then even though there're no regions 
+		on it, such lane still won't be considered valid for the 
+		script.
 
 ]]
 
