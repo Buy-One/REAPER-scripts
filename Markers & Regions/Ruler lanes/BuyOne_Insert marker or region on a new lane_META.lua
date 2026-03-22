@@ -35,11 +35,9 @@ About: 	If this script name is suffixed with META, when executed
 ]]
 
 
-local Debug = "1"
---local Debug = not select(2, reaper.get_action_context()):match('.+[\\/]BuyOne_') and "" -- in public scripts audomatically disabled
+local Debug = ""
 function Msg(param, cap) -- caption second or none
 	if #Debug:gsub(' ','') > 0 then -- OR Debug:match('%S') // declared outside of the function, allows to only didplay output when true without the need to comment the function out when not needed, borrowed from spk77
--- if Debug then - ONLY IF CONDITIONED BY SCRIPT NAME	
 	local cap = cap and tostring(cap)..' = ' or ''
 	reaper.ShowConsoleMsg(cap..tostring(param)..'\n')
 	end
@@ -389,9 +387,6 @@ Error_Tooltip('') -- clear other tooltips, such as toolbar button tooltip if the
 	if REAPER_Ver_Check(7.62, 1) -- want_later true
 	then return r.defer(no_undo) end
 	
-	
---Msg(table.unpack({r.GetThingFromPoint(r.GetMousePosition())})) do return end
-
 local is_new_value, fullpath_init, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
 local fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
 local scr_name = fullpath:match('.+_(.+)%.%w+') -- without path, scripter name & ext // suitable for individual scripts
