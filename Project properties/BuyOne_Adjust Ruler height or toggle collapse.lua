@@ -8,18 +8,18 @@ Licence: WTFPL
 REAPER: at least v7.62
 Provides: [main=main,midi_editor] .
 About: 	When the script is executed with a mouse click 
-			or a keyboard shortcut it toggles the Ruler
-			height between fully collapsed and uncollapsed
-			in the amount needed for all non-hidden lanes 
-			to be shown.
-			
-			When executed with mousewheel/trackball/MIDI/OSC
-			it changes Ruler height incrementally depending
-			on the STEP_SIZE setting below.
-			
-			The script can be simultaneoulsy bound to both, 
-			keyboard shortcut and the mousewheel with or 
-			without modifier keys.
+		or a keyboard shortcut it toggles the Ruler
+		height between fully collapsed and uncollapsed
+		in the amount needed for all non-hidden lanes 
+		to be shown.
+		
+		When executed with mousewheel/trackball/MIDI/OSC
+		it changes Ruler height incrementally depending
+		on the STEP_SIZE setting below.
+		
+		The script can be simultaneoulsy bound to both, 
+		keyboard shortcut and the mousewheel with or 
+		without modifier keys.
 ]]
 
 
