@@ -313,25 +313,27 @@ function Set_Ruler_Height()
 	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.62 then return end
 	
 local lane_cnt = Get_Ruler_Lane_Count()
-local hidden, collapsed
+local collapsed, ref_lane_idx
 
 	-- filter out hidden lanes
 	for i=0, lane_cnt-1 do
 		if r.GetSetProjectInfo(0, 'RULER_LANE_HIDDEN:'..i, 0, false) == 1 then -- is_set false
-		lane_cnt = lane_cnt-1
-		hidden = 1
+		lane_cnt = lane_cnt-1	
 		else
 		collapsed = collapsed or r.GetSetProjectInfo(0, 'RULER_LANE_VISIBLE:'..i, 0, false) == 0
+		ref_lane_idx = i
 		end
 	end
 
 	if lane_cnt > 0 and collapsed then
-	local amount = (26+(hidden and 4 or 0))*lane_cnt -- when there're hidden lanes 26 px per lane seems insufficient whereas when all are visible 30 px seems a bit excessive
 	local h = r.GetSetProjectInfo(0, 'RULER_HEIGHT', 0, false)-- isSet false
-		if h >= amount then -- when Ruler is fully collapsed its height is 68 px, i.e. greater than the height of 2 lanes 26 or 30 px each, so adjustment by lane height won't be enough in this case
-		amount = h + 6*lane_cnt
-		end
-	r.GetSetProjectInfo(0, 'RULER_HEIGHT', amount, true) -- isSet true
+	local i = 0
+	r.PreventUIRefresh(1)
+		repeat
+		h = r.GetSetProjectInfo(0, 'RULER_HEIGHT', h+1, true) -- isSet true
+		i=i+1
+		until r.GetSetProjectInfo(0, 'RULER_LANE_VISIBLE:'..ref_lane_idx, 0, false) == 1
+	r.PreventUIRefresh(-1)	
 	end
 
 end
@@ -386,7 +388,8 @@ local lane_idx = r.GetSetProjectInfo(0, 'RULER_LANE_ORDER:0', -1, true) -- value
 	if scr_name:match(' top') and lane_idx ~= 0 then
 	r.GetSetProjectInfo(0, 'RULER_LANE_ORDER:'..lane_idx, 0, true) -- value 0 to move to top positon, is_set true
 	r.UpdateTimeline()
-		if r.GetSetProjectInfo(0, 'RULER_HEIGHT', 0, false) == ruler_h then -- isSet false
+		if r.GetSetProjectInfo(0, 'RULER_HEIGHT', 0, false) == ruler_h -- isSet false
+		or r.GetSetProjectInfo(0, 'RULER_LANE_VISIBLE:'..lane_idx, 0, false) == 0 then
 		Set_Ruler_Height() -- when new lane is added via API and moved to top Ruler height doesn't get updated UNLESS UpdateTimeline() works
 		end
 	end
