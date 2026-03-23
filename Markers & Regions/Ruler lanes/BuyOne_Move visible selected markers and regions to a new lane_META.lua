@@ -313,31 +313,30 @@ function Set_Ruler_Height()
 	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.62 then return end
 	
 local lane_cnt = Get_Ruler_Lane_Count()
+local GetSet = r.GetSetProjectInfo
 local collapsed, ref_lane_idx
 
 	-- filter out hidden lanes
 	for i=0, lane_cnt-1 do
-		if r.GetSetProjectInfo(0, 'RULER_LANE_HIDDEN:'..i, 0, false) == 1 then -- is_set false
-		lane_cnt = lane_cnt-1	
-		else
-		collapsed = collapsed or r.GetSetProjectInfo(0, 'RULER_LANE_VISIBLE:'..i, 0, false) == 0
+		if GetSet(0, 'RULER_LANE_HIDDEN:'..i, 0, false) == 0 then -- is_set false
+		collapsed = collapsed or GetSet(0, 'RULER_LANE_VISIBLE:'..i, 0, false) == 0
 		ref_lane_idx = i
 		end
+		if collapsed then break end
 	end
 
 	if lane_cnt > 0 and collapsed then
-	local h = r.GetSetProjectInfo(0, 'RULER_HEIGHT', 0, false)-- isSet false
+	local h = GetSet(0, 'RULER_HEIGHT', 0, false)-- isSet false
 	local i = 0
 	r.PreventUIRefresh(1)
 		repeat
-		h = r.GetSetProjectInfo(0, 'RULER_HEIGHT', h+1, true) -- isSet true
+		h = GetSet(0, 'RULER_HEIGHT', h+1, true) -- isSet true
 		i=i+1
-		until r.GetSetProjectInfo(0, 'RULER_LANE_VISIBLE:'..ref_lane_idx, 0, false) == 1
+		until GetSet(0, 'RULER_LANE_VISIBLE:'..ref_lane_idx, 0, false) == 1
 	r.PreventUIRefresh(-1)	
 	end
 
 end
-
 
 
 Error_Tooltip('') -- clear other tooltips, such as toolbar button tooltip if the script is executed from a toolbar button
