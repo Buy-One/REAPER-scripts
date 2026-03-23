@@ -5,7 +5,7 @@ Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-
 Version: 1.1
 Changelog: 	#Added four new scripts to insert marker/region relative 
 			to the lane of selected marker, region
-			#Improved ruler size update when new lane is added
+			#Improved ruler height update when new lane is added
 Licence: WTFPL
 REAPER: at least v7.62
 Provides: 	[main=main,midi_editor] .
