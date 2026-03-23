@@ -423,12 +423,12 @@ local hidden
 	end
 
 	if lane_cnt > 0 then
-	local amount = (26+(hidden and 4 or 0))*lane_cnt
+	local amount = (26+(hidden and 4 or 0))*lane_cnt -- when there're hidden lanes 26 px per lane seems insufficient whereas when all are visible 30 px seems a bit excessive
 	local h = r.GetSetProjectInfo(0, 'RULER_HEIGHT', 0, false)-- isSet false
 		if h >= amount then -- when Ruler is fully collapsed its height is 68 px, i.e. greater than the height of 2 lanes 26 or 30 px each, so adjustment by lane height won't be enough in this case
 		amount = h + 6*lane_cnt
 		end
-	r.GetSetProjectInfo(0, 'RULER_HEIGHT', amount, true) -- isSet true // when there're hidden lanes 26 px per lane seems insufficient whereas when all are visible 30 px seems a bit excessive
+	r.GetSetProjectInfo(0, 'RULER_HEIGHT', amount, true) -- isSet true
 	end
 
 end
