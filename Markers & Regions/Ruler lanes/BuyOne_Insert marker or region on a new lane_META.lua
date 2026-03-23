@@ -410,10 +410,21 @@ function Set_Ruler_Height()
 
 	-- only supported since build 7.62
 	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.62 then return end
-
+	
 local lane_cnt = Get_Ruler_Lane_Count()
+local hidden
 
-r.GetSetProjectInfo(0, 'RULER_HEIGHT', 26*lane_cnt, true) -- isSet true
+	-- filter out hidden lanes
+	for i=0, lane_cnt-1 do
+		if r.GetSetProjectInfo(0, 'RULER_LANE_HIDDEN:'..i, 0, false) == 1 then -- is_set false
+		lane_cnt = lane_cnt-1
+		hidden = 1
+		end
+	end
+
+	if lane_cnt > 0 then
+	r.GetSetProjectInfo(0, 'RULER_HEIGHT', (26+(hidden and 4 or 0))*lane_cnt, true) -- isSet true // when there're hidden lanes 26 px per lane seems insufficient whereas when all are visible 30 px seems a bit excessive
+	end
 
 end
 
