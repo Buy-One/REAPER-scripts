@@ -313,17 +313,19 @@ function Set_Ruler_Height()
 	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.62 then return end
 	
 local lane_cnt = Get_Ruler_Lane_Count()
-local hidden
+local hidden, collapsed
 
 	-- filter out hidden lanes
 	for i=0, lane_cnt-1 do
 		if r.GetSetProjectInfo(0, 'RULER_LANE_HIDDEN:'..i, 0, false) == 1 then -- is_set false
 		lane_cnt = lane_cnt-1
 		hidden = 1
+		else
+		collapsed = collapsed or r.GetSetProjectInfo(0, 'RULER_LANE_VISIBLE:'..i, 0, false) == 0
 		end
 	end
 
-	if lane_cnt > 0 then
+	if lane_cnt > 0 and collapsed then
 	local amount = (26+(hidden and 4 or 0))*lane_cnt -- when there're hidden lanes 26 px per lane seems insufficient whereas when all are visible 30 px seems a bit excessive
 	local h = r.GetSetProjectInfo(0, 'RULER_HEIGHT', 0, false)-- isSet false
 		if h >= amount then -- when Ruler is fully collapsed its height is 68 px, i.e. greater than the height of 2 lanes 26 or 30 px each, so adjustment by lane height won't be enough in this case
