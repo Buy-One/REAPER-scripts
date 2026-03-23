@@ -474,7 +474,9 @@ local i = 0
 
 local obj = r.GetRegionOrMarker(0, idx, '') -- guidStr is empty string, i.e. getting by index
 
-r.PreventUIRefresh(1)
+local ruler_h = r.GetSetProjectInfo(0, 'RULER_HEIGHT', 0, false) -- isSet false
+
+--r.PreventUIRefresh(1)
 r.Undo_BeginBlock()
 local lane_idx = r.GetSetProjectInfo(0, 'RULER_LANE_ORDER:0', -1, true) -- value -1 to create new at lane_idx, is_set true
 r.UpdateTimeline() -- refresh UI for the changes to display immediately
@@ -486,9 +488,12 @@ r.SetRegionOrMarkerInfo_Value(0, obj, 'I_LANENUMBER', lane_idx)
 	r.GetSetProjectInfo(0, 'RULER_LANE_ORDER:'..lane_idx, targ_lane_idx, true) -- is_set true
 	end
 r.Undo_EndBlock(scr_name,-1)
-Set_Ruler_Height() -- when new lane is added via API and moved to top Ruler height doesn't get updated UNLESS UpdateTimeline() works
-r.PreventUIRefresh(-1)
+--r.PreventUIRefresh(-1)
 r.UpdateTimeline() -- NOT ALWAYS RELIABLE, DOESN'T PROPERLY REFRESH RULER SIZE WHEN LANES ARE RELATIVELY SHORT
+
+	if r.GetSetProjectInfo(0, 'RULER_HEIGHT', 0, false) == ruler_h then -- isSet false
+	Set_Ruler_Height() -- when new lane is added via API and moved to top Ruler height doesn't get updated UNLESS UpdateTimeline() works
+	end
 
 return true
 
