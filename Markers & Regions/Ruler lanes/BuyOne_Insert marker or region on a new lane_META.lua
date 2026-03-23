@@ -1,36 +1,40 @@
 --[[
-ReaScript name: BuyOne_Insert marker or region on a new lane_META.lua (4 scripts)
+ReaScript name: BuyOne_Insert marker or region on a new lane_META.lua (8 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 	#Added four new scripts to insert marker/region relative 
+				to the lane of selected marker, region
+				#Improved ruler size update when new lane is added
 Licence: WTFPL
 REAPER: at least v7.62
-Provides: 	[main=main,midi_editor] .
+Provides: [main=main,midi_editor] .
 			. > BuyOne_Insert marker on a new lane at the bottom.lua
 			. > BuyOne_Insert region on a new lane at the bottom.lua
 			. > BuyOne_Insert marker on a new lane at the top.lua
 			. > BuyOne_Insert region on a new lane at the top.lua
+			. > BuyOne_Insert marker on a new lane below the lane of first selected marker, region.lua
+			. > BuyOne_Insert region on a new lane below the lane of first selected marker, region.lua
+			. > BuyOne_Insert marker on a new lane above the lane of first selected marker, region.lua
+			. > BuyOne_Insert region on a new lane above the lane of first selected marker, region.lua
 About: 	If this script name is suffixed with META, when executed 
-		it will automatically spawn all individual scripts included 
-		in the package into the directory of the META script and will 
-		import them into the Action list from that directory.
+			it will automatically spawn all individual scripts included 
+			in the package into the directory of the META script and will 
+			import them into the Action list from that directory.
 
-		If there's no META suffix in this script name it will perfom 
-		the operation indicated in its name.
+			If there's no META suffix in this script name it will perfom 
+			the operation indicated in its name.
 
-		If this script is designed to insert a marker, a marker
-		is inserted at mouse cursor unless the mouse cursor
-		is outside of the Arrange area, i.e. hovers over 
-		a TCP, MCP, Ruler, a toolbar button, a menu, or the Action 
-		list etc., in which case the marker is inserted at 
-		at the edit cursor.
+			If this script is designed to insert a marker, a marker
+			is inserted at mouse cursor unless the mouse cursor
+			is outside of the Arrange area, i.e. hovers over 
+			a TCP, MCP, Ruler, a toolbar button, a menu, or the Action 
+			list etc., in which case the marker is inserted at 
+			at the edit cursor.
 
-		If this script is designed to insert a region, a region
-		is always inserted at time selection provided there's
-		one.
-
-		The new lane is added beneath all the current lanes.
+			If this script is designed to insert a region, a region
+			is always inserted at time selection provided there's
+			one.
 
 ]]
 
@@ -63,12 +67,12 @@ function META_Spawn_Scripts(fullpath, fullpath_init, scr_name, names_t)
 	local str = str:gsub('[%(%)%+%-%[%]%.%^%$%*%?%%]','%%%0')
 	return str
 	end
-	
+
 	local function script_is_installed(fullpath)
 	local sep = r.GetResourcePath():match('[\\/]')
 		for line in io.lines(r.GetResourcePath()..sep..'reaper-kb.ini') do
 		local path = line and line:match('.-%.lua["%s]*(.-)"?')
-			if path and #path > 0 and fullpath:match(Esc(path)) then -- installed 
+			if path and #path > 0 and fullpath:match(Esc(path)) then -- installed
 			return true end
 		end
 	end
@@ -103,18 +107,18 @@ local names_t, content = names_t
 		end
 
 	local path = fullpath:match('(.+[\\/])')
-		
+
 		------------------------------------------------------------------------------------
 		-- spawn scripts
 		-- NO USER SETTINGS
-		for k, scr_name in ipairs(names_t) do	
+		for k, scr_name in ipairs(names_t) do
 		local new_script = io.open(path..scr_name, 'w') -- create new file
 		content = content:gsub('ReaScript name:.-\n', 'ReaScript name: '..scr_name..'\n', 1) -- replace script name in the About tag
 		new_script:write(content)
 		new_script:close()
 		end
 		--------------------------------------------------------------------------------------
-		
+
 		-- CONDITION BY THE SCRIPT BEING INSTALLED TO OTHERWISE ALLOW SPAWNING SCRIPTS WITH INSTALLER SCRIPT VIA dofile() WITHOUT INSTALLATION ONLY FOR THE SAKE OF SETTINGS TRANSFER WHICH IS SUPPOSED TO BE DONE WHILE THE SCRIPT IS IN A TEMP FOLDER, get_action_context() alone is useless as a condition since when this script is executed via dofile() from the installer script the function returns props of the latter
 	--	if script_is_installed(fullpath) then -- install individual scripts
 	-- OR, which is more efficient, in the scenario described above this condition will be false
@@ -125,7 +129,7 @@ local names_t, content = names_t
 				end
 			end
 		end
-		
+
 	end
 
 end
@@ -149,8 +153,8 @@ end
 
 
 function Error_Tooltip(text, caps, spaced, x2, y2, want_color, want_blink)
--- the tooltip sticks under the mouse within Arrange 
--- but quickly disappears over the TCP, to make it stick 
+-- the tooltip sticks under the mouse within Arrange
+-- but quickly disappears over the TCP, to make it stick
 -- just a tad longer there it must be directly under the mouse
 -- not directly under the mouse the tooltip sticks if mouse is over Arrange
 -- but soon disappears if mouse is in the TCP area but not over the TCP
@@ -170,18 +174,18 @@ local x2, y2 = x2 and math.floor(x2) or 0, y2 and math.floor(y2) or 0
 r.TrackCtl_SetToolTip(text, x+x2, y+y2, true) -- topmost true
 -- r.TrackCtl_SetToolTip(text:upper(), x, y, true) -- topmost true
 -- r.TrackCtl_SetToolTip(text:upper():gsub('.','%0 '), x, y, true) -- spaced out // topmost true
-	if want_color then	
+	if want_color then
 	local color_init = r.GetThemeColor('col_tl_bg', 0)
 	local color = color_init ~= 255 and 255 or 65535 -- use red or yellow of red is taken
 		if want_blink then
-		    for i = 1, 100 do    
+		    for i = 1, 100 do
 				if i == 1 or i == 40 or i == 80 then
 				r.SetThemeColor('col_tl_bg', color, 0)
 				elseif i == 20 or i == 60 or i == 100 then
 				r.SetThemeColor('col_tl_bg', color_init, 0)
 				end
 			r.UpdateTimeline()
-			end		
+			end
 		else
 		r.SetThemeColor('col_tl_bg', color, 0) -- Timeline background
 			for i = 1, 200 do -- ensures that the warning color sticks for some time
@@ -202,6 +206,7 @@ r.UpdateTimeline() -- might be needed because tooltip can sometimes affect graph
 end
 
 
+
 function Invalid_Script_Name(scr_name,...)
 -- check if necessary elements, case agnostic, are found in script name and return the one found
 
@@ -217,7 +222,7 @@ function Invalid_Script_Name(scr_name,...)
 	local function Rep(n) -- number of repeats, integer
 	return (' '):rep(n)
 	end
-	
+
 -- either no keyword was found in the script name or no keyword arguments were supplied
 local br = '\n\n'
 r.MB([[The script name has been changed]]..br..Rep(7)..[[which renders it inoperable.]]..br..
@@ -241,7 +246,7 @@ local err = want_later and not later and err..'reaper '..build..' and later '
 or want_earlier and not earlier and err..'reaper no later than '..build
 or want_current and not current and 'reaper build '..build
 	if err then
---[[	
+--[[
 	local x,y = r.GetMousePosition()
 	err = err:upper():gsub('.','%0 ')
 	r.TrackCtl_SetToolTip(err, x, y+10, true) -- topmost true
@@ -297,7 +302,7 @@ r.SetEditCurPos(curs_pos, false, false) -- moveview, seekplay false // restore o
 --]]
 r.PreventUIRefresh(-1)
 
-return tcp_under_mouse and r.GetTrackFromPoint(r.GetMousePosition())  
+return tcp_under_mouse and r.GetTrackFromPoint(r.GetMousePosition())
 
 end
 
@@ -314,7 +319,7 @@ local tr, info = r.GetTrackFromPoint(r.GetMousePosition())
 -- ensuring that mouse cursor is over Arrange allows ignoring mouse position
 -- when the script is run via toolbar button, menu item or from the Action list
 -- because in this case tr var is nil
-	if tr and not Get_TCP_MCP_Under_Mouse() and not Get_TCP_MCP_Under_Mouse(1) -- want_mcp true 
+	if tr and not Get_TCP_MCP_Under_Mouse() and not Get_TCP_MCP_Under_Mouse(1) -- want_mcp true
 	and info ~= 2 then -- not FX window
 	r.PreventUIRefresh(1)
 	r.Main_OnCommand(40514,0) -- View: Move edit cursor to mouse cursor (no snapping) // more sensitive than with snapping
@@ -329,17 +334,108 @@ end
 
 
 
-function Insert_Mrkr_Region_On_Lane_X(want_mrkr, top, scr_name)
+
+function Get_Lane_Of_The_First_Selected_Vis_Mrkr_Region()
+-- want_mrkr boolean, if true gets marker, otherwise region
+
+local Get = r.GetRegionOrMarkerInfo_Value
+
+	if not Get then return end -- only supported since build 7.62
+
+local GetSet = r.GetSetProjectInfo
+
+	for i=0, r.GetNumRegionsOrMarkers(0)-1 do
+	local obj = r.GetRegionOrMarker(0, i, '') -- guidStr is empty string, i.e. getting by index
+	local st = Get(0, obj, 'D_STARTPOS')
+	local fin = Get(0, obj, 'D_ENDPOS') -- only for regions
+	local region = fin ~= st -- OR r.GetRegionOrMarkerInfo_Value(0, obj, 'B_ISREGION') == 1 // in markers start and end values are equal
+	local vis = Get(0, obj, 'B_VISIBLE') == 1
+	local sel = Get(0, obj, 'B_UISEL') == 1
+	local lane_idx = Get(0, obj, 'I_LANENUMBER')
+	local lane_vis = GetSet(0, 'RULER_LANE_HIDDEN:'..lane_idx, 0, false) == 0 -- isSet false // the attribute works without the colon as well // essentially redundant because B_VISIBLE is also false when the entire lane is hidden
+		if vis and sel and lane_vis then
+		return lane_idx
+		end
+	end
+
+end
+
+
+
+function Get_Ruler_Lane_Count() -- user in Set_Ruler_Height()
+-- since as of build 7.65 lane count isn't accessible via API
+-- the function uses a hack of creating a temp marker
+-- and force moving it to another lane starting from lane
+-- at index 100
+-- if lane at the destination index doesn't exist the marker
+-- is not moved and its original lane index remains the same,
+-- but it's moved as soon as a valid lane index is found
+-- and since the movement is attempted in reverse,
+-- the first lane index associated with successful movement
+-- will be the index of the last available lane
+
+	-- only supported since build 7.62
+	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.62 then return end
+
+r.PreventUIRefresh(1)
+local index = r.AddProjectMarker(0, false, 0, 0, '', 0xFFFF) -- isrgn false, pos 0, rgnend 0, wantidx 0xFFFF, to be able to easily find it for deletion // insert temp marker
+local obj = r.GetRegionOrMarker(0, 0, '') -- index 0, guidStr empty
+r.SetRegionOrMarkerInfo_Value(0, obj, 'B_HIDDEN', 1) -- hide, although not strictly necessary thanks to PreventUIRefresh()
+local lane_idx_init = r.GetRegionOrMarkerInfo_Value(0, obj, 'I_LANENUMBER')
+local lane_count
+	for i=100,0,-1 do
+	r.SetRegionOrMarkerInfo_Value(0, obj, 'I_LANENUMBER', i)
+	local lane_idx = r.GetRegionOrMarkerInfo_Value(0, obj, 'I_LANENUMBER')
+		if lane_idx ~= lane_idx_init then
+		-- if the very last lane is default for markers, the temp marker will be inserted there
+		-- and during the loop will only be able to move to a lane at a lower index,
+		-- in which case fall back on the original lane index as the heighest
+		lane_count = lane_idx < lane_idx_init and lane_idx_init or lane_idx
+		break
+		end
+	end
+r.DeleteProjectMarker(0, index, false) -- isrgn false // delete temp marker
+--r.UpdateTimeline() -- required for proper UI update after change, but unnecessary due to PreventUIRefresh()
+r.PreventUIRefresh(-1)
+
+-- if there's one lane only the temp marker won't be able to move anywhere
+-- hence fall back on its original lane index
+return (lane_count or lane_idx_init)+1 -- +1 because lane index returned by GetRegionOrMarkerInfo_Value is 0-based
+
+end
+
+
+
+function Set_Ruler_Height()
+
+	-- only supported since build 7.62
+	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.62 then return end
+
+local lane_cnt = Get_Ruler_Lane_Count()
+
+r.GetSetProjectInfo(0, 'RULER_HEIGHT', 26*lane_cnt, true) -- isSet true
+
+end
+
+
+
+
+function Insert_Mrkr_Region_On_Lane_X(scr_name)
 -- want_mrkr boolean, if true inserts marker, otherwise region
 
 	-- only supported since build 7.62
 	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.62 then return end
 
+local want_mrkr = scr_name:match('Insert marker ')
+local top = scr_name:match(' top')
+local below, above = scr_name:match(' below'), scr_name:match(' above')
+local sel_obj_lane = scr_name:match(' selected') and Get_Lane_Of_The_First_Selected_Vis_Mrkr_Region()
+
 -- only for markers, regions are inserted at time selection;
 -- first try to get mouse position, but if conditions aren't met
 -- i.e. the script is run from a toolbar, menu item or from the Action list
 -- the function will return edit cursor pos
-local cur_pos = Get_Mouse_Or_Edit_Curs_Pos()
+local cur_pos = want_mrkr and Get_Mouse_Or_Edit_Curs_Pos()
 
 -- only for regions
 local st, fin = r.GetSet_LoopTimeRange(false, false, 0, 0, false) -- isSet, isLoop, allowautoseek false
@@ -347,8 +443,11 @@ local st, fin = r.GetSet_LoopTimeRange(false, false, 0, 0, false) -- isSet, isLo
 st = want_mrkr and cur_pos or st
 fin = want_mrkr and 0 or fin
 
-	if not want_mrkr and st == fin then
-	Error_Tooltip('\n\n no active time selection \n\n', 1, 1) -- caps, spaced true
+local err = not want_mrkr and st == fin and 'no active time selection'
+or (below or above) and not sel_obj_lane and 'no visible selected \n\n   markers/regions'
+
+	if err then
+	Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced true
 	return end
 
 local idx = r.AddProjectMarker(0, not want_mrkr, st, fin, '', -1)	-- name empty, wantidx -1, i.e. auto // returns user facing index
@@ -366,15 +465,19 @@ local obj = r.GetRegionOrMarker(0, idx, '') -- guidStr is empty string, i.e. get
 
 r.PreventUIRefresh(1)
 r.Undo_BeginBlock()
-local lane_idx = r.GetSetProjectInfo(0, 'RULER_LANE_ORDER:0', -1, true) -- value -1 to create new at lane_idx, is_set true 
+local lane_idx = r.GetSetProjectInfo(0, 'RULER_LANE_ORDER:0', -1, true) -- value -1 to create new at lane_idx, is_set true
 r.UpdateTimeline() -- refresh UI for the changes to display immediately
 r.SetRegionOrMarkerInfo_Value(0, obj, 'I_LANENUMBER', lane_idx)
 	if top and lane_idx ~= 0 then
 	r.GetSetProjectInfo(0, 'RULER_LANE_ORDER:'..lane_idx, 0, true) -- value 0 to move to top positon, is_set true
+	elseif sel_obj_lane then
+	local targ_lane_idx = above and sel_obj_lane or sel_obj_lane+1
+	r.GetSetProjectInfo(0, 'RULER_LANE_ORDER:'..lane_idx, targ_lane_idx, true) -- is_set true
 	end
 r.Undo_EndBlock(scr_name,-1)
+Set_Ruler_Height() -- when new lane is added via API and moved to top Ruler height doesn't get updated UNLESS UpdateTimeline() works
 r.PreventUIRefresh(-1)
-r.UpdateTimeline() -- does update lanes when a new lane is moved to top
+r.UpdateTimeline() -- NOT ALWAYS RELIABLE, DOESN'T PROPERLY REFRESH RULER SIZE WHEN LANES ARE RELATIVELY SHORT
 
 return true
 
@@ -382,15 +485,15 @@ end
 
 
 
-Error_Tooltip('') -- clear other tooltips, such as toolbar button tooltip if the script is executed from a toolbar button	
-	
+Error_Tooltip('') -- clear other tooltips, such as toolbar button tooltip if the script is executed from a toolbar button
+
 	if REAPER_Ver_Check(7.62, 1) -- want_later true
 	then return r.defer(no_undo) end
-	
+
+
 local is_new_value, fullpath_init, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
 local fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script is run via dofile() from installer script the above function will return installer script path which is irrelevant for this script
 local scr_name = fullpath:match('.+_(.+)%.%w+') -- without path, scripter name & ext // suitable for individual scripts
-
 
 	-- doesn't run in non-META scripts
 	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Insert marker or region on a new lane_META.lua', names_t) -- names_t is optional only if constructed outside of the function, otherwise names are collected from the list in the header
@@ -403,24 +506,25 @@ local t = {
 'Insert marker on a new lane at the bottom',
 'Insert region on a new lane at the bottom',
 'Insert marker on a new lane at the top',
-'Insert region on a new lane at the top'
+'Insert region on a new lane at the top',
+
+'Insert marker on a new lane below the lane of first selected marker, region',
+'Insert region on a new lane below the lane of first selected marker, region',
+'Insert marker on a new lane above the lane of first selected marker, region',
+'Insert region on a new lane above the lane of first selected marker, region'
 }
-scr_name = t[1]
+scr_name = t[7]
 --]]------------------------------------
 
 
 
-local elm1, elm2, elm3, elm4, elm5 = 'insert ', 'marker', 'region', 'bottom', 'top'
+local elm1, elm2, elm3, elm4, elm5, elm6, elm7 = 'insert ', 'marker', 'region', 'bottom', 'top', 'below', 'above'
 
-	if not Invalid_Script_Name(scr_name, elm1..elm2, elm4, elm5)
-	or not Invalid_Script_Name(scr_name, elm1..elm3, elm4, elm5)
+	if not Invalid_Script_Name(scr_name, elm1..elm2, elm1..elm3)
+	or not Invalid_Script_Name(scr_name, elm4, elm5, elm6, elm7)
 	then return r.defer(no_undo) end
 
-
-local marker = scr_name:match('Insert marker ')
-local top = scr_name:match(' top')
-
-	if not Insert_Mrkr_Region_On_Lane_X(marker, top, scr_name) then -- error message
+	if not Insert_Mrkr_Region_On_Lane_X(scr_name) then -- error message
 	return r.defer(no_undo) end
 
 
