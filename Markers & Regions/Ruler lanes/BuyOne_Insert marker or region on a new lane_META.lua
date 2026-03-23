@@ -4,11 +4,11 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
 Changelog: 	#Added four new scripts to insert marker/region relative 
-				to the lane of selected marker, region
-				#Improved ruler size update when new lane is added
+			to the lane of selected marker, region
+			#Improved ruler size update when new lane is added
 Licence: WTFPL
 REAPER: at least v7.62
-Provides: [main=main,midi_editor] .
+Provides: 	[main=main,midi_editor] .
 			. > BuyOne_Insert marker on a new lane at the bottom.lua
 			. > BuyOne_Insert region on a new lane at the bottom.lua
 			. > BuyOne_Insert marker on a new lane at the top.lua
