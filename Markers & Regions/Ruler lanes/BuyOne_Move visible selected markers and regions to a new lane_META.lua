@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Move visible selected markers and regions to a new lane_META.lua (2 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Improved ruler height update when new lane is added
 Licence: WTFPL
 REAPER: at least v7.62
 Provides: 	[main=main,midi_editor] .
@@ -263,6 +263,74 @@ end
 
 
 
+function Get_Ruler_Lane_Count()
+-- since as of build 7.65 lane count isn't accessible via API
+-- the function uses a hack of creating a temp marker
+-- and force moving it to another lane starting from lane
+-- at index 100
+-- if lane at the destination index doesn't exist the marker
+-- is not moved and its original lane index remains the same,
+-- but it's moved as soon as a valid lane index is found
+-- and since the movement is attempted in reverse,
+-- the first lane index associated with successful movement
+-- will be the index of the last available lane
+
+	-- only supported since build 7.62
+	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.62 then return end
+
+r.PreventUIRefresh(1)
+local index = r.AddProjectMarker(0, false, 0, 0, '', 0xFFFF) -- isrgn false, pos 0, rgnend 0, wantidx 0xFFFF, to be able to easily find it for deletion // insert temp marker
+local obj = r.GetRegionOrMarker(0, 0, '') -- index 0, guidStr empty
+r.SetRegionOrMarkerInfo_Value(0, obj, 'B_HIDDEN', 1) -- hide, although not strictly necessary thanks to PreventUIRefresh()
+local lane_idx_init = r.GetRegionOrMarkerInfo_Value(0, obj, 'I_LANENUMBER')
+local lane_count
+	for i=100,0,-1 do
+	r.SetRegionOrMarkerInfo_Value(0, obj, 'I_LANENUMBER', i)
+	local lane_idx = r.GetRegionOrMarkerInfo_Value(0, obj, 'I_LANENUMBER')
+		if lane_idx ~= lane_idx_init then
+		-- if the very last lane is default for markers, the temp marker will be inserted there
+		-- and during the loop will only be able to move to a lane at a lower index
+		-- in which case fall back on the original lane index as the heighest
+		lane_count = lane_idx < lane_idx_init and lane_idx_init or lane_idx
+		break
+		end
+	end
+r.DeleteProjectMarker(0, index, false) -- isrgn false // delete temp marker
+--r.UpdateTimeline() -- required for proper UI update after change, but unnecessary due to PreventUIRefresh()
+r.PreventUIRefresh(-1)
+
+-- if there's one lane only the temp marker won't be able to move anywhere
+-- hence fall back on its original lane index
+return (lane_count or lane_idx_init)+1 -- +1 because lane index returned by GetRegionOrMarkerInfo_Value is 0-based
+
+end
+
+
+
+function Set_Ruler_Height()
+
+	-- only supported since build 7.62
+	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.62 then return end
+	
+local lane_cnt = Get_Ruler_Lane_Count()
+local hidden
+
+	-- filter out hidden lanes
+	for i=0, lane_cnt-1 do
+		if r.GetSetProjectInfo(0, 'RULER_LANE_HIDDEN:'..i, 0, false) == 1 then -- is_set false
+		lane_cnt = lane_cnt-1
+		hidden = 1
+		end
+	end
+
+	if lane_cnt > 0 then
+	r.GetSetProjectInfo(0, 'RULER_HEIGHT', (26+(hidden and 4 or 0))*lane_cnt, true) -- isSet true // when there're hidden lanes 26 px per lane seems insufficient whereas when all are visible 30 px seems a bit excessive
+	end
+
+end
+
+
+
 Error_Tooltip('') -- clear other tooltips, such as toolbar button tooltip if the script is executed from a toolbar button
 
 	if REAPER_Ver_Check(7.62, 1) -- want_later true
@@ -301,6 +369,7 @@ local sel_obj_t = Collect_Selected_Mrkrs_Regns()
 
 r.Undo_BeginBlock()
 
+local ruler_h = r.GetSetProjectInfo(0, 'RULER_HEIGHT', 0, false) -- isSet false
 local lane_idx = r.GetSetProjectInfo(0, 'RULER_LANE_ORDER:0', -1, true) -- value -1 to create new at lane_idx, is_set true
 
 	for idx, obj in ipairs(sel_obj_t) do
@@ -310,6 +379,9 @@ local lane_idx = r.GetSetProjectInfo(0, 'RULER_LANE_ORDER:0', -1, true) -- value
 	if scr_name:match(' top') and lane_idx ~= 0 then
 	r.GetSetProjectInfo(0, 'RULER_LANE_ORDER:'..lane_idx, 0, true) -- value 0 to move to top positon, is_set true
 	r.UpdateTimeline()
+		if r.GetSetProjectInfo(0, 'RULER_HEIGHT', 0, false) == ruler_h then -- isSet false
+		Set_Ruler_Height() -- when new lane is added via API and moved to top Ruler height doesn't get updated UNLESS UpdateTimeline() works
+		end
 	end
 
 r.Undo_EndBlock(scr_name,-1)
