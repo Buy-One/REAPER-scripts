@@ -412,13 +412,12 @@ function Set_Ruler_Height()
 	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.62 then return end
 	
 local lane_cnt = Get_Ruler_Lane_Count()
-local hidden, collapsed, ref_lane_idx
+local collapsed, ref_lane_idx
 
 	-- filter out hidden lanes
 	for i=0, lane_cnt-1 do
 		if r.GetSetProjectInfo(0, 'RULER_LANE_HIDDEN:'..i, 0, false) == 1 then -- is_set false
 		lane_cnt = lane_cnt-1
-		hidden = 1
 		else
 		collapsed = collapsed or r.GetSetProjectInfo(0, 'RULER_LANE_VISIBLE:'..i, 0, false) == 0
 		ref_lane_idx = i
