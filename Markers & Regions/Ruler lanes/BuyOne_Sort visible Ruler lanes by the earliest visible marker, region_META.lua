@@ -124,7 +124,7 @@ local names_t, content = names_t
 	--	if script_is_installed(fullpath) then -- install individual scripts
 	-- OR, which is more efficient, in the scenario described above this condition will be false
 		if fullpath_init:match('.+[\\/](.+)') == scr_name then -- install individual scripts
-			for _, sectID in ipairs{0,32060,32062} do -- Main, MIDI Ed, Media Ex // per script list
+			for _, sectID in ipairs{0,32060,32063} do -- Main, MIDI Ed, Media Ex // per script list
 				for k, scr_name in ipairs(names_t) do
 				local result = r.AddRemoveReaScript(true, sectID, path..scr_name, true) -- add, commit true // doesn't affect the props of an already installed script if attempts to install it again, so is safe
 				end
