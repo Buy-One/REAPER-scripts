@@ -9,35 +9,35 @@ REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI for full functionality
 Provides: [main=main,midi_editor] .
 About: 	The script allows running custom actions and scripts
-			from an external .ReaperKeyMap file via dynamically
-			generated menu. This means that custom actions and 
-			scripts don't have to reside directly in the Action
-			list. Scripts however must be avaialble at the paths 
-			they're associated with in the .ReaperKeyMap file.
+		from an external .ReaperKeyMap file via dynamically
+		generated menu. This means that custom actions and 
+		scripts don't have to reside directly in the Action
+		list. Scripts however must be avaialble at the paths 
+		they're associated with in the .ReaperKeyMap file.
 
-			Custom actions are supported for the sections Main,
-			MIDI Editor, MIDI Event List Editor and Media Explorer.
-			To be able to run custom actions which include SWS/S&M
-			extension actions the extension is obviously required
-			otherwise some or all components of such actions will
-			be missing. Extensions are also required to run Media 
-			Explorer custom actions regardless of their reliance
-			on SWS/S&M extension actions.
+		Custom actions are supported for the sections Main,
+		MIDI Editor, MIDI Event List Editor and Media Explorer.
+		To be able to run custom actions which include SWS/S&M
+		extension actions the extension is obviously required
+		otherwise some or all components of such actions will
+		be missing. Extensions are also required to run Media 
+		Explorer custom actions regardless of their reliance
+		on SWS/S&M extension actions.
 
-			.ReaperKeyMap files available at the script path or
-			the one defined in the CUSTOM_PATH setting can be 
-			switched via 'ReaperKeyMaps' submenu.
+		.ReaperKeyMap files available at the script path or
+		the one defined in the CUSTOM_PATH setting can be 
+		switched via 'ReaperKeyMaps' submenu.
 
-			.ReaperKeyMap files which don't contain custom action
-			or script data are grayed out in the menu.
+		.ReaperKeyMap files which don't contain custom action
+		or script data are grayed out in the menu.
 
-			To accommodate large number of entries in the active
-			.ReaperKeyMap file, submenus are created housing a max
-			of 20 entries each.
+		To accommodate large number of entries in the active
+		.ReaperKeyMap file, submenus are created housing a max
+		of 20 entries each.
 
-			The identity of the last active .ReaperKeyMap file is
-			kept in the memory during the session and stored with
-			the project once it's saved.
+		The identity of the last active .ReaperKeyMap file is
+		kept in the memory during the session and stored with
+		the project once it's saved.
 
 ]]
 
