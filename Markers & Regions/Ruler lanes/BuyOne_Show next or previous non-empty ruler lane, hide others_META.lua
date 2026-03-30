@@ -300,7 +300,7 @@ local Get = r.GetRegionOrMarkerInfo_Value
 
 	if not Get then return end -- only supported since build 7.62
 
-local t = {non_empty={},shown={}} -- non_empty nested table is only there to prevent storing the same lane index more than once
+local t = {non_empty={},shown={}} -- non_empty nested table is only there to prevent storing the same lane index more than once and ensure storage of unique lane indices only
 
 	for i=0, r.GetNumRegionsOrMarkers(0)-1 do
 	local obj = r.GetRegionOrMarker(0, i, '') -- guidStr is empty string, i.e. getting by index
