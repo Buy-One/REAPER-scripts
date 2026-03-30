@@ -6,27 +6,27 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v7.62
-Provides: [main=main,midi_editor] .
+Provides: 	[main=main,midi_editor] .
 			. > BuyOne_Show next non-empty ruler lane, hide others.lua
 			. > BuyOne_Show previous non-empty ruler lane, hide others.lua
 About: 	If this script name is suffixed with META, when executed
-			it will automatically spawn all individual scripts included
-			in the package into the directory of the META script and will
-			import them into the Action list from that directory.
+		it will automatically spawn all individual scripts included
+		in the package into the directory of the META script and will
+		import them into the Action list from that directory.
 
-			If there's no META suffix in this script name it will perfom
-			the operation indicated in its name.
+		If there's no META suffix in this script name it will perfom
+		the operation indicated in its name.
 
-			When all non-empty lanes are initially hidden, the 'next' script
-			will start by unhiding the very 1st non-empty lane while the
-			'previous' script will start by unhiding the last one.
+		When all non-empty lanes are initially hidden, the 'next' script
+		will start by unhiding the very 1st non-empty lane while the
+		'previous' script will start by unhiding the last one.
 
-			When all non-empty lanes are initially visible, the 'next' script 
-			will only leave visible the first non-empty lane while the 
-			'previous' script will leave visible the last one.
+		When all non-empty lanes are initially visible, the 'next' script 
+		will only leave visible the first non-empty lane while the 
+		'previous' script will leave visible the last one.
 
-			While alternating between single lanes the script maintains
-			Ruler height.
+		While alternating between single lanes the script maintains
+		Ruler height.
 
 ]]
 
