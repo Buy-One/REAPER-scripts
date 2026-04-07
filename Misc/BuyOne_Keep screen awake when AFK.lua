@@ -14,6 +14,12 @@ About: 	The script is for those who for whatever reason
 		sleep mode, i.e. getting turned off which may be
 		desirable for recording sessions.
 
+		This is achieved by having the script automatically
+		open and close a tiny window at intervals set in
+		the UPDATE_RATE setting below.  
+		Launch the script before going AFK, and upon return 
+		launch it again to terminate it.
+
 ]]
 
 -----------------------------------------------------------------------------
