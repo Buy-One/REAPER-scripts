@@ -9,10 +9,10 @@ REAPER: at least v5.962, 7.0+ recommended
 Extensions: 
 Provides: [main=main,midi_editor] .
 About: 	The script is for those who for whatever reason 
-			don't want to change their display settings in 
-			order to prevent the screen from going into 
-			sleep mode, i.e. getting turned off which may be
-			desirable for recording sessions.
+		don't want to change their display settings in 
+		order to prevent the screen from going into 
+		sleep mode, i.e. getting turned off which may be
+		desirable for recording sessions.
 
 ]]
 
