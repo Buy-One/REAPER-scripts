@@ -4,14 +4,14 @@ Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.5
 Changelog:  1.5 #Updated syntax of the reference to the Media Explorer section of the Action list
-		as the installation target used in 'Provides' attribute of scripts header
-	   1.4 #Fixed recognition of files from the 'Media Explorer' folder
-		or fit to be imported into the Media Explorer section of the Action list
-	    1.3 #Added support for Media Explorer script installation
-		#Optimized installation function
-		#Updated 'About' text
-	   1.2 	#Made user setting transfer report message a bit more descriptive
-	   1.1  #Reworded installation report message
+				as the installation target used in 'Provides' attribute of scripts header
+	   		1.4 #Fixed recognition of files from the 'Media Explorer' folder
+				or fit to be imported into the Media Explorer section of the Action list
+	   	 	1.3 #Added support for Media Explorer script installation
+				#Optimized installation function
+				#Updated 'About' text
+	   		1.2 #Made user setting transfer report message a bit more descriptive
+	   		1.1 #Reworded installation report message
 Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main=main,midi_editor] .
