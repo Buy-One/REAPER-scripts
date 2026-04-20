@@ -7,7 +7,7 @@ Changelog: #Improved track selection consistency when left mouse button
 			is clicked while the mouse cursor is over Arrange
 Licence: WTFPL
 REAPER: at least v5.962
-Extensions: JS_ReaScriptAPI recommended for better performance
+Extensions: js_ReaScriptAPI recommended for better performance
 Provides: [main] .
 About: 	The script is an emulation of a Pro Tools feature
 		'Link track to edit selection'.  
@@ -25,7 +25,7 @@ About: 	The script is an emulation of a Pro Tools feature
 		deselected for as long as left mouse button is depressed 
 		while the mouse cursor hovers over the Arrange. Once 
 		released the selection is reinstated.  
-		Having JS_ReaScriptAPI installed helps to fix this behavior.
+		Having js_ReaScriptAPI installed helps to fix this behavior.
 		When installed, tracks do not get deselected in response
 		to left mouse click over Arrange. The tradeoff is that when 
 		razor edit area position or vertical boundaries are changed 
