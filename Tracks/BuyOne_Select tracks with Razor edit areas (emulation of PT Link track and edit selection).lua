@@ -10,29 +10,29 @@ REAPER: at least v5.962
 Extensions: JS_ReaScriptAPI recommended for better performance
 Provides: [main] .
 About: 	The script is an emulation of a Pro Tools feature
-			'Link track to edit selection'.  
-			It selects track as soon as razor edit area is created 
-			on it and deslects it as soon as one is cleared.
+		'Link track to edit selection'.  
+		It selects track as soon as razor edit area is created 
+		on it and deslects it as soon as one is cleared.
 
-			Once launched the script runs in the background. If linked
-			to a toolbar button or a menu item these will be lit or
-			checkmarked respectively. To terminate the script launch it
-			again. This offers toggle behavior similar to the said 
-			Pro Tools feature.
+		Once launched the script runs in the background. If linked
+		to a toolbar button or a menu item these will be lit or
+		checkmarked respectively. To terminate the script launch it
+		again. This offers toggle behavior similar to the said 
+		Pro Tools feature.
 
-			One quirk of the script stemming from the ReaScript API 
-			is that tracks with razor edit areas on them get temporarily 
-			deselected for as long as left mouse button is depressed 
-			while the mouse cursor hovers over the Arrange. Once 
-			released the selection is reinstated.  
-			Having JS_ReaScriptAPI installed helps to fix this behavior.
-			When installed, tracks do not get deselected in response
-			to left mouse click over Arrange. The tradeoff is that when 
-			razor edit area position or vertical boundaries are changed 
-			with left mouse drag, tracks on which Razor edit area is 
-			cleared are only deselected once left mouse button is released.
+		One quirk of the script stemming from the ReaScript API 
+		is that tracks with razor edit areas on them get temporarily 
+		deselected for as long as left mouse button is depressed 
+		while the mouse cursor hovers over the Arrange. Once 
+		released the selection is reinstated.  
+		Having JS_ReaScriptAPI installed helps to fix this behavior.
+		When installed, tracks do not get deselected in response
+		to left mouse click over Arrange. The tradeoff is that when 
+		razor edit area position or vertical boundaries are changed 
+		with left mouse drag, tracks on which Razor edit area is 
+		cleared are only deselected once left mouse button is released.
 
-			See USER SETTINGS
+		See USER SETTINGS
 ]]
 
 
