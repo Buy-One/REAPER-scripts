@@ -5,10 +5,10 @@ Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-
 Version: 1.2
 Changelog: 1.2  #Added a tooltip warning when script is started without Ripple per track being enabled.
 		   1.1  #Added support for ripple editing automation envelopes and automation items
-			#Added new user settings
-			#Updated script name
-			#Updated screenshot
-			#Updated text under About tag	    
+				#Added new user settings
+				#Updated script name
+				#Updated screenshot
+				#Updated text under About tag	    
 Licence: WTFPL
 REAPER: at least v5.962
 Screenshots: https://git.io/JSTkE
