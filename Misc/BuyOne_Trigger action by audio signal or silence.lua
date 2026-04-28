@@ -115,7 +115,7 @@ About: 	The script executes user defined actions depending
 
 	The USER SETTINGS can be managed and the script launched via 
 	a menu if MANAGE_SETTINGS_VIA_MENU setting is enabled 
-	USER SETTINGS section below, which is its default state. 
+	in the USER SETTINGS section below, which is its default state. 
 	Detailed explanation of each setting see in the USER SETTINGS 
 	section.
 
