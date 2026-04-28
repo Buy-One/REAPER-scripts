@@ -111,7 +111,7 @@ About: 	The script executes user defined actions depending
 	low the distance between two closest items may not suffice for 	
 	the trigger to be reset and for the script to be primed for 
 	another execution of the action which will result in the action
-	not be triggered when the playhead comes across the next item.
+	not being triggered when the playhead comes across the next item.
 
 	The USER SETTINGS can be managed and the script launched via 
 	a menu if MANAGE_SETTINGS_VIA_MENU setting is enabled 
