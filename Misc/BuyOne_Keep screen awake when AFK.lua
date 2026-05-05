@@ -8,7 +8,10 @@ Licence: WTFPL
 REAPER: at least v5.962, 7.0+ recommended
 Extensions: 
 Provides: [main=main,midi_editor] .
-About: 	The script is for those who for whatever reason 
+About: 	The feature is supported natively since build 7.70
+		via preference in the General section.
+
+		The script is for those who for whatever reason 
 		don't want to change their display settings in 
 		order to prevent the screen from going into 
 		sleep mode, i.e. getting turned off which may be
