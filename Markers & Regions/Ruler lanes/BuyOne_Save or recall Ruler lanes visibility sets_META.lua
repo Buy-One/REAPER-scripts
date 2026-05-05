@@ -2,60 +2,66 @@
 ReaScript name: BuyOne_Save or recall Ruler lanes visibility sets_META.lua (13 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog:	#Added support for lane set storage based on lane GUID since REAPER build 7.71
+				#Fixed lane set visibility evaluation for indicator display in sets menu
+				#Updated 'About' text
 Licence: WTFPL
-REAPER: at least v7.62
+REAPER: at least v7.62, but v7.71 and later are recommended
 Provides: 	[main=main,midi_editor] .
-			. > BuyOne_Save Ruler lanes visibility set 1.lua
-			. > BuyOne_Save Ruler lanes visibility set 2.lua
-			. > BuyOne_Save Ruler lanes visibility set 3.lua
-			. > BuyOne_Save Ruler lanes visibility set 4.lua
-			. > BuyOne_Save Ruler lanes visibility set 5.lua
-			. > BuyOne_Save Ruler lanes visibility set 6.lua
-			. > BuyOne_Recall Ruler lanes visibility set 1.lua
-			. > BuyOne_Recall Ruler lanes visibility set 2.lua
-			. > BuyOne_Recall Ruler lanes visibility set 3.lua
-			. > BuyOne_Recall Ruler lanes visibility set 4.lua
-			. > BuyOne_Recall Ruler lanes visibility set 5.lua
-			. > BuyOne_Recall Ruler lanes visibility set 6.lua
-			. > BuyOne_Save and recall Ruler lanes visibility sets (menu).lua
+				. > BuyOne_Save Ruler lanes visibility set 1.lua
+				. > BuyOne_Save Ruler lanes visibility set 2.lua
+				. > BuyOne_Save Ruler lanes visibility set 3.lua
+				. > BuyOne_Save Ruler lanes visibility set 4.lua
+				. > BuyOne_Save Ruler lanes visibility set 5.lua
+				. > BuyOne_Save Ruler lanes visibility set 6.lua
+				. > BuyOne_Recall Ruler lanes visibility set 1.lua
+				. > BuyOne_Recall Ruler lanes visibility set 2.lua
+				. > BuyOne_Recall Ruler lanes visibility set 3.lua
+				. > BuyOne_Recall Ruler lanes visibility set 4.lua
+				. > BuyOne_Recall Ruler lanes visibility set 5.lua
+				. > BuyOne_Recall Ruler lanes visibility set 6.lua
+				. > BuyOne_Save and recall Ruler lanes visibility sets (menu).lua
 About: 	If this script name is suffixed with META, when 
-		executed it will automatically spawn all individual 
-		scripts included in the package into the directory 
-		of the META script and will import them into the 
-		Action list from that directory.
+			executed it will automatically spawn all individual 
+			scripts included in the package into the directory 
+			of the META script and will import them into the 
+			Action list from that directory.
 
-		If there's no META suffix in this script name it will 
-		perfom the operation indicated in its name.
+			If there's no META suffix in this script name it will 
+			perfom the operation indicated in its name.
 
-		To save a lane visibility set select at least one
-		marker/region on lanes you wish to save into a set.
+			To save a lane visibility set select at least one
+			marker/region on lanes you wish to save into a set.
 
-		Lane storage is based on custom lane names, because
-		these are the only property which lends lane a unique 
-		identity. Fo this reason unnamed lanes cannot be saved 
-		into a set and it's strongly advised to avoid giving
-		same names to different lanes, because on set recall
-		all lanes which match the saved name will be shown,
-		even if only one such lane was targeted at the storage
-		stage.  
-		Renaming lanes saved in a set is also discouraged 
-		because these won't be recalled. Or after renaming one
-		the set must be re-saved.  
-		Lanes order isn't saved with a set, they load in their
-		current relative order determined inside Ruler Lane Manager.
+			In builds older than 7.71 lane storage is based on custom 
+			lane names, because lane name in those builds are the only 
+			property which lends lane a unique identity. For this 
+			reason unnamed lanes cannot be saved into a set and it's 
+			strongly advised to avoid giving same names to different 
+			lanes, because on set recall all lanes which match the 
+			saved name will be shown, even if only one such lane was 
+			targeted at the storage stage.  
+			Renaming lanes saved in a set is also discouraged 
+			because these won't be recalled. Or after renaming one
+			the set must be re-saved.  
+			These limitations don't apply to sets storage and recall 
+			inside REAPER build 7.71 and later.			
+			
+			Lanes order isn't saved with a set, they load in their
+			current relative order determined inside Ruler Lane Manager.
 
-		Sets are project specific. To make sure new or updated 
-		set is retained for future use the project must be saved.
+			Sets are project specific. To make sure new or updated 
+			set is retained for future use the project must be saved.
 
-		If you need more than 6 sets, add as many script name
-		entries to the list under 'Provides:' tag in the META 
-		script header copying the format of other entries, and 
-		execute it so it spawns new files. However for the script  
-		BuyOne_Save and recall Ruler lanes visibility sets (menu).lua
-		to include more sets, modification of the code is
-		required.
+			If you need more than 6 sets, add as many script name
+			entries to the list under 'Provides:' tag in the META 
+			script header copying the format of other entries, and 
+			execute it so it spawns new files. However for the script  
+			BuyOne_Save and recall Ruler lanes visibility sets (menu).lua
+			to include more sets, modification of the code is
+			required.
+
 ]]
 
 
@@ -368,37 +374,56 @@ function Get_Sets_Status(saved_sets_t, lane_count)
 -- lane_count stems from Get_Ruler_Lane_Count(), for restoration stage
 
 local t = {} -- using new table because saved_sets_t will be needed for conditioning of menu indicators for save actions
-
+	
 	-- parse sets into tables
 	for set_idx, set in pairs(saved_sets_t) do
 	t[set_idx] = {}
-		for name in set:gmatch('[^\n]+') do
-		local name = name and name:match('LANE%d+:(.+)')
-			if name then
-			table.insert(t[set_idx], name)
+		for ID in set:gmatch('[^\n]+') do
+		local ID = ID and ID:match('LANE%d+:(.+)')
+			if ID then
+			table.insert(t[set_idx], ID)
 			end
 		end
 	end
-
+	
+local old_build = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.71 -- support for lane GUID was added which obviates reliance on lane names as the source of their identity
+local PARM = old_build and 'RULER_LANE_NAME:' or 'RULER_LANE_GUID:'
+	
 	-- evaluate equality against visible lanes
+--[[ -- THIS EVALUATES TO TRUTH WHEN ALL LANES FROM THE SET ARE VISIBLE, BY ITSELF OR AMONG OTHER UNRELARED LANES
+	for set_idx, set in pairs(t) do
+	local match_count = 0
+		for k, ID in ipairs(set) do
+			for i=0, lane_count-1 do
+				if r.GetSetProjectInfo(0, 'RULER_LANE_HIDDEN:'..i, 0, false) == 0 then -- isSet false // visible lane
+				local ret, lane_ID = r.GetSetProjectInfo_String(0, PARM..i, '', false) -- is_set false
+					if lane_ID == ID then -- one match is enough
+					match_count = match_count+1
+					end
+				end
+			end		
+		end
+	t[set_idx] = match_count == #set and not stray_lane
+	end
+	--]]
 	-- THIS EVALUATES TO TRUTH WHEN ONLY LANES FROM THE SET ARE VISIBLE AND NOTHING ELSE
 	for set_idx, set in pairs(t) do
 	local all_match
 		for i=0, lane_count-1 do
 			if r.GetSetProjectInfo(0, 'RULER_LANE_HIDDEN:'..i, 0, false) == 0 then -- isSet false // visible lane
-			local ret, lane_name = r.GetSetProjectInfo_String(0, 'RULER_LANE_NAME:'..i, '', false) -- is_set false
-				if #lane_name:match('%S') then
-					for k, name in ipairs(set) do
+			local ret, lane_ID = r.GetSetProjectInfo_String(0, PARM..i, '', false) -- is_set false
+				if lane_ID:match('%S') then
+					for k, ID in ipairs(set) do
 					all_match = nil -- reset at each cycle because being an upvalue the var won't be reset if were true at least once
-						if lane_name == name then
+						if lane_ID == ID then
 						all_match = 1
-						break
+						break	
 					--	else -- same as resetting at the cycle start above
 					--	all_match = nil -- reset because being an upvalue the var won't be reset if were true at least once
 						end
 					end
 					if not all_match then break end -- at least one lane name isn't found in the set, exit lanes loop
-				end
+				end				
 			end
 		end
 	t[set_idx] = all_match
@@ -440,30 +465,33 @@ function Save_Recall_Set(set, lane_count, lanes_t)
 local Get = r.GetRegionOrMarkerInfo_Value
 
 	if not Get then return end -- only supported since build 7.62
+	
+local old_build = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.71 -- support for lane GUID was added which obviates reliance on lane names as the source of their identity
+local PARM = old_build and 'RULER_LANE_NAME:' or 'RULER_LANE_GUID:'
 
 local section = 'BUYONE RULER LANE VISIBILITY SETS'
 
-	if lanes_t then -- save
+	if lanes_t then -- save	
 	local lane_count, stored_count = 0,0
 		for lane_idx in pairs(lanes_t) do
 		lane_count = lane_count+1
-		local ret, lane_name = r.GetSetProjectInfo_String(0, 'RULER_LANE_NAME:'..lane_idx, '', false) -- is_set false
-			if lane_name:match('%S') then
-			lanes_t[lane_idx] = lane_name
+		local ret, lane_ID = r.GetSetProjectInfo_String(0, PARM..lane_idx, '', false) -- is_set false
+			if lane_ID:match('%S') then
+			lanes_t[lane_idx] = lane_ID
 			stored_count = stored_count+1
 			end
 		end
-			if lane_count ~= stored_count then
-			local all = stored_count == 0
-			local resp = r.MB((all and space(7)..'All' or space(4)..'Some')..' lanes seem to be unnamed.\n\n  Those cannot be saved into the set.'
-			..(not all and '\n\n'..space(9)..'Wish to save without them?' or ''), 'WARNING', all and 0 or 1)
-				if all or resp == 2 then return end
-			end
-		local data, count = '', 0
-		for lane_idx, name in pairs(lanes_t) do
-			if #name > 0 then
+		if old_build and lane_count ~= stored_count then
+		local all = stored_count == 0
+		local resp = r.MB((all and space(7)..'All' or space(4)..'Some')..' lanes seem to be unnamed.\n\n  Those cannot be saved into the set.'
+		..(not all and '\n\n'..space(9)..'Wish to save without them?' or ''), 'WARNING', all and 0 or 1)
+			if all or resp == 2 then return end
+		end
+	local data, count = '', 0
+		for lane_idx, lane_ID in pairs(lanes_t) do
+			if #lane_ID > 0 then
 			count = count+1
-			data = data..'LANE'..count..':'..name..'\n' -- lane numbers are immaterial because the don't represent either their indices or their order, used only for convenience
+			data = data..'LANE'..count..':'..lane_ID..'\n' -- lane numbers are immaterial because they don't represent either their indices or their order, used only for convenience
 			end
 		end
 		if #data > 0 then
@@ -474,16 +502,16 @@ local section = 'BUYONE RULER LANE VISIBILITY SETS'
 	local ret, set = r.GetProjExtState(0, section, 'LANESET'..set)
 		if ret == 0 then return -- no stored set under this number
 		else -- find lane indices
-		local t = {names={}, indices={}}
-			for name in set:gmatch('[^\n]+') do
-			local name = name and name:match('LANE%d+:(.+)')
-				if name then
-				t.names[name] = ''
+		local t = {IDs={}, indices={}}
+			for ID in set:gmatch('[^\n]+') do
+			local ID = ID and ID:match('LANE%d+:(.+)')
+				if ID then
+				t.IDs[ID] = ''
 				end
-			end
+			end	
 			for i=0, lane_count-1 do
-			local ret, lane_name = r.GetSetProjectInfo_String(0, 'RULER_LANE_NAME:'..i, '', false) -- is_set false
-				if t.names[lane_name] then -- lanes with identical names will all be included regardless of which was originally saved
+			local ret, ID = r.GetSetProjectInfo_String(0, PARM..i, '', false) -- is_set false
+				if t.IDs[ID] then -- in old builds where storage is based on lane name, lanes with identical names will all be included regardless of which was originally saved
 				t.indices[i] = ''
 				end
 			end
@@ -492,6 +520,7 @@ local section = 'BUYONE RULER LANE VISIBILITY SETS'
 	end
 
 end
+
 
 
 
@@ -510,32 +539,38 @@ function Get_Ruler_Lane_Count() -- used inside Load_Lane_Set()
 
 	-- only supported since build 7.62
 	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.62 then return end
-
-r.PreventUIRefresh(1)
-local index = r.AddProjectMarker(0, false, 0, 0, '', 0xFFFF) -- isrgn false, pos 0, rgnend 0, wantidx 0xFFFF, to be able to easily find it for deletion // insert temp marker
-local obj = r.GetRegionOrMarker(0, 0, '') -- index 0, guidStr empty
-r.SetRegionOrMarkerInfo_Value(0, obj, 'B_HIDDEN', 1) -- hide, although not strictly necessary thanks to PreventUIRefresh()
-local parm = 'I_LANENUMBER'
-local lane_idx_init = r.GetRegionOrMarkerInfo_Value(0, obj, parm)
-local lane_count
-	for i=100,0,-1 do
-	r.SetRegionOrMarkerInfo_Value(0, obj, parm, i)
-	local lane_idx = r.GetRegionOrMarkerInfo_Value(0, obj, parm)
-		if lane_idx ~= lane_idx_init then
-		-- if the very last lane is default for markers, the temp marker will be inserted there
-		-- and during the loop will only be able to move to a lane at a lower index
-		-- in which case fall back on the original lane index as the heighest
-		lane_count = lane_idx < lane_idx_init and lane_idx_init or lane_idx
-		break
+	-- OR
+	-- if not r.GetRegionOrMarker then return end
+	
+	if tonumber(r.GetAppVersion():match('[%d%.]+')) >= 7.71 then
+	return r.GetSetProjectInfo(0, 'RULER_LANE_COUNT', 0, false) -- is_set false
+	else
+	r.PreventUIRefresh(1)
+	local index = r.AddProjectMarker(0, false, 0, 0, '', 0xFFFF) -- isrgn false, pos 0, rgnend 0, wantidx 0xFFFF, to be able to easily find it for deletion // insert temp marker
+	local obj = r.GetRegionOrMarker(0, 0, '') -- index 0, guidStr empty
+	r.SetRegionOrMarkerInfo_Value(0, obj, 'B_HIDDEN', 1) -- hide, although not strictly necessary thanks to PreventUIRefresh()
+	local parm = 'I_LANENUMBER'
+	local lane_idx_init = r.GetRegionOrMarkerInfo_Value(0, obj, parm)
+	local lane_count
+		for i=100,0,-1 do
+		r.SetRegionOrMarkerInfo_Value(0, obj, parm, i)
+		local lane_idx = r.GetRegionOrMarkerInfo_Value(0, obj, parm)
+			if lane_idx ~= lane_idx_init then
+			-- if the very last lane is default for markers, the temp marker will be inserted there
+			-- and during the loop will only be able to move to a lane at a lower index
+			-- in which case fall back on the original lane index as the heighest
+			lane_count = lane_idx < lane_idx_init and lane_idx_init or lane_idx
+			break
+			end
 		end
-	end
-r.DeleteProjectMarker(0, index, false) -- isrgn false // delete temp marker
---r.UpdateTimeline() -- required for proper UI update after change, but unnecessary due to PreventUIRefresh()
-r.PreventUIRefresh(-1)
+	r.DeleteProjectMarker(0, index, false) -- isrgn false // delete temp marker
+	--r.UpdateTimeline() -- required for proper UI update after change, but unnecessary due to PreventUIRefresh()
+	r.PreventUIRefresh(-1)
 
--- if there's one lane only the temp marker won't be able to move anywhere
--- hence fall back on its original lane index
-return (lane_count or lane_idx_init)+1 -- +1 because lane index returned by GetRegionOrMarkerInfo_Value is 0-based
+	-- if there's one lane only the temp marker won't be able to move anywhere
+	-- hence fall back on its original lane index
+	return (lane_count or lane_idx_init)+1 -- +1 because lane index returned by GetRegionOrMarkerInfo_Value is 0-based
+	end
 
 end
 
@@ -584,7 +619,7 @@ local scr_name = fullpath:match('.+_(.+)%.%w+') -- without path, scripter name &
 	then return r.defer(no_undo) end -- abort if META script but continue if not
 
 
---[[-------- NAME TESTING ------------
+--[-[-------- NAME TESTING ------------
 local t = {
 'Save Ruler lanes visibility set 1',
 'Recall Ruler lanes visibility set 1',
