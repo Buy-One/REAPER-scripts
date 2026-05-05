@@ -21,7 +21,7 @@ Provides: 	[main=main,midi_editor] .
 			. > BuyOne_Recall Ruler lanes visibility set 4.lua
 			. > BuyOne_Recall Ruler lanes visibility set 5.lua
 			. > BuyOne_Recall Ruler lanes visibility set 6.lua
-				. > BuyOne_Save and recall Ruler lanes visibility sets (menu).lua
+			. > BuyOne_Save and recall Ruler lanes visibility sets (menu).lua
 About: 	If this script name is suffixed with META, when 
 		executed it will automatically spawn all individual 
 		scripts included in the package into the directory 
