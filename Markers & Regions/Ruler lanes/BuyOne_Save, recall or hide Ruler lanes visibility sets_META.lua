@@ -1,11 +1,17 @@
 --[[
-ReaScript name: BuyOne_Save or recall Ruler lanes visibility sets_META.lua (13 scripts)
+ReaScript name: BuyOne_Save, recall or hide Ruler lanes visibility sets_META.lua (25 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog:	#Added support for lane set storage based on lane GUID since REAPER build 7.71
-			#Fixed lane set visibility evaluation for indicator display in sets menu
-			#Updated 'About' text
+Version: 1.2
+Changelog:	1.2 #Added a set of scripts and an option to the menu script 
+				to recall ruler lane set without hiding all other ruler lanes
+				#Added a set of scripts and menu items to hide ruler lane sets
+				#Changed logic of menu items display depending on visibility of lanes in a set
+				#Updated META script title
+				#Updated 'About' text
+			1.1 #Added support for lane set storage based on lane GUID since REAPER build 7.71
+				#Fixed lane set visibility evaluation for indicator display in sets menu
+				#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v7.62, but v7.71 and later are recommended
 Provides: 	[main=main,midi_editor] .
@@ -21,6 +27,18 @@ Provides: 	[main=main,midi_editor] .
 			. > BuyOne_Recall Ruler lanes visibility set 4.lua
 			. > BuyOne_Recall Ruler lanes visibility set 5.lua
 			. > BuyOne_Recall Ruler lanes visibility set 6.lua
+			. > BuyOne_Recall Ruler lanes visibility set 1 (exclusuvely).lua
+			. > BuyOne_Recall Ruler lanes visibility set 2 (exclusuvely).lua
+			. > BuyOne_Recall Ruler lanes visibility set 3 (exclusuvely).lua
+			. > BuyOne_Recall Ruler lanes visibility set 4 (exclusuvely).lua
+			. > BuyOne_Recall Ruler lanes visibility set 5 (exclusuvely).lua
+			. > BuyOne_Recall Ruler lanes visibility set 6 (exclusuvely).lua
+			. > BuyOne_Hide Ruler lanes visibility set 1.lua
+			. > BuyOne_Hide Ruler lanes visibility set 2.lua
+			. > BuyOne_Hide Ruler lanes visibility set 3.lua
+			. > BuyOne_Hide Ruler lanes visibility set 4.lua
+			. > BuyOne_Hide Ruler lanes visibility set 5.lua
+			. > BuyOne_Hide Ruler lanes visibility set 6.lua
 			. > BuyOne_Save and recall Ruler lanes visibility sets (menu).lua
 About: 	If this script name is suffixed with META, when 
 		executed it will automatically spawn all individual 
@@ -53,6 +71,21 @@ About: 	If this script name is suffixed with META, when
 
 		Sets are project specific. To make sure new or updated 
 		set is retained for future use the project must be saved.
+		
+		The 'Recall' scripts which include the word '(exclusively)'
+		in their name recall a set while simulteneously hiding
+		all lanes which don't belong to the set. Scripts which don't
+		include this word load a set while retaining visibility
+		of all other lanes.  
+		In the script 
+		'BuyOne_Save and recall Ruler lanes visibility sets (menu).lua'
+		the recall behavior depends on a toggleable option.  
+		'Recall' menu items are grayed out for empty sets and 
+		set slots all lanes in which are visible.  
+		'Hide' menu items are grayed out for empty set slots 
+		and sets all lanes in which are hidden.  
+		Non-empty set slots in the menu are marked with
+		a trailing dot.
 
 		If you need more than 6 sets, add as many script name
 		entries to the list under 'Provides:' tag in the META 
@@ -374,7 +407,7 @@ function Get_Sets_Status(saved_sets_t, lane_count)
 -- lane_count stems from Get_Ruler_Lane_Count(), for restoration stage
 
 local t = {} -- using new table because saved_sets_t will be needed for conditioning of menu indicators for save actions
-	
+
 	-- parse sets into tables
 	for set_idx, set in pairs(saved_sets_t) do
 	t[set_idx] = {}
@@ -385,13 +418,15 @@ local t = {} -- using new table because saved_sets_t will be needed for conditio
 			end
 		end
 	end
-	
+
 local old_build = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.71 -- support for lane GUID was added which obviates reliance on lane names as the source of their identity
 local PARM = old_build and 'RULER_LANE_NAME:' or 'RULER_LANE_GUID:'
-	
-	-- evaluate equality against visible lanes
---[[ -- THIS EVALUATES TO TRUTH WHEN ALL LANES FROM THE SET ARE VISIBLE, BY ITSELF OR AMONG OTHER UNRELARED LANES
+
+-- evaluate equality against visible lanes
+-- THIS EVALUATES TO TRUTH WHEN ALL LANES FROM THE SET ARE VISIBLE, BY ITSELF OR AMONG OTHER UNRELARED LANES
+-- AND WHEN SOME ARE HIDDEN
 	for set_idx, set in pairs(t) do
+	t[set_idx] = {}
 	local match_count = 0
 		for k, ID in ipairs(set) do
 			for i=0, lane_count-1 do
@@ -401,32 +436,10 @@ local PARM = old_build and 'RULER_LANE_NAME:' or 'RULER_LANE_GUID:'
 					match_count = match_count+1
 					end
 				end
-			end		
-		end
-	t[set_idx] = match_count == #set and not stray_lane
-	end
-	--]]
-	-- THIS EVALUATES TO TRUTH WHEN ONLY LANES FROM THE SET ARE VISIBLE AND NOTHING ELSE
-	for set_idx, set in pairs(t) do
-	local all_match
-		for i=0, lane_count-1 do
-			if r.GetSetProjectInfo(0, 'RULER_LANE_HIDDEN:'..i, 0, false) == 0 then -- isSet false // visible lane
-			local ret, lane_ID = r.GetSetProjectInfo_String(0, PARM..i, '', false) -- is_set false
-				if lane_ID:match('%S') then
-					for k, ID in ipairs(set) do
-					all_match = nil -- reset at each cycle because being an upvalue the var won't be reset if were true at least once
-						if lane_ID == ID then
-						all_match = 1
-						break	
-					--	else -- same as resetting at the cycle start above
-					--	all_match = nil -- reset because being an upvalue the var won't be reset if were true at least once
-						end
-					end
-					if not all_match then break end -- at least one lane name isn't found in the set, exit lanes loop
-				end				
 			end
 		end
-	t[set_idx] = all_match
+	t[set_idx].vis = match_count == #set --and not stray_lane
+	t[set_idx].hid = match_count > 0
 	end
 
 return t
@@ -465,13 +478,13 @@ function Save_Recall_Set(set, lane_count, lanes_t)
 local Get = r.GetRegionOrMarkerInfo_Value
 
 	if not Get then return end -- only supported since build 7.62
-	
+
 local old_build = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.71 -- support for lane GUID was added which obviates reliance on lane names as the source of their identity
 local PARM = old_build and 'RULER_LANE_NAME:' or 'RULER_LANE_GUID:'
 
 local section = 'BUYONE RULER LANE VISIBILITY SETS'
 
-	if lanes_t then -- save	
+	if lanes_t then -- save
 	local lane_count, stored_count = 0,0
 		for lane_idx in pairs(lanes_t) do
 		lane_count = lane_count+1
@@ -508,9 +521,9 @@ local section = 'BUYONE RULER LANE VISIBILITY SETS'
 				if ID then
 				t.IDs[ID] = ''
 				end
-			end	
+			end
 			for i=0, lane_count-1 do
-			local ret, ID = r.GetSetProjectInfo_String(0, PARM..i, '', false) -- is_set false
+			local ret, ID = r.GetSetProjectInfo_String(0, PARM..i, '', false) -- is_set false // since build 7.71 r.GetSetProjectInfo(0, RULER_LANE_FROM_GUID:'..i, 0, false) could be used to get lane index right away but ticking with GetSetProjectInfo_String() to maintain conformity with older builds where sets are lane name based
 				if t.IDs[ID] then -- in old builds where storage is based on lane name, lanes with identical names will all be included regardless of which was originally saved
 				t.indices[i] = ''
 				end
@@ -525,7 +538,7 @@ end
 
 
 
-function Get_Ruler_Lane_Count() -- used inside Load_Lane_Set()
+function Get_Ruler_Lane_Count() -- used inside Load_Or_Hide_Lane_Set()
 -- since as of build 7.65 lane count isn't accessible via API
 -- the function uses a hack of creating a temp marker
 -- and force moving it to another lane starting from lane
@@ -541,7 +554,7 @@ function Get_Ruler_Lane_Count() -- used inside Load_Lane_Set()
 	if tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.62 then return end
 	-- OR
 	-- if not r.GetRegionOrMarker then return end
-	
+
 	if tonumber(r.GetAppVersion():match('[%d%.]+')) >= 7.71 then
 	return r.GetSetProjectInfo(0, 'RULER_LANE_COUNT', 0, false) -- is_set false
 	else
@@ -576,26 +589,29 @@ end
 
 
 
-function Load_Lane_Set(lane_set_t, lane_count)
+function Load_Or_Hide_Lane_Set(lane_set_t, lane_count, hide, exclusively)
 -- lane_set_t stems from Save_Recall_Set()
 -- lane_count stems from Get_Ruler_Lane_Count()
+-- exclusively boolean arg only relevant for set recalling
 
 local GetSet = r.GetSetProjectInfo
 local parm = 'RULER_LANE_HIDDEN:'
 
--- first hide all
-	for i=0,lane_count-1 do
-	local vis = GetSet(0, parm..i, 0, false) == 0
-		if vis and not lane_set_t[i] then -- hide if not lane from the set
-		GetSet(0, parm..i, 1, true) -- isSet true
+	if exclusively and not hide then -- first hide all
+		for i=0,lane_count-1 do
+		local vis = GetSet(0, parm..i, 0, false) == 0
+			if vis and not lane_set_t[i] then -- hide if not lane from the set
+			GetSet(0, parm..i, 1, true) -- isSet true
+			end
 		end
 	end
 
--- unhide lanes of the set
+-- (un)hide lanes of the set
 	for lane_idx in pairs(lane_set_t) do
 	local vis = GetSet(0, parm..lane_idx, 0, false) == 0
-		if not vis then -- unhide
-		GetSet(0, parm..lane_idx, 0, true) -- isSet true
+	local state = not hide and not vis and 0 or hide and vis and 1
+		if state then -- (un)hide
+		GetSet(0, parm..lane_idx, state, true) -- isSet true
 		end
 	end
 
@@ -619,17 +635,19 @@ local scr_name = fullpath:match('.+_(.+)%.%w+') -- without path, scripter name &
 	then return r.defer(no_undo) end -- abort if META script but continue if not
 
 
---[-[-------- NAME TESTING ------------
+--[[-------- NAME TESTING ------------
 local t = {
 'Save Ruler lanes visibility set 1',
 'Recall Ruler lanes visibility set 1',
+'Recall Ruler lanes visibility set 1 (exclusively)',
+'Hide Ruler lanes visibility set 1',
 'Save and recall Ruler lanes visibility sets (menu)'
 }
 scr_name = t[3]
 --]]-----------------------------------
 
 
-	if not Invalid_Script_Name(scr_name, 'save', 'recall')
+	if not Invalid_Script_Name(scr_name, 'save', 'recall', 'hide')
 	or not Invalid_Script_Name(scr_name, 'set %d+', 'menu')
 	then return r.defer(no_undo) end
 
@@ -638,16 +656,44 @@ local lane_count = (menu or not save) and Get_Ruler_Lane_Count()
 
 ::RELOAD::
 
+Error_Tooltip('') -- clear any lingering tooltips
+
+local saved_sets_t = Get_Saved_Sets()
+local sect, key = 'BUYONE RULER LANE VISIBILITY SETS', 'EXCLUSIVE_RECALL'
+local ret, excl
+	if menu then
+	ret, excl = r.GetProjExtState(0, sect, key)
+	excl = (#excl == 0 or excl == '1') and '!' or '' -- #excl == 0 allows enabling the option by default, when no state has been saved yet
+	end
+
+local sets_status_t = Get_Sets_Status(saved_sets_t, lane_count, excl == '!')
+
 local MENU = ''
+local offset = 7 -- Save items followed by 'Recall exclusively' option, expandable
+local itm_cnt = 1 + (offset-1)*2 -- item_cnt only covers Save and Recall, Hide is concatenated in a separate loop
 
 	if menu then
-	local saved_sets_t = menu and Get_Saved_Sets()
-	local sets_status_t = menu and Get_Sets_Status(saved_sets_t, lane_count)
 	local dot = ' \226\128\162' -- Bullet U+2022
-		for i=1,12 do
-		 MENU =  MENU..(#MENU == 0 and '' or i == 7 and '|||' or '|')
-		..(i < 7 and 'Save' or 'Recall')..' Ruler lanes set '
-		..(i < 7 and i or i-6)..((saved_sets_t[i] or sets_status_t[i-6]) and dot or '') -- both saved_sets_t and sets_status_t can include a max of fields because that's the max number of sets
+	-- both saved_sets_t and sets_status_t only include fields for stored sets, i.e. not necessarily all 6;
+	-- a dot appended to a menu item denotes a non-empty lanes set slot, to ditinguish them from empty slots
+	-- when items are grayed out;
+	-- recall menu item for stored ruler lane set is grayed out only when all lanes in the set are visible
+	-- which allows recalling a partially visible set;
+		for i=1,itm_cnt do
+		 MENU =  MENU..(#MENU == 0 and '' or i == offset and '|||' or '|') -- 7 (offset) is 'Recall exclusively' option
+		..(i < offset and 'Save'
+		or i > offset and ((sets_status_t[i-offset] and sets_status_t[i-offset].vis or not sets_status_t[i-offset]) and '#'
+		or '')..'Recall' or '')
+		..(i ~= offset and ' Ruler lanes set ' or '')
+		..(i==offset and excl..'Recall exclusively|' or '')
+		..(i==offset and '' or (i < offset and i or i-offset)..((saved_sets_t[i] or saved_sets_t[i-offset]) and dot or ''))
+		end
+	-- hide menu item for stored ruler lane set is grayed out only when all lanes in the set are hidden
+	-- which allows hiding a partially hidden set
+		for i=1,offset-1 do
+		MENU =  MENU..(i==1 and '|||' or '|')
+		..(sets_status_t[i] and sets_status_t[i].hid and '' or '#') -- menu item is only grayed out when all et lanes are hidden
+		..'Hide Ruler lanes set '..i..(saved_sets_t[i] and dot or '')
 		end
 	MENU = ('RULER LANE SETS'):gsub('.','%0 ')..'||'..MENU
 	end
@@ -656,15 +702,20 @@ local output = menu and Reload_Menu_at_Same_Pos(MENU, 1) -- keep_menu_open true
 
 	if output == 0 then return -- menu exited
 	elseif output then
-		if output == 1 then goto RELOAD end -- title was clicked
+		if output == 1 then goto RELOAD -- title was clicked
+		elseif output == offset+1 then -- toggle 'Recall exclusively' option
+		r.SetProjExtState(0, sect, key, #excl > 0 and '0' or '1')
+		goto RELOAD
+		end
 	output = output-1 -- offset menu title
 	end
 
 
-save = output and output < 7 or not output and scr_name:match('Save')
-set = output and (output > 6 and output-6 or output) or scr_name:match('%d+')
+local save = output and output < offset or not output and scr_name:match('Save')
+local hide = output and output > itm_cnt or not output and scr_name:match('Hide')
+output = output and (hide and output-itm_cnt or output)
+local set = output and (output > offset and output-offset or output) or not output and scr_name:match('%d+')
 set = math.floor(set+0) -- trim trailing decimal 0 left fron the output value
---Msg(save, 'save') Msg(set)
 local lanes_t = save and Collect_Lanes_Of_Visible_Selected_Mrkrs_Regns()
 
 	if save and not next(lanes_t) then
@@ -673,9 +724,10 @@ local lanes_t = save and Collect_Lanes_Of_Visible_Selected_Mrkrs_Regns()
 		if menu then goto RELOAD end
 	return r.defer(no_undo) end
 
+
 local set_t = Save_Recall_Set(set, not save and lane_count, save and lanes_t) -- returns set table in recall scripts
 
-	if save and not set_t then -- user declined to save set without unnamed lanes
+	if save and not set_t then -- user declined to save set without unnamed lanes in builds older than 7.71
 		if menu then goto RELOAD end
 	return r.defer(no_undo) end
 
@@ -687,14 +739,24 @@ local set_t = Save_Recall_Set(set, not save and lane_count, save and lanes_t) --
 
 		if err then
 		Error_Tooltip('\n\n '..err..' \n\n', 1, 1) -- caps, spaced true
-		pause(1.5)
-			if menu then goto RELOAD end
+			if menu then pause(1.5) goto RELOAD end
 		return r.defer(no_undo) end
+
+	-- only non-empty sets, because only these are included in the table
+	-- sets_status_t[set].hid is true when at least one lane from the set is visible
+	-- sets_status_t[set].vis is false when at least one lane from the set is hidden
+	local status = hide and not sets_status_t[set].hid and 'hidden' or not hide and sets_status_t[set].vis and 'visible'
+		if status then
+		Error_Tooltip('\n\n\tLane set '..set..' \n\n is already '..status..' \n\n', 1, 1) -- caps, spaced true
+		return r.defer(no_undo)
+		end
+
+	local exclusively = menu and #excl > 0 or not menu and scr_name:match('%(exclusively%)')
 
 	r.PreventUIRefresh(1)
 	r.Undo_BeginBlock()
 
-	Load_Lane_Set(set_t, lane_count)
+	Load_Or_Hide_Lane_Set(set_t, lane_count, hide, exclusively)
 
 	r.Undo_EndBlock(scr_name,-1)
 	r.PreventUIRefresh(-1)
