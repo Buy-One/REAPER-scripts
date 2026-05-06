@@ -631,7 +631,7 @@ local fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script i
 local scr_name = fullpath:match('.+_(.+)%.%w+') -- without path, scripter name & ext // suitable for individual scripts
 
 	-- doesn't run in non-META scripts
-	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Save or recall Ruler lanes visibility sets_META.lua', names_t) -- names_t is optional only if constructed outside of the function, otherwise names are collected from the list in the header
+	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Save, recall or hide Ruler lanes visibility sets_META.lua', names_t) -- names_t is optional only if constructed outside of the function, otherwise names are collected from the list in the header
 	then return r.defer(no_undo) end -- abort if META script but continue if not
 
 
