@@ -9,14 +9,14 @@ REAPER: at least v5.962
 Extensions: 
 Provides: [main] .
 About: 	If all visible track envelopes are displayed in the media lane, 
-			the script zooms the TCP to available Arrange height,
-			otherwise only zooms envelopes displayed in their own lane.
+		the script zooms the TCP to available Arrange height,
+		otherwise only zooms envelopes displayed in their own lane.
 
-			For envelopes displayed in their own lanes the toggle direction
-			is determined by the current height of the envelopes, i.e.
-			if height of at least one envelope is different from the one
-			calculated relative to the available Arrange height all envelopes
-			are zoomed to the available Arrange height.
+		For envelopes displayed in their own lanes the toggle direction
+		is determined by the current height of the envelopes, i.e.
+		if height of at least one envelope is different from the one
+		calculated relative to the available Arrange height all envelopes
+		are zoomed to the available Arrange height.
 ]]
 
 -----------------------------------------------------------------------------
