@@ -2,8 +2,14 @@
 ReaScript name: BuyOne_Toggle zoom of visible envelopes in the first selected track to available Arrange height.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 	#Added pinned tracks support
+			#Added scrolling to top of the Arrange for non-pinned tracks
+			#Added a setting to minimize TCP when toggling zoom 
+			of envelopes displayed in their own lanes
+			#Added support for envelope selection as a way to
+			select the target track
+			#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: 
@@ -14,19 +20,45 @@ About: 	If all visible track envelopes are displayed in the media lane,
 
 		For envelopes displayed in their own lanes the toggle direction
 		is determined by the current height of the envelopes, i.e.
-		if height of at least one envelope is different from the one
-		calculated relative to the available Arrange height all envelopes
-		are zoomed to the available Arrange height.
+		if height of at least one envelope is minimized, all envelopes
+		are zoomed to the available Arrange height. When zoom is toggled 
+		to Off, envelopes height is minimized.
+
+		Instead of a track, a track envelope may be selected for the script
+		to find the track to zoom the envelopes of.
+
+		Be aware that if the track is pinned, once its envelopes or its TCP
+		are zoomed, they will occupy all available Arrange height making the 
+		pinned tracks area as high as the entire Arrange, so scrolling won't 
+		reveal non-pinned tracks because scrolling doesn't apply to the 
+		pinned tracks area. In order to access non-pinned tracks, either zoom
+	back out with the script or manually shrink the pinned tracks area
+	having grabbed the divider at the very bottom of the program window.
 ]]
 
 -----------------------------------------------------------------------------
 ------------------------------ USER SETTINGS --------------------------------
 -----------------------------------------------------------------------------
 
+-- The following settings override track height lock
+-- if enabled in the track settings,
+-- the lock remains active, but the locked height
+-- will change as a result of the script activity
+
+-- Enable by inserting any alphanumeric character
+-- to have selected track TCP minimized when its
+-- envelopes get zoomed in,
+-- when the envelopes zoom is toggled to Off, i.e.
+-- their height is minimized, the original TCP height
+-- is restored;
+-- only applies when there're visible envelopes
+-- displayed in their own lanes
+MINIMIZE_TCP_WHEN_ZOOMED_IN = ""
+
+
 -- The following settings only apply
 -- when all track envelopes are displayed
--- in the track media lane because only in this case
--- TCP own height is being changed
+-- in the track media lane
 
 -- Enable by inserting any alphanumeric character
 -- to have TCP zoom toggled to last registered TCP height;
@@ -36,7 +68,7 @@ About: 	If all visible track envelopes are displayed in the media lane,
 TOGGLE_TO_LAST_TCP_HEIGHT = "1"
 
 -- Key in number of pixels the TCP
--- height must be toggled back to,
+-- zoom must be toggled back to,
 -- if empty, invalid or 0 defaults to fully minimized;
 -- only applies when TOGGLE_TO_LAST_TCP_HEIGHT
 -- setting above is disabled
@@ -173,6 +205,8 @@ end
 
 
 function Get_Pinned_Tracks_Height()
+-- track spacers aren't included because they're not supported
+-- in pinned tracks area
 local H = 0
 	if r.GetToggleCommandState(43573) == 0 then -- Track: Override/unpin all pinned tracks in TCP
 		for i=-1, r.GetNumTracks()-1 do
@@ -297,17 +331,41 @@ end
 
 
 
+function Scroll_Track_To_Top(tr, pinned_h, env) -- see more versatile v3 below
+-- env arg is optional, only if the first envelope
+-- displayed in its own lane needs to be scrolled to
+-- THE FUNCTION MUST NOT BE RUN BETWEEN PreventUIRefresh() FUNCTION
+-- INSTANCES BECAUSE THEY PREVENT GETTING CURRENT TRACK Y COORDINATE
+-- FOR FURTHER CALCULATIONS
+
+local GetValue = r.GetMediaTrackInfo_Value
+local tr_y = GetValue(tr, 'I_TCPY')
+local env_y = env and r.GetEnvelopeInfo_Value(env, 'I_TCPY') or 0 -- the result is the same as with tr_h
+
+local dir = tr_y < pinned_h and -1 or tr_y > pinned_h and 1 -- if less than 0 (out of sight above) the scroll must move up to bring the track into view, hence -1 and vice versa
+r.PreventUIRefresh(1)
+local Y_init -- to store track Y coordinate between loop cycles and monitor when the stored one equals to the one obtained after scrolling within the loop which will mean the scrolling can't continue due to reaching scroll limit when the track is close to the track list end or is the very last, otherwise the loop will become endless because there'll be no condition for it to stop
+	if dir then
+		repeat
+		r.CSurf_OnScroll(0, dir) -- unit is 8 px
+		local Y = GetValue(tr, 'I_TCPY')
+			if Y ~= Y_init then Y_init = Y -- store
+			else break end -- if scroll has reached the end before track has reached the destination to prevent loop becoming endless
+		until dir > 0 and Y+env_y <= pinned_h or dir < 0 and Y+env_y >= pinned_h
+	end
+r.PreventUIRefresh(-1)
+end
+
+
 
 local tr = r.GetSelectedTrack(0,0)
+local sel_env = not tr and r.GetSelectedEnvelope(0)
+tr = tr or sel_env and r.GetEnvelopeInfo_Value(sel_env, 'P_TRACK')
 
 	if not tr then
-	Error_Tooltip('\n\n no selected track \n\n', 1,1) -- caps, spaced true
+	Error_Tooltip('\n\n no selected track or envelope \n\n', 1,1) -- caps, spaced true
 	return r.defer(function() end)
 	end
-
-local tcp_h = r.GetMediaTrackInfo_Value(tr, 'I_TCPH')
-local tcp_h_env = r.GetMediaTrackInfo_Value(tr, 'I_WNDH')
-local diff = tcp_h_env-tcp_h
 
 local t = {own_lane={}, media_lane={}}
 	for i=0, r.CountTrackEnvelopes(tr)-1 do
@@ -324,36 +382,74 @@ local t = {own_lane={}, media_lane={}}
 	return r.defer(function() end)
 	end
 
+
+-- calculate new ecp height and determine toggle direction
 local old_builds = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.62 --7.62
-local arrange_h = old_builds and GetSet_Track_Zoom_100_Perc()
+local arrange_h_init = old_builds and GetSet_Track_Zoom_100_Perc()
 or r.GetSetProjectInfo(0, 'ARRANGE_H', 0, false) -- is_set false // doesn't account for pinned tracks
+Msg(arrange_h_init, 'arrange raw')
+
+local tcp_h = r.GetMediaTrackInfo_Value(tr, 'I_TCPH')
+local tcp_y = r.GetMediaTrackInfo_Value(tr, 'I_TCPY')
+local tr_pinned = r.GetMediaTrackInfo_Value(tr, 'B_TCPPIN') == 1
+local tcp_h_env = r.GetMediaTrackInfo_Value(tr, 'I_WNDH')
 
 -- when toggling envelopes in their own lanes their parent track height must be accounted for
 -- because it occupies part of Arrange height
-arrange_h = arrange_h - (#t.own_lane > 0 and tcp_h or 0) - (old_builds and 0 or Get_Pinned_Tracks_Height())
+local own_lane_cnt = #t.own_lane
+local pinned_h = Get_Pinned_Tracks_Height() -- height of the pinned tracks area or 0 if nothing is pinned or the feature isn't supported
+arrange_h = not tr_pinned and arrange_h_init - (own_lane_cnt > 0 and tcp_h or 0) - pinned_h
+or arrange_h_init - (tcp_y + (own_lane_cnt > 0 and tcp_h or 0) + 10) -- 10 px is pinned track area separator width // when in a pinned track there're envelopes displayed in their own lanes its TCP height must be subtracted from arrange height, otherwise the TCP height is ignored in the calculation because it itself is zoomed
 
-local ecp_h = math.floor(arrange_h/#t.own_lane+0.5)
+local ecp_h = math.floor(arrange_h/own_lane_cnt+0.5)
 local new_ecp_h
 	for k, env in ipairs(t.own_lane) do
 	local ret, chunk = r.GetEnvelopeStateChunk(env, '', false) -- isundo false
 	local cur_ecp_h = chunk:match('LANEHEIGHT (%-?%d+)') -- in case height value is negative as a result of some glitch
-		if cur_ecp_h+0 ~= ecp_h then -- if height of at least a single ecp is different from the expected zoomed height, zoom in all
+		if cur_ecp_h+0 == 1 then -- if height of at least a single ecp is 1, i.e. fully collapsed, zoom in all
 		new_ecp_h = ecp_h
 		break end
 	end
+
+	-- allow shrinking but not expanding which is ensured by validity of new_ecp_h var
+	if tr_pinned and new_ecp_h
+	and (new_ecp_h*own_lane_cnt <= tcp_h_env-tcp_h
+	or arrange_h < 0) -- OR new_ecp_h < 0
+	then
+	Error_Tooltip('\n\n not enough room for zoom \n\n', 1,1) -- caps, spaced true
+	return r.defer(function() end)
+	end
+
+
+	if own_lane_cnt > 0 and MINIMIZE_TCP_WHEN_ZOOMED_IN:match('%S') then
+		if new_ecp_h then -- minimize track when envelopes in separate lanes are zoomed in
+		local I_TCPH = r.GetMediaTrackInfo_Value(tr, 'I_TCPH')
+		r.GetSetMediaTrackInfo_String(tr, 'P_EXT:LAST_HEIGHT', I_TCPH, true) -- isSet true // store
+		r.SetMediaTrackInfo_Value(tr, 'I_HEIGHTOVERRIDE', 1) -- minimize
+		-- update to account for the space freed up after track minimization
+		local tcp_h = r.GetMediaTrackInfo_Value(tr, 'I_TCPH') -- minimized height
+		new_ecp_h = new_ecp_h + math.floor(tcp_h/own_lane_cnt+0.5)
+		else -- restore track height
+		local ret, tr_h = r.GetSetMediaTrackInfo_String(tr, 'P_EXT:LAST_HEIGHT', '', false) -- isSet false // recall
+			if #tr_h > 0 then
+			r.SetMediaTrackInfo_Value(tr, 'I_HEIGHTOVERRIDE', tr_h)
+			end
+		end
+	end
+
 
 	for k, env in ipairs(t.own_lane) do
 	local ret, chunk = r.GetEnvelopeStateChunk(env, '', false) -- isundo false
 	local cur_ecp_h = chunk:match('LANEHEIGHT (%-?%d+)') -- in case height value is negative as a result of some glitch
 	-- toggle height of all envelopes based on the presence of at least a single ecp whose height
-	-- differs from the expected zoomed height
-	-- so that their toggling remains uniform, i.e. performed in one directon only
+	-- is set to minimum, so that their toggling remains uniform, i.e. performed in one directon only
 	cur_ecp_h = Esc(cur_ecp_h) -- in case height value was negative as a result of some glitch and this contains minus which needs escaping
 	chunk = chunk:gsub('LANEHEIGHT '..cur_ecp_h, 'LANEHEIGHT '..(new_ecp_h or 1))
 	r.SetEnvelopeStateChunk(env, chunk, false) -- isundo false
 	end
 
-	if #t.own_lane == 0 and #t.media_lane > 0 then -- increase track own height to accommodate envelopes displayed in the media lane
+	-- increase track own height to accommodate envelopes displayed in the media lane
+	if own_lane_cnt == 0 and #t.media_lane > 0 then
 	local restore_last_h = TOGGLE_TO_LAST_TCP_HEIGHT:match('%S')
 	local I_TCPH = r.GetMediaTrackInfo_Value(tr, 'I_TCPH')
 	local ret, last_h
@@ -367,7 +463,22 @@ local new_ecp_h
 	min_h = min_h and min_h > 0 and math.floor(min_h) == min_h and min_h or 1
 	I_TCPH = I_TCPH < arrange_h and arrange_h or last_h or min_h
 	r.SetMediaTrackInfo_Value(tr, 'I_HEIGHTOVERRIDE', I_TCPH)
-	r.TrackList_AdjustWindows(true) -- isMinor true, TCP only // update so zoom is apparent immediately
+	end
+
+r.TrackList_AdjustWindows(true) -- isMinor true, TCP only // update so zoom is apparent immediately
+
+	-- only triggered when expanding, because only in this scenario tcp height remains unchanged
+	-- placed after TrackList_AdjustWindows() so the change in height, if any, is registered
+	if tr_pinned and own_lane_cnt == 0 and r.GetMediaTrackInfo_Value(	tr, 'I_TCPH') == tcp_h then
+	Error_Tooltip('\n\n not enough room for zoom \n\n', 1,1) -- caps, spaced true
+	end
+
+	-- only scroll if track isn't pinned, because pinned tracks cannot be scrolled,
+	-- and if it's not aleady at the top;
+	-- scroll must come last because when the TCP itself is zoomed in
+	-- increase in height will affect scroll position if set beforehand
+	if not tr_pinned and tcp_y ~= pinned_h then
+	Scroll_Track_To_Top(tr, pinned_h)
 	end
 
 
