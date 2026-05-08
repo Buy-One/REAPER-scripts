@@ -32,8 +32,8 @@ About: 	If all visible track envelopes are displayed in the media lane,
 		pinned tracks area as high as the entire Arrange, so scrolling won't 
 		reveal non-pinned tracks because scrolling doesn't apply to the 
 		pinned tracks area. In order to access non-pinned tracks, either zoom
-	back out with the script or manually shrink the pinned tracks area
-	having grabbed the divider at the very bottom of the program window.
+		back out with the script or manually shrink the pinned tracks area
+		having grabbed the divider at the very bottom of the program window.
 ]]
 
 -----------------------------------------------------------------------------
