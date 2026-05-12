@@ -25,7 +25,7 @@ About:  The script is meant to complement REAPER built-in
         
         When the folder the files are removed from is open in 
         the OS file browser the folder isn't updated so the files
-        remain visually listed. To check whether the've been
+        remain visually listed. To check whether they've been
         deleted refresh the folder view.
         
         See USER SETTINGS below.
