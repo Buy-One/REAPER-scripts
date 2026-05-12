@@ -24,7 +24,7 @@ About:  The script is meant to complement REAPER built-in
         directory are ignored by the script.
         
         When the folder the files are removed from is open in 
-        the OS, file browser the folder isn't updated so the files
+        the OS file browser the folder isn't updated so the files
         remain visually listed. To check whether the've been
         deleted refresh the folder view.
         
