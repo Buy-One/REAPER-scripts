@@ -9,14 +9,14 @@ REAPER: at least v5.962
 Extensions: 
 Provides: [main=main,midi_editor] .
 About: 	Selects tracks visible in the TCP
-  			to the end of the tracklist 
-  			starting from the currently selected 
-  			track.
-  			
-  			Mimics behavior of text processors
-  			where text can be selected from the
-  			carriage position to the very end 
-  			of the document.
+		to the end of the tracklist 
+		starting from the currently selected 
+		track.
+		
+		Mimics behavior of text processors
+		where text can be selected from the
+		carriage position to the very end 
+		of the document.
 ]]
 
 -----------------------------------------------------------------------------
