@@ -9,14 +9,13 @@ REAPER: at least v5.962
 Extensions: 
 Provides: [main=main,midi_editor] .
 About: 	Selects tracks visible in the TCP
-			to the top/bottom of the Arrange 
-			starting from the currently selected 
-			track.
-			
-			Tracks are selected as long as 
-			their TCP is visible.
-					
-			Pinned tracks are ignored.
+		to the top of the Arrange starting 
+		from the currently selected track.
+		
+		Tracks are selected as long as 
+		their TCP is visible.
+				
+		Pinned tracks are ignored.
 ]]
 
 
@@ -257,6 +256,15 @@ local arrange_h = old_builds and GetSet_Track_Zoom_100_Perc()
 or r.GetSetProjectInfo(0, 'ARRANGE_H', 0, false) -- is_set false, doesn't account for pinned tracks 
 local pinned_h = not old_builds and Get_Pinned_Tracks_Height() -- height of the pinned tracks area or 0 if nothing is pinned or the feature isn't supported
 
+local y = r.GetMediaTrackInfo_Value(sel_tr, 'I_TCPY')
+--	local h = r.GetMediaTrackInfo_Value(tr, 'I_WNDH') -- incl. envelopes
+local h = r.GetMediaTrackInfo_Value(sel_tr, 'I_TCPH') -- excl. envelopes
+
+	if y+h < (old_builds and 0 or pinned_h) or y > arrange_h then
+	Error_Tooltip('\n\n no selected track within view \n\n', 1,1) -- caps, spaced true
+	return r.defer(function() end)
+	end
+
 local st, fin, dir = table.unpack(bottom and {sel_tr_idx, r.GetNumTracks()-1, 1} or top and {sel_tr_idx,0,-1})
 
 	for i=st, fin, dir do
@@ -273,18 +281,40 @@ local st, fin, dir = table.unpack(bottom and {sel_tr_idx, r.GetNumTracks()-1, 1}
 		end
 	end
 	
+
 --[[
 -- alternatively could have been accomplished with actions
--- SCROLLS AUTOMATICALLY
+-- SCROLLS AUTOMATICALLY if the last tracks TCP isn't fully revealed, which isn't necessary in this script
 -- the actions ignore pinned tracks
-local fin, ID = table.unpack(bottom and {r.GetNumTracks()-sel_tr_idx, 40287} -- Track: Go to next track (leaving other tracks selected)
-or top and {sel_tr_idx, 40288}) -- Track: Go to previous track (leaving other tracks selected)
+local st, fin, dir = table.unpack(bottom and {r.GetNumTracks()-1, 0, -1} or top and {0, r.GetNumTracks()-1,1})
+local targ_tr_idx
+
+	for i=st, fin,dir do
+	local tr = r.GetTrack(0,i)
+	local vis = r.GetMediaTrackInfo_Value(tr, 'B_SHOWINTCP') == 1
+	local pinned = r.GetMediaTrackInfo_Value(tr, 'B_TCPPIN') == 1
+		if vis and not pinned then
+		local y = r.GetMediaTrackInfo_Value(tr, 'I_TCPY')
+	--	local h = r.GetMediaTrackInfo_Value(tr, 'I_WNDH') -- incl. envelopes
+		local h = r.GetMediaTrackInfo_Value(tr, 'I_TCPH') -- excl. envelopes
+			if bottom and y < arrange_h or top and y+h > (old_builds and 0 or pinned_h) then
+			targ_tr_idx = i
+			break
+			end
+		end
+	end
+
+local st, fin = math.min(sel_tr_idx, targ_tr_idx), math.max(sel_tr_idx, targ_tr_idx)
+local ID = bottom and 40287 -- Track: Go to next track (leaving other tracks selected)
+or top and 40288 -- Track: Go to previous track (leaving other tracks selected)
 r.PreventUIRefresh(1)
-	for i=1, fin do
+	for i=st, fin-1 do -- -1 because the initially selected track isn't counted
 	r.Main_OnCommand(ID, 0)
 	end
 r.PreventUIRefresh(-1)
+
 --]]
+
 	
 
 do r.defer(function() end) end
