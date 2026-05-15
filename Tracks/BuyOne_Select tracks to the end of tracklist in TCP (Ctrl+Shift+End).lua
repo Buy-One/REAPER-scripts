@@ -18,7 +18,7 @@ About: 	Selects tracks visible in the TCP
 		carriage position to the very end 
 		of the document.
 
-		Pinned tracks are not selected.
+		Pinned tracks are ignored.
 ]]
 
 -----------------------------------------------------------------------------
