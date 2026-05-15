@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_Select tracks to the end of tracklist in TCP (Ctrl+Shift+End).lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Ensured that pinned tracks are ignored in selection
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: 
@@ -17,6 +17,8 @@ About: 	Selects tracks visible in the TCP
 		where text can be selected from the
 		carriage position to the very end 
 		of the document.
+
+		Pinned tracks are not selected.
 ]]
 
 -----------------------------------------------------------------------------
@@ -188,7 +190,9 @@ or scr_name:match('start') and {sel_tr_idx,0,-1} or {})
 
 	for i=st, fin, dir do 
 	local tr = r.GetTrack(0,i)
-		if r.GetMediaTrackInfo_Value(tr, 'B_SHOWINTCP') == 1 then
+	local vis = r.GetMediaTrackInfo_Value(tr, 'B_SHOWINTCP') == 1
+	local pinned = r.GetMediaTrackInfo_Value(tr, 'B_TCPPIN') == 1
+		if vis and not pinned then
 		r.SetTrackSelected(tr, true) -- selected true
 		sel_tr = tr
 		end
@@ -197,6 +201,7 @@ or scr_name:match('start') and {sel_tr_idx,0,-1} or {})
 --[[
 -- alternatively could have been accomplished with actions
 -- SCROLLS AUTOMATICALLY
+-- the actions ignore pinned tracks
 local fin, ID = table.unpack(scr_name:match('end') and {r.GetNumTracks()-sel_tr_idx, 40287} -- Track: Go to next track (leaving other tracks selected)
 or scr_name:match('start') and {sel_tr_idx, 40288}) -- Track: Go to previous track (leaving other tracks selected)
 r.PreventUIRefresh(1)
@@ -205,7 +210,7 @@ r.PreventUIRefresh(1)
 	end
 r.PreventUIRefresh(-1)
 --]]
-	
+
 	if WANT_SCROLL:match('%S') then
 	Scroll_Track_To_Top(sel_tr)
 	end
