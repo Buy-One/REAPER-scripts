@@ -9,183 +9,183 @@ REAPER: at least v5.962
 Extensions: 
 Provides: [main=main,midi_editor] .
 About: 	The script is desinged to create a multi-sample 
-			out of a single sample by transposing it to different
-			pitches according to the user preferences supplied
-			to it via a dialogue. Which may in particular be useful
-			for creating an RS5k instrument because RS5k doesn't
-			do pitch shifting other than by way of resampling the
-			audio which affects its speed.
+		out of a single sample by transposing it to different
+		pitches according to the user preferences supplied
+		to it via a dialogue. Which may in particular be useful
+		for creating an RS5k instrument because RS5k doesn't
+		do pitch shifting other than by way of resampling the
+		audio which affects its speed.
 
-			The multi-sample source can be an audio or a MIDI take.
-			When a MIDI take is selected, the script expects at least 
-			one instance of ReaSamplOmatic5000 (RS5k) on the item's track 
-			able to be triggered by the note events in the MIDI take.
-			The main idea of rendering a multi-sample from a MIDI take
-			is to shape the source sample with RS5k envelope. If this
-			is not necessary the sample can of course be dropped into
-			REAPER as an audio item and used in this capacity.
+		The multi-sample source can be an audio or a MIDI take.
+		When a MIDI take is selected, the script expects at least 
+		one instance of ReaSamplOmatic5000 (RS5k) on the item's track 
+		able to be triggered by the note events in the MIDI take.
+		The main idea of rendering a multi-sample from a MIDI take
+		is to shape the source sample with RS5k envelope. If this
+		is not necessary the sample can of course be dropped into
+		REAPER as an audio item and used in this capacity.
 
-			SAMPLE PREPARATION
+		SAMPLE PREPARATION
 
-			As a preparatory step add note name and octave to the
-			source take name of selected item, the take must be active. 
-			If you don't know what pitch your source sample is in, insert
-			ReaTune on the item track or in the source take FX chain to
-			look it up.  
-			The take name may consist of only a note name or a note name 
-			and a preceding text which can serve as a custom name for your 
-			multi-sample. No text following the note name is allowed in 
-			the take name. 
+		As a preparatory step add note name and octave to the
+		source take name of selected item, the take must be active. 
+		If you don't know what pitch your source sample is in, insert
+		ReaTune on the item track or in the source take FX chain to
+		look it up.  
+		The take name may consist of only a note name or a note name 
+		and a preceding text which can serve as a custom name for your 
+		multi-sample. No text following the note name is allowed in 
+		the take name. 
 
-			If there're track and/or take FX which will be printed into 
-			the multi-sample provided APPLY_FX setting is enabled in the 
-			USER SETTINGS or you use a MIDI source take, you may want to 
-			configure the FX tail at 
-			Preferences -> Media -> Tail length when using Apply FX to items (for track FX)
-			/ Take FX tail length... (for take FX)
+		If there're track and/or take FX which will be printed into 
+		the multi-sample provided APPLY_FX setting is enabled in the 
+		USER SETTINGS or you use a MIDI source take, you may want to 
+		configure the FX tail at 
+		Preferences -> Media -> Tail length when using Apply FX to items (for track FX)
+		/ Take FX tail length... (for take FX)
 
-			MIDI SOURCE 
+		MIDI SOURCE 
 
-			If the multi-sample is created from a MIDI take, set 
-			RS5k 'Mode' to 'Sample (Ignores MIDI note)'. 
-			'Obey notes off' option can be enabled if the original 
-			sample must be cut short by the length of the MIDI note 
-			which triggers it. If it must be played back in full, 
-			leave it unchecked and have a sufficient MIDI item length 
-			because length of the file created by the action  
-			'Item: Apply track/take FX to items'  
-			used in the script to render the sample will be equal 
-			to the MIDI item length rather than MIDI note or note 
-			sequence length, UNLESS the prefernce at  
-			Preferences -> Media -> Tail length when using Apply FX to items 
-			provides for a sufficient extra tail.  
-			For the same reason in order to prevent addition of silent 
-			tail to the rendered sample it's advised at the very least 
-			to set the MIDI item length to the length of the triggering 
-			MIDI note or note sequence as well as to keep the preferences at  
-			Preferences -> Media -> Tail length when using Apply FX to items (for track FX) 
-			/ Take FX tail length (for take FX) at 0 if you're rendering 
-			dry sample, i.e. without any track FX and take FX with tails.  
-			Having said all of the above, the script on its part 
-			additionally attempts to truncate any lading and trailing 
-			silence tails in the rendered sample.
+		If the multi-sample is created from a MIDI take, set 
+		RS5k 'Mode' to 'Sample (Ignores MIDI note)'. 
+		'Obey notes off' option can be enabled if the original 
+		sample must be cut short by the length of the MIDI note 
+		which triggers it. If it must be played back in full, 
+		leave it unchecked and have a sufficient MIDI item length 
+		because length of the file created by the action  
+		'Item: Apply track/take FX to items'  
+		used in the script to render the sample will be equal 
+		to the MIDI item length rather than MIDI note or note 
+		sequence length, UNLESS the prefernce at  
+		Preferences -> Media -> Tail length when using Apply FX to items 
+		provides for a sufficient extra tail.  
+		For the same reason in order to prevent addition of silent 
+		tail to the rendered sample it's advised at the very least 
+		to set the MIDI item length to the length of the triggering 
+		MIDI note or note sequence as well as to keep the preferences at  
+		Preferences -> Media -> Tail length when using Apply FX to items (for track FX) 
+		/ Take FX tail length (for take FX) at 0 if you're rendering 
+		dry sample, i.e. without any track FX and take FX with tails.  
+		Having said all of the above, the script on its part 
+		additionally attempts to truncate any lading and trailing 
+		silence tails in the rendered sample.
 
-			PITCH SHIFT ALGO
+		PITCH SHIFT ALGO
 
-			The script uses the pitch shift algo enabled in the source 
-			take. Pitch shift algos SoundTouch and Rubber Band Library 
-			allow for very significant negative transposition. Elastique 
-			is limited and produces click at the start of negatively 
-			transposed sample instances. Simple Window (fast) is low 
-			quality.  
-			If you prefer SoundTouch or Rubber Band Library algos you 
-			may want to enable PROMPT_FOR_PITCHSHIFT_ALGO setting in the 
-			USER SETTINGS below to always be prompted whenever these're 
-			not enabled in the source take pitch shift algo settings so 
-			that the script enables them automatically.
+		The script uses the pitch shift algo enabled in the source 
+		take. Pitch shift algos SoundTouch and Rubber Band Library 
+		allow for very significant negative transposition. Elastique 
+		is limited and produces click at the start of negatively 
+		transposed sample instances. Simple Window (fast) is low 
+		quality.  
+		If you prefer SoundTouch or Rubber Band Library algos you 
+		may want to enable PROMPT_FOR_PITCHSHIFT_ALGO setting in the 
+		USER SETTINGS below to always be prompted whenever these're 
+		not enabled in the source take pitch shift algo settings so 
+		that the script enables them automatically.
 
-			RANGE PROPERTIES DIALOGUE
+		RANGE PROPERTIES DIALOGUE
 
-			The multi-sample pitch range can be defined in terms 
-			of notes or in terms of octaves. The array of pitches 
-			which the muti-sample will be comprised of is further 
-			modified by the step value. If the step value is not 
-			specified it defaults to 1, meaning all pitches which 
-			fall within the specified range will be included in the 
-			multi-sample.  
-			If the range is defined by notes and it's not a multiple 
-			of the step value, which is only possible when the step 
-			is other than 1, the root and/or end notes will not 
-			necessarily fall within the range. The actual source 
-			take pitch may end up not being included either.  
-			If the range is defined by octaves, it necessarily starts 
-			and ends with the root note in the respective lowest 
-			and highest octaves, unless 'Step reset' mode is 
-			activated (see below).
+		The multi-sample pitch range can be defined in terms 
+		of notes or in terms of octaves. The array of pitches 
+		which the muti-sample will be comprised of is further 
+		modified by the step value. If the step value is not 
+		specified it defaults to 1, meaning all pitches which 
+		fall within the specified range will be included in the 
+		multi-sample.  
+		If the range is defined by notes and it's not a multiple 
+		of the step value, which is only possible when the step 
+		is other than 1, the root and/or end notes will not 
+		necessarily fall within the range. The actual source 
+		take pitch may end up not being included either.  
+		If the range is defined by octaves, it necessarily starts 
+		and ends with the root note in the respective lowest 
+		and highest octaves, unless 'Step reset' mode is 
+		activated (see below).
 
-			In the note range only sharps # are supported as 
-			accidentals. 
+		In the note range only sharps # are supported as 
+		accidentals. 
 
-			The step value is added consequtively across all octaves 
-			within the specified range and as a result multi-sample 
-			notes are very likely to be different in different octaves.
+		The step value is added consequtively across all octaves 
+		within the specified range and as a result multi-sample 
+		notes are very likely to be different in different octaves.
 
-			Outside of the 'Step reset' mode, in order to create 2 
-			unique pitches per octave the range start note must be C 
-			and step value be 6, so that the rendered notes are C and 
-			F# in each octave.
+		Outside of the 'Step reset' mode, in order to create 2 
+		unique pitches per octave the range start note must be C 
+		and step value be 6, so that the rendered notes are C and 
+		F# in each octave.
 
-			STEP RESET MODE
+		STEP RESET MODE
 
-			Unlike the regular mode where the step value is added 
-			consecutively across all octaves, in this mode it's reset 
-			for each octave. This ensures that for each octave within 
-			the specified range the same notes are being created.  
-			In this mode only the range defined by octaves is supported 
-			and it always starts with the C note in the lowest octave 
-			of the range rather than with the root note in that octave.
-			The C note is included in each octave, other notes depend 
-			on the step value.
-			If the step value is greater than 11 each octave will only 
-			contain the C note.
-			The mode is activated by inclusion of the letter R 
-			(the register is immaterial) in the 'Step' field of the 
-			dialogue. The rules applicable to the numeric step value 
-			remain the same.
+		Unlike the regular mode where the step value is added 
+		consecutively across all octaves, in this mode it's reset 
+		for each octave. This ensures that for each octave within 
+		the specified range the same notes are being created.  
+		In this mode only the range defined by octaves is supported 
+		and it always starts with the C note in the lowest octave 
+		of the range rather than with the root note in that octave.
+		The C note is included in each octave, other notes depend 
+		on the step value.
+		If the step value is greater than 11 each octave will only 
+		contain the C note.
+		The mode is activated by inclusion of the letter R 
+		(the register is immaterial) in the 'Step' field of the 
+		dialogue. The rules applicable to the numeric step value 
+		remain the same.
 
-			The Range properties dialogue is case agnostic so note names
-			can be in any register.
+		The Range properties dialogue is case agnostic so note names
+		can be in any register.
 
-			THE RESULT
+		THE RESULT
 
-			The multi-sample is rendered to the project media directory
-			which is one of the following:  
-			for unsaved projects it's - 
-			A) '%USER%\Documents\REAPER Media' (on Windows), if no path is 
-			configured in any of the preferences;  
-			B) path configured in 
-			Project settings -> Media ->  Path to save media files (...) 
-			(only if absolute);  
-			C) path configured in 
-			Preferences -> General -> Paths -> Default recording path;
-			for saved projects -  
-			A) path configured in 
-			Project settings -> Media -> Path to save media files (...), 
-			relative to project directory or absolute;  
-			B) project directory root if no path is configured in the 
-			Project Settings
+		The multi-sample is rendered to the project media directory
+		which is one of the following:  
+		for unsaved projects it's - 
+		A) '%USER%\Documents\REAPER Media' (on Windows), if no path is 
+		configured in any of the preferences;  
+		B) path configured in 
+		Project settings -> Media ->  Path to save media files (...) 
+		(only if absolute);  
+		C) path configured in 
+		Preferences -> General -> Paths -> Default recording path;
+		for saved projects -  
+		A) path configured in 
+		Project settings -> Media -> Path to save media files (...), 
+		relative to project directory or absolute;  
+		B) project directory root if no path is configured in the 
+		Project Settings
 
-			Each render pass creates a new set of files.
-			If there's text preceding the note name in 
-			the take name the resulting multi-sample file name format is 
-			[preceding text]_[multi] [number]_[note name].ext   
-			otherwise the file name format is  
-			Instrument_[number]_[multi]_[note name].ext  
-			If at the time of multi-sample creation the destination folder 
-			already contains previously rendered multi-sample files with 
-			the same name, the number in the file names of the currently 
-			rendered multi-sample is incremented, unless there's a smaller 
-			available number.
+		Each render pass creates a new set of files.
+		If there's text preceding the note name in 
+		the take name the resulting multi-sample file name format is 
+		[preceding text]_[multi] [number]_[note name].ext   
+		otherwise the file name format is  
+		Instrument_[number]_[multi]_[note name].ext  
+		If at the time of multi-sample creation the destination folder 
+		already contains previously rendered multi-sample files with 
+		the same name, the number in the file names of the currently 
+		rendered multi-sample is incremented, unless there's a smaller 
+		available number.
 
-			The consistency of multi-sample item and file names depends 
-			solely on the note being correct in the source take name 
-			(source file name doesn't matter), therefore make sure to verify 
-			the correct pitch of the source take using ReaTune and label 
-			it accordingly.
+		The consistency of multi-sample item and file names depends 
+		solely on the note being correct in the source take name 
+		(source file name doesn't matter), therefore make sure to verify 
+		the correct pitch of the source take using ReaTune and label 
+		it accordingly.
 
-			To finetune the script behavior proceed to the USER SETTINGS
-			below.
+		To finetune the script behavior proceed to the USER SETTINGS
+		below.
 
-			!!!!WARNING!!!!
+		!!!!WARNING!!!!
 
-			If you're going to export RS5k multi-sample instrument having
-			enabled the relevant script settings be aware that root note
-			name in some RS5k instances may be incorrect. This is due to
-			RS5k bug which as of build 7.73 is yet to be fixed. Bug reports
-			https://forum.cockos.com/showthread.php?t=308333
-			https://forum.cockos.com/showthread.php?t=309056
-			This bug doesn't affect the actual transposition, so all pitches
-			will be correct.
+		If you're going to export RS5k multi-sample instrument having
+		enabled the relevant script settings be aware that root note
+		name in some RS5k instances may be incorrect. This is due to
+		RS5k bug which as of build 7.73 is yet to be fixed. Bug reports
+		https://forum.cockos.com/showthread.php?t=308333
+		https://forum.cockos.com/showthread.php?t=309056
+		This bug doesn't affect the actual transposition, so all pitches
+		will be correct.
 
 ]]
 
