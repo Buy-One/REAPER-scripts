@@ -9,12 +9,12 @@ REAPER: at least v5.962
 Extensions:
 Provides: [main=main,midi_editor] .
 About: 	When fixed item lanes are enabled on the track
-  			of the selected item, the item is only moved by lanes
-  			if the lanes are not collapsed. When they are collapsed
-  			and the visible lane is not the selected item's lane,
-  			the item is ignored.
-  
-  			See USER SETTINGS below.
+		of the selected item, the item is only moved by lanes
+		if the lanes are not collapsed. When they are collapsed
+		and the visible lane is not the selected item's lane,
+		the item is ignored.
+
+		See USER SETTINGS below.
 ]]
 
 -----------------------------------------------------------------------------
