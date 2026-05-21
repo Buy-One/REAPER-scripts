@@ -82,7 +82,9 @@ About: 	The script is desinged to create a multi-sample
 		may want to enable PROMPT_FOR_PITCHSHIFT_ALGO setting in the 
 		USER SETTINGS below to always be prompted whenever these're 
 		not enabled in the source take pitch shift algo settings so 
-		that the script enables them automatically.
+		that the script enables them automatically. They obviously
+		will be enabled with default settings whereas manual 
+		activation allows changing their configuration.
 
 		RANGE PROPERTIES DIALOGUE
 
