@@ -9,40 +9,40 @@ REAPER: at least v5.962
 Extensions: js_ReaScriptAPI not required but may be useful
 Provides: [main=main,midi_editor] .
 About: 	To do its thing the script must run in
-			the background. Once launched it will
-			continue to run until explicitly stopped
-			by a direct click on its entry in the 
-			Action list, in the list of running 
-			scripts in the Actions menu, on a toolbar
-			button or a menu item its linked to.			
+		the background. Once launched it will
+		continue to run until explicitly stopped
+		by a direct click on its entry in the 
+		Action list, in the list of running 
+		scripts in the Actions menu, on a toolbar
+		button or a menu item its linked to.
 
-			As long as the script runs it prevents 
-			changes to the track order in the TCP,
-			and in MCP as well unless the option
-			'Auto-arrange track in Mixer' is disabled,
-			but it allows adding new tracks after
-			which their position gets locked by the
-			script.
+		As long as the script runs it prevents 
+		changes to the track order in the TCP,
+		and in MCP as well unless the option
+		'Auto-arrange track in Mixer' is disabled,
+		but it allows adding new tracks after
+		which their position gets locked by the
+		script.
 
-			If the script is linked to a toolbar
-			button or a menu item they will be lit
-			or checkmarked respectively, while the
-			script runs.
+		If the script is linked to a toolbar
+		button or a menu item they will be lit
+		or checkmarked respectively, while the
+		script runs.
 
-			Pinned tracks maintain their position
-			in the general tracklist which is restored
-			once unpinned.
+		Pinned tracks maintain their position
+		in the general tracklist which is restored
+		once unpinned.
 
-			The only drawback of the script activity
-			is that it MUST create an undo point 
-			every time it restores the original track 
-			order. This is the ReaScript API requirement 
-			which there's no way around.
+		The only drawback of the script activity
+		is that it MUST create an undo point 
+		every time it restores the original track 
+		order. This is the ReaScript API requirement 
+		which there's no way around.
 
-			See USER SETTINGS for a way of allowing
-			certain tracks to be moved to another 
-			position within the tracklist despite 
-			the script locking activity.
+		See USER SETTINGS for a way of allowing
+		certain tracks to be moved to another 
+		position within the tracklist despite 
+		the script locking activity.
 
 ]]
 
