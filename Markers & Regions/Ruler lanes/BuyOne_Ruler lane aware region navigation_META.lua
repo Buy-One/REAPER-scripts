@@ -7,41 +7,41 @@ Changelog: #Improved ruler height update when new lane is added
 Licence: WTFPL
 REAPER: at least v7.62
 Provides: [main=main,midi_editor] .
-			. > BuyOne_Go to next region on lane 1 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to next region on lane 2 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to next region on lane 3 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to next region on lane 4 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to next region on lane 5 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to next region on lane 6 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to next region on lane 7 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to next region on lane 8 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to previous region on lane 1 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to previous region on lane 2 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to previous region on lane 3 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to previous region on lane 4 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to previous region on lane 5 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to previous region on lane 6 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to previous region on lane 7 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to previous region on lane 8 after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to next region on the same lane after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to previous region on the same lane after current region finishes playing (smooth seek).lua
-			. > BuyOne_Go to first selected region after current region finishes playing (smooth seek).lua
-			. > BuyOne_Set loop points to next region on the same lane.lua
-			. > BuyOne_Set loop points to previous region on the same lane.lua
-			. > BuyOne_Set loop points to selected region.lua
+		. > BuyOne_Go to next region on lane 1 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to next region on lane 2 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to next region on lane 3 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to next region on lane 4 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to next region on lane 5 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to next region on lane 6 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to next region on lane 7 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to next region on lane 8 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to previous region on lane 1 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to previous region on lane 2 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to previous region on lane 3 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to previous region on lane 4 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to previous region on lane 5 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to previous region on lane 6 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to previous region on lane 7 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to previous region on lane 8 after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to next region on the same lane after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to previous region on the same lane after current region finishes playing (smooth seek).lua
+		. > BuyOne_Go to first selected region after current region finishes playing (smooth seek).lua
+		. > BuyOne_Set loop points to next region on the same lane.lua
+		. > BuyOne_Set loop points to previous region on the same lane.lua
+		. > BuyOne_Set loop points to selected region.lua
 About: 	If this script name is suffixed with META, when
-			executed it will automatically spawn all individual
-			scripts included in the package into the directory
-			of the META script and will import them into the
-			Action list from that directory.
+		executed it will automatically spawn all individual
+		scripts included in the package into the directory
+		of the META script and will import them into the
+		Action list from that directory.
 
-			If there's no META suffix in this script name it will
-			perfom the operation indicated in its name.
+		If there's no META suffix in this script name it will
+		perfom the operation indicated in its name.
 
-			In scripts targeting regions on the same lane, if start
-			and end points of regions on different lanes overlap,
-			the lane of the target region will be determined relative 
-			to the current region with the greatest number.		
+		In scripts targeting regions on the same lane, if start
+		and end points of regions on different lanes overlap,
+		the lane of the target region will be determined relative 
+		to the current region with the greatest number.		
 
 ]]
 
