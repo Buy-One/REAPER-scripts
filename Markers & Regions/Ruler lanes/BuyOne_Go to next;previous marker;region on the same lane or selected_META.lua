@@ -7,73 +7,73 @@ Changelog: #Improved ruler height update when new lane is added
 Licence: WTFPL
 REAPER: at least v7.62
 Provides: [main=main,midi_editor,mediaexplorer] .
-			. > BuyOne_Go to next marker or region on the same lane.lua
-			. > BuyOne_Go to previous marker or region on the same lane.lua
-			. > BuyOne_Go to next marker on the same lane.lua
-			. > BuyOne_Go to previous marker on the same lane.lua
-			. > BuyOne_Go to first selected marker or region.lua
-			. > BuyOne_Go to first selected marker.lua
-			. > BuyOne_Go to next selected marker or region.lua
-			. > BuyOne_Go to previous selected marker or region.lua
-			. > BuyOne_Go to next selected marker.lua
-			. > BuyOne_Go to previous selected marker.lua
+		. > BuyOne_Go to next marker or region on the same lane.lua
+		. > BuyOne_Go to previous marker or region on the same lane.lua
+		. > BuyOne_Go to next marker on the same lane.lua
+		. > BuyOne_Go to previous marker on the same lane.lua
+		. > BuyOne_Go to first selected marker or region.lua
+		. > BuyOne_Go to first selected marker.lua
+		. > BuyOne_Go to next selected marker or region.lua
+		. > BuyOne_Go to previous selected marker or region.lua
+		. > BuyOne_Go to next selected marker.lua
+		. > BuyOne_Go to previous selected marker.lua
 About: 	If this script name is suffixed with META, when
-			executed it will automatically spawn all individual
-			scripts included in the package into the directory
-			of the META script and will import them into the
-			Action list from that directory.
+		executed it will automatically spawn all individual
+		scripts included in the package into the directory
+		of the META script and will import them into the
+		Action list from that directory.
 
-			If there's no META suffix in this script name it will
-			perfom the operation indicated in its name.
+		If there's no META suffix in this script name it will
+		perfom the operation indicated in its name.
 
 
-			NOTES REGARDING BEHAVIOR OF SCRIPTS WHICH PERFORM
-			NAVIGATION BETWEEN MARKERS/REGIONS ON THE SAME LANE
+		NOTES REGARDING BEHAVIOR OF SCRIPTS WHICH PERFORM
+		NAVIGATION BETWEEN MARKERS/REGIONS ON THE SAME LANE
 
-			1. If, when the script is executed, there's no marker 
-			or region at the edit cursor, the lane is determined 
-			by the lane of the marker/region in which immediately 
-			precedes (if moving to next) or immediately follows 
-			(if moving to previous) the edit cursor.  
-			When there's no such reference marker (or region in 
-			relevant scripts), the cursor will be moved to the marker 
-			or region closest to the edit cursor in the relevant 
-			direction.
+		1. If, when the script is executed, there's no marker 
+		or region at the edit cursor, the lane is determined 
+		by the lane of the marker/region in which immediately 
+		precedes (if moving to next) or immediately follows 
+		(if moving to previous) the edit cursor.  
+		When there's no such reference marker (or region in 
+		relevant scripts), the cursor will be moved to the marker 
+		or region closest to the edit cursor in the relevant 
+		direction.
 
-			2. If start or end points of markers/regions closest to
-			the edit cursor on different lanes overlap, the lane 
-			is determined by the lane of the marker/region with the 
-			greatest (if moving to next) or smallest (if moving to 
-			previous) number.
+		2. If start or end points of markers/regions closest to
+		the edit cursor on different lanes overlap, the lane 
+		is determined by the lane of the marker/region with the 
+		greatest (if moving to next) or smallest (if moving to 
+		previous) number.
 
-			3. During playback the scripts will only work reliably 
-			if the lane was identified at least once before the 
-			playback start. And for the scripts to remain latched 
-			onto such lane the playback must start while this 
-			particular lane remains the last one identified.  
-			All this admittedly is quite clunky, so a more 
-			straightforward and reliable alternative could be 
-			using one of the scripts included in 
-			BuyOne_Toggle exclusive visibility of Ruler lanes_META.lua
-			inside a custom action, e.g.
+		3. During playback the scripts will only work reliably 
+		if the lane was identified at least once before the 
+		playback start. And for the scripts to remain latched 
+		onto such lane the playback must start while this 
+		particular lane remains the last one identified.  
+		All this admittedly is quite clunky, so a more 
+		straightforward and reliable alternative could be 
+		using one of the scripts included in 
+		BuyOne_Toggle exclusive visibility of Ruler lanes_META.lua
+		inside a custom action, e.g.
 
-				Custom: Go to next marker on lane 1 / project end
-				Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
-				Markers: Go to next marker/project end
-				Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
+			Custom: Go to next marker on lane 1 / project end
+			Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
+			Markers: Go to next marker/project end
+			Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
 
-				Custom: Go to previous marker on lane 1 / project start
-				Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
-				Markers: Go to previous marker/project start
-				Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
+			Custom: Go to previous marker on lane 1 / project start
+			Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
+			Markers: Go to previous marker/project start
+			Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
 
-			The first script instance only leaves Ruler lane 1 visible
-			which prevents the action 'Markers: Go to next marker/project end'
-			from being pulled to a marker/region on any other lane. 
-			The second script instance restore the original lane 
-			visibility. Be aware that during the custom action 
-			execution the Ruler will be jumping as visible lane 
-			count changes.
+		The first script instance only leaves Ruler lane 1 visible
+		which prevents the action 'Markers: Go to next marker/project end'
+		from being pulled to a marker/region on any other lane. 
+		The second script instance restore the original lane 
+		visibility. Be aware that during the custom action 
+		execution the Ruler will be jumping as visible lane 
+		count changes.
 
 ]]
 
