@@ -7,51 +7,51 @@ Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v7.62
 Provides: [main=main,midi_editor,mediaexplorer] .
-			. > BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
-			. > BuyOne_Toggle exclusive visibility of Ruler lane 2.lua
-			. > BuyOne_Toggle exclusive visibility of Ruler lane 3.lua
-			. > BuyOne_Toggle exclusive visibility of Ruler lane 4.lua
-			. > BuyOne_Toggle exclusive visibility of Ruler lane 5.lua
-			. > BuyOne_Toggle exclusive visibility of Ruler lane 6.lua
-			. > BuyOne_Toggle exclusive visibility of Ruler lane 7.lua
-			. > BuyOne_Toggle exclusive visibility of Ruler lane 8.lua
+		. > BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
+		. > BuyOne_Toggle exclusive visibility of Ruler lane 2.lua
+		. > BuyOne_Toggle exclusive visibility of Ruler lane 3.lua
+		. > BuyOne_Toggle exclusive visibility of Ruler lane 4.lua
+		. > BuyOne_Toggle exclusive visibility of Ruler lane 5.lua
+		. > BuyOne_Toggle exclusive visibility of Ruler lane 6.lua
+		. > BuyOne_Toggle exclusive visibility of Ruler lane 7.lua
+		. > BuyOne_Toggle exclusive visibility of Ruler lane 8.lua
 About: 	If this script name is suffixed with META, when executed
-			it will automatically spawn all individual scripts included
-			in the package into the directory of the META script and will
-			import them into the Action list from that directory.
+		it will automatically spawn all individual scripts included
+		in the package into the directory of the META script and will
+		import them into the Action list from that directory.
 
-			If there's no META suffix in this script name it will perfom
-			the operation indicated in its name.
+		If there's no META suffix in this script name it will perfom
+		the operation indicated in its name.
 
-			Toggling exclusive visibility means leaving the lane 
-			exclusively visible by hiding all other lanes and then
-			unhiding lanes which were initially visible.
+		Toggling exclusive visibility means leaving the lane 
+		exclusively visible by hiding all other lanes and then
+		unhiding lanes which were initially visible.
 
-			It's not recommended changing lanes visibility manually
-			in-between script executions because the script won't be
-			aware of these changes and produce inconsistent results
-			on the next execution.
+		It's not recommended changing lanes visibility manually
+		in-between script executions because the script won't be
+		aware of these changes and produce inconsistent results
+		on the next execution.
 
-			The scripts can be used for exclusive navigation along
-			a particular Ruler lane, e.g.
+		The scripts can be used for exclusive navigation along
+		a particular Ruler lane, e.g.
 
-				Custom: Go to next marker on lane 1 / project end
-				Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
-				Markers: Go to next marker/project end
-				Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
+			Custom: Go to next marker on lane 1 / project end
+			Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
+			Markers: Go to next marker/project end
+			Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
 
-				Custom: Go to previous marker on lane 1 / project start
-				Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
-				Markers: Go to previous marker/project start
-				Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
+			Custom: Go to previous marker on lane 1 / project start
+			Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
+			Markers: Go to previous marker/project start
+			Script: BuyOne_Toggle exclusive visibility of Ruler lane 1.lua
 
-			The first script instance only leaves Ruler lane 1 visible
-			which prevents the action 'Markers: Go to next marker/project end'
-			from being pulled to a marker/region on any other lane. 
-			The second script instance restore the original lane 
-			visibility. Be aware that during the custom action 
-			execution the Ruler will be jumping as visible lane 
-			count changes.
+		The first script instance only leaves Ruler lane 1 visible
+		which prevents the action 'Markers: Go to next marker/project end'
+		from being pulled to a marker/region on any other lane. 
+		The second script instance restore the original lane 
+		visibility. Be aware that during the custom action 
+		execution the Ruler will be jumping as visible lane 
+		count changes.
 
 ]]
 
