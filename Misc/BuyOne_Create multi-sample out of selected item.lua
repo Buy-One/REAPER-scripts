@@ -56,7 +56,7 @@ About: 	The script is desinged to create a multi-sample
 		'Item: Apply track/take FX to items'  
 		used in the script to render the sample will be equal 
 		to the MIDI item length rather than MIDI note or note 
-		sequence length, UNLESS the prefernce at  
+		sequence length, UNLESS the preference at  
 		Preferences -> Media -> Tail length when using Apply FX to items 
 		provides for a sufficient extra tail.  
 		For the same reason in order to prevent addition of silent 
@@ -67,7 +67,7 @@ About: 	The script is desinged to create a multi-sample
 		/ Take FX tail length (for take FX) at 0 if you're rendering 
 		dry sample, i.e. without any track FX and take FX with tails.  
 		Having said all of the above, the script on its part 
-		additionally attempts to truncate any lading and trailing 
+		additionally attempts to truncate any leading and trailing 
 		silence tails in the rendered sample.
 
 		PITCH SHIFT ALGO
@@ -90,7 +90,7 @@ About: 	The script is desinged to create a multi-sample
 
 		The multi-sample pitch range can be defined in terms 
 		of notes or in terms of octaves. The array of pitches 
-		which the muti-sample will be comprised of is further 
+		which the multi-sample will be comprised of is further 
 		modified by the step value. If the step value is not 
 		specified it defaults to 1, meaning all pitches which 
 		fall within the specified range will be included in the 
@@ -108,7 +108,7 @@ About: 	The script is desinged to create a multi-sample
 		In the note range only sharps # are supported as 
 		accidentals. 
 
-		The step value is added consequtively across all octaves 
+		The step value is added consecutively across all octaves 
 		within the specified range and as a result multi-sample 
 		notes are very likely to be different in different octaves.
 
