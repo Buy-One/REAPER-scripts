@@ -109,11 +109,12 @@ About:	THIS SCRIPT MUST BE INSTALLED FIRST
 	if any, will be processed as well.
 	
 	The specifics of native and non-native installation modes are
-	also laid out in the pop uo dialogue so be sure to refer to them
+	also laid out in the pop up dialogue so be sure to refer to them
 	in case of a doubt.
 	
-	The successful installation stats include all scripts which were
-	submitted for installation regardless their being already installed.
+	The successful installation stats include all scripts which 
+	were submitted for installation regardless of their being 
+	already installed.
 		
 ]]
 
