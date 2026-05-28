@@ -1,70 +1,72 @@
 --[[
 ReaScript name: BuyOne_Exclusive dummy toggles_META.lua (10 scripts)
 Author: BuyOne
-Version: 1.3
-Changelog:  v1.3 #Fixed individual script installation function
-		 #Made individual script installation function more efficient
-	    v1.2 #Creation of individual scripts has been made hands-free. 
-		 These are created in the directory the META script is located in
-		 and from there are imported into the Action list.
-		 #Updated About text
-	    v1.1 #Added functionality to export individual scripts included in the package
-		 #Updated About text
+Version: 1.4
+Changelog:  1.4 #Made directory validation cross-platform in the function which spawns individual scripts
+			1.3 #Fixed individual script installation function
+				#Made individual script installation function more efficient
+			1.2 #Creation of individual scripts has been made hands-free. 
+				These are created in the directory the META script is located in
+				and from there are imported into the Action list.
+				#Updated About text
+			1.1 #Added functionality to export individual scripts included in the package
+				#Updated About text
 Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M extension (recommended for ability to use Cycle action editor)
 Metapackage: true
-Provides: 	[main=main,midi_editor] .
-		[main=main,midi_editor,midi_inlineeditor,midi_eventlisteditor,mediaexplorer] . > BuyOne_Exclusive dummy toggles/BuyOne_Exclusive dummy toggle 1.lua
-		[main=main,midi_editor,midi_inlineeditor,midi_eventlisteditor,mediaexplorer] . > BuyOne_Exclusive dummy toggles/BuyOne_Exclusive dummy toggle 2.lua
-		[main=main,midi_editor,midi_inlineeditor,midi_eventlisteditor,mediaexplorer] . > BuyOne_Exclusive dummy toggles/BuyOne_Exclusive dummy toggle 3.lua
-		[main=main,midi_editor,midi_inlineeditor,midi_eventlisteditor,mediaexplorer] . > BuyOne_Exclusive dummy toggles/BuyOne_Exclusive dummy toggle 4.lua
-		[main=main,midi_editor,midi_inlineeditor,midi_eventlisteditor,mediaexplorer] . > BuyOne_Exclusive dummy toggles/BuyOne_Exclusive dummy toggle 5.lua
-		[main=main,midi_editor,midi_inlineeditor,midi_eventlisteditor,mediaexplorer] . > BuyOne_Exclusive dummy toggles/BuyOne_Exclusive dummy toggle 6.lua
-		[main=main,midi_editor,midi_inlineeditor,midi_eventlisteditor,mediaexplorer] . > BuyOne_Exclusive dummy toggles/BuyOne_Exclusive dummy toggle 7.lua
-		[main=main,midi_editor,midi_inlineeditor,midi_eventlisteditor,mediaexplorer] . > BuyOne_Exclusive dummy toggles/BuyOne_Exclusive dummy toggle 8.lua
-		[main=main,midi_editor,midi_inlineeditor,midi_eventlisteditor,mediaexplorer] . > BuyOne_Exclusive dummy toggles/BuyOne_Exclusive dummy toggle 9.lua
-		[main=main,midi_editor,midi_inlineeditor,midi_eventlisteditor,mediaexplorer] . > BuyOne_Exclusive dummy toggles/BuyOne_Exclusive dummy toggle 10.lua
+Provides: 	[main=main,midi_editor,midi_inlineeditor,midi_eventlisteditor,mediaexplorer] .
+			. > BuyOne_Exclusive dummy toggle 1.lua
+			. > BuyOne_Exclusive dummy toggle 2.lua
+			. > BuyOne_Exclusive dummy toggle 3.lua
+			. > BuyOne_Exclusive dummy toggle 4.lua
+			. > BuyOne_Exclusive dummy toggle 5.lua
+			. > BuyOne_Exclusive dummy toggle 6.lua
+			. > BuyOne_Exclusive dummy toggle 7.lua
+			. > BuyOne_Exclusive dummy toggle 8.lua
+			. > BuyOne_Exclusive dummy toggle 9.lua
+			. > BuyOne_Exclusive dummy toggle 10.lua
 About:	If this script name is suffixed with META, when executed it will automatically spawn 
-	all individual scripts included in the package into the directory of the META script
-	and will import them into the Action list from that directory. That's provided such
-	scripts don't exist yet, if they do, then in order to recreate them they have to
-	be deleted from the Action list and from the disk first.  
-	If there's no META suffix in this script name it will perfom the operation indicated 
-	in its name.
+		all individual scripts included in the package into the directory of the META script
+		and will import them into the Action list from that directory. That's provided such
+		scripts don't exist yet, if they do, then in order to recreate them they have to
+		be deleted from the Action list and from the disk first.  
+		If there's no META suffix in this script name it will perfom the operation indicated 
+		in its name.
 
-	This set of 10 scripts borrows the concept of SWS extension 'SWS/S&M: Dummy toggle' 
-	actions but makes dummy toggle exclusive within the scope of an Action list section,
-	meaning that when one of 10 scripts toggle state is ON, toggle state of the rest 9 is OFF 
-	while the state of a given script in one Action list section is completely independent 
-	from its state in other Acton list sections.  
-	These can be useful in switching between options/modes of operation depending 
-	on the state of a specific dummy toggle script, for example with the SWS Cycle actions 
-	through conditional statements or within other scripts. One such use case is switching
-	between velocity presets in the MIDI Editor, another - mouse tool switcher. The switching 
-	can be done from a toolbar or a menu via toolbar buttons or menu items linked to the dummy 
-	toggle scripts.  
-	You can expand the script set by duplicating any instance, giving its duplicate a unique 
-	number and importing it into every Action list section.  
-	With the USER SETTINGS the script set can be divided into subsets (groups) so that every 
-	script in a subset only affects toggle state of other scripts in this subset. This way 
-	each subset can be dedicated to a specific task which requires mutually exclusive modes.
-	Division into subsets is specific to the Action list section so in each section the dummy 
-	toggle script set can have its own subset division scheme.
-		
-        The dummy toggle script whose toggle state is currently ON is stored. This allows restoring 
-        its state on REAPER startup using 'BuyOne_Exclusive dummy toggle startup script.lua' script 
-        from the Main section of the Action list, provided it's included in the SWS extension Startup 
-	actions.
-				
-	SCREENSHOTS:  
-	https://raw.githubusercontent.com/Buy-One/screenshots/main/Exclusive%20dummy%20toggle%20scripts.gif  
-	Use case  https://raw.githubusercontent.com/Buy-One/screenshots/main/Insert%20note%20at%20constant%20velocity%20depending%20on%20dummy%20toggle%20scripts.gif
+		This set of 10 scripts borrows the concept of SWS extension 'SWS/S&M: Dummy toggle' 
+		actions but makes dummy toggle exclusive within the scope of an Action list section,
+		meaning that when one of 10 scripts toggle state is ON, toggle state of the rest 9 is OFF 
+		while the state of a given script in one Action list section is completely independent 
+		from its state in other Acton list sections.  
+		These can be useful in switching between options/modes of operation depending 
+		on the state of a specific dummy toggle script, for example with the SWS Cycle actions 
+		through conditional statements or within other scripts. One such use case is switching
+		between velocity presets in the MIDI Editor, another - mouse tool switcher. The switching 
+		can be done from a toolbar or a menu via toolbar buttons or menu items linked to the dummy 
+		toggle scripts.  
+		You can expand the script set by duplicating any instance, giving its duplicate a unique 
+		number and importing it into every Action list section.  
+		With the USER SETTINGS the script set can be divided into subsets (groups) so that every 
+		script in a subset only affects toggle state of other scripts in this subset. This way 
+		each subset can be dedicated to a specific task which requires mutually exclusive modes.
+		Division into subsets is specific to the Action list section so in each section the dummy 
+		toggle script set can have its own subset division scheme.
 
-	These scripts are available separately:
-	[main=main,midi_editor,midi_inlineeditor,midi_eventlisteditor,mediaexplorer] BuyOne_Exclusive dummy toggles/BuyOne_Exclusive dummy toggle - spawn new script.lua
-	[main] BuyOne_Exclusive dummy toggles/BuyOne_Exclusive dummy toggle startup script.lua
+		  The dummy toggle script whose toggle state is currently ON is stored. This allows restoring 
+		  its state on REAPER startup using 'BuyOne_Exclusive dummy toggle startup script.lua' script 
+		  from the Main section of the Action list, provided it's included in the SWS extension Startup 
+		actions.
+
+		SCREENSHOTS:  
+		https://raw.githubusercontent.com/Buy-One/screenshots/main/Exclusive%20dummy%20toggle%20scripts.gif  
+		Use case  	 https://raw.githubusercontent.com/Buy-One/screenshots/main/Insert%20note%20at%20constant%20velocity%20depending%20on%20dummy%20toggle%20scripts.gif
+
+		These scripts are available separately:
+		BuyOne_Exclusive dummy toggle - spawn new script.lua
+		BuyOne_Exclusive dummy toggle startup script.lua
+
 ]]
 
 -------------------------------------------------------------------------------------
@@ -108,12 +110,18 @@ end
 
 function META_Spawn_Scripts(fullpath, fullpath_init, scr_name, names_t)
 
-	local function Dir_Exists(path) -- short
-	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+	function Dir_Exists(path)
+	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces // OR ('(%S.+)%s*$')
 	local sep = path:match('[\\/]')
-	local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
-	local _, mess = io.open(path)
-	return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+		if not sep then
+			-- if path is disk root where the separator isn't listed, use forward slash, which should work on Windows as well
+			if path:match('^%u:$') then sep = '/'
+			else return -- likely not a string representing a path
+			end
+		end
+	path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for os.rename()
+	local ok, mess, code = os.rename(path, path)
+	return (ok or code == 13) and path..sep -- 13 is error code for 'exists but permission denied' on some systems
 	end
 
 	local function Esc(str)
