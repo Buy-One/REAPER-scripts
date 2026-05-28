@@ -2,75 +2,77 @@
 ReaScript name: BuyOne_Create Razor edit area from cursor to mouse on envelope or item lane_META.lua (8 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog:  v1.2 #Fixed individual script installation function
-		 #Made individual script installation function more efficient  
-	   v1.1 #Fixed error message due to duplicate statement
-		 #Creation of individual scripts has been made hands-free. 
-		 These are created in the directory the META script is located in
-		 and from there are imported into the Action list.
-		 #Updated About text
+Version: 1.3
+Changelog:  1.3 #Made directory validation cross-platform in the function which spawsn individual scripts
+			1.2 #Fixed individual script installation function
+				#Made individual script installation function more efficient  
+			1.1 #Fixed error message due to duplicate statement
+				#Creation of individual scripts has been made hands-free. 
+				These are created in the directory the META script is located in
+				and from there are imported into the Action list.
+				#Updated About text
 Metapackage: true
 Licence: WTFPL
 REAPER: at least v6.24
 Metapackage: true
-Provides:	. > BuyOne_Create Razor edit area from cursor to mouse on any lane.lua
-		. > BuyOne_Create Razor edit area from cursor to mouse on any lane keeping existing.lua
-		. > BuyOne_Create Razor edit area from cursor to mouse on track envelope lane.lua
-		. > BuyOne_Create Razor edit area from cursor to mouse on track envelope lane keeping existing.lua
-		. > BuyOne_Create Razor edit area from cursor to mouse on track all envelope lanes.lua
-		. > BuyOne_Create Razor edit area from cursor to mouse on track all envelope lanes keeping existing.lua
-		. > BuyOne_Create Razor edit area from cursor to mouse on item lane.lua
-		. > BuyOne_Create Razor edit area from cursor to mouse on item lane keeping existing.lua
+Provides:	[main] .
+			. > BuyOne_Create Razor edit area from cursor to mouse on any lane.lua
+			. > BuyOne_Create Razor edit area from cursor to mouse on any lane keeping existing.lua
+			. > BuyOne_Create Razor edit area from cursor to mouse on track envelope lane.lua
+			. > BuyOne_Create Razor edit area from cursor to mouse on track envelope lane keeping existing.lua
+			. > BuyOne_Create Razor edit area from cursor to mouse on track all envelope lanes.lua
+			. > BuyOne_Create Razor edit area from cursor to mouse on track all envelope lanes keeping existing.lua
+			. > BuyOne_Create Razor edit area from cursor to mouse on item lane.lua
+			. > BuyOne_Create Razor edit area from cursor to mouse on item lane keeping existing.lua
 About:	If this script name is suffixed with META, when executed it 
-	will automatically spawn all individual scripts included in 
-	the package into the directory of the META script and will 
-	import them into the Action list from that directory.  
-	If there's no META suffix in this script name it will perfom 
-	the operation indicated in its name.
-
-	The scripts refine the functionality of the native action 
-	'Razor edit: Create area from cursor to mouse'
-	which can create Razor edit area either on item lane only 
-	or on item lane and all envelope lanes but cannot
-	create Razor edit area on a single envelope lane, and it works 
-	exclusively, removing any existing Razor edit areas on the track
-	when the new one is being created.		
-
-	The scripts must be run with a shortcut so that the mouse 
-	cursor is free to point at a location on the timeline.
+		will automatically spawn all individual scripts included in 
+		the package into the directory of the META script and will 
+		import them into the Action list from that directory.  
+		If there's no META suffix in this script name it will perfom 
+		the operation indicated in its name.
 	
-	If SWS/S&M extension isn't installed, the target envelope 
-	must be selected, otherwise it suffices that the mouse cursor 
-	point at it.
-	If the extension is installed and the mouse doesn't point at 
-	an envelope, a Razor edit area will be created on envelope lanes
-	as long as there's selected envelope. 
-	EXCEPTIONS
-	1) Without the SWS extension being installed, in order to target 
-	an envelope lane with the following scripts:
-	Create Razor edit area from cursor to mouse on any lane.lua
-	AND
-	Create Razor edit area from cursor to mouse on any lane keeping existing.lua
-	such envelope lane must be both selected and under the mouse.
-	2) The following scripts don't require pointing mouse at the envelope
-	lane (if the SWS is installed) or having at least one envelope selected
-	(if the extension isn't installed), the mouse can point at an item
-	lane as well:
-	Create Razor edit area from cursor to mouse on track all envelope lanes.lua
-	AND
-	Create Razor edit area from cursor to mouse on track all envelope lanes keeping existing.lua
-			
-	In scripts which include 'keeping existing' verbiage in their name
-	the existing Razor edit areas on the target lane (item or envelope or
-	both, depending on the script designation) are retained, while
-	Razor edit areas which fall between the edit and mouse cursor on the 
-	target lane(s) get overwritten.
+		The scripts refine the functionality of the native action 
+		'Razor edit: Create area from cursor to mouse'
+		which can create Razor edit area either on item lane only 
+		or on item lane and all envelope lanes but cannot
+		create Razor edit area on a single envelope lane, and it works 
+		exclusively, removing any existing Razor edit areas on the track
+		when the new one is being created.		
 	
-	When item lane is the target, if mouse cursor is over the TCP 
-	the Razor edit area will be created up to the TCP. When envelope lane 
-	is the target, if mouse cursor is over the ECP (envelope control panel) 
-	the Razor edit area will be created up to the ECP.
+		The scripts must be run with a shortcut so that the mouse 
+		cursor is free to point at a location on the timeline.
+		
+		If SWS/S&M extension isn't installed, the target envelope 
+		must be selected, otherwise it suffices that the mouse cursor 
+		point at it.
+		If the extension is installed and the mouse doesn't point at 
+		an envelope, a Razor edit area will be created on envelope lanes
+		as long as there's selected envelope. 
+		EXCEPTIONS
+		1) Without the SWS extension being installed, in order to target 
+		an envelope lane with the following scripts:
+		Create Razor edit area from cursor to mouse on any lane.lua
+		AND
+		Create Razor edit area from cursor to mouse on any lane keeping existing.lua
+		such envelope lane must be both selected and under the mouse.
+		2) The following scripts don't require pointing mouse at the envelope
+		lane (if the SWS is installed) or having at least one envelope selected
+		(if the extension isn't installed), the mouse can point at an item
+		lane as well:
+		Create Razor edit area from cursor to mouse on track all envelope lanes.lua
+		AND
+		Create Razor edit area from cursor to mouse on track all envelope lanes keeping existing.lua
+				
+		In scripts which include 'keeping existing' verbiage in their name
+		the existing Razor edit areas on the target lane (item or envelope or
+		both, depending on the script designation) are retained, while
+		Razor edit areas which fall between the edit and mouse cursor on the 
+		target lane(s) get overwritten.
+		
+		When item lane is the target, if mouse cursor is over the TCP 
+		the Razor edit area will be created up to the TCP. When envelope lane 
+		is the target, if mouse cursor is over the ECP (envelope control panel) 
+		the Razor edit area will be created up to the ECP.
 	
 ]]
 
@@ -96,12 +98,19 @@ end
 
 function META_Spawn_Scripts(fullpath, fullpath_init, scr_name, names_t)
 
-	local function Dir_Exists(path) -- short
-	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
-	local sep = path:match('[\\/]')
-	local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
-	local _, mess = io.open(path)
-	return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+	local function Dir_Exists(path)
+	-- path is a directory path, not file
+	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces // OR ('(%S.+)%s*$')
+	local sep = path:match('[\\/]') -- extract the separator
+		if not sep then
+			-- if path is disk root where the separator isn't listed, use forward slash, which should work on Windows as well
+			if path:match('^%u:$') then sep = '/'
+			else return -- likely not a string representing a path
+			end
+		end
+	path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for os.rename()
+	local ok, mess, code = os.rename(path, path)
+	return (ok or code == 13) and path..sep -- 13 is error code for 'exists but permission denied' on some systems
 	end
 
 	local function Esc(str)
