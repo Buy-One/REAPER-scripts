@@ -2,9 +2,10 @@
 ReaScript name: Export project tabs and import from dump
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.1
-Changelog: # Made exported tabs count reflect actual number
-	   # Some other cosmetic changes
+Version: 1.2
+Changelog:  1.2 #Made directory validation method cross-platform
+			1.1 #Made exported tabs count reflect actual number
+				#Some other cosmetic changes
 Provides: [main] .
 Licence: WTFPL
 REAPER: at least v5.962
@@ -55,15 +56,19 @@ local DUMP_PATH = not DUMP_PATH:match('.+[\\/]%s*$') and DUMP_PATH:match('^%s*(.
 
 
 function Dir_Exists(path)
-
-local _, mess = io.open(path:sub(1,-2)) -- to return 1 (valid) last separator must be removed
-local result = mess:match('Permission denied') and 1 -- dir exists
-or mess:match('No such file or directory') and 2
-or mess:match('Invalid argument') and 3 -- -- leading and/or trailing spaces in the path
-
-return result
-
+local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces // OR ('(%S.+)%s*$')
+local sep = path:match('[\\/]')
+	if not sep then
+		-- if path is disk root where the separator isn't listed, use forward slash, which should work on Windows as well
+		if path:match('^%u:$') then sep = '/'
+		else return -- likely not a string representing a path
+		end
+	end
+path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for os.rename()
+local ok, mess, code = os.rename(path, path)
+return (ok or code == 13) and path..sep -- 13 is error code for 'exists but permission denied' on some systems
 end
+
 
 
 function EXPORT(DUMP_PATH)
@@ -72,7 +77,7 @@ local _, scr_name, sect_ID, cmd_ID, _,_,_ = r.get_action_context()
 local scr_name = scr_name:match('.+[\\/](.+)') -- with extension
 
 local name = 'REAPER Project tabs dump.txt'
-local dump_fn = DUMP_PATH and Dir_Exists(DUMP_PATH) == 1 and DUMP_PATH..name or resource_path..name
+local dump_fn = DUMP_PATH and Dir_Exists(DUMP_PATH) and DUMP_PATH..name or resource_path..name
 
 local i = 0
 local content = ''
@@ -100,7 +105,7 @@ end
 
 function IMPORT(DUMP_PATH)
 
-local dir = DUMP_PATH and Dir_Exists(DUMP_PATH) == 1 and DUMP_PATH or resource_path
+local dir = DUMP_PATH and Dir_Exists(DUMP_PATH) and DUMP_PATH or resource_path
 
 local retval, fn = r.GetUserFileNameForRead(dir, 'SELECT PROJECT TABS DUMP FILE', '.txt')
 	if not retval then return end -- file browser closed with 'Cancel'
