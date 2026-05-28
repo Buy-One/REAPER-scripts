@@ -384,7 +384,7 @@ local t = {own_lane={}, media_lane={}}
 
 
 -- calculate new ecp height and determine toggle direction
-local old_builds = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.62 --7.62
+local old_builds = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.62
 local arrange_h_init = old_builds and GetSet_Track_Zoom_100_Perc()
 or r.GetSetProjectInfo(0, 'ARRANGE_H', 0, false) -- is_set false // doesn't account for pinned tracks
 Msg(arrange_h_init, 'arrange raw')
