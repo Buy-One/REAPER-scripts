@@ -1,68 +1,69 @@
 --[[
 ReaScript name: BuyOne_Remove Razor Edit areas from item or envelope lanes_META.lua (8 scripts)
 Author: BuyOne
-Version: 1.5
-Changelog:  v1.5 #Renamed the scripts to accurately reflect their functionality
-		 #Added 4 new scripts
-		 #Updated About text
-	    v1.4 #Added a menu to the META script so it's now functional as well
-		 allowing to use from a single menu all options available as individual scripts
-		 #Changed behavior making the exclusion independent of presence of another
-		 Razor Edit area type on a track
-		 #Updated About text
-	    v1.3 #Fixed individual script installation function
-		 #Made individual script installation function more efficient 
-	    v1.2 #Creation of individual scripts has been made hands-free. 
-		 These are created in the directory the META script is located in
-		 and from there are imported into the Action list.
-		 #Updated About text
-	    v1.1 #Added REAPER version check
-		 #Corrected minimal supported version in the header
+Version: 1.6
+Changelog:  1.6 #Made directory validation cross-platform in the function which spawns individual scripts
+			1.5 #Renamed the scripts to accurately reflect their functionality
+				#Added 4 new scripts
+				#Updated About text
+			1.4 #Added a menu to the META script so it's now functional as well
+				allowing to use from a single menu all options available as individual scripts
+				#Changed behavior making the exclusion independent of presence of another
+				Razor Edit area type on a track
+				#Updated About text
+			1.3 #Fixed individual script installation function
+				#Made individual script installation function more efficient 
+			1.2 #Creation of individual scripts has been made hands-free. 
+				These are created in the directory the META script is located in
+				and from there are imported into the Action list.
+				#Updated About text
+			1.1 #Added REAPER version check
+				#Corrected minimal supported version in the header
 Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v6.24
 Metapackage: true
 Provides: 	[main] .
-		[main] . > BuyOne_Remove Razor Edit areas from item lanes on all tracks.lua
-		[main] . > BuyOne_Remove Razor Edit areas from item lanes on selected tracks.lua
-		[main] . > BuyOne_Remove Razor Edit areas from envelope lanes on all tracks.lua
-		[main] . > BuyOne_Remove Razor Edit areas from envelope lanes on selected tracks.lua
-		[main] . > BuyOne_Remove Razor Edit areas from item lanes which overlap Razor Edit areas on envelope lanes (all tracks).lua
-		[main] . > BuyOne_Remove Razor Edit areas from item lanes which overlap Razor Edit areas on envelope lanes (selected tracks).lua
-		[main] . > BuyOne_Remove Razor Edit areas from envelope lanes which overlap Razor Edit areas on item lanes (all tracks).lua
-		[main] . > BuyOne_Remove Razor Edit areas from envelope lanes which overlap Razor Edit areas on item lanes (selected tracks).lua
+			. > BuyOne_Remove Razor Edit areas from item lanes on all tracks.lua
+			. > BuyOne_Remove Razor Edit areas from item lanes on selected tracks.lua
+			. > BuyOne_Remove Razor Edit areas from envelope lanes on all tracks.lua
+			. > BuyOne_Remove Razor Edit areas from envelope lanes on selected tracks.lua
+			. > BuyOne_Remove Razor Edit areas from item lanes which overlap Razor Edit areas on envelope lanes (all tracks).lua
+			. > BuyOne_Remove Razor Edit areas from item lanes which overlap Razor Edit areas on envelope lanes (selected tracks).lua
+			. > BuyOne_Remove Razor Edit areas from envelope lanes which overlap Razor Edit areas on item lanes (all tracks).lua
+			. > BuyOne_Remove Razor Edit areas from envelope lanes which overlap Razor Edit areas on item lanes (selected tracks).lua
 About:	If this script name is suffixed with META, when executed
-	it will automatically spawn all individual scripts included 
-	in the package into the directory of the META script and will 
-	import them into the Action list from that directory. That's 
-	provided such scripts don't exist yet, if they do, then in 
-	order to recreate them they have to be deleted from the Action 
-	list and from the disk first. It will also display a menu
-	allowing to execute all actions available as individual scripts.
-	Each menu item is preceded with a quick access shortcut so
-	it can be triggered from keyboard.  
-	If there's no META suffix in this script name it will perfom 
-	the operation indicated in its name. Individual scripts can
-	be included in custom actions.
+		it will automatically spawn all individual scripts included 
+		in the package into the directory of the META script and will 
+		import them into the Action list from that directory. That's 
+		provided such scripts don't exist yet, if they do, then in 
+		order to recreate them they have to be deleted from the Action 
+		list and from the disk first. It will also display a menu
+		allowing to execute all actions available as individual scripts.
+		Each menu item is preceded with a quick access shortcut so
+		it can be triggered from keyboard.  
+		If there's no META suffix in this script name it will perfom 
+		the operation indicated in its name. Individual scripts can
+		be included in custom actions.
 
-	When envelope is displayed in the item lane due to option
-	'Move to media lane' being enabled, the envelope isn't removed
-	from a Razor Edit area because in this case envelope lane doesn't
-	exist and usual Razor Edit operations cannot be performed on such
-	envelope.
-	
-	The scripts:
-	Remove Razor Edit areas from item lanes on all tracks.lua
-	Remove Razor Edit areas from item lanes on selected tracks.lua
-	
-	Can be used inside a custom action alongside the native action
-	'Razor edit: Create area from cursor to mouse'
-	to only create Razor Edit area on envelope lanes because the native
-	action doesn't allow isolating them, e.g.
-	
-	Custom: Create Razor edit area from cursor to mouse on envelope lane
-		Razor edit: Create area from cursor to mouse
-		Script: BuyOne_Remove Razor Edit areas from item lanes on selected tracks.lua
+		When envelope is displayed in the item lane due to option
+		'Move to media lane' being enabled, the envelope isn't removed
+		from a Razor Edit area because in this case envelope lane doesn't
+		exist and usual Razor Edit operations cannot be performed on such
+		envelope.
+
+		The scripts:
+		Remove Razor Edit areas from item lanes on all tracks.lua
+		Remove Razor Edit areas from item lanes on selected tracks.lua
+
+		Can be used inside a custom action alongside the native action
+		'Razor edit: Create area from cursor to mouse'
+		to only create Razor Edit area on envelope lanes because the native
+		action doesn't allow isolating them, e.g.
+		
+		Custom: Create Razor edit area from cursor to mouse on envelope lane
+			Razor edit: Create area from cursor to mouse
+			Script: BuyOne_Remove Razor Edit areas from item lanes on selected tracks.lua
 
 ]]
 
@@ -95,13 +96,20 @@ end
 
 function META_Spawn_Scripts(fullpath, fullpath_init, scr_name, names_t)
 
-	local function Dir_Exists(path) -- short
-	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+	local function Dir_Exists(path)
+	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces // OR ('(%S.+)%s*$')
 	local sep = path:match('[\\/]')
-	local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
-	local _, mess = io.open(path)
-	return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+		if not sep then
+			-- if path is disk root where the separator isn't listed, use forward slash, which should work on Windows as well
+			if path:match('^%u:$') then sep = '/'
+			else return -- likely not a string representing a path
+			end
+		end
+	path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for os.rename()
+	local ok, mess, code = os.rename(path, path)
+	return (ok or code == 13) and path..sep -- 13 is error code for 'exists but permission denied' on some systems
 	end
+
 
 	local function Esc(str)
 		if not str then return end -- prevents error
