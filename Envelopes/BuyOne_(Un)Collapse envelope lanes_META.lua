@@ -424,7 +424,7 @@ DEFAULT_UNCOLLAPSED_HEIGHT = tonumber(DEFAULT_UNCOLLAPSED_HEIGHT) and DEFAULT_UN
 local theme_stored = r.GetExtState(ext_state_sect, 'theme_cur')
 local theme_cur = r.GetLastColorThemeFile():match('.+[\\/](.+)')
 local theme_changed = theme_stored ~= theme_cur
-	if theme_changed then
+	if theme_changed and theme_cur then -- theme_cur validation is an attempt to prevent error on MacOS which was reported when the script was being installed via 'Script updater and installer.lua' even though it's not supposed to be invalid and works on Windows
 	r.SetExtState(ext_state_sect, 'theme_cur', theme_cur, false) -- persist false
 	end
 
