@@ -2,98 +2,99 @@
 ReaScript name: BuyOne_(Un)Collapse envelope lanes_META.lua (18 scripts)
 Author: BuyOne
 Version: 2.0
-Changelog:  v2.0 #Fixed toggle actions for Master track envelopes when 'Tempo map' envelope is enabled
-		 #Disabled 'No selected track' error message for actions which don't require track selection
-		 #Made 'No selected track' error message account for the Master track
-	    v1.9 #Added quick access shortcuts to the menu to be able to run actions from keyboard
-		 #Updated About text
-	    v1.8 #Added a menu to the META script so it's now functional as well
-		 allowing to use from a single menu all options available as individual scripts
-		 #Updated About text
-	    v1.7 #Added error messages
-		 #Made sure that invisible envelopes are ignored
-		 #Fixed behavior of script
-		 Toggle collapse selected envelope lane or all lanes in selected tracks.lua
-	    v1.6 #Fixed behavior of scripts
-		 (Toggle) (Un)Collapse selected envelope lane or all lanes in selected tracks.lua
-		 #Updated About text
-	    v1.5 #Fixed individual script installation function
-		 #Made individual script installation function more efficient
-	    v1.4 #Creation of individual scripts has been made hands-free. 
-		 These are created in the directory the META script is located in
-		 and from there are imported into the Action list.
-		 #Updated About text
-	    v1.3 #Added functionality to export individual scripts included in the package
-		 #Updated About text
-	    v1.2 #Added support for theme's default uncollapsed height if starts out from collapsed state
-	    v1.1 #Fixed bug of un-arming envelope
-		 #Added a screenshot
+Changelog:  2.1 #Made directory validation cross-platform in the function which spawns individual scripts
+			2.0 #Fixed toggle actions for Master track envelopes when 'Tempo map' envelope is enabled
+				#Disabled 'No selected track' error message for actions which don't require track selection
+				#Made 'No selected track' error message account for the Master track
+			1.9 #Added quick access shortcuts to the menu to be able to run actions from keyboard
+				#Updated About text
+			1.8 #Added a menu to the META script so it's now functional as well
+				allowing to use from a single menu all options available as individual scripts
+				#Updated About text
+			1.7 #Added error messages
+				#Made sure that invisible envelopes are ignored
+				#Fixed behavior of script
+				Toggle collapse selected envelope lane or all lanes in selected tracks.lua
+			1.6 #Fixed behavior of scripts
+				(Toggle) (Un)Collapse selected envelope lane or all lanes in selected tracks.lua
+				#Updated About text
+			1.5 #Fixed individual script installation function
+				#Made individual script installation function more efficient
+			1.4 #Creation of individual scripts has been made hands-free. 
+				These are created in the directory the META script is located in
+				and from there are imported into the Action list.
+				#Updated About text
+			1.3 #Added functionality to export individual scripts included in the package
+				#Updated About text
+			1.2 #Added support for theme's default uncollapsed height if starts out from collapsed state
+			1.1 #Fixed bug of un-arming envelope
+				#Added a screenshot
 Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 Screenshots: https://raw.githubusercontent.com/Buy-One/screenshots/main/(Un)Collapse%20envelope%20lanes.gif
 REAPER: at least v5.962  		
 Metapackage: true
 Provides: 	. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse selected envelope lane in track.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse selected envelope lane in track.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse selected envelope lane or all lanes in selected tracks.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse selected envelope lane or all lanes in selected tracks.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse selected envelope lane uncollapse others in track.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse selected envelope lane collapse others in track.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Alternate collapsing selected envelope lane and other lanes in track.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse track envelope lanes in selected tracks.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse track envelope lanes in selected tracks.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse FX envelope lanes in selected tracks.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse FX envelope lanes in selected tracks.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse all envelope lanes in selected tracks.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse all envelope lanes in selected tracks.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse selected envelope lane in track.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse selected envelope lane or all lanes in selected tracks.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse track envelope lanes in selected tracks.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse FX envelope lanes in selected tracks.lua
-		. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse all envelope lanes in selected tracks.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse selected envelope lane in track.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse selected envelope lane or all lanes in selected tracks.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse selected envelope lane or all lanes in selected tracks.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse selected envelope lane uncollapse others in track.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse selected envelope lane collapse others in track.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Alternate collapsing selected envelope lane and other lanes in track.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse track envelope lanes in selected tracks.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse track envelope lanes in selected tracks.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse FX envelope lanes in selected tracks.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse FX envelope lanes in selected tracks.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Collapse all envelope lanes in selected tracks.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Uncollapse all envelope lanes in selected tracks.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse selected envelope lane in track.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse selected envelope lane or all lanes in selected tracks.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse track envelope lanes in selected tracks.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse FX envelope lanes in selected tracks.lua
+			. > BuyOne_(Un)Collapse envelope lanes/BuyOne_Toggle collapse all envelope lanes in selected tracks.lua
 About:	If this script name is suffixed with META, when executed 
-	it will automatically spawn all individual scripts included 
-	in the package into the directory of the META script and will 
-	import them into the Action list from that directory. That's 
-	provided such scripts don't exist yet, if they do, then in 
-	order to recreate them they have to be deleted from the Action 
-	list and from the disk first. It will also display a menu
-	allowing to execute all actions available as individual scripts.
-	Each menu item is preceded with a quick access shortcut so
-	it can be triggered from keyboard.  
-	If there's no META suffix in this script name it will perfom 
-	the operation indicated in its name. Individual scripts can
-	be included in custom actions.
-
-	In these '(un)collapse envelope lane' scripts 
-	'track envelope' means envelope of TCP controls, those 
-	which are listed in the 'trim' (envelope) button context 
-	menu or under 'Track Envelopes' heading in the track 
-	envelope panel, including Send envelopes.  
+		it will automatically spawn all individual scripts included 
+		in the package into the directory of the META script and will 
+		import them into the Action list from that directory. That's 
+		provided such scripts don't exist yet, if they do, then in 
+		order to recreate them they have to be deleted from the Action 
+		list and from the disk first. It will also display a menu
+		allowing to execute all actions available as individual scripts.
+		Each menu item is preceded with a quick access shortcut so
+		it can be triggered from keyboard.  
+		If there's no META suffix in this script name it will perfom 
+		the operation indicated in its name. Individual scripts can
+		be included in custom actions.
 	
-	'FX envelope' means envelope of a track FX control.  
-	With toggle scripts uncollapsed state gets priority, so
-	if at least one envelope lane in selected tracks is 
-	uncollapsed, it will be collapsed while collapsed lanes 
-	will stay as they are.  
-	
-	Unidirectional scripts will always work according to their name.
-	
-	If there're no lanes to collapse or uncollapse nothing will happen.  
-	
-	In toggle scripts the uncollapsed state gets priority 
-	meaning that if at least one envelope lane in selected tracks
-	is uncollapsed the state of all is considered uncollapsed
-	and the script collapses them. 
-	
-	The scripts 
-	(Toggle) (Un)Collapse selected envelope lane or all lanes in selected tracks.lua
-	in tracks with no selected envelope lane all lanes are affected
-	while in track with selected envelope lane this lane is the
-	only one affected.
-	
-	The scripts don't support creation of undo point due 
-	to REAPER internal design. 		
+		In these '(un)collapse envelope lane' scripts 
+		'track envelope' means envelope of TCP controls, those 
+		which are listed in the 'trim' (envelope) button context 
+		menu or under 'Track Envelopes' heading in the track 
+		envelope panel, including Send envelopes.  
+		
+		'FX envelope' means envelope of a track FX control.  
+		With toggle scripts uncollapsed state gets priority, so
+		if at least one envelope lane in selected tracks is 
+		uncollapsed, it will be collapsed while collapsed lanes 
+		will stay as they are.  
+		
+		Unidirectional scripts will always work according to their name.
+		
+		If there're no lanes to collapse or uncollapse nothing will happen.  
+		
+		In toggle scripts the uncollapsed state gets priority 
+		meaning that if at least one envelope lane in selected tracks
+		is uncollapsed the state of all is considered uncollapsed
+		and the script collapses them. 
+		
+		The scripts 
+		(Toggle) (Un)Collapse selected envelope lane or all lanes in selected tracks.lua
+		in tracks with no selected envelope lane all lanes are affected
+		while in track with selected envelope lane this lane is the
+		only one affected.
+		
+		The scripts don't support creation of undo point due 
+		to REAPER internal design.
 
 ]]
 
@@ -128,12 +129,18 @@ end
 
 function META_Spawn_Scripts(fullpath, fullpath_init, scr_name, names_t)
 
-	local function Dir_Exists(path) -- short
-	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+	function Dir_Exists(path)
+	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces // OR ('(%S.+)%s*$')
 	local sep = path:match('[\\/]')
-	local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
-	local _, mess = io.open(path)
-	return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+		if not sep then
+			-- if path is disk root where the separator isn't listed, use forward slash, which should work on Windows as well
+			if path:match('^%u:$') then sep = '/'
+			else return -- likely not a string representing a path
+			end
+		end
+	path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for os.rename()
+	local ok, mess, code = os.rename(path, path)
+	return (ok or code == 13) and path..sep -- 13 is error code for 'exists but permission denied' on some systems
 	end
 
 	local function Esc(str)
