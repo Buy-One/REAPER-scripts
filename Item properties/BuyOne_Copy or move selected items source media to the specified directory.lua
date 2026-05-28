@@ -2,55 +2,56 @@
 ReaScript name: BuyOne_Copy or move selected items source media to the specified directory.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: #Fixed error when settigs aren't managed via menu
-	   and no setting is enabled;
-	   #Added error messages when selected items have no audio takes;
-	   #Updated 'About' text
+Version: 1.2
+Changelog: 	1.2 #Made directory validation method cross-platform
+			1.1 #Fixed error when settigs aren't managed via menu
+				and no setting is enabled;
+				#Added error messages when selected have no audio takes;
+				#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main=main,mediaexplorer] .
 Extensions: SWS/S&M or js_ReaScriptAPI for extended functionality
 About: 	The script may be useful for quick storage of sampled 
-	or sound design audio along with categorizing it within 
-	your sample library.
-
-	In its basic functionality the script uses destination
-	directory supplied by the user via a dialogue.
-
-	When settings UPDATE_FILE_ASSOCIATION_SEL_ITEMS and 
-	UPDATE_FILE_ASSOCIATION_ALL_ITEMS are not enabled the
-	script only targets active take in selected items. 
-	Therefore if source file only need to be copied to
-	another folder without file association update, the
-	script will have to be executed for each take in selected 
-	item if source media of all their takes need to be copied.
-
-	If the SWS/S&M extension is installed and MEDIA_EXPLORER
-	setting is enabled in the USER SETTINGS, the script will
-	only work if the Media Explorer (MX) is open and will take 
-	the destination directory from the MX path box.
-
-	If in addition to the SWS/S&M extension js_ReaScriptAPI 
-	extension is installed or it alone is installed and 
-	MEDIA_EXPLORER setting is enabled the script will also 
-	scroll the last copied/stored file into view in the MX 
-	file list.
-
-	If js_ReaScriptAPI extension isn't installed, sometimes, 
-	for reasons which have nothing to do with the script, the 
-	file may not appear immediately in the directory open in 
-	the MX.  
-	This is fixable by refreshing the MX window through either 
-	pressing F5 key, toggling MX window visiblity off and on, or 
-	running the actions 'Browser: Go to parent folder'
-	and 'Browser: Go to previous folder in history'
-	as a custom action.			
-
-	The script USER SETTINGS can be managed in real time and 
-	tailored to suit the specific use case at each script
-	execution provided MANAGE_SETTINGS_VIA_MENU setting is
-	enabled in the USER SETTINGS section.
+		or sound design audio along with categorizing it within 
+		your sample library.
+	
+		In its basic functionality the script uses destination
+		directory supplied by the user via a dialogue.
+	
+		When settings UPDATE_FILE_ASSOCIATION_SEL_ITEMS and 
+		UPDATE_FILE_ASSOCIATION_ALL_ITEMS are not enabled the
+		script only targets active take in selected items. 
+		Therefore if source file only need to be copied to
+		another folder without file association update, the
+		script will have to be executed for each take in selected 
+		item if source media of all their takes need to be copied.
+	
+		If the SWS/S&M extension is installed and MEDIA_EXPLORER
+		setting is enabled in the USER SETTINGS, the script will
+		only work if the Media Explorer (MX) is open and will take 
+		the destination directory from the MX path box.
+	
+		If in addition to the SWS/S&M extension js_ReaScriptAPI 
+		extension is installed or it alone is installed and 
+		MEDIA_EXPLORER setting is enabled the script will also 
+		scroll the last copied/stored file into view in the MX 
+		file list.
+	
+		If js_ReaScriptAPI extension isn't installed, sometimes, 
+		for reasons which have nothing to do with the script, the 
+		file may not appear immediately in the directory open in 
+		the MX.  
+		This is fixable by refreshing the MX window through either 
+		pressing F5 key, toggling MX window visiblity off and on, or 
+		running the actions 'Browser: Go to parent folder'
+		and 'Browser: Go to previous folder in history'
+		as a custom action.			
+	
+		The script USER SETTINGS can be managed in real time and 
+		tailored to suit the specific use case at each script
+		execution provided MANAGE_SETTINGS_VIA_MENU setting is
+		enabled in the USER SETTINGS section.
 
 ]]
 
@@ -733,12 +734,17 @@ end
 
 function Dir_Exists(path)
 -- path is a directory path, not file
-local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces // OR ('(%S.+)%s*$')
 local sep = path:match('[\\/]')
-	if not sep then return end -- likely not a string represening a path
-local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
-local _, mess = io.open(path)
-return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+	if not sep then
+		-- if path is disk root where the separator isn't listed, use forward slash, which should work on Windows as well
+		if path:match('^%u:$') then sep = '/'
+		else return -- likely not a string representing a path
+		end
+	end
+path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for os.rename()
+local ok, mess, code = os.rename(path, path)
+return (ok or code == 13) and path..sep -- 13 is error code for 'exists but permission denied' on some systems
 end
 
 
