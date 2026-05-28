@@ -2,65 +2,65 @@
 ReaScript name: BuyOne_Apply next;previous EnvCP;Transport layout_META.lua (4 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 	#Made directory validation cross-platform in the function which spawns individual scripts
 Licence: WTFPL
 REAPER: at least v5.962, 6.36+ recommended
 Metapackage: true
 Provides:	[main=main,midi_editor] .
-		. > BuyOne_Apply next EnvCP layout.lua
-		. > BuyOne_Apply previous EnvCP layout.lua
-		. > BuyOne_Apply next Transport layout.lua
-		. > BuyOne_Apply previous Transport layout.lua
+			. > BuyOne_Apply next EnvCP layout.lua
+			. > BuyOne_Apply previous EnvCP layout.lua
+			. > BuyOne_Apply next Transport layout.lua
+			. > BuyOne_Apply previous Transport layout.lua
 About:	If this script name is suffixed with META, when executed 
-	it will automatically spawn all individual scripts included 
-	in the package into the directory of the META script and will 
-	import them into the Action list from that directory. That's 
-	provided such scripts don't exist yet, if they do, then in 
-	order to recreate them they have to be deleted from the Action 
-	list and from the disk first.  
-	If there's no META suffix in this script name it will perfom 
-	the operation indicated in its name. Individual scripts can
-	be included in custom actions.
-
-	The script name is self-explanatory.
-
-	In the script targetting envelope control panel layout,
-	first found visible envelope control panel is scrolled
-	into view.
-
-	Cycling the layouts essentially cycles its Global  
-	default layouts, those listed under 
-	Options -> Layouts -> Transport / Envelope panel
-	which means that once its layout is switched to, it will apply 
-	to all new and other projects.
-
-	Layout change doesn't create an undo point due to REAPER design.
-
-	To cycle layouts with the individual scripts in both 
-	directions, use the following custom actions:
-
-	Custom: Cycle ECP layouts  
-		Action: Skip next action if CC parameter >0/mid  
-		BuyOne_Apply previous ECP layout.lua  
-		Action: Skip next action if CC parameter <0/mid  
-		BuyOne_Apply next ECP layout.lua
-
-
-	Custom: Cycle Transport layouts  
-		Action: Skip next action if CC parameter >0/mid  
-		BuyOne_Apply previous Transport layout.lua  
-		Action: Skip next action if CC parameter <0/mid  
-		BuyOne_Apply next Transport layout.lua  
-
-
-	And bind them to the mousewheel. The associaton between 
-	the mousewheel scroll direction and the performed action
-	is as follows: mousewheel forward/out/up - next,  
-	mousewheel backward/in/down - previous. 
-	To reverse the direction add action   
-	'Action: Modify MIDI CC/mousewheel: Negative'  
-	at the very beginning of each custom action sequence.
+		it will automatically spawn all individual scripts included 
+		in the package into the directory of the META script and will 
+		import them into the Action list from that directory. That's 
+		provided such scripts don't exist yet, if they do, then in 
+		order to recreate them they have to be deleted from the Action 
+		list and from the disk first.  
+		If there's no META suffix in this script name it will perfom 
+		the operation indicated in its name. Individual scripts can
+		be included in custom actions.
+	
+		The script name is self-explanatory.
+	
+		In the script targetting envelope control panel layout,
+		first found visible envelope control panel is scrolled
+		into view.
+	
+		Cycling the layouts essentially cycles its Global  
+		default layouts, those listed under 
+		Options -> Layouts -> Transport / Envelope panel
+		which means that once its layout is switched to, it will apply 
+		to all new and other projects.
+	
+		Layout change doesn't create an undo point due to REAPER design.
+	
+		To cycle layouts with the individual scripts in both 
+		directions, use the following custom actions:
+	
+		Custom: Cycle ECP layouts  
+			Action: Skip next action if CC parameter >0/mid  
+			BuyOne_Apply previous ECP layout.lua  
+			Action: Skip next action if CC parameter <0/mid  
+			BuyOne_Apply next ECP layout.lua
+	
+	
+		Custom: Cycle Transport layouts  
+			Action: Skip next action if CC parameter >0/mid  
+			BuyOne_Apply previous Transport layout.lua  
+			Action: Skip next action if CC parameter <0/mid  
+			BuyOne_Apply next Transport layout.lua  
+	
+	
+		And bind them to the mousewheel. The associaton between 
+		the mousewheel scroll direction and the performed action
+		is as follows: mousewheel forward/out/up - next,  
+		mousewheel backward/in/down - previous. 
+		To reverse the direction add action   
+		'Action: Modify MIDI CC/mousewheel: Negative'  
+		at the very beginning of each custom action sequence.
 
 ]]
 
@@ -108,12 +108,18 @@ end
 
 function META_Spawn_Scripts(fullpath, fullpath_init, scr_name, names_t)
 
-	local function Dir_Exists(path) -- short
-	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+	local function Dir_Exists(path)
+	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces // OR ('(%S.+)%s*$')
 	local sep = path:match('[\\/]')
-	local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
-	local _, mess = io.open(path)
-	return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+		if not sep then
+			-- if path is disk root where the separator isn't listed, use forward slash, which should work on Windows as well
+			if path:match('^%u:$') then sep = '/'
+			else return -- likely not a string representing a path
+			end
+		end
+	path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for os.rename()
+	local ok, mess, code = os.rename(path, path)
+	return (ok or code == 13) and path..sep -- 13 is error code for 'exists but permission denied' on some systems
 	end
 
 	local function Esc(str)
