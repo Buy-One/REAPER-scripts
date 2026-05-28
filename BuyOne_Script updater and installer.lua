@@ -2,16 +2,17 @@
 ReaScript name: BuyOne_Script updater and installer.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.5
-Changelog:  1.5 #Updated syntax of the reference to the Media Explorer section of the Action list
+Version: 1.6
+Changelog:  1.6 #Made directory validation method cross-platform
+			1.5 #Updated syntax of the reference to the Media Explorer section of the Action list
 				as the installation target used in 'Provides' attribute of scripts header
-	   		1.4 #Fixed recognition of files from the 'Media Explorer' folder
+			1.4 #Fixed recognition of files from the 'Media Explorer' folder
 				or fit to be imported into the Media Explorer section of the Action list
-	   	 	1.3 #Added support for Media Explorer script installation
+			1.3 #Added support for Media Explorer script installation
 				#Optimized installation function
 				#Updated 'About' text
-	   		1.2 #Made user setting transfer report message a bit more descriptive
-	   		1.1 #Reworded installation report message
+			1.2 #Made user setting transfer report message a bit more descriptive
+			1.1 #Reworded installation report message
 Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main=main,midi_editor] .
@@ -230,13 +231,18 @@ return t, output:match('(.+),') or output -- remove hanging comma if there was a
 end
 
 
-function Dir_Exists(path) -- short
-local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+function Dir_Exists(path)
+local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces // OR ('(%S.+)%s*$')
 local sep = path:match('[\\/]')
-	if not sep then return end -- likely not a string represening a path
-local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
-local _, mess = io.open(path)
-return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+	if not sep then
+		-- if path is disk root where the separator isn't listed, use forward slash, which should work on Windows as well
+		if path:match('^%u:$') then sep = '/'
+		else return -- likely not a string representing a path
+		end
+	end
+path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for os.rename()
+local ok, mess, code = os.rename(path, path)
+return (ok or code == 13) and path..sep -- 13 is error code for 'exists but permission denied' on some systems
 end
 
 
