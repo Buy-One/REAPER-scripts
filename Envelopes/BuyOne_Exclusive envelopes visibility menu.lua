@@ -15,36 +15,36 @@ REAPER: at least v5.962
 Extensions: 
 Provides: [main=main,midi_editor] .
 About: 	Inspired by actions introduced in build 7.47
-			Track: Hide envelope, display next/previous envelope on same track (cycle)
-			
-			The menu is designed to toggle exclusive visibility 
-			of active envelopes, so that only one envelope is
-			visible at a time.  			
-			The script doesn't allow making multiple envelopes 
-			of the same object visible at once.  
-			If multiple envelopes have been made visible manually, 
-			clicking one visible envelope menu item hides all other 
-			visible envelopes while the envelope of the clicked menu 
-			item remains visible.  
-			In REAPER when an armed envelope is bypassed, it's 
-			automatically unarmed, therefore a checkmark will be 
-			cleared from  
-			'Toggle arming of the visible envelope' menu item when 
-			'Toggle bypass of the visible envelope' menu item is clicked
-			And vice versa, when a bypassed envelope is armed, it's 
-			automatically unbypassed, therefore a checkmark will be 
-			cleared from 
-			'Toggle bypass of the visible envelope' menu item when 
-			'Toggle arming of the visible envelope' menu item is clicked
-			
-			The object targeting priority is as follows: 
-			take under mouse
-			track under mouse
-			parent take of the selected take envelope
-			parent track of the selected track envelope
-			active take of selected item
-			selected track
-			last touched track
+		Track: Hide envelope, display next/previous envelope on same track (cycle)
+		
+		The menu is designed to toggle exclusive visibility 
+		of active envelopes, so that only one envelope is
+		visible at a time.  			
+		The script doesn't allow making multiple envelopes 
+		of the same object visible at once.  
+		If multiple envelopes have been made visible manually, 
+		clicking one visible envelope menu item hides all other 
+		visible envelopes while the envelope of the clicked menu 
+		item remains visible.  
+		In REAPER when an armed envelope is bypassed, it's 
+		automatically unarmed, therefore a checkmark will be 
+		cleared from  
+		'Toggle arming of the visible envelope' menu item when 
+		'Toggle bypass of the visible envelope' menu item is clicked
+		And vice versa, when a bypassed envelope is armed, it's 
+		automatically unbypassed, therefore a checkmark will be 
+		cleared from 
+		'Toggle bypass of the visible envelope' menu item when 
+		'Toggle arming of the visible envelope' menu item is clicked
+		
+		The object targeting priority is as follows: 
+		take under mouse
+		track under mouse
+		parent take of the selected take envelope
+		parent track of the selected track envelope
+		active take of selected item
+		selected track
+		last touched track
 ]]
 
 
