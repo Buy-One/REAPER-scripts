@@ -3,7 +3,7 @@ ReaScript name: BuyOne_Create Razor edit area from cursor to mouse on envelope o
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.3
-Changelog:  1.3 #Made directory validation cross-platform in the function which spawsn individual scripts
+Changelog:  1.3 #Made directory validation cross-platform in the function which spawns individual scripts
 			1.2 #Fixed individual script installation function
 				#Made individual script installation function more efficient  
 			1.1 #Fixed error message due to duplicate statement
