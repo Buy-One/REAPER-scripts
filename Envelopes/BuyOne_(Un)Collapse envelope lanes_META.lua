@@ -129,7 +129,7 @@ end
 
 function META_Spawn_Scripts(fullpath, fullpath_init, scr_name, names_t)
 
-	function Dir_Exists(path)
+	local function Dir_Exists(path)
 	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces // OR ('(%S.+)%s*$')
 	local sep = path:match('[\\/]')
 		if not sep then
