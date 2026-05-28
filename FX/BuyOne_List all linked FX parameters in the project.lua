@@ -1,12 +1,12 @@
 --[[
 ReaScript Name: List all linked FX parameters in the project
 Author: BuyOne
-Version: 1.0
-Changelog: Initial release
+Version: 1.1
+Changelog: #Made directory validation method cross-platform
 Author URL: https://forum.cockos.com/member.php?u=134058
 Licence: WTFPL
 REAPER: at least v5.962
-About: 		Either displays in the ReaScript console the list of FX parameters 
+About: 	Either displays in the ReaScript console the list of FX parameters 
 		linked via parameter modulation or, if the list is too long
 		to fit within one console output, saves it to a dump file either
 		in the directory specified in the USER SETTINGS of in REAPER
@@ -117,14 +117,19 @@ return obj_type..obj_idx..' "'..obj_name..'"\nSLAVE:  '..slave_parm_name..' / '.
 
 end
 
-function Dir_Exists(path) -- short
-local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+function Dir_Exists(path)
+local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces // OR ('(%S.+)%s*$')
 local sep = path:match('[\\/]')
-local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
-local _, mess = io.open(path)
-return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+	if not sep then
+		-- if path is disk root where the separator isn't listed, use forward slash, which should work on Windows as well
+		if path:match('^%u:$') then sep = '/'
+		else return -- likely not a string representing a path
+		end
+	end
+path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for os.rename()
+local ok, mess, code = os.rename(path, path)
+return (ok or code == 13) and path..sep -- 13 is error code for 'exists but permission denied' on some systems
 end
-
 
 function open_dir_in_file_browser(dir)
 local OS = r.GetOS():sub(1,3)
