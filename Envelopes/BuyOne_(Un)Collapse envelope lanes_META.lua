@@ -1,7 +1,7 @@
 --[[
 ReaScript name: BuyOne_(Un)Collapse envelope lanes_META.lua (18 scripts)
 Author: BuyOne
-Version: 2.0
+Version: 2.1
 Changelog:  2.1 #Made directory validation cross-platform in the function which spawns individual scripts
 			2.0 #Fixed toggle actions for Master track envelopes when 'Tempo map' envelope is enabled
 				#Disabled 'No selected track' error message for actions which don't require track selection
