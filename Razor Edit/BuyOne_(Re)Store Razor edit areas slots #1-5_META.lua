@@ -1,57 +1,59 @@
 --[[
 ReaScript name: BuyOne_(Re)Store Razor edit areas slots #1-5_META.lua (10 scripts)
 Author: BuyOne
-Version: 1.4
-Changelog:  v1.4 #Added a menu to the META script so it's now functional as well
-		 allowing to use from a single menu all options available as individual scripts
-		 #Updated About text
-	   v1.3 #Fixed individual script installation function
-		 #Made individual script installation function more efficient
-	   v1.2 #Creation of individual scripts has been made hands-free. 
-		 These are created in the directory the META script is located in
-		 and from there are imported into the Action list.
-		 #Updated About text
-	   v1.1 #Added REAPER version check
-		 #Corrected minimal supported version in the header
+Version: 1.5
+Changelog: 	  1.5 #Made directory validation cross-platform in the function which spawns individual scripts
+			  1.4 #Added a menu to the META script so it's now functional as well
+				  allowing to use from a single menu all options available as individual scripts
+				  #Updated About text
+			  1.3 #Fixed individual script installation function
+				  #Made individual script installation function more efficient
+			  1.2 #Creation of individual scripts has been made hands-free. 
+				  These are created in the directory the META script is located in
+				  and from there are imported into the Action list.
+				  #Updated About text
+			  1.1 #Added REAPER version check
+				  #Corrected minimal supported version in the header
 Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v6.54
 Metapackage: true
-Provides: 	[main] . > BuyOne_Store Razor edit areas slot 1.lua
-		[main] . > BuyOne_Store Razor edit areas slot 2.lua
-		[main] . > BuyOne_Store Razor edit areas slot 3.lua
-		[main] . > BuyOne_Store Razor edit areas slot 4.lua
-		[main] . > BuyOne_Store Razor edit areas slot 5.lua
-		[main] . > BuyOne_Restore Razor edit areas slot 1.lua
-		[main] . > BuyOne_Restore Razor edit areas slot 2.lua
-		[main] . > BuyOne_Restore Razor edit areas slot 3.lua
-		[main] . > BuyOne_Restore Razor edit areas slot 4.lua
-		[main] . > BuyOne_Restore Razor edit areas slot 5.lua
+Provides: 	[main] . 
+			. > BuyOne_Store Razor edit areas slot 1.lua
+			. > BuyOne_Store Razor edit areas slot 2.lua
+			. > BuyOne_Store Razor edit areas slot 3.lua
+			. > BuyOne_Store Razor edit areas slot 4.lua
+			. > BuyOne_Store Razor edit areas slot 5.lua
+			. > BuyOne_Restore Razor edit areas slot 1.lua
+			. > BuyOne_Restore Razor edit areas slot 2.lua
+			. > BuyOne_Restore Razor edit areas slot 3.lua
+			. > BuyOne_Restore Razor edit areas slot 4.lua
+			. > BuyOne_Restore Razor edit areas slot 5.lua
 About:	If this script name is suffixed with META, when executed 
-	it will automatically spawn all individual scripts included 
-	in the package into the directory of the META script and will 
-	import them into the Action list from that directory. That's 
-	provided such scripts don't exist yet, if they do, then in 
-	order to recreate them they have to be deleted from the Action 
-	list and from the disk first. It will also display a menu
-	allowing to execute all actions available as individual scripts.		
-	If there's no META suffix in this script name it will perfom 
-	the operation indicated in its name. Individual scripts can
-	be included in custom actions.
-	
-	Each menu item of the META script can be triggered from 
-	keyboard. STORE menu items with numerals 1 through 5 and 
-	RESTORE menu items with characters 'a' through 'e' which 
-	are listed next to the menu items. When ADDITIONAL_SLOTS 
-	setting is 5 the last STORE menu item must be triggered 
-	from keyboard with key 0. When ADDITIONAL_SLOTS setting 
-	is greater than 5, letters are added to the STORE menu items 
-	to be used as keyboard triggers instead of number keys.
-	
-	If more store/restore slots are needed, duplicate any two
-	of the complementing individual scripts and increase the slot 
-	number in their names so it's greater than the currently 
-	available maximum number.
+		it will automatically spawn all individual scripts included 
+		in the package into the directory of the META script and will 
+		import them into the Action list from that directory. That's 
+		provided such scripts don't exist yet, if they do, then in 
+		order to recreate them they have to be deleted from the Action 
+		list and from the disk first. It will also display a menu
+		allowing to execute all actions available as individual scripts.  
+		If there's no META suffix in this script name it will perfom 
+		the operation indicated in its name. Individual scripts can
+		be included in custom actions.
+		
+		Each menu item of the META script can be triggered from 
+		keyboard. STORE menu items with numerals 1 through 5 and 
+		RESTORE menu items with characters 'a' through 'e' which 
+		are listed next to the menu items. When ADDITIONAL_SLOTS 
+		setting is 5 the last STORE menu item must be triggered 
+		from keyboard with key 0. When ADDITIONAL_SLOTS setting 
+		is greater than 5, letters are added to the STORE menu items 
+		to be used as keyboard triggers instead of number keys.
+		
+		If more store/restore slots are needed, duplicate any two
+		of the complementing individual scripts and increase the slot 
+		number in their names so it's greater than the currently 
+		available maximum number.
 
 ]]
 
@@ -91,12 +93,18 @@ end
 
 function META_Spawn_Scripts(fullpath, fullpath_init, scr_name, names_t)
 
-	local function Dir_Exists(path) -- short
-	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+	local function Dir_Exists(path)
+	local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces // OR ('(%S.+)%s*$')
 	local sep = path:match('[\\/]')
-	local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
-	local _, mess = io.open(path)
-	return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+		if not sep then
+			-- if path is disk root where the separator isn't listed, use forward slash, which should work on Windows as well
+			if path:match('^%u:$') then sep = '/'
+			else return -- likely not a string representing a path
+			end
+		end
+	path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for os.rename()
+	local ok, mess, code = os.rename(path, path)
+	return (ok or code == 13) and path..sep -- 13 is error code for 'exists but permission denied' on some systems
 	end
 
 	local function Esc(str)
