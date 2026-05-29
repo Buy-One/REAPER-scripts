@@ -2,24 +2,25 @@
 ReaScript name: BuyOne_Transcribing A - Generate Transcribing A toolbar ReaperMenu file.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.5
-Changelog: 1.5 	#Changed name of the script BuyOne_Transcribing A - Search the transcript
-		to BuyOne_Transcribing A - Search or replace text in the transcript
-		#Renamed the 'SEARCH' button into 'SEARCH or replace' to reflect new script
-		functionality
-	   1.4 	#Added button for the script BuyOne_Transcribing A - Search the transcript.lua
-	       	#Updated list of transcribing A scripts set in the About section
-	   1.3 	#Added button for the action SWS/S&M: Open/close Notes window (track notes)
-	       	#Added error it SWS/S&M extension isn't installed to complement the new button addition
-	       	#Improved zooming of the track with 'Transcribing A toolbar layout.png' image
-	   1.2 	#Fixed the toolbar name everywhere it's mentioned
-	       	#Included toolbar name in the code for the exported file
-	       	#Set toolbar buttons tooltip to display the linked action
-	       	#Updated script name
-	   1.1 	#Fixed resources search while generating the toolbar code
-	       	#Disabled user prompt for the target toolbar number in builds newer than 7.21
-	       	#Fixed a toolbar button name
-	       	#Updated About text
+Version: 1.6
+Changelog: 	1.6 #Made directory validation method cross-platform
+			1.5 #Changed name of the script BuyOne_Transcribing A - Search the transcript
+				to BuyOne_Transcribing A - Search or replace text in the transcript
+				#Renamed the 'SEARCH' button into 'SEARCH or replace' to reflect new script
+				functionality
+			1.4 #Added button for the script BuyOne_Transcribing A - Search the transcript.lua
+				#Updated list of transcribing A scripts set in the 'About' section
+			1.3 #Added button for the action SWS/S&M: Open/close Notes window (track notes)
+				#Added error it SWS/S&M extension isn't installed to complement the new button addition
+				#Improved zooming of the track with 'Transcribing A toolbar layout.png' image
+			1.2 #Fixed the toolbar name everywhere it's mentioned
+			 	#Included toolbar name in the code for the exported file
+				#Set toolbar buttons tooltip to display the linked action
+				#Updated script name
+			1.1 #Fixed resources search while generating the toolbar code
+				#Disabled user prompt for the target toolbar number in builds newer than 7.21
+				#Fixed a toolbar button name
+				#Updated About text
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is part of the Transcribing A workflow set of scripts
@@ -308,13 +309,25 @@ end
 
 
 function Dir_Exists(path)
--- path is a directory path, not file
-local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces // OR ('(%S.+)%s*$')
 local sep = path:match('[\\/]')
-	if not sep then return end -- likely not a string represening a path
-local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
-local _, mess = io.open(path)
-return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+	if not sep then
+		-- if path is disk root where the separator isn't listed, use forward slash, which should work on Windows as well
+		if path:match('^%u:$') then sep = '/'
+		else return -- likely not a string representing a path
+		end
+	end
+path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for os.rename()
+local OS = r.GetAppVersion()
+local win = OS:match('/') or OS:match('/x')
+	if win then
+	local _, mess = io.open(path)
+	return #path:gsub('[%c%.]', '') > 0 and mess and mess:match('Permission denied') and path..sep -- dir exists // this one is enough HOWEVER THIS IS ALSO THE RESULT IF THE path var ONLY INCLUDES DOTS, therefore gsub ensures that besides dots there're other characters
+	else
+	-- on Windows this doesn't work for directories in REAPER but works with external Lua runtimes, in ZeroBrane for example
+	local ok, mess, code = os.rename(path, path)
+	return (ok or code == 13) and path..sep -- 13 is error code for 'exists but permission denied' on some systems
+	end
 end
 
 
