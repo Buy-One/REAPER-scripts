@@ -385,8 +385,15 @@ local sep = path:match('[\\/]')
 		end
 	end
 path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for os.rename()
-local ok, mess, code = os.rename(path, path)
-return (ok or code == 13) and path..sep -- 13 is error code for 'exists but permission denied' on some systems
+local OS = r.GetAppVersion()
+local win = OS:match('/') or OS:match('/x')
+	if win then
+	local _, mess = io.open(path)
+	return #path:gsub('[%c%.]', '') > 0 and mess and mess:match('Permission denied') and path..sep -- dir exists // this one is enough HOWEVER THIS IS ALSO THE RESULT IF THE path var ONLY INCLUDES DOTS, therefore gsub ensures that besides dots there're other characters
+	else
+	local ok, mess, code = os.rename(path, path)
+	return (ok or code == 13) and path..sep -- 13 is error code for 'exists but permission denied' on some systems
+	end
 end
 
 
