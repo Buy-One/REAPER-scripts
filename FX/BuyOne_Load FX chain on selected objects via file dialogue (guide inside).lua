@@ -2,9 +2,10 @@
 ReaScript name: Load FX chain on selected objects via file dialogue (guide inside)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058
-Version: 1.1
-Changelog: #Added a setting for custom FXChains folder
-	   #Fixed breaking plugin parameter link
+Version: 1.2
+Changelog: 	1.2 #Made directory validation method cross-platform
+			1.1 #Added a setting for custom FXChains folder
+				#Fixed breaking plugin parameter link
 About: 
 
   Allows loading selected FX chain on selected objects.
@@ -90,12 +91,25 @@ function Validate_Folder_Path(path) -- returns empty string if path is empty and
 	end
 end
 
-function Dir_Exists(path) -- short
-local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+function Dir_Exists(path)
+local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces // OR ('(%S.+)%s*$')
 local sep = path:match('[\\/]')
-local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
-local _, mess = io.open(path)
-return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+	if not sep then
+		-- if path is disk root where the separator isn't listed, use forward slash, which should work on Windows as well
+		if path:match('^%u:$') then sep = '/'
+		else return -- likely not a string representing a path
+		end
+	end
+path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for os.rename()
+local OS = r.GetAppVersion()
+local win = OS:match('/') or OS:match('/x')
+	if win then
+	local _, mess = io.open(path)
+	return #path:gsub('[%c%.]', '') > 0 and mess and mess:match('Permission denied') and path..sep -- dir exists // this one is enough HOWEVER THIS IS ALSO THE RESULT IF THE path var ONLY INCLUDES DOTS, therefore gsub ensures that besides dots there're other characters
+	else
+	local ok, mess, code = os.rename(path, path)
+	return (ok or code == 13) and path..sep -- 13 is error code for 'exists but permission denied' on some systems
+	end
 end
 
 
