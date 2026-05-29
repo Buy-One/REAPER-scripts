@@ -2,50 +2,51 @@
 ReaScript name: BuyOne_Transcribing B - Generate Transcribing B toolbar ReaperMenu file.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: 1.2  #Added button for the script BuyOne_Transcribing B - Replace text in the transcript.lua
-		#Fixed failure to update the toolbar number when overwriting an existing 
-		'Transcribing B workflow toolbar.ReaperMenu' file
-		#Fixed ReaperMenu file name in the user message
-		#Reordered some buttons
-	   1.1 	#Added button for the action View: Show region/marker manager window
-		#Improved zooming of the track with 'Transcribing B toolbar layout.png' image
+Version: 1.3
+Changelog: 	1.3 #Made directory validation method cross-platform
+			1.2 #Added button for the script BuyOne_Transcribing B - Replace text in the transcript.lua
+				#Fixed failure to update the toolbar number when overwriting an existing 
+				'Transcribing B workflow toolbar.ReaperMenu' file
+				#Fixed ReaperMenu file name in the user message
+				#Reordered some buttons
+			1.1 #Added button for the action View: Show region/marker manager window
+				#Improved zooming of the track with 'Transcribing B toolbar layout.png' image
 Licence: WTFPL
 REAPER: at least v5.962
 About:	The script is part of the Transcribing B workflow set of scripts
-	alongside
-	BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
-	BuyOne_Transcribing B - Real time preview.lua  
-	BuyOne_Transcribing B - Format converter.lua  
-	BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
-	BuyOne_Transcribing B - Prepare transcript for rendering.lua  
-	BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
-	BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua  
-	BuyOne_Transcribing B - Replace text in the transcript.lua
-
-	The script generates a ReaperMenu file for a toolbar 
-	to which all scripts and custom actions included in this 
-	script set are linked, except this script. So that if
-	the user would like have one they wouldn't have to create
-	one from scratch.   
-	After that the generated file named   
-	'Transcribing workflow toolbar.ReaperMenu'  
-	and placed in the MenuSets folder in the REAPER resource
-	directory need to be imported into the Menu/Toolbar editor.
+		alongside
+		BuyOne_Transcribing B - Create and manage segments (MAIN).lua  
+		BuyOne_Transcribing B - Real time preview.lua  
+		BuyOne_Transcribing B - Format converter.lua  
+		BuyOne_Transcribing B - Import SRT or VTT file as regions.lua  
+		BuyOne_Transcribing B - Prepare transcript for rendering.lua  
+		BuyOne_Transcribing B - Show entry of region selected or at cursor in Region-Marker Manager.lua  
+		BuyOne_Transcribing B - Offset position of regions in time selection by specified amount.lua  
+		BuyOne_Transcribing B - Replace text in the transcript.lua
 	
-	Users of REAPER builds older than 7.23 are prompted for 
-	the number of the target toolbar because in older REAPER 
-	builds exported toolbar content can only be imported into
-	toolbars with the same number. The toolbar number can be 
-	input from the keyboard while the prompt menu is open or 
-	by clicking the digits in the menu. To create the file hit 
-	T key on the keyboard or click the 'TOOLBAR #:' line in the 
-	menu. The wrong input can be corrected with the < character.
-	
-	When the toolbar file is generated for the first time 
-	the script also loads an image of the toolbar layout to help
-	the user find their way around it provided such image was
-	downloaded with the set of scripts.
+		The script generates a ReaperMenu file for a toolbar 
+		to which all scripts and custom actions included in this 
+		script set are linked, except this script. So that if
+		the user would like have one they wouldn't have to create
+		one from scratch.   
+		After that the generated file named   
+		'Transcribing workflow toolbar.ReaperMenu'  
+		and placed in the MenuSets folder in the REAPER resource
+		directory need to be imported into the Menu/Toolbar editor.
+		
+		Users of REAPER builds older than 7.23 are prompted for 
+		the number of the target toolbar because in older REAPER 
+		builds exported toolbar content can only be imported into
+		toolbars with the same number. The toolbar number can be 
+		input from the keyboard while the prompt menu is open or 
+		by clicking the digits in the menu. To create the file hit 
+		T key on the keyboard or click the 'TOOLBAR #:' line in the 
+		menu. The wrong input can be corrected with the < character.
+		
+		When the toolbar file is generated for the first time 
+		the script also loads an image of the toolbar layout to help
+		the user find their way around it provided such image was
+		downloaded with the set of scripts.
 
 ]]
 
@@ -279,14 +280,26 @@ r.Undo_EndBlock('Insert Transcribing B toolbar layout image', -1)
 end
 
 
+
 function Dir_Exists(path)
--- path is a directory path, not file
-local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces
+local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces // OR ('(%S.+)%s*$')
 local sep = path:match('[\\/]')
-	if not sep then return end -- likely not a string represening a path
-local path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed to return 1 (valid)
-local _, mess = io.open(path)
-return mess:match('Permission denied') and path..sep -- dir exists // this one is enough
+	if not sep then
+		-- if path is disk root where the separator isn't listed, use forward slash, which should work on Windows as well
+		if path:match('^%u:$') then sep = '/'
+		else return -- likely not a string representing a path
+		end
+	end
+path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for os.rename()
+local OS = r.GetAppVersion()
+local win = OS:match('/') or OS:match('/x')
+	if win then
+	local _, mess = io.open(path)
+	return #path:gsub('[%c%.]', '') > 0 and mess and mess:match('Permission denied') and path..sep -- dir exists // this one is enough HOWEVER THIS IS ALSO THE RESULT IF THE path var ONLY INCLUDES DOTS, therefore gsub ensures that besides dots there're other characters
+	else
+	local ok, mess, code = os.rename(path, path)
+	return (ok or code == 13) and path..sep -- 13 is error code for 'exists but permission denied' on some systems
+	end
 end
 
 
