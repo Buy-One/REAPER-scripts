@@ -2,8 +2,11 @@
 ReaScript name: BuyOne_Script updater and installer.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.6
-Changelog:  1.6 #Made directory validation method cross-platform
+Version: 1.7
+Changelog:  1.7 #Included a mention of 'Media Explorer project transport sync.zip' archive
+				in the final installation status message
+				#Included Media Explorer section in the installation failures report
+			1.6 #Made directory validation method cross-platform
 			1.5 #Updated syntax of the reference to the Media Explorer section of the Action list
 				as the installation target used in 'Provides' attribute of scripts header
 			1.4 #Fixed recognition of files from the 'Media Explorer' folder
@@ -18,105 +21,105 @@ REAPER: at least v5.962
 Provides: [main=main,midi_editor] .
 About:	THIS SCRIPT MUST BE INSTALLED FIRST
 	
-	***  H O W   T O   U S E  ***
-	
-	1. INSTALLATION
-	
-	When you install BuyOne's scripts for the first time,
-	after downloading the entire collection from the repo 
-	at https://github.com/Buy-One/REAPER-scripts simply
-	extract the folder 'REAPER-scripts-main', preferably
-	name it after the scripter so it's clear whose scripts
-	it contains and drop the folder into the /Scripts folder
-	in REAPER's resource directory or external main scripts
-	folder in case you don't keep your scripts in REAPER's
-	resource directory.  
-	
-	Import into the Main section of the Action list this 
-	very script only.  
-	
-	Run this script and in the dialogue supply the path
-	to BuyOne's scripts folder, the one you just dropped
-	into your main scripts folder as described above.
-	
-	Click OK.
-	
-	In the dialogue which will pop up click YES to run
-	installation in the native mode, that's a mode designed
-	for installation of BuyOne's scripts.
-	
-	During the operation REAPER may freeze, so just be patient.
-	
-	When the installation is complete another pop up will appear.
-	Click OK and you're done.
-	
-	During the installation all script instances included in 
-	META scripts will be installed as well so separate execution
-	of META scripts after the installation isn't necessary.
-	
-	2. SETTINGS TRANSFER		
-	
-	If you have BuyOne's scripts already installed but wish to
-	update them with their latest versions and add new scripts, 
-	do not drop the downloaded folder with the scripts as you'd 
-	do when installing them for the first time. Many scripts 
-	feature USER SETTINGS and if you simply overwrite the older 
-	files the settings will revert to their defaults. By the way 
-	this is the problem with ReaPack which is agnostic of user
-	settings.
-	
-	Instead extract the newly downloaded scripts into a 
-	temporary folder.
-	
-	Run this script which by that time will already be installed,
-	and in the dialogue supply path to such temporary folder.
-	In the pop up dialogue click YES to launch transfer of the
-	custom user settings to newer versions of the scripts.
-	
-	During the operation REAPER may freeze, so just be patient.
-	
-	When the transfer is complete another pop up will appear.
-	Click OK to exit.
-	
-	The settings will be transfered to individual instances of 
-	META scripts as well.
-	
-	AS A SAFETY MEASURE, BEFORE PERFORMING THE NEXT STEP CREATE 
-	A BACKUP COPY OF THE CURRENTLY INSTALLED VERSIONS OF THE 
-	SCRIPTS YOU'RE GOING TO OVEWRITE.
-	
-	Now peform the actions described in paragraph 1. INSTALLATION
-	above to overwrite the older versions of the scripts in BuyOne's
-	scripts folder and install any new ones.
-	
-	Check a couple which you know well and if everything is fine, 
-	you can delete the backup copy if one was created as suggested
-	above.
-	
-			***  N U A N C E S  ***
-	
-	This script can also be used to install 3d party scripts BUT 
-	NOT to transfer their user settings.
-	
-	In the native mode scripts are installed in the section of the
-	Action list designated to them by BuyOne. In the non-native
-	installation mode all scripts will be installed in both Main
-	and MIDI Editor sections of the Action list regardless of their
-	actual purpose just to be on the safe side.
-	
-	If in the native mode you only wish to transfer the settings 
-	between or install scripts in specific folder, supply path to 
-	such folder in the dialogue. Scripts in subfolders of this folder, 
-	if any, will be processed as well.
-	
-	The specifics of native and non-native installation modes are
-	also laid out in the pop up dialogue so be sure to refer to them
-	in case of a doubt.
-	
-	The successful installation stats include all scripts which 
-	were submitted for installation regardless of their being 
-	already installed.
+				***  H O W   T O   U S E  ***
+
+		1. INSTALLATION
+
+		When you install BuyOne's scripts for the first time,
+		after downloading the entire collection from the repo 
+		at https://github.com/Buy-One/REAPER-scripts simply
+		extract the folder 'REAPER-scripts-main', preferably
+		name it after the scripter so it's clear whose scripts
+		it contains and drop the folder into the /Scripts folder
+		in REAPER's resource directory or external main scripts
+		folder in case you don't keep your scripts in REAPER's
+		resource directory.  
 		
+		Import into the Main section of the Action list this 
+		very script only.  
+		
+		Run this script and in the dialogue supply the path
+		to BuyOne's scripts folder, the one you just dropped
+		into your main scripts folder as described above.
+
+		Click OK.
+
+		In the dialogue which will pop up click YES to run
+		installation in the native mode, that's a mode designed
+		for installation of BuyOne's scripts.
+
+		During the operation REAPER may freeze, so just be patient.
+
+		When the installation is complete another pop up will appear.
+		Click OK and you're done.
+
+		During the installation all script instances included in 
+		META scripts will be installed as well so separate execution
+		of META scripts after the installation isn't necessary.
+
+		2. SETTINGS TRANSFER		
+
+		If you have BuyOne's scripts already installed but wish to
+		update them with their latest versions and add new scripts, 
+		do not drop the downloaded folder with the scripts as you'd 
+		do when installing them for the first time. Many scripts 
+		feature USER SETTINGS and if you simply overwrite the older 
+		files the settings will revert to their defaults. By the way 
+		this is the problem with ReaPack which is agnostic of user
+		settings.
+
+		Instead extract the newly downloaded scripts into a 
+		temporary folder.
+
+		Run this script which by that time will already be installed,
+		and in the dialogue supply path to such temporary folder.
+		In the pop up dialogue click YES to launch transfer of the
+		custom user settings to newer versions of the scripts.
+
+		During the operation REAPER may freeze, so just be patient.
+
+		When the transfer is complete another pop up will appear.
+		Click OK to exit.
+
+		The settings will be transfered to individual instances of 
+		META scripts as well.
+
+		AS A SAFETY MEASURE, BEFORE PERFORMING THE NEXT STEP CREATE 
+		A BACKUP COPY OF THE CURRENTLY INSTALLED VERSIONS OF THE 
+		SCRIPTS YOU'RE GOING TO OVEWRITE.
+
+		Now peform the actions described in paragraph 1. INSTALLATION
+		above to overwrite the older versions of the scripts in BuyOne's
+		scripts folder and install any new ones.
+
+		Check a couple which you know well and if everything is fine, 
+		you can delete the backup copy if one was created as suggested
+		above.
+
+								***  N U A N C E S  ***
+
+		This script can also be used to install 3d party scripts BUT 
+		NOT to transfer their user settings.
+
+		In the native mode scripts are installed in the section of the
+		Action list designated to them by BuyOne. In the non-native
+		installation mode all scripts will be installed in both Main
+		and MIDI Editor sections of the Action list regardless of their
+		actual purpose just to be on the safe side.
+
+		If in the native mode you only wish to transfer the settings 
+		between or install scripts in specific folder, supply path to 
+		such folder in the dialogue. Scripts in subfolders of this folder, 
+		if any, will be processed as well.
+
+		The specifics of native and non-native installation modes are
+		also laid out in the pop up dialogue so be sure to refer to them
+		in case of a doubt.
+
+		The successful installation stats include all scripts which 
+		were submitted for installation regardless of their being 
+		already installed.
+
 ]]
 
 
@@ -334,6 +337,7 @@ i = 0
 			t.total[#t.total+1] = '' -- dummy entry only for the sake of keeping script count for final stats
 			elseif ext == '.zip' then
 			-- if 'Set default mouse modifier...' actions in Lua format (relevant for REAPER 7).zip archive
+			-- and Media Explorer project transport sync.zip
 			t.zip = path..sep..file_n
 			end
 		end
@@ -531,7 +535,7 @@ local orig_cnt = #t + #t.midi + #t.mx -- store because the entries will be delet
 t = Install_Scripts(t, native_install_mode)
 
 local failed_cnt = #t + #t.midi + #t.mx
-local zip = t.zip and '\tThere\'s a .zip archive in the /Misc folder'
+local zip = t.zip and 'There\'re .zip archives in the /Misc and /Media Explorer folders'
 ..'\n\n      scripts in which cannot be installed with the installer.'
 ..'\n\n     If you find them useful, you can install them manually.' or ''
 local br = t.zip and '\n\n\n' or ''
@@ -541,9 +545,13 @@ and (t.zip and space(15) or space(16))..failed_cnt..' installations have failed 
 local success = #failure == 0 and (t.zip and space(4) or space(6))..#t.total -- the successful installation count includes scripts both installed previously and newly installed, all which were collected at the user supplied path
 
 	if failed_cnt > 0 then -- list all scripts which failed to get installed
-	Msg('MAIN:\n\n'..table.concat(t,'\n')..'\n\nMIDI EDITOR:\n\n'..table.concat(t.midi,'\n'), r.ClearConsole())
+	local main = #t > 0 and 'MAIN:\n\n'....table.concat(t,'\n') or ''
+	local midi = #t.midi > 0 and (#main > 0 and '\n\n' or '')..'MIDI EDITOR:\n\n'..table.concat(t.midi,'\n') or ''
+	local mx = #t.mx > 0 and (#main + #midi > 0 and '\n\n' or '')..'MEDIA EXPLORER:\n\n'..table.concat(t.mx,'\n') or ''
+	Msg(main..midi..mx, r.ClearConsole())
 	end
-	r.MB(success..failure..zip, 'REPORT', 0)
+
+r.MB(success..failure..zip, 'REPORT', 0)
 
 end
 
