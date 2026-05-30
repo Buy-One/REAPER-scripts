@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_Go to next;previous marker;region on the same lane or selected_META.lua (10 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Improved ruler height update when new lane is added
+Version: 1.2
+Changelog: 	1.2 #Fixed script name in the function which spawns individual scripts
+			1.1 #Improved ruler height update when new lane is added
 Licence: WTFPL
 REAPER: at least v7.62
 Provides: [main=main,midi_editor,mediaexplorer] .
@@ -484,7 +485,7 @@ local fullpath = debug.getinfo(1,'S').source:match('^@?(.+)') -- if the script i
 local scr_name = fullpath:match('.+_(.+)%.%w+') -- without path, scripter name & ext // suitable for individual scripts
 
 	-- doesn't run in non-META scripts
-	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Go to next;previous marker;region on the same lane_META.lua', names_t) -- names_t is optional only if constructed outside of the function, otherwise names are collected from the list in the header
+	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Go to next;previous marker;region on the same lane or selected_META.lua', names_t) -- names_t is optional only if constructed outside of the function, otherwise names are collected from the list in the header
 	then return r.defer(no_undo) end -- abort if META script but continue if not
 
 
