@@ -1,9 +1,9 @@
 --[[
-ReaScript name: BuyOne_Sort visible Ruler lanes by the earliest visible marker, region.lua (2 scripts)
+ReaScript name: BuyOne_Sort visible Ruler lanes by the earliest visible marker, region_META.lua (2 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Fixed script name in the function which spawns individual script
 Licence: WTFPL
 REAPER: at least v7.62
 Provides: 	[main=main,midi_editor] .
@@ -388,7 +388,7 @@ local scr_name = fullpath:match('.+_(.+)%.%w+') -- without path, scripter name &
 --Msg(scr_name)
 
 	-- doesn't run in non-META scripts
-	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Sort visible Ruler lanes by the earliest visible marker, region.lua', names_t) -- names_t is optional only if constructed outside of the function, otherwise names are collected from the list in the header
+	if not META_Spawn_Scripts(fullpath, fullpath_init, 'BuyOne_Sort visible Ruler lanes by the earliest visible marker, region_META.lua', names_t) -- names_t is optional only if constructed outside of the function, otherwise names are collected from the list in the header
 	then return r.defer(no_undo) end -- abort if META script but continue if not
 --]]
 
