@@ -56,6 +56,7 @@ local DUMP_PATH = not DUMP_PATH:match('.+[\\/]%s*$') and DUMP_PATH:match('^%s*(.
 
 
 function Dir_Exists(path)
+-- path is a directory path, not file
 local path = path:match('^%s*(.-)%s*$') -- remove leading/trailing spaces // OR ('(%S.+)%s*$')
 local sep = path:match('[\\/]')
 	if not sep then
@@ -64,9 +65,9 @@ local sep = path:match('[\\/]')
 		else return -- likely not a string representing a path
 		end
 	end
-path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for os.rename()
+path = path:match('.+[\\/]$') and path:sub(1,-2) or path -- last separator is removed so the path is properly formatted for io.open() and os.rename()
 local OS = r.GetAppVersion()
-local win = OS:match('/') or OS:match('/x')
+local win = not OS:match('/') or OS:match('/x')
 	if win then
 	local _, mess = io.open(path)
 	return #path:gsub('[%c%.]', '') > 0 and mess and mess:match('Permission denied') and path..sep -- dir exists // this one is enough HOWEVER THIS IS ALSO THE RESULT IF THE path var ONLY INCLUDES DOTS, therefore gsub ensures that besides dots there're other characters
