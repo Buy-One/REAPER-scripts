@@ -193,12 +193,6 @@ local tr_cnt = r.CountTracks(0)
 end
 
 
-function mouse_cursor_moved(x, y) -- EXPERIMENT
-local a, b = r.GetMousePosition()
-return x and a ~= x or y and b ~= y
-end
-
-
 function track_likely_dragged()
 
 	if not r.JS_Mouse_GetState then return end
