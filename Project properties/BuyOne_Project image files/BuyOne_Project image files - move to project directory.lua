@@ -12,7 +12,9 @@ About: 	The script is meant to complement REAPER built-in
 		functionality of moving media to the project 
 		directory which ignores image files used in item
 		notes and as track icons and only respects video take 
-		source image files.
+		source image files, i.e. image files added directly
+		to track via drag and drop or Insert -> Media file...
+		dialogue.
 
 		The script moves image files used in the current
 		project to the location in the project directory, which 
