@@ -8,11 +8,13 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M recommended for greater reliability
 Provides: [main=main,midi_editor] .
-About:  The script is meant to complement REAPER built-in
-        functionality of copying media to the project 
-        directory which ignores image files used in item
-        notes and as track icons and only respects video take 
-        source image files.
+About: 	The script is meant to complement REAPER built-in
+		functionality of moving media to the project 
+		directory which ignores image files used in item
+		notes and as track icons and only respects video take 
+		source image files, i.e. image files added directly
+		to track via drag and drop or Insert -> Media file...
+		dialogue.
   
         The script copies image files used in the current
         project to the location in the project directory, which 
