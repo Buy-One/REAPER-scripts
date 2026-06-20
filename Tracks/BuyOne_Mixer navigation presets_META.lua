@@ -26,111 +26,111 @@ Provides: [main] .
 			 . > BuyOne_Mixer navigation preset 8 (global).lua
 			 . > BuyOne_Mixer navigation presets (menu).lua
 About: 	If this script name is suffixed with META, when
-			executed it will automatically spawn all individual
-			scripts included in the package into the directory
-			of the META script and will import them into the
-			Action list from that directory.  
-			For global preset scripts this is only true if the
-			scripts don't exist yet. If they do, then in order 
-			to recreate them they have to be deleted from the 
-			disk first.  
+		executed it will automatically spawn all individual
+		scripts included in the package into the directory
+		of the META script and will import them into the
+		Action list from that directory.  
+		For global preset scripts this is only true if the
+		scripts don't exist yet. If they do, then in order 
+		to recreate them they have to be deleted from the 
+		disk first.
 
-			If there's no META suffix in this script name it 
-			will perfom the operation indicated in its name.
+		If there's no META suffix in this script name it 
+		will perfom the operation indicated in its name.
 
-			The scripts allow saving and recalling Mixer scroll
-			position for quick navigation between tracks, because
-			built-in Track view sets only allow saving tracklist
-			scroll position in Arrange.
+		The scripts allow saving and recalling Mixer scroll
+		position for quick navigation between tracks, because
+		built-in Track view sets only allow saving tracklist
+		scroll position in Arrange.
 
-			SAVING A PRESET
+		SAVING A PRESET
 
-			To save a navigation preset, scroll the Mixer so that
-			the track which will serve as the navigation target 
-			becomes the leftmost fully visible track. If the 
-			visible tracks in the Mixer are too few to allow
-			scrolling the desired track to the leftmost position 
-			and you still intend to save a preset planning
-			to increase the track count going forward (because
-			if scrolling isn't possible due to low track count
-			there's not much sense in saving the navigation preset)
-			what you can do is float the Mixer window if its 
-			currently docked) and shrink it so scrolling becomes
-			possible with the current track count.
+		To save a navigation preset, scroll the Mixer so that
+		the track which will serve as the navigation target 
+		becomes the leftmost fully visible track. If the 
+		visible tracks in the Mixer are too few to allow
+		scrolling the desired track to the leftmost position 
+		and you still intend to save a preset planning
+		to increase the track count going forward (because
+		if scrolling isn't possible due to low track count
+		there's not much sense in saving the navigation preset)
+		what you can do is float the Mixer window if its 
+		currently docked) and shrink it so scrolling becomes
+		possible with the current track count.
 
-			The name of track saved in a per project preset is
-			irrelevant.
+		The name of track saved in a per project preset is
+		irrelevant.
 
-			A global type navigation preset can alternatively be 
-			saved by simply adding the target track name to the 
-			TRACK_NAME setting in the script USER SETTINGS.
+		A global type navigation preset can alternatively be 
+		saved by simply adding the target track name to the 
+		TRACK_NAME setting in the script USER SETTINGS.
 
-			RESETTING A PRESET
+		RESETTING A PRESET
 
-			Close the Mixer and run the preset script.
+		Close the Mixer and run the preset script.
 
-			UPDATING A PRESET
+		UPDATING A PRESET
 
-			In order to update a preset it must be reset first
-			as described in the previous paragraph.
+		In order to update a preset it must be reset first
+		as described in the previous paragraph.
 
-			A global type navigation preset can alternatively be 
-			updated by simply changing the target track name in 
-			the TRACK_NAME setting in the script USER SETTINGS.
+		A global type navigation preset can alternatively be 
+		updated by simply changing the target track name in 
+		the TRACK_NAME setting in the script USER SETTINGS.
 
-			RECALLING A PRESET
+		RECALLING A PRESET
 
-			Run the preset script to scroll the target track to
-			the leftomst position in the Mixer, provided there's 
-			enough scrolling space. With global presets, if 
-			there're multiple tracks which satisfy the TRACK_NAME 
-			setting they will be cycled through.  
-			If the target track is inside a collapsed folder its 
-			last visible parent track will be scrolled to the 
-			leftomst position in the Mixer. 
-			Track which is close to the tracklist end and cannot 
-			be scrolled to the leftmost position will be selected
-			to heighlight it.
+		Run the preset script to scroll the target track to
+		the leftomst position in the Mixer, provided there's 
+		enough scrolling space. With global presets, if 
+		there're multiple tracks which satisfy the TRACK_NAME 
+		setting they will be cycled through.  
+		If the target track is inside a collapsed folder its 
+		last visible parent track will be scrolled to the 
+		leftomst position in the Mixer. 
+		Track which is close to the tracklist end and cannot 
+		be scrolled to the leftmost position will be selected
+		to heighlight it.
 
-			PRESETS MENU SCRIPT
+		PRESETS MENU SCRIPT
 
-			In the script 'BuyOne_Mixer navigation presets (menu).lua'
-			all presets are listed as a menu. The contents of the 
-			Global presets menu depend on the physical presence 
-			of global preset scripts on the disk in the directory
-			of the menu script which is supposed to be the same as 
-			the directory of the META script.  
-			Menu items of non-empty 'per project' presets end with
-			a dot. Menu items of non-empty global presets include
-			the track name and the hashtag sign # if STRICT_MATCH
-			setting in the corresponding script is enabled.  
-			When Mixer scroll position matches the preset, the 
-			preset item is checkmarked in the menu.
+		In the script 'BuyOne_Mixer navigation presets (menu).lua'
+		all presets are listed as a menu. The contents of the 
+		Global presets menu depend on the physical presence 
+		of global preset scripts on the disk in the directory
+		of the menu script which is supposed to be the same as 
+		the directory of the META script.  
+		Menu items of non-empty 'per project' presets end with
+		a dot. Menu items of non-empty global presets include
+		the track name and the hashtag sign # if STRICT_MATCH
+		setting in the corresponding script is enabled.  
+		When Mixer scroll position matches the preset, the 
+		preset item is checkmarked in the menu.
 
-			A WORKFLOW TIP
+		A WORKFLOW TIP
 
-			Besides being able to navigate the open Mixer with the 
-			preset scripts alone, these can be included in a double
-			duty custom action based on the following template. When 
-			the Mixer is closed the custom action will open it and 
-			activate the preset, when the Mixer is open it will only
-			activate the preset:
+		Besides being able to navigate the open Mixer with the 
+		preset scripts alone, these can be included in a double
+		duty custom action based on the following template. When 
+		the Mixer is closed the custom action will open it and 
+		activate the preset, when the Mixer is open it will only
+		activate the preset:
 
-			Custom: Activate Mixer navigation preset 1 (per project)	
-				Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.
-				View: Toggle mixer visible
-				Action: Skip next action if CC parameter >0/mid
-				View: Toggle mixer visible
-				BuyOne_Mixer navigation preset 1 (per project).lua
+		Custom: Activate Mixer navigation preset 1 (per project)	
+			Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.  
+			View: Toggle mixer visible  
+			Action: Skip next action if CC parameter >0/mid  
+			View: Toggle mixer visible  
+			BuyOne_Mixer navigation preset 1 (per project).lua
 
-			OR
+		OR
 
-			Custom: Activate Mixer navigation preset 1 (global)
-				Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.
-				View: Toggle mixer visible
-				Action: Skip next action if CC parameter >0/mid
-				View: Toggle mixer visible
-				BuyOne_Mixer navigation preset 1 (global).lua
+		Custom: Activate Mixer navigation preset 1 (global)  
+			Action: Skip next action, set CC parameter to relative +1 if action toggle state enabled, -1 if disabled, 0 if toggle state unavailable.  
+			View: Toggle mixer visible  
+			Action: Skip next action if CC parameter >0/mid  
+			View: Toggle mixer visible  
+			BuyOne_Mixer navigation preset 1 (global).lua
 
 ]]
 
