@@ -3,7 +3,8 @@ ReaScript name: BuyOne_Script updater and installer.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.7
-Changelog:  1.7 #Included a mention of 'Media Explorer project transport sync.zip' archive
+Changelog:  1.8 #Fixed typo in the code
+			1.7 #Included a mention of 'Media Explorer project transport sync.zip' archive
 				in the final installation status message
 				#Included Media Explorer section in the installation failures report
 			1.6 #Made directory validation method cross-platform
@@ -545,7 +546,7 @@ and (t.zip and space(15) or space(16))..failed_cnt..' installations have failed 
 local success = #failure == 0 and (t.zip and space(4) or space(6))..#t.total -- the successful installation count includes scripts both installed previously and newly installed, all which were collected at the user supplied path
 
 	if failed_cnt > 0 then -- list all scripts which failed to get installed
-	local main = #t > 0 and 'MAIN:\n\n'....table.concat(t,'\n') or ''
+	local main = #t > 0 and 'MAIN:\n\n'..table.concat(t,'\n') or ''
 	local midi = #t.midi > 0 and (#main > 0 and '\n\n' or '')..'MIDI EDITOR:\n\n'..table.concat(t.midi,'\n') or ''
 	local mx = #t.mx > 0 and (#main + #midi > 0 and '\n\n' or '')..'MEDIA EXPLORER:\n\n'..table.concat(t.mx,'\n') or ''
 	Msg(main..midi..mx, r.ClearConsole())
