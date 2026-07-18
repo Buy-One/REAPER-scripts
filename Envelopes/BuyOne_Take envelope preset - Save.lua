@@ -1,5 +1,5 @@
 --[[
-ReaScript name: BuyOne_Save take envelope preset.lua
+ReaScript name: BuyOne_Take envelope preset - Save.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.0
@@ -10,10 +10,10 @@ Provides: [main] .
 About: 	The script allows saving automation item presets in the context 
         of take envelopes which is not supported natively.
 			
-			 Before running the script select source take envelope.	
-			 The script will trigger Save Automation Item dialogue
-			 for manual saving the preset. All the rest is done
-			 by the script.
+		 Before running the script select source take envelope.	
+		 The script will trigger Save Automation Item dialogue
+		 for manual saving the preset. All the rest is done
+		 by the script.
 ]]
 
 
@@ -113,12 +113,12 @@ end
 local is_new_value, script_path, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
 local scr_name = script_path:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
 
-local save, load = scr_name:match('^Save take envelope preset'), scr_name:match('^Load take envelope preset')
-
 --[[---------------- NAME TESTING
-save = 1
-load = 1
+--scr_name = 'Take envelope preset - Save'
+--scr_name = 'Take envelope preset - Load'
 --]]---------------
+
+local save, load = scr_name:match('^Take envelope preset %- Save'), scr_name:match('^Take envelope preset %- Load')
 
 	if not save and not load then
 	Error_Tooltip('\n\n the script name isn\'t recognized \n\n', 1, 1) -- caps, spaced true
