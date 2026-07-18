@@ -10,10 +10,10 @@ Provides: [main] .
 About: 	The script allows saving automation item presets in the context 
         of take envelopes which is not supported natively.
 			
-		 Before running the script select source take envelope.	
-		 The script will trigger Save Automation Item dialogue
-		 for manual saving the preset. All the rest is done
-		 by the script.
+		Before running the script select source take envelope.	
+		The script will trigger Save Automation Item dialogue
+		for manual saving the preset. All the rest is done
+		by the script.
 ]]
 
 
