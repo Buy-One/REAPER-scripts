@@ -3,18 +3,18 @@ ReaScript name: BuyOne_Save-Load window set #1-10 with Mixer scroll position_MET
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.6
-Changelog:  v1.6 #Fixed individual script installation function
-		 #Made individual script installation function more effici
-	    v1.5 #Creation of individual scripts has been made hands-free. 
-		 These are created in the directory the META script is located in
-		 and from there are imported into the Action list.
-		 #Updated About text
-	    v1.4 #Added functionality to export individual scripts included in the package
-		 #Updated About text
-	    v1.3 #Fixed error prone pieces of code
-	    v1.2 #Fixed capture of MCP folder state
-		 #Fixed logic of the search for the parent of a collapsed folder the target track is in
-	    v1.1 #More reliable scroll in different situations
+Changelog:	1.6 #Fixed individual script installation function
+				#Made individual script installation function more efficient
+			1.5 #Creation of individual scripts has been made hands-free. 
+				These are created in the directory the META script is located in
+				and from there are imported into the Action list.
+				#Updated About text
+			1.4 #Added functionality to export individual scripts included in the package
+				#Updated About text
+			1.3 #Fixed error prone pieces of code
+			1.2 #Fixed capture of MCP folder state
+				#Fixed logic of the search for the parent of a collapsed folder the target track is in
+			1.1 #More reliable scroll in different situations
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M for best performance
