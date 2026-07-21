@@ -7,92 +7,95 @@ Changelog: Initial release
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS, not mandatory but recommended
-About: 	The script allows storing and recalling last project specific 
-	Mixer scroll position on project load and when switching between
-	project tabs. It can work in manual and in auto modes.
+About: 	Mixer scroll position per project is stored and restored 
+		by REAPER natively since build 7.76.
+		
+		The script allows storing and recalling last project specific 
+		Mixer scroll position on project load and when switching between
+		project tabs. It can work in manual and in auto modes.
+	
+		▓ M A N U A L  M O D E
 
-        ▓ M A N U A L  M O D E
+		To take advantage of the script functionality 
+		you'll need to set up a number of custom actions 
+		featuring the script and optionally use SWS extension 
+		'Project startup action' utility.
 
-        To take advantage of the script functionality 
-        you'll need to set up a number of custom actions 
-        featuring the script and optionally use SWS extension 
-        'Project startup action' utility.
+		► RECALLING
 
-        ► RECALLING
+		In order to be able to recall the Mixer scroll position
+		on project load do one of the following or both. 
+		Create a custom action (note that the two script instances):  
 
-        In order to be able to recall the Mixer scroll position
-        on project load do one of the following or both. 
-        Create a custom action (note that the two script instances):  
+		  Custom: Open project and restore Mixer scroll position  
+		  Script: BuyOne_(Re)Store Mixer scroll position per project.lua <--- (this script) 
+		  File: Open project  
+		  Script: BuyOne_(Re)Store Mixer scroll position per project.lua <--- (this script)  
 
-          Custom: Open project and restore Mixer scroll position  
-          Script: BuyOne_(Re)Store Mixer scroll position per project.lua <--- (this script) 
-          File: Open project  
-          Script: BuyOne_(Re)Store Mixer scroll position per project.lua <--- (this script)  
+		Use it to load project via Open project dialogue. Set up 'Project startup action':  
+		1) Copy this script command ID by right-clicking on its entry in the Action list  
+		and selecting 'Copy selected action command ID'.  
+		2) From the main REAPER menu select Extensions -> Startup actions -> Set project startup action  
+		3) Paste the copied script command ID into the 'Set project startup action' field  
+		4) Click OK and save the project so the setting is stored in it.  
+		Now the project can be loaded from the 'Recent projects' menu 
+		and have Mixer scroll position recalled. SWS Project startup action 
+		must be set for each project you wish to be affected by this script on load.
 
-        Use it to load project via Open project dialogue. Set up 'Project startup action':  
-        1) Copy this script command ID by right-clicking on its entry in the Action list  
-        and selecting 'Copy selected action command ID'.  
-        2) From the main REAPER menu select Extensions -> Startup actions -> Set project startup action  
-        3) Paste the copied script command ID into the 'Set project startup action' field  
-        4) Click OK and save the project so the setting is stored in it.  
-        Now the project can be loaded from the 'Recent projects' menu 
-        and have Mixer scroll position recalled. SWS Project startup action 
-        must be set for each project you wish to be affected by this script on load.
+		To be able to recall Mixer scroll position when switching between project tabs
+		set up the following custom actions:  
 
-        To be able to recall Mixer scroll position when switching between project tabs
-        set up the following custom actions:  
+		  Custom: Open next proj tab and restore Mixer scroll position  
+		  Next project tab  
+		  Script: BuyOne_(Re)Store Mixer scroll position per project.lua <--- (this script)  
 
-          Custom: Open next proj tab and restore Mixer scroll position  
-          Next project tab  
-          Script: BuyOne_(Re)Store Mixer scroll position per project.lua <--- (this script)  
+		  Custom: Open previous proj tab and restore Mixer scroll position  
+		  Previous project tab  
+		  Script: BuyOne_(Re)Store Mixer scroll position per project.lua <--- (this script)  
 
-          Custom: Open previous proj tab and restore Mixer scroll position  
-          Previous project tab  
-          Script: BuyOne_(Re)Store Mixer scroll position per project.lua <--- (this script)  
+		Use them instead of the stock action to switch project tabs.  
+		If you prefer switching tabs manually then after each such switch the script will
+		have to be run manually.
 
-        Use them instead of the stock action to switch project tabs.  
-        If you prefer switching tabs manually then after each such switch the script will
-        have to be run manually.
+		► STORING
 
-        ► STORING
+		Once the Mixer scroll position is recalled within a project the script switches 
+		to the storage mode. Its consequtive runs will store current Mixer scroll position 
+		whatever it is at any given moment. But to be able to store it in the project file 
+		the project file must be explicitly saved, for this purpose set up the following 
+		custom action:  
 
-        Once the Mixer scroll position is recalled within a project the script switches 
-        to the storage mode. Its consequtive runs will store current Mixer scroll position 
-        whatever it is at any given moment. But to be able to store it in the project file 
-        the project file must be explicitly saved, for this purpose set up the following 
-        custom action:  
+		  Custom: Save project with Mixer scroll position  
+		  Script: BuyOne_(Re)Store Mixer scroll position per project.lua <--- (this script)  
+		  File: Save project  
 
-          Custom: Save project with Mixer scroll position  
-          Script: BuyOne_(Re)Store Mixer scroll position per project.lua <--- (this script)  
-          File: Save project  
+		and use it instead of the stock Save action.
 
-        and use it instead of the stock Save action.
+		So basically once the scroll position has been recalled within a project 
+		it can only be recalled again if you don't save the project and switch 
+		to another project tab to switch back to the current one using a custom 
+		action described above or running the script directly. Once the project 
+		has been saved with that custom action a new scroll position has been 
+		stored unless it remained the same after recalling.
 
-        So basically once the scroll position has been recalled within a project 
-        it can only be recalled again if you don't save the project and switch 
-        to another project tab to switch back to the current one using a custom 
-        action described above or running the script directly. Once the project 
-        has been saved with that custom action a new scroll position has been 
-        stored unless it remained the same after recalling.
+		After running the above custom action to store a new scroll position you 
+		may notice asterisk added to the project name in the project tab as is 
+		usually the case when the project has been altered and there's data waiting 
+		to be saved. But this doesn't mean the scroll position failed to get stored. 
+		Admittedly confusing but couldn't figure out why this happens.
 
-        After running the above custom action to store a new scroll position you 
-        may notice asterisk added to the project name in the project tab as is 
-        usually the case when the project has been altered and there's data waiting 
-        to be saved. But this doesn't mean the scroll position failed to get stored. 
-        Admittedly confusing but couldn't figure out why this happens.
+		▓ A U T O  M O D E 
 
-        ▓ A U T O  M O D E 
-
-        In auto mode the script runs in the background and stores and recalls 
-        the Mixer scroll position automatically.  
-        What you will still need to do is periodically save the project so that 
-        the latest scroll position data is saved to the project file and is available 
-        on the next project load. But for recalling the scroll position while jumping
-        between project tabs saving isn't necessary.  
-        This mode must be enabled in the USER SETTINGS.  
-        To launch the script automatically on REAPER startup add its command ID to the 
-        SWS extension 'Startup actions' as a 'Global startup action'.  
-	If the script is linked to a toolbar button in auto mode the button will be lit.
+		In auto mode the script runs in the background and stores and recalls 
+		the Mixer scroll position automatically.  
+		What you will still need to do is periodically save the project so that 
+		the latest scroll position data is saved to the project file and is available 
+		on the next project load. But for recalling the scroll position while jumping
+		between project tabs saving isn't necessary.  
+		This mode must be enabled in the USER SETTINGS.  
+		To launch the script automatically on REAPER startup add its command ID to the 
+		SWS extension 'Startup actions' as a 'Global startup action'.  
+		If the script is linked to a toolbar button in auto mode the button will be lit.
 
 ]]
 ------------------------------------------------------------------
