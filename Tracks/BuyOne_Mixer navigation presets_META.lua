@@ -39,9 +39,10 @@ About: 	If this script name is suffixed with META, when
 		will perfom the operation indicated in its name.
 
 		The scripts allow saving and recalling Mixer scroll
-		position for quick navigation between tracks, because
-		built-in Track view sets only allow saving tracklist
-		scroll position in Arrange.
+		position for quick navigation between tracks in 
+		REAPER builds older than 7.77 where built-in 
+		Track view sets only allow saving tracklist scroll 
+		position in Arrange.
 
 		SAVING A PRESET
 
