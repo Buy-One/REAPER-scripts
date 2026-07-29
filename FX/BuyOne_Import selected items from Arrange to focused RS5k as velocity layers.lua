@@ -8,10 +8,10 @@ Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main] .
 About: 	If selected item has multiple takes
-			  the script only respects the active take.
+		the script only respects the active take.
 
-		  	The items are imported in the order
-			  of their selection.
+		The items are imported in the order
+		of their selection.
 ]]
 
 -----------------------------------------------------------------------------
@@ -260,17 +260,17 @@ function Validate_FX_Identity(obj, fx_idx, fx_name, parm_t, parm_ident_t, TAG)
 -- relies on Esc() function
 
 local tr, take = r.ValidatePtr(obj, 'MediaTrack*'), r.ValidatePtr(obj, 'MediaItem_Take*')
-local GetFXName, GetConfig, CopyFX, GetParmCount, GetParamName =
+local GetFXName, GetConfig, CopyFX, GetParmCount, GetParamName, GetParamIdent =
 table.unpack(tr and {r.TrackFX_GetFXName, r.TrackFX_GetNamedConfigParm,
-r.TrackFX_CopyToTrack, r.TrackFX_GetNumParams, r.TrackFX_GetParamName}
+r.TrackFX_CopyToTrack, r.TrackFX_GetNumParams, r.TrackFX_GetParamName, r.TrackFX_GetParamIdent}
 or take and {r.TakeFX_GetFXName, r.TakeFX_GetNamedConfigParm,
-r.TakeFX_CopyToTrack, r.TakeFX_GetNumParams, r.TakeFX_GetParamName} or {})
+r.TakeFX_CopyToTrack, r.TakeFX_GetNumParams, r.TakeFX_GetParamName, r.TakeFX_GetParamIdent} or {})
 -- get name displayed in fx chain
 local retval, fx_chain_name = GetFXName(obj, fx_idx, '')
 fx_chain_name = TAG and fx_chain_name:gsub(TAG,'') or fx_chain_name -- if TAG is supplied removing to be able to evaluate clean name // script specific
 	if fx_chain_name:match(Esc(fx_name)) then return true end -- ignoring fx type prefix
 
--- if fx chain displayed name doesn't match the user supplied name, meaning was renamed
+-- if fx chain displayed name doesn't match the user supplied name, meaning it was renamed
 -- get fx browser displayed name in builds which support this option
 
 local build_6_37 = tonumber(r.GetAppVersion():match('[%d%.]+')) >= 6.37
@@ -285,79 +285,83 @@ local retval, orig_fx_name
 	end
 
 -- if validation by the original name failed or wasn't supported
--- validate using parameter names
+-- validate using parameter names and identifiers
 
--- add temp track and copy the fx instance to it
+local validated
+	if build_6_37 and parm_ident_t then
+		for idx, ident in pairs(parm_ident_t) do
+		local retval, parm_ident = GetParamIdent(obj, fx_idx, idx)
+			if not parm_ident:match(Esc(ident)) then return end -- using string.match because returned identifiers incluse param index, i.e. 1:_identifier, while the table fed as argument doesn't
+		end
+	validated = 1
+	end
+	if validated then return true
+	elseif parm_t then
+		for idx, name in pairs(parm_t) do
+		local retval, parm_name = GetParamName(obj, fx_idx, idx, '')
+			if name ~= parm_name then return end
+		end
+	validated = 1
+	end
+
+	if validated then return true end
+
+-- if validation by parameter identifiers cound't be performed 
+-- due to build being older than 6.37
+-- and validation by parameter names failed due to their aliasing
+-- add fresh fx instance by name to a temp track and compare names of random parameters
+-- collected from the source fx to those of the fresh fx instance on the temp track,
+-- in builds older than 6.37 the evaluation isn't reliable
+-- by 100% because some parameter names in the source fx may be aliased
+-- and won't match the expected names
 r.PreventUIRefresh(1)
 r.InsertTrackAtIndex(r.GetNumTracks(), false) -- wantDefaults false; insert new track at end of track list and hide it; action 40702 'Track: Insert new track at end of track list' creates undo point hence unsuitable
 local temp_track = r.GetTrack(0,r.CountTracks(0)-1)
 r.SetMediaTrackInfo_Value(temp_track, 'B_SHOWINMIXER', 0) -- hide in Mixer
 r.SetMediaTrackInfo_Value(temp_track, 'B_SHOWINTCP', 0) -- hide in Arrange
--- search for the name of fx parameter at the same index as the one being evaluated
--- in plugin copy on the temp track,
--- in builds older than 6.37 the evaluation isn't reliable
--- by 100% because some parameter names in the source fx may be aliased
--- and won't match the expected names
--- parameter identifiers supported since build 6.37 however are likely to be immutable
 CopyFX(obj, fx_idx, temp_track, 0, false) -- is_move false
 
-local parm_t = parm_t and type(parm_t) == 'table' and #parm_t > 0 and parm_t
-local parm_ident_t = parm_ident_t and type(parm_ident_t) == 'table' and #parm_ident_t > 0 and parm_ident_t
-local name_match = true
+validated = 1
 
-	if parm_t or parm_ident_t then
-		for idx, name in pairs(parm_t) do
+local src_parm_cnt = GetParmCount(obj, fx_idx)
+local tmp_parm_cnt = r.TrackFX_GetNumParams(temp_track, 0) -- 0 temp fx index
+	
+	if src_parm_cnt ~= tmp_parm_cnt then
+	validated = nil
+	else
+	parm_t, parm_ident_t = {}, {}
+	math.randomseed(math.floor(r.time_precise()*1000))
+	local count = src_parm_cnt > 5 and 6 or src_parm_cnt -- look for 6 param names as long as the param count allows that, 6 is more reliable than 3 or 4 because random number may repeat which will reduce the number of options
+		for i=1, count do
+		-- collect parameter data from the source fx
 		local ident
-		local retval, parm_name = r.TrackFX_GetParamName(temp_track, 0, idx, '') -- fx_idx 0
+		local rnd = math.random(1, src_parm_cnt)-1 -- math.random range must start from 1
+		local ret, parm_name = GetParamName(obj, fx_idx, rnd, '')
 			if build_6_37 then
-			retval, ident = r.TrackFX_GetParamIdent(temp_track, 0, idx)
+			ret, ident = r.TrackFX_GetParamIdent(obj, fx_idx, rnd)
 			end
-			if partm_t and name ~= parm_name
-			or parm_ident_t and not ident:match(Esc(parm_ident_t[idx])) -- using string.match because returned identifiers incluse param index, i.e. 1:_identifier, while the table fed as argument doesn't
-			then
+		local stock = parm_name == 'Bypass' or parm_name == 'Wet' or build_6_37 and parm_name == 'Delta' -- excluding 3 stock parameters because they're not unique to a plugin
+			if parm_t[rnd] or parm_ident_t[rnd] or stock then -- prevent storing the same param several times if math.random generates the same number, and storing stock params
+				repeat
+				rnd = math.random(1, src_parm_cnt)-1
+				ret, parm_name = GetParamName(obj, fx_idx, rnd, '')
+				until not parm_t[rnd] and not parm_ident_t[rnd]
+				and parm_name ~= 'Bypass' and parm_name ~= 'Wet'
+				and (not build_6_37 or parm_name ~= 'Delta')
+			end
+		parm_t[rnd], parm_ident_t[rnd] = parm_name, ident -- store
+		end
+		-- compare collected parameter data with temp fx parameters
+		for parm_idx, name in pairs(parm_t) do
+		local ident
+		local retval, parm_name = r.TrackFX_GetParamName(temp_track, 0, parm_idx, '') -- fx_idx 0
+			if build_6_37 then
+			retval, ident = r.TrackFX_GetParamIdent(temp_track, 0, parm_idx)
+			end
+			if name ~= parm_name or parm_ident_t[parm_idx] and parm_ident_t[parm_idx] ~= ident then
 			-- break rather than return to allow deletion of the temp track
 			-- before returning the value
-			name_match = false break
-			end
-		end
-	else -- compare names and identifiers of up to 6 random parameters
-	local src_parm_cnt = GetParmCount(obj, fx_idx)
-	local tmp_parm_cnt = r.TrackFX_GetNumParams(temp_track, 0) -- 0 temp fx index
-		if src_parm_cnt == tmp_parm_cnt then
-		parm_t, parm_ident_t = {}, {}
-		math.randomseed(math.floor(r.time_precise()*1000))
-		local count = src_parm_cnt > 5 and 6 or src_parm_cnt -- look for 6 param names as long as the param count allows that, 6 is more reliable than 3 or 4 because random number may repeat which will reduce the number of options
-			for i=1, count do
-			-- collect parameter data from the source fx
-			local ident
-			local rnd = math.random(1, src_parm_cnt)-1 -- math.random range must start from 1
-			local ret, parm_name = GetParamName(obj, fx_idx, rnd, '')
-				if build_6_37 then
-				ret, ident = r.TrackFX_GetParamIdent(obj, fx_idx, rnd)
-				end
-			local stock = parm_name == 'Bypass' or parm_name == 'Wet' or build_6_37 and parm_name == 'Delta' -- excluding 3 stock parameters because they're not unique to a plugin
-				if parm_t[rnd] or parm_ident_t[rnd] or stock then -- prevent storing the same param several times if math.random generates the same number, and storing stock params
-					repeat
-					rnd = math.random(1, src_parm_cnt)-1
-					ret, parm_name = GetParamName(obj, fx_idx, rnd, '')
-					until not parm_t[rnd] and not parm_ident_t[rnd]
-					and parm_name ~= 'Bypass' and parm_name ~= 'Wet'
-					and (not build_6_37 or parm_name ~= 'Delta')
-				end
-			parm_t[rnd], parm_ident_t[rnd] = parm_name, ident -- store
-			end
-			-- compare collected parameter data with temp fx parameters
-			for parm_idx, name in pairs(parm_t) do
-			local ident
-			local retval, parm_name = r.TrackFX_GetParamName(temp_track, 0, parm_idx, '') -- fx_idx 0
-				if build_6_37 then
-				retval, ident = r.TrackFX_GetParamIdent(temp_track, 0, parm_idx)
-				end
-				if name ~= parm_name or parm_ident_t[parm_idx] and parm_ident_t[parm_idx] ~= ident then
-				-- break rather than return to allow deletion of the temp track
-				-- before returning the value
-				name_match = false break
-				end
+			validated = nil break
 			end
 		end
 	end
@@ -365,10 +369,9 @@ local name_match = true
 r.DeleteTrack(temp_track)
 r.PreventUIRefresh(-1)
 
-return name_match
+return validated
 
 end
-
 
 
 function Import_Item_To_RS5k(item, track, rs5k_idx, item_idx) -- doesn't set sample Mode and doesn't map to a keyboard key
