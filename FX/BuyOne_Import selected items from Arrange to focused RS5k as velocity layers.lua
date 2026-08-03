@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Import selected items from Arrange to focused RS5k as velocity layers.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: 	#Provided for a possibility of selected items being located on different tracks
+			#Added RANDOM_ORDER setting
+			#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main] .
@@ -11,7 +13,9 @@ About: 	If selected item has multiple takes
 		the script only respects the active take.
 
 		The items are imported in the order
-		of their selection.
+		of their selection which in REAPER is
+		left to right top to bottom unless
+		RANDOM_ORDER setting is enabled. 
 ]]
 
 -----------------------------------------------------------------------------
@@ -29,10 +33,12 @@ About: 	If selected item has multiple takes
 -- taken from the last selected item
 RESPECT_ITEM_PITCH = "1"
 
+
 -- Both item volume and active take volume;
 -- the final volume applied to RS5k will be
 -- taken from the last selected item
 RESPECT_ITEM_VOLUME = "1"
+
 
 -- Respect item trimming;
 -- if trimmed to the point of the source
@@ -42,7 +48,13 @@ RESPECT_ITEM_VOLUME = "1"
 -- will be taken from the last selected item
 RESPECT_ITEM_BOUNDS = "1"
 
------------------------------------------------------------------------------
+
+-- Enable to have active takes imported
+-- in a random order rather than in the order
+-- of their parent items within the project
+RANDOM_ORDER = ""
+
+----------------------------------------------------------------------------
 -------------------------- END OF USER SETTINGS -----------------------------
 -----------------------------------------------------------------------------
 
@@ -325,7 +337,7 @@ validated = 1
 
 local src_parm_cnt = GetParmCount(obj, fx_idx)
 local tmp_parm_cnt = r.TrackFX_GetNumParams(temp_track, 0) -- 0 temp fx index
-	
+
 	if src_parm_cnt ~= tmp_parm_cnt then
 	validated = nil
 	else
@@ -372,6 +384,19 @@ r.PreventUIRefresh(-1)
 return validated
 
 end
+
+
+
+function Randomize_Array(t)
+-- https://gist.github.com/Uradamus/10323382
+-- Fisher-Yates algo, provides for a better chance of value ending up at an index different from the original
+math.randomseed(math.floor(r.time_precise()*1000)) -- math.floor() because the seeding number must be integer; seems to facilitate greater randomization at fast rate thanks to milliseconds count, not necessary in this script though
+	for i=#t, 2, -1 do
+	local r = math.random(i)
+	t[r], t[i] = t[i], t[r]
+	end
+end
+
 
 
 function Import_Item_To_RS5k(item, track, rs5k_idx, item_idx) -- doesn't set sample Mode and doesn't map to a keyboard key
@@ -469,21 +494,32 @@ local retval, tr_num, tr, itm_num, item, take_num, take, fx_num, mon_fx, fx_alia
 local parm_t = {[11]='Obey note-offs', [19]='Probability of hitting', [26]='Release (note-off)'}
 local parm_ident_t = {[11]='11:_Obey_note_offs', [19]='19:_Probability_of_hitting', [26]='26:_Release__note_off_'}
 local rs5k = Validate_FX_Identity(take or tr, fx_num, 'ReaSamplOmatic5000', parm_t, parm_ident_t)
---Msg(rs5k)
+
 	if not rs5k then
 	Error_Tooltip('\n\n the focused fx is not RS5k \n\n', 1,1) -- caps, spaced true
 	return r.defer(no_undo)
 	end
+	
 
-
-r.Undo_BeginBlock()
+local sel_itms_t = {}
 
 	for i=0, sel_itm_cnt-1 do
 	local item = r.GetSelectedMediaItem(0,i)
 	local take = r.GetActiveTake(item)
 		if is_audio_src(take) then
-		Import_Item_To_RS5k(item, tr, fx_num, i)
+		local tr = r.GetMediaItemTrack(item)
+		sel_itms_t[#sel_itms_t+1] = item
 		end
+	end
+	
+	if RANDOM_ORDER:match('%S') then
+	Randomize_Array(sel_itms_t)
+	end
+
+r.Undo_BeginBlock()
+
+	for k, item in ipairs(sel_itms_t) do
+	Import_Item_To_RS5k(item, r.GetMediaItemTrack(item), fx_num, k-1) -- k-1 because sample indexing is 0-based
 	end
 
 r.Undo_EndBlock('Import selected items from Arrange to focused RS5k as velocity layers', -1)
