@@ -9,31 +9,31 @@ REAPER: at least v5.962
 Extensions: SWS/S&M
 Provides: [main=main,midi_editor] .
 About:	The script allows enabling and setting Project length limit
-    		for the current project optionally placing a marker signifying
-    		the limit on the time line.  
-    		
-    		If the mouse cursor doesn't hover directly over the Arrange
-    		the edit cursor position will be the target position instead,
-    		unless it hovers over a Mixer track.
-    		This allows running the script from a toolbar button, a menu item,
-    		from the Action list and when the mouse cursor is outside of the 
-    		Arrange.
-    		
-    		Since REAPER build 7.16 project length limit is indicated with a 
-    		STOP icon in the Ruler but the icon cannot be dragged to change 
-    		the setting.
-    		So the script can be useful in both earlier and later builds.
-    
-    		If the setting INSERT_PROJ_LIMIT_MARKER was disabled after the 
-    		project length limit marker was inserted, the marker will be 
-    		removed because otherwise it will be misleading.
-    		
-    		To bake the new setting in the project file the project must be
-    		saved therefore it's advised to use the script as part of a custom
-    		action:
-    		
-    			BuyOne_Set project length limit to mouse or edit cursor.lua
-    			File: Save project
+		for the current project optionally placing a marker signifying
+		the limit on the time line.  
+		
+		If the mouse cursor doesn't hover directly over the Arrange
+		the edit cursor position will be the target position instead,
+		unless it hovers over a Mixer track.
+		This allows running the script from a toolbar button, a menu item,
+		from the Action list and when the mouse cursor is outside of the 
+		Arrange.
+		
+		Since REAPER build 7.16 project length limit is indicated with a 
+		STOP icon in the Ruler but the icon cannot be dragged to change 
+		the setting.
+		So the script can be useful in both earlier and later builds.
+
+		If the setting INSERT_PROJ_LIMIT_MARKER was disabled after the 
+		project length limit marker was inserted, the marker will be 
+		removed because otherwise it will be misleading.
+		
+		To bake the new setting in the project file the project must be
+		saved therefore it's advised to use the script as part of a custom
+		action:
+		
+			BuyOne_Set project length limit to mouse or edit cursor.lua
+			File: Save project
 
 ]]
 -----------------------------------------------------------------------------
