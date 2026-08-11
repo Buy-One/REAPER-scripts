@@ -2,8 +2,7 @@
 ReaScript Name: Close tab or quit REAPER without Save prompt
 Author: BuyOne
 Version: 1.1
-Changelog: 	#Fixed error message display
-			#Made DUMMY_PROJECT_PATH setting optional for builds 6.53+
+Changelog: 	#Made DUMMY_PROJECT_PATH setting optional for builds 6.53+
 Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v5.962
