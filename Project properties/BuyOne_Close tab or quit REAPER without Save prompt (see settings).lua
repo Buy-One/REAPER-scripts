@@ -18,6 +18,10 @@ About: 	Use instead of the native actions whenever you like to exit
 	
 		The script will only work if DUMMY_PROJECT_PATH setting in 
 		USER SETTINGS is configured.
+
+		The only drabwack is that the dummy project path is added
+		to the Recent Projects menu, but as long as the file's
+		location remains constant that's only a single extra line.
 ]]
 
 -----------------------------------------------------------------
