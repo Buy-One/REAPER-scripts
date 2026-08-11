@@ -1,8 +1,9 @@
 --[[
 ReaScript Name: Close tab or quit REAPER without Save prompt
 Author: BuyOne
-Version: 1.0
-Changelog: Initial release
+Version: 1.1
+Changelog: 	#Fixed error message display
+			#Made DUMMY_PROJECT_PATH setting optional for builds 6.53+
 Author URL: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Licence: WTFPL
 REAPER: at least v5.962
@@ -28,6 +29,9 @@ About: 	Use instead of the native actions whenever you like to exit
 ------------------- U S E R  S E T T I N G S --------------------
 -----------------------------------------------------------------
 
+-- The setting is only mandatory for builds older than 6.53,
+-- in the newer builds if the setting is empty a dummy project file 
+-- will be created automatically and placed at the path of this script;
 -- Dummy project path must be a full path to a valid .RPP file, 
 -- such as an empty project, which is preferable, e.g.
 -- C:\REAPER\ProjectTemplates\my_dummy_project.RPP
@@ -52,10 +56,36 @@ MULTITAB_QUIT = "" -- only relevant when MULTITAB is enabled
 -------------- E N D  O F  U S E R  S E T T I N G S -------------
 -----------------------------------------------------------------
 
-	if not reaper.file_exists(DUMMY_PROJECT_PATH) then
+local err = not DUMMY_PROJECT_PATH:match('%S') and 'the dummy project path is empty'
+or not reaper.file_exists(DUMMY_PROJECT_PATH) and (' '):rep(7)..'invalid path \n\n  to the dummy project'
+
+local new_builds = tonumber(reaper.GetAppVersion():match('[%d%.]+')) >= 6.53
+	if new_builds then
+	local is_new_value, path, sect_ID, cmd_ID, mode, resol, val, contextstr = reaper.get_action_context()
+	path = path:match('.+[\\/]')
+	DUMMY_PROJECT_PATH = path..'BuyOne_dummy project (do not rename).RPP'
+	end
+local create
+
+	if err and not new_builds then -- builds without Main_SaveProjectEx() support
 	local x, y = reaper.GetMousePosition()
-	reaper.TrackCtl_SetToolTip(('\n\n        invalid path \n\n  to the dummy project  \n\n '):upper():gsub('.','%0 '), x, y, true) -- topmost true
-	return reaper.defer(function() do return end end) end
+	reaper.TrackCtl_SetToolTip(('\n\n '..err..' \n\n '):upper():gsub('.','%0 '), x, y, true) -- topmost true
+	return reaper.defer(function() end)
+	elseif err:match('invalid') and not reaper.file_exists(DUMMY_PROJECT_PATH) then -- build supports Main_SaveProjectEx() but the user preferred their own dummy project file a path to which has turned out to be invalid while there's no alternative dummy project file at the script path
+	local resp = reaper.MB((' '):rep(9)..'The dummy project path is invalid.\n\n'
+	..(' '):rep(10)..'Wish a dummy project file named\n\nBuyOne_dummy project (do not rename).RPP\n\n'
+	..'to be created automatically at the script path?', 'PROMPT', 4)
+		if resp == 6 then -- YES
+		create = 1 -- to trigger dummy project file creation at the script path below
+		else
+		return reaper.defer(function() end)
+		end
+	end
+
+	if create then -- create a dummy project file at the script path
+	reaper.Main_SaveProjectEx(0, DUMMY_PROJECT_PATH, 0) -- option 0 to save file without linking it to the current tab
+	end
+
 
 
 function CLOSE()
