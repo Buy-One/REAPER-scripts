@@ -14,7 +14,12 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: 
 Provides: [main=main,midi_editor] .
-About: 	Inspired by actions introduced in build 7.47
+About: 	The script is likely redundant because the same functionality
+		is available natively provided the preference at
+		Preferences -> Editing Behavior -> Envelopes -> Changing envelope in lane
+		is set to 'Hide old envelope'.
+
+		Inspired by actions introduced in build 7.47
 		Track: Hide envelope, display next/previous envelope on same track (cycle)
 		
 		The menu is designed to toggle exclusive visibility 
