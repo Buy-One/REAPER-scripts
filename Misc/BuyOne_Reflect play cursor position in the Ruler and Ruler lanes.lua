@@ -6,7 +6,7 @@ Version: 1.0
 Changelog: #Initial release
 Licence: WTFPL
 REAPER: at least v5.962
-Provides: [main=main,midi_editor] .
+Provides: [main=main] .
 About: 	The functionality is achieved by linking position
   			of either the edit cursor or a temporary marker or both
   			to the play cursor when the transport is in play mode 
