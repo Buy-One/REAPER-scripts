@@ -98,6 +98,10 @@ function no_undo()
 end
 
 
+function act(ID)
+r.MIDIEditor_LastFocused_OnCommand(ID, false) -- islistviewcommand false
+end
+
 
 function Error_Tooltip(text, caps, spaced, x2, y2, want_color, want_blink)
 -- the tooltip sticks under the mouse within Arrange
