@@ -9,35 +9,37 @@ REAPER: at least v5.962
 Extensions: 
 Provides: [main=main,midi_editor] .
 About: 	Meant to be a counterpart of the native action 
-			'Envelope: Insert 4 envelope points at time selection'
-			but for the MIDI Editor.
+		'Envelope: Insert 4 envelope points at time selection'
+		but for the MIDI Editor.
 
-			The most obvious use is creating a segment for
-			a particular note event or a number of such.			
-			To automate this task use the script inside a custom
-			action as follows:
+		Current CC lane is the last clicked.
 
-			Custom: Insert square segment in CC envelope at selected notes  
-				Edit: Set time selection to selected notes  
-				Script: BuyOne_Insert square segment in CC envelope in time selection.lua  
-				Time selection: Remove time selection
+		The most obvious use is creating a segment for
+		a particular note event or a number of such.			
+		To automate this task use the script inside a custom
+		action as follows:
 
-			The inserted segment shape is square which 
-			consists of 2 points rather than 4 because
-			square 4 point segment isn't supported in 
-			CC envelopes and falls apart in response 
-			to click.
+		Custom: Insert square segment in CC envelope at selected notes  
+			Edit: Set time selection to selected notes  
+			Script: BuyOne_Insert square segment in CC envelope in time selection.lua  
+			Time selection: Remove time selection
 
-			The segment is inserted in the currently active
-			MIDI channel (the one selected in the channel filter)
-			or in the last active channel if 'All Channels' 
-			or 'Multichannel' options are selected.
-			If the option   
-			'Selecting a single note sets the channel for new events'
-			is enabled, active MIDI channel will change as
-			soon as a note is selected with a click.
+		The inserted segment shape is square which 
+		consists of 2 points rather than 4 because
+		square 4 point segment isn't supported in 
+		CC envelopes and falls apart in response 
+		to click.
 
-			Also see USER SETTINGS below.
+		The segment is inserted in the currently active
+		MIDI channel (the one selected in the channel filter)
+	or in the last active channel if 'All Channels' 
+	or 'Multichannel' options are selected.
+	If the option   
+	'Selecting a single note sets the channel for new events'
+	is enabled, active MIDI channel will change as
+	soon as a note is selected with a click.
+
+	Also see USER SETTINGS below.
 			
 ]]
 
