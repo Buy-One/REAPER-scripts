@@ -308,22 +308,29 @@ local val
 
 r.Undo_BeginBlock()
 
+act(40671) -- Unselect all CC events // to be able to identify the selected point(s) which are made selection on insertion
+
 Delete_CC_Events_Within_Time(ME, take, data_type, last_focused, st, fin)
+
 -- top point values
 local msg2_lsb = data_type == 176 and last_focused
 or val and (pitch_env and val & 127 or (ch_press or prog) and val) or (ch_press or prog) and 127 or 0
 local msg3_msb = val and (pitch_env and (val >> 7) & 127 or val) or (ch_press or prog) and 0 or 127
-st = r.MIDI_GetPPQPosFromProjTime(take, st)
-fin = r.MIDI_GetPPQPosFromProjTime(take, fin)
-local chan = r.MIDIEditor_GetSetting_int(ME, 'default_note_chan')
 -- bottom point values
 _msg2_lsb = pitch_env and 8191&127 or data_type == 176 and last_focused or 0
 _msg3_msb = pitch_env and 8191>>7&127 or 0
 
-r.MIDI_InsertCC(take, false, false, st, data_type, chan, msg2_lsb, msg3_msb) -- selected false, muted false // point 1
-r.MIDI_SetCCShape(take, r.MIDI_EnumSelCC(take, -1), 0, 0, true) -- shape 0 square, beztension 0, noSortIn true // although the square shape seems to be default for a new point
+st = r.MIDI_GetPPQPosFromProjTime(take, st)
+fin = r.MIDI_GetPPQPosFromProjTime(take, fin)
+local chan = r.MIDIEditor_GetSetting_int(ME, 'default_note_chan')
+
+r.MIDI_InsertCC(take, true, false, st, data_type, chan, msg2_lsb, msg3_msb) -- selected true, muted false // point 1 // selected true to be able to identify this point in order to set its segment shape to square although the square shape seems to be default for a new point but just in case
+r.MIDI_SetCCShape(take, r.MIDI_EnumSelCC(take, -1), 0, 0, true) -- shape 0 square, beztension 0, noSortIn true
 r.MIDI_InsertCC(take, false, false, fin, data_type, chan, _msg2_lsb, _msg3_msb) -- selected false, muted false // point 2
 
-r.Undo_EndBlock('Create rectangular segment in CC envelope in time selection.lua', -1)
+r.MIDI_Sort(take)
 
+act(40671) -- Unselect all CC events
+
+r.Undo_EndBlock('Create rectangular segment in CC envelope in time selection.lua', -1)
 
