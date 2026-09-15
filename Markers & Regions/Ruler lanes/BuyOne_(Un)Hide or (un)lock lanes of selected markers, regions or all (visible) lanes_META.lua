@@ -2,8 +2,8 @@
 ReaScript name: BuyOne_(Un)Hide or (un)lock lanes of selected markers, regions or all (visible) lanes_META.lua (18 scripts)
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Fixed some script names in the list which lacked the extension
 Licence: WTFPL
 REAPER: at least v7.62
 Provides: 	[main=main,midi_editor] .
