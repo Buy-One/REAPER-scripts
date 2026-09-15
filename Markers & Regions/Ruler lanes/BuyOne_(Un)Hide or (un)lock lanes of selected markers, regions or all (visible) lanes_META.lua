@@ -17,14 +17,14 @@ Provides: 	[main=main,midi_editor] .
 			. > BuyOne_Unlock all visible Ruler lanes.lua
 			. > BuyOne_Toggle lock all visible Ruler lanes.lua
 			. > BuyOne_Hide empty Ruler lanes.lua
-			. > BuyOne_Hide markers only Ruler lanes
-			. > BuyOne_Hide regions only Ruler lanes
-			. > BuyOne_Unhide markers only Ruler lanes
-			. > BuyOne_Unhide regions only Ruler lanes
-			. > BuyOne_Hide non-empty lanes without selected markers, regions
-			. > BuyOne_Lock non-empty lanes without selected markers, regions
-			. > BuyOne_Unlock non-empty lanes without selected markers, regions
-			. > BuyOne_Toggle lock non-empty lanes without selected markers, regions
+			. > BuyOne_Hide markers only Ruler lanes.lua
+			. > BuyOne_Hide regions only Ruler lanes.lua
+			. > BuyOne_Unhide markers only Ruler lanes.lua
+			. > BuyOne_Unhide regions only Ruler lanes.lua
+			. > BuyOne_Hide non-empty lanes without selected markers, regions.lua
+			. > BuyOne_Lock non-empty lanes without selected markers, regions.lua
+			. > BuyOne_Unlock non-empty lanes without selected markers, regions.lua
+			. > BuyOne_Toggle lock non-empty lanes without selected markers, regions.lua
 About: 	If this script name is suffixed with META, when 
 		executed it will automatically spawn all individual 
 		scripts included in the package into the directory 
