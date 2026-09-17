@@ -26,8 +26,8 @@ About: 	Meant to be a counterpart of the native action
 
 		The inserted segment shape is square which 
 		consists of 2 points rather than 4 because
-		square 4 point segment isn't supported in 
-		CC envelopes and falls apart in response 
+		rectangular 4 point segment isn't supported 
+		in CC envelopes and falls apart in response 
 		to click.
 
 		The segment is inserted in the currently active
@@ -52,8 +52,8 @@ About: 	Meant to be a counterpart of the native action
 -- custom value for the segment via a dialogue;
 -- if disabled, the value defaults to maximum
 -- value of the effective range which for the pitch
--- envelope is either custom or 63 and for all other
--- supported envelopes is 127;
+-- envelope is either custom in semitones or -63 - +63
+-- and for all other supported envelopes is 0 - 127;
 -- when the range of the pitch envelope
 -- is in semitones, cents are supported as well
 -- as fractions of 1, i.e. 0.01 - 1 cent,
