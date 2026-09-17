@@ -32,12 +32,12 @@ About: 	Meant to be a counterpart of the native action
 
 		The segment is inserted in the currently active
 		MIDI channel (the one selected in the channel filter)
-	or in the last active channel if 'All Channels' 
-	or 'Multichannel' options are selected.
-	If the option   
-	'Selecting a single note sets the channel for new events'
-	is enabled, active MIDI channel will change as
-	soon as a note is selected with a click.
+		or in the last active channel if 'All Channels' 
+		or 'Multichannel' options are selected.
+		If the option   
+		'Selecting a single note sets the channel for new events'
+		is enabled, active MIDI channel will change as
+		soon as a note is selected with a click.
 
 	Also see USER SETTINGS below.
 			
