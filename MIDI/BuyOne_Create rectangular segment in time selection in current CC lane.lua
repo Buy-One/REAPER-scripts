@@ -39,7 +39,7 @@ About: 	Meant to be a counterpart of the native action
 		is enabled, active MIDI channel will change as
 		soon as a note is selected with a click.
 
-	Also see USER SETTINGS below.
+		Also see USER SETTINGS below.
 			
 ]]
 
