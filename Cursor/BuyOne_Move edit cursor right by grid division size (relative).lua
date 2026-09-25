@@ -7,30 +7,37 @@ Changelog:  #Added a setting to follow visible grid
 	    #Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
-About: 	The script follows the actual grid resolution, unless FOLLOW_VISIBLE_GRID
-	setting is enabled in the USER SETTINGS section.
-
-	The script is only meant for the Arrange view because in the
-	MIDI Editor section of the Action list the actions
-	'Navigate: Move edit cursor left/right by grid'
-	already move the cursor relatively if snapping is disabled.
-
-	See also BuyOne_Move edit cursor left by grid division size (relative).lua
-	
-	To move the edit cursor both left and right with the mousewheel
-	set up the following custom action and bind it to the mousweheel:
-	
-	Custom: Move edit cursor by grid division size (relative)
-		Action: Skip next action if CC parameter >0/mid
-		BuyOne_Move edit cursor left by grid division size (relative).lua
-		Action: Skip next action if CC parameter <0/mid
-		BuyOne_Move edit cursor right by grid division size (relative).lua
+About: 	In build 7.41 native actions were added
+		'View: Move cursor right/left by grid division'
 		
-	This custom action implies the following scrolling direction: 
-	forwards/out/up - right, backwards/in/down - left
-	To reverse the direction swap the order of the scripts within
-	the custom action sequence without swapping the order of the
-	native actions.
+		So by and large the script would only be useful 
+		in older REAPER builds unless a bug in the native
+		actions https://forum.cockos.com/showthread.php?t=311625
+
+		The script follows the actual grid resolution, unless FOLLOW_VISIBLE_GRID
+		setting is enabled in the USER SETTINGS section.
+	
+		The script is only meant for the Arrange view because in the
+		MIDI Editor section of the Action list the actions
+		'Navigate: Move edit cursor left/right by grid'
+		already move the cursor relatively if snapping is disabled.
+	
+		See also BuyOne_Move edit cursor left by grid division size (relative).lua
+		
+		To move the edit cursor both left and right with the mousewheel
+		set up the following custom action and bind it to the mousweheel:
+		
+		Custom: Move edit cursor by grid division size (relative)
+			Action: Skip next action if CC parameter >0/mid
+			BuyOne_Move edit cursor left by grid division size (relative).lua
+			Action: Skip next action if CC parameter <0/mid
+			BuyOne_Move edit cursor right by grid division size (relative).lua
+			
+		This custom action implies the following scrolling direction: 
+		forwards/out/up - right, backwards/in/down - left
+		To reverse the direction swap the order of the scripts within
+		the custom action sequence without swapping the order of the
+		native actions.
 			
 ]]
 
