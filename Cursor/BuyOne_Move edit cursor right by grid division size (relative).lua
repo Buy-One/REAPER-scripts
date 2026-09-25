@@ -3,8 +3,8 @@ ReaScript name: BuyOne_Move edit cursor right by grid division size (relative).l
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.1
-Changelog:  #Added a setting to follow visible grid
-	    #Updated 'About' text
+Changelog:	#Added a setting to follow visible grid
+		   	#Updated 'About' text
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	In build 7.41 native actions were added
