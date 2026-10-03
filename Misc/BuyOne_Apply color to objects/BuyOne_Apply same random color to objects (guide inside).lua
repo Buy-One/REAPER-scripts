@@ -2,72 +2,72 @@
 ReaScript name: BuyOne_Apply same random color to objects (guide inside).lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog: #Made color picker behavior compatible with build 7.81
 Licence: WTFPL
 REAPER: at least v5.962
 About: 	The script is designed to be a one stop shop for object coloration
-	with the same random color in REAPER. It colors objects randomly 
-	according to 3 criteria: being encolsed within razor edit area, 
-	within time selection and being selected.  
-	The objects are project markers and regions, take markers, items/takes
-	and tracks.  
-	The criteria are evaluated in the following order: razor edit areas,
-	time selection, item selection, track selection. When one criterion
-	is not met, the next one is evaluated.  
-	Thus first objects within razor areas are targeted, absent razor 
-	edit areas objects within time selection are targeted, absent time 
-	selection selected items are targeted and absent selected items 
-	selected tracks are targeted.
-	
-	Razor edit areas are relevant for project markers and regions and take
-	markers. To color these enclose them within razor edit areas. The 
-	multiplicity of razor edit ares allows coloration of non-contiguous 
-	objects. For region color to be affected by the script its start or 
-	end ust be enclosed within a razor edit area or coincide with either 
-	of its edges. The same applies to markers with the exception of the 
-	end which they don't have. In multi-take items all take markers in all 
-	takes are affected as long as they fall within razor edit area bounds.
-	
-	For project markers and regions and take markers time selection is also 
-	relevant, however time selection only allows coloring non-contiguos
-	objects. Like in the case of razor edit areas objects must be either
-	encolsed within time selection or conicide with either of its edges.
-	To affect take markers the item must be selected. In multi-take items 
-	only markers in the active take are affected.
-	
-	Item selection only relevant for items and track selection is only 
-	relevant for tracks. By default if item consists of multiple takes
-	the color is applied to the active take. This can be changed in the
-	USER SETTINGS.   
-
-	
-	Select target objects using the means described above and run the script.
-	
-	When selected items are being colored they will appear blinking once.
-	That's done on purpose to reveal the new color, because depending on
-	the theme selection color may mask the actual item/take color, so without
-	temporarily clearing the selection automatically, in order to assess the
-	coloration result the selection would have to be cleared manually and then
-	re-stored if the result wasn't satistactory.
-	
-	
-	If you happen to forget what criteria are applied to which object 
-	type, run the script with a shortcut having placed the mouse cursor 
-	within 100 px of the left edge of the screen (not REAPER window) to 
-	display a hint. The hint can only be displayed before the color picker 
-	has been loaded.
-	
-	
-	If you wish to apply the same color which was applied previously you can 
-	look up its RGB values in the Undo point description and then use these 
-	values with BuyOne_Apply color to objects (guide inside).lua script.
-	
-	
-	Check out also:  
-	BuyOne_Apply color to objects (guide inside).lua		
-	BuyOne_Apply different random colors to objects (guide inside).lua
+		with the same random color in REAPER. It colors objects randomly 
+		according to 3 criteria: being encolsed within razor edit area, 
+		within time selection and being selected.  
+		The objects are project markers and regions, take markers, items/takes
+		and tracks.  
+		The criteria are evaluated in the following order: razor edit areas,
+		time selection, item selection, track selection. When one criterion
+		is not met, the next one is evaluated.  
+		Thus first objects within razor areas are targeted, absent razor 
+		edit areas objects within time selection are targeted, absent time 
+		selection selected items are targeted and absent selected items 
+		selected tracks are targeted.
 		
+		Razor edit areas are relevant for project markers and regions and take
+		markers. To color these enclose them within razor edit areas. The 
+		multiplicity of razor edit ares allows coloration of non-contiguous 
+		objects. For region color to be affected by the script its start or 
+		end ust be enclosed within a razor edit area or coincide with either 
+		of its edges. The same applies to markers with the exception of the 
+		end which they don't have. In multi-take items all take markers in all 
+		takes are affected as long as they fall within razor edit area bounds.
+		
+		For project markers and regions and take markers time selection is also 
+		relevant, however time selection only allows coloring non-contiguos
+		objects. Like in the case of razor edit areas objects must be either
+		encolsed within time selection or conicide with either of its edges.
+		To affect take markers the item must be selected. In multi-take items 
+		only markers in the active take are affected.
+		
+		Item selection only relevant for items and track selection is only 
+		relevant for tracks. By default if item consists of multiple takes
+		the color is applied to the active take. This can be changed in the
+		USER SETTINGS.   
+	
+		
+		Select target objects using the means described above and run the script.
+		
+		When selected items are being colored they will appear blinking once.
+		That's done on purpose to reveal the new color, because depending on
+		the theme selection color may mask the actual item/take color, so without
+		temporarily clearing the selection automatically, in order to assess the
+		coloration result the selection would have to be cleared manually and then
+		re-stored if the result wasn't satistactory.
+		
+		
+		If you happen to forget what criteria are applied to which object 
+		type, run the script with a shortcut having placed the mouse cursor 
+		within 100 px of the left edge of the screen (not REAPER window) to 
+		display a hint. The hint can only be displayed before the color picker 
+		has been loaded.
+		
+		
+		If you wish to apply the same color which was applied previously you can 
+		look up its RGB values in the Undo point description and then use these 
+		values with BuyOne_Apply color to objects (guide inside).lua script.
+		
+		
+		Check out also:  
+		BuyOne_Apply color to objects (guide inside).lua		
+		BuyOne_Apply different random colors to objects (guide inside).lua
+	
 ]]
 
 -----------------------------------------------------------------------------
@@ -499,6 +499,7 @@ REF = REF:gsub('ALWAYS_COLOR_ITEM setting is enabled', '%0\nC) All takes differe
 	if Display_REF_Popup(REF, ALWAYS_COLOR_ITEM, always_color_item) then -- the function only runs if mouse cursor is within 100 px of the X and Y axes start
 	return r.defer(no_undo) end -- abort to prevent color change in randomize scripts
 ALWAYS_COLOR_ITEM = always_color_item == '1' or ALWAYS_COLOR_ITEM
+local main_wnd = r.GetMainHwnd()
 
 
 r.Undo_BeginBlock()
@@ -506,7 +507,7 @@ r.Undo_BeginBlock()
 ::RETRY:: -- must come after Undo_BeginBlock()
 
 	if not randomize_same and not randomize_diff and reload then -- only relevant for script 'Apply color to objects' which features RE_OPEN_COLOR_PICKER setting (Stage 2)
-	retval, color = r.GR_SelectColor()
+	retval, color = r.GR_SelectColor(main_wnd) -- since introduction of new color picker in build 7.81 main window handle must be passed, otherwise color picker window can be obscured by it
 		if retval == 0 then return r.defer(no_undo) end -- user canceled the dialogue
 	r.Undo_BeginBlock()
 	end
@@ -556,7 +557,7 @@ local undo_var = randomize_same and 'Apply same random color to' or randomize_di
 		if randomize_same then -- to all selected markers the same random color is applied
 		color = math.random(0, rand) -- gives greater randomization
 		elseif not randomize_diff and not retval and not retval1 and not retval2 and not reload then -- during the initial run retval will be false; during second run from the beginning to check if selection changed retval intialized below will be true so that the color picker doesn't load again unless there's an error due to selection change in which case retval will be again set to false so that the color picker can be reloaded; other retvals ensure that the color can be applied to markers/regions after selection change
-		retval, color = r.GR_SelectColor()
+		retval, color = r.GR_SelectColor(main_wnd) -- since introduction of new color picker in build 7.81 main window handle must be passed, otherwise color picker window can be obscured by it
 			if retval == 0 then return r.defer(no_undo) end -- user canceled the dialogue
 		goto RETRY -- run from the beginning to check if the selection changed while the color picker is open
 		end
@@ -587,7 +588,7 @@ local undo_var = randomize_same and 'Apply same random color to' or randomize_di
 		if randomize_same then -- to all selected markers the same random color is applied
 		color = math.random(0, rand) -- gives greater randomization
 		elseif not randomize_diff and not retval and not retval1 and not retval2 and not reload then -- during the initial run retval will be false; during second run from the beginning to check if selection changed retval intialized below will be true so that the color picker doesn't load again unless there's an error due to selection change in which case retval will be again set to false so that the color picker can be reloaded; other retvals ensure that the color can be applied to markers/regions after selection change
-		retval, color = r.GR_SelectColor()
+		retval, color = r.GR_SelectColor(main_wnd) -- since introduction of new color picker in build 7.81 main window handle must be passed, otherwise color picker window can be obscured by it
 			if retval == 0 then return r.defer(no_undo) end -- user canceled the dialogue
 		goto RETRY -- run from the beginning to check if the selection changed while the color picker is open
 		end
@@ -602,7 +603,7 @@ local undo_var = randomize_same and 'Apply same random color to' or randomize_di
 		if randomize_same then -- to all selected items the same random color is applied
 		color = math.random(0, rand) -- gives greater randomization
 		elseif not randomize_diff and not retval1 and not retval and not retval2 and not reload then -- during the initial run retval1 will be false; during second run from the beginning to check if selection changed retval1 intialized below will be true so that the color picker doesn't load again, which will also be the case if there's an error due to selection change in which case retval will be set to true in the error routine below; other retvals ensure that the color can be applied to items after selection change		
-		retval1, color = r.GR_SelectColor()
+		retval1, color = r.GR_SelectColor(main_wnd) -- since introduction of new color picker in build 7.81 main window handle must be passed, otherwise color picker window can be obscured by it
 			if retval1 == 0 then return r.defer(no_undo) end -- user canceled the dialogue
 		goto RETRY
 		end
@@ -618,7 +619,7 @@ local undo_var = randomize_same and 'Apply same random color to' or randomize_di
 		if randomize_same then -- to all selected tracks the same random color is applied
 		color = math.random(0, rand) -- gives greater randomization
 		elseif not randomize_diff and not retval2 and not retval and not retval1 and not reload then -- during the initial run retval2 will be false; during second run from the beginning to check if selection changed retval2 intialized below will be true so that the color picker doesn't load again, which will also be the case if there's an error due to selection change in which case retval will be set to true in the error routine below; other retvals ensure that the color can be applied to tracks after selection change		
-		retval2, color = r.GR_SelectColor()
+		retval2, color = r.GR_SelectColor(main_wnd) -- since introduction of new color picker in build 7.81 main window handle must be passed, otherwise color picker window can be obscured by it
 			if retval2 == 0 then return r.defer(no_undo) end -- user canceled the dialogue
 		goto RETRY
 		end
@@ -640,7 +641,7 @@ local undo_var = randomize_same and 'Apply same random color to' or randomize_di
 		local resp = r.MB(mess:upper(), 'ERROR', 5)
 			if resp == 2 then return r.defer(no_undo)
 			elseif not RE_OPEN_COLOR_PICKER then -- otherwise global color picker at the very beginning of the routine will be loaded
-			retval, color = r.GR_SelectColor()
+			retval, color = r.GR_SelectColor(main_wnd) -- since introduction of new color picker in build 7.81 main window handle must be passed, otherwise color picker window can be obscured by it
 				if retval == 0 then return r.defer(no_undo) end -- user canceled the dialogue
 			goto RETRY -- run from the beginning to check if the selection changed while the color picker is open
 			end
@@ -657,6 +658,5 @@ local undo_var = randomize_same and 'Apply same random color to' or randomize_di
 	reload, retval, retval1, retval2, undo = 1, 1, 1, 1, nil -- undo must be reset so that 'no selected objects' error could be triggered above; retvals must be set to prevent loading separate color picker for individual criteria
 	goto RETRY 
 	end
-
 
 
