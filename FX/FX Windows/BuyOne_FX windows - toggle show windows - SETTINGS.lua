@@ -8,18 +8,18 @@ Licence: WTFPL
 REAPER: at least v5.962
 Provides: 	[main=main,midi_editor] .
 About:	The script provides settings to modify behavior
-			of scripts included in the packages
+		of scripts included in the packages
 
-			BuyOne_FX windows - store and toggle show windows set_META.lua
-			BuyOne_FX windows - store and toggle show windows of selected objects_META.lua
+		BuyOne_FX windows - store and toggle show windows set_META.lua
+		BuyOne_FX windows - store and toggle show windows of selected objects_META.lua
 
-			except the 'menu' scripts.
+		except the 'menu' scripts.
 
-			These settings are global, i.e. affect the scripts 
-			behavior across all projects and are stored inside
-			reaper-extstate.ini file under
-			'BuyOne_FX windows - toggle show settings' section.
-			The file is located in the REAPER resource directory.
+		These settings are global, i.e. affect the scripts 
+		behavior across all projects and are stored inside
+		reaper-extstate.ini file under
+		'BuyOne_FX windows - toggle show settings' section.
+		The file is located in the REAPER resource directory.
 
 --]]
 
