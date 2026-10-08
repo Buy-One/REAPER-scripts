@@ -9,89 +9,89 @@ REAPER: at least v5.962, v7.74 is recommended unless SWS/S&M extension is instal
 Extensions: SWS/S&M is recommended
 Metapackage: true
 Provides: 	[main=main,midi_editor] .
-  				. > BuyOne_FX windows - store set 1.lua
-  				. > BuyOne_FX windows - store set 2.lua
-  				. > BuyOne_FX windows - store set 3.lua
-  				. > BuyOne_FX windows - store set 4.lua
-  				. > BuyOne_FX windows - store set 5.lua
-  				. > BuyOne_FX windows - store set 6.lua
-  				. > BuyOne_FX windows - store set 7.lua
-  				. > BuyOne_FX windows - store set 8.lua
-  				. > BuyOne_FX windows - toggle show set 1.lua
-  				. > BuyOne_FX windows - toggle show set 2.lua
-  				. > BuyOne_FX windows - toggle show set 3.lua
-  				. > BuyOne_FX windows - toggle show set 4.lua
-  				. > BuyOne_FX windows - toggle show set 5.lua
-  				. > BuyOne_FX windows - toggle show set 6.lua
-  				. > BuyOne_FX windows - toggle show set 7.lua
-  				. > BuyOne_FX windows - toggle show set 8.lua
-  				. > BuyOne_FX windows - store and toggle show windows sets (menu).lua
+			. > BuyOne_FX windows - store set 1.lua
+			. > BuyOne_FX windows - store set 2.lua
+			. > BuyOne_FX windows - store set 3.lua
+			. > BuyOne_FX windows - store set 4.lua
+			. > BuyOne_FX windows - store set 5.lua
+			. > BuyOne_FX windows - store set 6.lua
+			. > BuyOne_FX windows - store set 7.lua
+			. > BuyOne_FX windows - store set 8.lua
+			. > BuyOne_FX windows - toggle show set 1.lua
+			. > BuyOne_FX windows - toggle show set 2.lua
+			. > BuyOne_FX windows - toggle show set 3.lua
+			. > BuyOne_FX windows - toggle show set 4.lua
+			. > BuyOne_FX windows - toggle show set 5.lua
+			. > BuyOne_FX windows - toggle show set 6.lua
+			. > BuyOne_FX windows - toggle show set 7.lua
+			. > BuyOne_FX windows - toggle show set 8.lua
+			. > BuyOne_FX windows - store and toggle show windows sets (menu).lua
 About:	If this script file name is suffixed with META, 
-  			when executed it will automatically spawn all 
-  			individual scripts included in the package into 
-  			the directory of the META script and will import 
-  			them into the Action list from that directory.
-  
-  			If there's no META suffix in this script file 
-  			name it will perfom the operation indicated in 
-  			its name.
-  
-  			In the 'toggle show' and the menu scripts the 
-  			toggle direction is determined by the set active
-  			status, i.e. visibility of all windows and FX UIs
-  			stored in the set. If at least one window is 
-  			closed or FX UI isn't visible the set is re-activated.
-  
-  			Since the sets are project specific. In order 
-  			for a stored set to be available in the next 
-  			project session the project must be saved.
-  
-  			The order windows are opened in doesn't 
-  			necessarily follow their order at the moment 
-  			of set storage.  	
-  			The priority in opening is as follows:
-  			1. track main FX chain
-  			2. track input FX chain (Monitoring FX for the Master track)
-  			3. take FX chains
-  			FX belonging to the same FX chain are opened 
-  			in ascending order.
-  
-  
-  			LIMITATIONS
-  
-  			1. In builds older than 7.06 the script doesn't 
-  			support FX inside containers   
-  			2. It doesn't support floating windows of bridged 
-  			x86 bit plugins on x64 bit systems, unless the 
-  			option  
-  			Run As -> Embed bridged UI  
-  			in the plugin right click context menu in the 
-  			FX Browser is enabled.
-  
-  			If you run REAPER build older than 7.74 and don't have
-  			SWS/S&M extension installed, it's recommended to enabled
-  			the preference at
-  			Preference -> Plugins -> Do not create undo points when closing FX windows
-  
-  			SETTINGS
-  
-  			The behavior of the scripts included in the package, 
-  			except the 'menu' script, can be modified with
-  			the settings available in the script  
-  			BuyOne_FX windows - toggle show windows - SETTINGS.lua
-  
-  
-  			The script can be used to recall open FX chain windows
-  			after screenset change, with a custom action built from
-  			the following sequence:
-  
-  			---| BuyOne_FX windows - store set 1.lua
-  			---| Screenset: Load window set #01
-  			---| BuyOne_FX windows - toggle show set 1.lua
-  
-  			When screensets are changed all open FX windows get 
-  			automatically closed that's why the 'toggle' script 
-  			will open them rather than close.
+		when executed it will automatically spawn all 
+		individual scripts included in the package into 
+		the directory of the META script and will import 
+		them into the Action list from that directory.
+
+		If there's no META suffix in this script file 
+		name it will perfom the operation indicated in 
+		its name.
+
+		In the 'toggle show' and the menu scripts the 
+		toggle direction is determined by the set active
+		status, i.e. visibility of all windows and FX UIs
+		stored in the set. If at least one window is 
+		closed or FX UI isn't visible the set is re-activated.
+
+		Since the sets are project specific. In order 
+		for a stored set to be available in the next 
+		project session the project must be saved.
+
+		The order windows are opened in doesn't 
+		necessarily follow their order at the moment 
+		of set storage.  	
+		The priority in opening is as follows:
+		1. track main FX chain
+		2. track input FX chain (Monitoring FX for the Master track)
+		3. take FX chains
+		FX belonging to the same FX chain are opened 
+		in ascending order.
+
+
+		LIMITATIONS
+
+		1. In builds older than 7.06 the script doesn't 
+		support FX inside containers   
+		2. It doesn't support floating windows of bridged 
+		x86 bit plugins on x64 bit systems, unless the 
+		option  
+		Run As -> Embed bridged UI  
+		in the plugin right click context menu in the 
+		FX Browser is enabled.
+
+		If you run REAPER build older than 7.74 and don't have
+		SWS/S&M extension installed, it's recommended to enabled
+		the preference at
+		Preference -> Plugins -> Do not create undo points when closing FX windows
+
+		SETTINGS
+
+		The behavior of the scripts included in the package, 
+		except the 'menu' script, can be modified with
+		the settings available in the script  
+		BuyOne_FX windows - toggle show windows - SETTINGS.lua
+
+
+		The script can be used to recall open FX chain windows
+		after screenset change, with a custom action built from
+		the following sequence:
+
+		---| BuyOne_FX windows - store set 1.lua
+		---| Screenset: Load window set #01
+		---| BuyOne_FX windows - toggle show set 1.lua
+
+		When screensets are changed all open FX windows get 
+		automatically closed that's why the 'toggle' script 
+		will open them rather than close.
 
 ]]
 
