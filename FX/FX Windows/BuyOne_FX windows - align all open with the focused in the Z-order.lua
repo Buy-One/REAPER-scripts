@@ -9,22 +9,22 @@ REAPER: at least v5.962
 Extensions: SWS/S&M or js_ReaScriptAPI
 Provides: 	[main=main,midi_editor] .
 About:	The script is an ancillary to the package
-  			BuyOne_Focus next;previous FX window_META.lua.
-  			It places ALL currently open FX windows at the
-  			top left corner X and Y coordinates of the last
-  			focused FX window maintaining their current order
-  			so that they overlay each other in the Z-order,
-  			thereby making use of scripts spawned by
-  			BuyOne_Focus next;previous FX window_META.lua
-  			script have more sense.
-  
-  			LIMITATIONS
-  
-  			The script doesn't support floating windows
-  			of bridged x86 bit plugins on x64 bit systems,
-  			unless the option Run As -> Embed bridged UI
-  			in the plugin right click context menu in the
-  			FX Browser is enabled.
+		BuyOne_Focus next;previous FX window_META.lua.
+		It places ALL currently open FX windows at the
+		top left corner X and Y coordinates of the last
+		focused FX window maintaining their current order
+		so that they overlay each other in the Z-order,
+		thereby making use of scripts spawned by
+		BuyOne_Focus next;previous FX window_META.lua
+		script make more sense.
+
+		LIMITATIONS
+
+		The script doesn't support floating windows
+		of bridged x86 bit plugins on x64 bit systems,
+		unless the option Run As -> Embed bridged UI
+		in the plugin right click context menu in the
+		FX Browser is enabled.
 
 ]]
 
