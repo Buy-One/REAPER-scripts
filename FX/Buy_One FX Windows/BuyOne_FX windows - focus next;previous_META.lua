@@ -9,98 +9,98 @@ REAPER: at least v5.962, v7.74 is recommended unless SWS/S&M extension is instal
 Extensions: SWS/S&M as the first priority, or js_ReaScriptAPI, recommended
 Metapackage: true
 Provides: 	[main=main,midi_editor] .
-  				. > BuyOne_FX windows - focus next track or take window.lua
-  				. > BuyOne_FX windows - focus previous track or take window.lua
-  				. > BuyOne_FX windows - focus next track or take window on selected tracks.lua
-  				. > BuyOne_FX windows - focus previous track or take window on selected tracks.lua				
-  				. > BuyOne_FX windows - focus next track window.lua
-  				. > BuyOne_FX windows - focus previous track window.lua
-  				. > BuyOne_FX windows - focus next track window on selected tracks.lua
-  				. > BuyOne_FX windows - focus previous track window on selected tracks.lua
-  				. > BuyOne_FX windows - focus next take window.lua
-  				. > BuyOne_FX windows - focus previous take window.lua
-  				. > BuyOne_FX windows - focus next take window on selected tracks.lua
-  				. > BuyOne_FX windows - focus previous take window on selected tracks.lua
-  				. > BuyOne_FX windows - focus next track or take window on selected tracks (effect).lua
-  				. > BuyOne_FX windows - focus previous track or take window on selected tracks (effect).lua
-  				. > BuyOne_FX windows - focus next track or take window (effect).lua
-  				. > BuyOne_FX windows - focus previous track or take window (effect).lua
-  				. > BuyOne_FX windows - focus next track window (effect).lua
-  				. > BuyOne_FX windows - focus previous track window (effect).lua
-  				. > BuyOne_FX windows - focus next track window on selected tracks (effect).lua
-  				. > BuyOne_FX windows - focus previous track window on selected tracks (effect).lua
-  				. > BuyOne_FX windows - focus next track window (instrument).lua
-  				. > BuyOne_FX windows - focus previous track window (instrument).lua
-  				. > BuyOne_FX windows - focus next track window on selected tracks (instrument).lua
-  				. > BuyOne_FX windows - focus previous track window on selected tracks (instrument).lua				
-  				. > BuyOne_FX windows - focus open window (menu).lua
+			. > BuyOne_FX windows - focus next track or take window.lua
+			. > BuyOne_FX windows - focus previous track or take window.lua
+			. > BuyOne_FX windows - focus next track or take window on selected tracks.lua
+			. > BuyOne_FX windows - focus previous track or take window on selected tracks.lua				
+			. > BuyOne_FX windows - focus next track window.lua
+			. > BuyOne_FX windows - focus previous track window.lua
+			. > BuyOne_FX windows - focus next track window on selected tracks.lua
+			. > BuyOne_FX windows - focus previous track window on selected tracks.lua
+			. > BuyOne_FX windows - focus next take window.lua
+			. > BuyOne_FX windows - focus previous take window.lua
+			. > BuyOne_FX windows - focus next take window on selected tracks.lua
+			. > BuyOne_FX windows - focus previous take window on selected tracks.lua
+			. > BuyOne_FX windows - focus next track or take window on selected tracks (effect).lua
+			. > BuyOne_FX windows - focus previous track or take window on selected tracks (effect).lua
+			. > BuyOne_FX windows - focus next track or take window (effect).lua
+			. > BuyOne_FX windows - focus previous track or take window (effect).lua
+			. > BuyOne_FX windows - focus next track window (effect).lua
+			. > BuyOne_FX windows - focus previous track window (effect).lua
+			. > BuyOne_FX windows - focus next track window on selected tracks (effect).lua
+			. > BuyOne_FX windows - focus previous track window on selected tracks (effect).lua
+			. > BuyOne_FX windows - focus next track window (instrument).lua
+			. > BuyOne_FX windows - focus previous track window (instrument).lua
+			. > BuyOne_FX windows - focus next track window on selected tracks (instrument).lua
+			. > BuyOne_FX windows - focus previous track window on selected tracks (instrument).lua				
+			. > BuyOne_FX windows - focus open window (menu).lua
 About:	If this script file name is suffixed with META, 
-  			when executed it will automatically spawn all 
-  			individual scripts included in the package into 
-  			the directory of the META script and will import 
-  			them into the Action list from that directory.
-  
-  			If there's no META suffix in this script file 
-  			name it will perfom the operation indicated in 
-  			its name.
-  
-  			The script brings already open FX chain and 
-  			floating FX windows into focus one by one in 
-  			ascending or descending order depending in 
-  			the script name.
-  
-  			The order is determined by the track/item/take
-  			order within the project rather than by the arbitrary 
-  			order effected manually by shuffling FX windows.
-  
-  			The ascending order of FX windows is as follows:
-  			1. track main FX chain
-  			2. track input FX chain (Monitoring FX for the Master track)
-  			3. take FX chains
-  			The actual FX source object types (track, take 
-  			or both) depend on the script name.
-  
-  			To be able to run the script with a shortcut
-  			the shortcut mode must be 'Global + text fields'.
-  
-  
-  			LIMITATIONS
-  
-  			1. In builds older than 7.06 the script doesn't 
-  			support FX inside containers   
-  			2. It doesn't support floating windows of bridged 
-  			x86 bit plugins on x64 bit systems, unless the 
-  			option  
-  			Run As -> Embed bridged UI  
-  			in the plugin right click context menu in the 
-  			FX Browser is enabled.
-  
-  			If the script contains '(instrument)' appendage
-  			in its name, it will only recognize plugins other
-  			than JSFX. Conversely if it containes '(effect)'
-  			appendage it will recognize all JSFX plugins, 
-  			effects as well as intstruments.
-  			
-  			In the menu script, container name is listed when 
-  			FX UI is displayed within a container open in a 
-  			floating window and the container name is aliased, 
-  			i.e. not the generic 'Container', otherwise the
-  			FX name is listed. The item of the currently focused 
-  			FX as well as that of its parent track are checkmarked
-  			in the menu provided the window of currently focused 
-  			fx is valid, i.e. displays an FX UI. If there's no
-  			checkmark in the menu, the currently focused window
-  			is ignored by the script as irrelevant.
-  
-  			See also an ancillary script
-  			BuyOne_Align all open FX windows with the focused FX window in the Z-order.lua
-  			which will place ALL currently open FX windows
-  			on top of each other at the coordinates of the 
-  			currently focused window maintaining their 
-  			current order so they take up less screen real 
-  			estate and then can be focused (brought to the 
-  			foreground) one by one with the individual 
-  			scripts included in this package.
+		when executed it will automatically spawn all 
+		individual scripts included in the package into 
+		the directory of the META script and will import 
+		them into the Action list from that directory.
+
+		If there's no META suffix in this script file 
+		name it will perfom the operation indicated in 
+		its name.
+
+		The script brings already open FX chain and 
+		floating FX windows into focus one by one in 
+		ascending or descending order depending in 
+		the script name.
+
+		The order is determined by the track/item/take
+		order within the project rather than by the arbitrary 
+		order effected manually by shuffling FX windows.
+
+		The ascending order of FX windows is as follows:
+		1. track main FX chain
+		2. track input FX chain (Monitoring FX for the Master track)
+		3. take FX chains
+		The actual FX source object types (track, take 
+		or both) depend on the script name.
+
+		To be able to run the script with a shortcut
+		the shortcut mode must be 'Global + text fields'.
+
+
+		LIMITATIONS
+
+		1. In builds older than 7.06 the script doesn't 
+		support FX inside containers   
+		2. It doesn't support floating windows of bridged 
+		x86 bit plugins on x64 bit systems, unless the 
+		option  
+		Run As -> Embed bridged UI  
+		in the plugin right click context menu in the 
+		FX Browser is enabled.
+
+		If the script contains '(instrument)' appendage
+		in its name, it will only recognize plugins other
+		than JSFX. Conversely if it containes '(effect)'
+		appendage it will recognize all JSFX plugins, 
+		effects as well as intstruments.
+		
+		In the menu script, container name is listed when 
+		FX UI is displayed within a container open in a 
+		floating window and the container name is aliased, 
+		i.e. not the generic 'Container', otherwise the
+		FX name is listed. The item of the currently focused 
+		FX as well as that of its parent track are checkmarked
+		in the menu provided the window of currently focused 
+		fx is valid, i.e. displays an FX UI. If there's no
+		checkmark in the menu, the currently focused window
+		is ignored by the script as irrelevant.
+
+		See also an ancillary script
+		BuyOne_Align all open FX windows with the focused FX window in the Z-order.lua
+		which will place ALL currently open FX windows
+		on top of each other at the coordinates of the 
+		currently focused window maintaining their 
+		current order so they take up less screen real 
+		estate and then can be focused (brought to the 
+		foreground) one by one with the individual 
+		scripts included in this package.
 ]]
 
 
