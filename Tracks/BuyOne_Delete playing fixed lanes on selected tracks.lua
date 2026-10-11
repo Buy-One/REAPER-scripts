@@ -43,13 +43,6 @@ function no_undo()
 end
 
 
-function Deselect_All_Tracks() -- API alternative to the action 'Track: Unselect all tracks' (40297)
-local master = r.GetMasterTrack(0) -- Master track because it's always there
-r.SetOnlyTrackSelected(master)
-r.SetTrackSelected(master, false) -- selected is false
-end
-
-
 function Error_Tooltip(text, caps, spaced, x2, y2, want_color, want_blink)
 -- the tooltip sticks under the mouse within Arrange
 -- but quickly disappears over the TCP, to make it stick
@@ -143,8 +136,7 @@ r.Undo_BeginBlock()
 r.PreventUIRefresh(1)
 
 	for tr, playing_lanes in pairs(t) do
-	Deselect_All_Tracks() -- deselect all because the action affects all sekected tracks at once which pverents granular lane deletion
-	r.SetTrackSelected(tr, true) -- selected true // select track so that action affects it
+	r.SetOnlyTrackSelected(tr) -- select track exclusively so that action doesn't affect other selected tracks
 	r.SetMediaTrackInfo_Value(tr, 'C_ALLLANESPLAY', 1) -- set all play
 		for i=#playing_lanes, 1, -1 do -- in reverse due to deletion
 		local idx = playing_lanes[i]
