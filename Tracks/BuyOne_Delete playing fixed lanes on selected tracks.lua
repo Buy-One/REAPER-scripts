@@ -8,7 +8,7 @@ Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main] .
 About: 	Script complementing native actions
-			which only allow deleting non-playing lanes.
+		which only allow deleting non-playing lanes.
 
 ]]
 
