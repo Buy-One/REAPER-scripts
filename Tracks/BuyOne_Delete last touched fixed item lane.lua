@@ -9,6 +9,7 @@ REAPER: at least v5.962
 Provides: [main] .
 About: 	Script complementing native lane delete actions.
 
+		Be aware that the script overwrites the clipboard.
 ]]
 
 
