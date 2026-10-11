@@ -225,7 +225,7 @@ r.PreventUIRefresh(1)
 
 local sel_tracks_t = re_store_sel_trks()
  
-r.SetTrackSelected(tr, true) -- selected true // select track so that action affects it
+r.SetOnlyTrackSelected(tr) -- select track exclusively so that action doesn't affect other selected tracks
 r.SetMediaTrackInfo_Value(tr, 'C_ALLLANESPLAY', 1) -- set all play
 r.SetMediaTrackInfo_Value(tr, 'C_LANEPLAYS:'..lane_idx, 0) -- turn lane off
 r.Main_OnCommand(42691, 0) -- Track lanes: Delete lanes (including media items) that are not playing
