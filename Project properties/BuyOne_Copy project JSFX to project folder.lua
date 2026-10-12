@@ -8,24 +8,24 @@ Licence: WTFPL
 REAPER: v6.37 recommended
 Provides: [main=main,midi_editor] .
 About: 	Copies project JSFX into a subfolder /Effects
-			under the project folder which ensures project
-			portability at least as far as JSFX are concerned.
+		under the project folder which ensures project
+		portability at least as far as JSFX are concerned.
 
-			As long as the project folder contains a file of
-			JSFX used in the project that's what the project 
-			will fall back on absent the JSFX file at the path 
-			it was originally loaded from.
+		As long as the project folder contains a file of
+		JSFX used in the project that's what the project 
+		will fall back on absent the JSFX file at the path 
+		it was originally loaded from.
 
-			Subfolders in the project /Effects folder aren't 
-			supported by REAPER therefore possible file name
-			conflicts are resolved by preventing file ovewriting.
-			So if there're identically named JSFX loaded from 
-			different locations inside the main /Effects folder, 
-			the file collected or found later won't ovetwrite 
-			the one already copied to the project folder.	
+		Subfolders in the project /Effects folder aren't 
+		supported by REAPER therefore possible file name
+		conflicts are resolved by preventing file ovewriting.
+		So if there're identically named JSFX loaded from 
+		different locations inside the main /Effects folder, 
+		the file collected or found later won't ovetwrite 
+		the one already copied to the project folder.	
 
-			In builds older then 6.37 JSFX will only be collected
-			if their instances in FX chains were not renamed.
+		In builds older then 6.37 JSFX will only be collected
+		if their instances in FX chains were not renamed.
 
 ]]
 
