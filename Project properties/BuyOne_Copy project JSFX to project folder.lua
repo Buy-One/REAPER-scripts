@@ -27,6 +27,11 @@ About: 	Copies project JSFX into a subfolder /Effects
 		In builds older then 6.37 JSFX will only be collected
 		if their instances in FX chains were not renamed.
 
+		!!! IMPORTANT
+		The script only copies JSFX files to the exclusion
+		of any dependencies they may rely upon, such as image
+		files and libraries.
+
 ]]
 
 
