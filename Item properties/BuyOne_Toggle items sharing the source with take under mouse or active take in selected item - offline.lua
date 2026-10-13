@@ -8,24 +8,24 @@ Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main] .
 About: 	This script was needed in order to able to affect
-			items sharing the same source with the reference
-			take regardless of their take active status,
-			as well as to be able to set all conforming items 
-			to identical offline state.
-			
-			None of this is possible with the native actions.
+		items sharing the same source with the reference
+		take regardless of their take active status,
+		as well as to be able to set all conforming items 
+		to identical offline state.
+		
+		None of this is possible with the native actions.
 
-			The offline state effected by the script is forced 
-			rather than temporary, meaning if not toggled back
-			it's saved with the project and is restored in the 
-			next project load, unlike the temporary offline state.
-			That's because ReaScript API doesn't allow querying
-			the temporary offline state to be able to determine 
-			toggle direction.
-			
-			A use case for the script is updating item source
-			file in external editor without exiting the project
-			or REAPER but keeping all other items online.			
+		The offline state effected by the script is forced 
+		rather than temporary, meaning if not toggled back
+		it's saved with the project and is restored in the 
+		next project load, unlike the temporary offline state.
+		That's because ReaScript API doesn't allow querying
+		the temporary offline state to be able to determine 
+		toggle direction.
+		
+		A use case for the script is updating item source
+		file in external editor without exiting the project
+		or REAPER but keeping all other items online.			
 			
 ]]
 
