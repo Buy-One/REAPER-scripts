@@ -15,6 +15,9 @@ About: 	This script was needed in order to able to affect
 		
 		None of this is possible with the native actions.
 
+		The offline state is applied to the entire item,
+		not to individual takes if there're several.
+
 		The offline state effected by the script is forced 
 		rather than temporary, meaning if not toggled back
 		it's saved with the project and is restored in the 
