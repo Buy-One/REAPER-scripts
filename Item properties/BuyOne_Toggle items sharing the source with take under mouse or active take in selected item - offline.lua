@@ -49,7 +49,7 @@ About: 	This script was needed in order to able to affect
 
 
 
-local Debug = "1"
+local Debug = ""
 function Msg(...)
 -- accepts either a single arg, or multiple pairs of value and caption
 -- caption must follow value because if value is nil
