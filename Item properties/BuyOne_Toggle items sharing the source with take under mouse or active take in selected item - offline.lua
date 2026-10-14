@@ -12,7 +12,7 @@ About: 	This script was needed in order to able to affect
 		take regardless of their take active status,
 		as well as to be able to set all conforming items 
 		to identical offline state.
-		
+
 		None of this is possible with the native actions.
 
 		The offline state is applied to the entire item,
@@ -25,10 +25,25 @@ About: 	This script was needed in order to able to affect
 		That's because ReaScript API doesn't allow querying
 		the temporary offline state to be able to determine 
 		toggle direction.
-		
+
 		A use case for the script is updating item source
 		file in external editor without exiting the project
-		or REAPER but keeping all other items online.			
+		or REAPER but keeping all other items online.
+
+		For convenience it can be a part of custom actions:
+
+		Custom: Open selected item in external editor
+		--|BuyOne_Toggle items sharing the source with take under mouse or active take in selected item - offline.lua
+		--|Item: Open items in primary external editor
+
+		Custom: Update selected item and its copies after editing in external editor
+		--|Peaks: Rebuild peaks for selected items
+		--|BuyOne_Toggle items sharing the source with take under mouse or active take in selected item - offline.lua
+
+		Another use case is re-rendering in one project - files
+		used as item sources in another open project which is
+		essentially the same as using the action:
+		Project tabs: Auto-offline background project media		
 			
 ]]
 
