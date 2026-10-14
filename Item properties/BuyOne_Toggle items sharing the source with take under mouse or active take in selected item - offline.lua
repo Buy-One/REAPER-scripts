@@ -168,7 +168,9 @@ local file, offline = Get_Take_Source_File(take or act_take)
 
 local err = item and 'take under mouse is ' or sel_itm and 'active take in first selected \n\n'
 err = item and (not take and err..'empty' or not file and err..'not media')
-or not sel_itm and 'no take under mouse \n\n    or selected item' or not act_take and err..'\t\titem is empty'
+or not sel_itm and 'no take under mouse \n\n    or selected item' 
+or r.CountSelectedMediaItems(0) > 1 and 'more than 1 item is selected'
+or not act_take and err..'\t\titem is empty'
 or not file and err..'\t   item is not media'
 
 	if err then
