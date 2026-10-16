@@ -10,8 +10,8 @@ Provides: [main] .
 About: 	This script was needed in order to able to affect
 		items sharing the same source with the reference
 		take regardless of their take active status,
-		as well as to be able to set all conforming items 
-		to identical offline state.
+		as well as to be able to toggle offline state of
+		all conforming items in sync.
 
 		None of this is possible with the native actions.
 
