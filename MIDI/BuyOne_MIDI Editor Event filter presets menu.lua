@@ -8,90 +8,90 @@ Licence: WTFPL
 REAPER: at least v5.962
 About: 	Menu options explanation
 
-			Store - store event filter settings preset with a custom 
-			name, although the dialogue can be submitted empty in which 
-			case the preset will be assigned a generic name 'Preset <No>'.
+		Store - store event filter settings preset with a custom 
+		name, although the dialogue can be submitted empty in which 
+		case the preset will be assigned a generic name 'Preset <No>'.
 
-			Quick store - store event filter settings preset without a
-			dialogue, i.e. with a generic preset name 'Preset <No>'.
+		Quick store - store event filter settings preset without a
+		dialogue, i.e. with a generic preset name 'Preset <No>'.
 
-			Update - click to enable, then click a menu item of a preset
-			you wish to update with new data.
+		Update - click to enable, then click a menu item of a preset
+		you wish to update with new data.
 
-			Rename - click to enable, then click a menu item of a preset
-			whose name you wish to change; submitting empty dialogue
-			clears the preset name in which case it assumes the generic
-			name 'Preset <No>'
+		Rename - click to enable, then click a menu item of a preset
+		whose name you wish to change; submitting empty dialogue
+		clears the preset name in which case it assumes the generic
+		name 'Preset <No>'
 
-			Delete - click to enable, then click a menu item of a preset
-			which you wish to delete.
+		Delete - click to enable, then click a menu item of a preset
+		which you wish to delete.
 
-			The options Update, Rename and Delete are mutually exclusive
-			and only persist as long as the menu is open. When none of
-			them is active, clicking preset menu item activates the 
-			corresponding preset.
+		The options Update, Rename and Delete are mutually exclusive
+		and only persist as long as the menu is open. When none of
+		them is active, clicking preset menu item activates the 
+		corresponding preset.
 
-			Toggle Event filter open - self-explanatory, but if the script
-			is run from any section of the Action list but MIDI Editor 
-			there will have to be a selected MIDI item in which case it 
-			will be opened in the MIDI Editor in order for the Event filter 
-			to be activated.
+		Toggle Event filter open - self-explanatory, but if the script
+		is run from any section of the Action list but MIDI Editor 
+		there will have to be a selected MIDI item in which case it 
+		will be opened in the MIDI Editor in order for the Event filter 
+		to be activated.
 
-			Other options:
+		Other options:
 
-			Display in descending order - enable to have the preset list
-			in the menu displayed in reverse which may be useful in order
-			to access preset menu items invisible due to the length of 
-			the preset list and accessibility of which would otherwise
-			require scrolling the menu.
+		Display in descending order - enable to have the preset list
+		in the menu displayed in reverse which may be useful in order
+		to access preset menu items invisible due to the length of 
+		the preset list and accessibility of which would otherwise
+		require scrolling the menu.
 
-			Keep menu open - enable to force the menu reload after a click
-			so that if several operations need to be performed in a row you 
-			won't have to call the script again for each of them; this option
-			is enabled automatically when the options Update, Rename or 
-			Delete get enabled so that their active state persists.
+		Keep menu open - enable to force the menu reload after a click
+		so that if several operations need to be performed in a row you 
+		won't have to call the script again for each of them; this option
+		is enabled automatically when the options Update, Rename or 
+		Delete get enabled so that their active state persists.
 
-			Offset preset list by: - supply the number by which to offset
-			the preset list in the menu; like the option   
-			'Display in descending order' is useful for being able to access
-			preset menu items invisible due to the preset list length.
+		Offset preset list by: - supply the number by which to offset
+		the preset list in the menu; like the option   
+		'Display in descending order' is useful for being able to access
+		preset menu items invisible due to the preset list length.
 
-			Delete all - self explanatory.
+		Delete all - self explanatory.
 
 
-			Presets can be managed without having the Event filter open.
+		Presets can be managed without having the Event filter open.
 
-			To apply a preset, click a corresponding menu item while the 
-			options Update, Rename or Delete are disabled.	
-			For being able to store or apply a preset the MIDI Editor 
-			or the Event filter don't have to be open, i.e. the script
-			can be installed in any section of the Action list, but the 
-			take whose content is going to be affected by the Event filter 
-			with the applied preset must be active in a selected item. 
-			While the Event filter is closed, different Event filter preset
-			can be applied to different MIDI takes in a multi-take item.
-			However once Event filter is open, whatever settings are 
-			associated with the active take will automatically apply to 
-			all MIDI takes in the same item regardless of the preset applied
-			to them previously, WHICH DOESN'T MEAN that content of the 
-			inactive takes will be affected by Event filter settings applied 
-			to the content of the active take.  
-			The script options managed via the menu are stored in 
-			reaper-extstate.ini file and also as a backup at the very end 
-			of this script.
-			
-			The number of presets is limited to 100 but not sure one
-			would need even half as many.
+		To apply a preset, click a corresponding menu item while the 
+		options Update, Rename or Delete are disabled.	
+		For being able to store or apply a preset the MIDI Editor 
+		or the Event filter don't have to be open, i.e. the script
+		can be installed in any section of the Action list, but the 
+		take whose content is going to be affected by the Event filter 
+		with the applied preset must be active in a selected item. 
+		While the Event filter is closed, different Event filter preset
+		can be applied to different MIDI takes in a multi-take item.
+		However once Event filter is open, whatever settings are 
+		associated with the active take will automatically apply to 
+		all MIDI takes in the same item regardless of the preset applied
+		to them previously, WHICH DOESN'T MEAN that content of the 
+		inactive takes will be affected by Event filter settings applied 
+		to the content of the active take.  
+		The script options managed via the menu are stored in 
+		reaper-extstate.ini file and also as a backup at the very end 
+		of this script.
+		
+		The number of presets is limited to 100 but not sure one
+		would need even half as many.
 
-			In the MIDI Editor to be able to open this script and the Event
-			filter simultaneously use the following custom action:
+		In the MIDI Editor to be able to open this script and the Event
+		filter simultaneously use the following custom action:
 
-			--|Filter: Enable/disable event filter and show/hide filter window...
-			--|BuyOne_MIDI Editor Event filter presets.lua
+		--|Filter: Enable/disable event filter and show/hide filter window...
+		--|BuyOne_MIDI Editor Event filter presets.lua
 
-			See also script BuyOne_MIDI Editor Event filter presets_META.lua
-			The presets stored by this menu script and by scripts included in 
-			that META package are separate.
+		See also script BuyOne_MIDI Editor Event filter presets_META.lua
+		The presets stored by this menu script and by scripts included in 
+		that META package are separate.
 ]]
 
 
