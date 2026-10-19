@@ -9,62 +9,62 @@ REAPER: at least v5.962
 Extensions:
 Metapackage: true
 Provides: 	[main=main,midi_editor] .
-				. > BuyOne_MIDI Editor Event filter - store preset 1.lua
-				. > BuyOne_MIDI Editor Event filter - store preset 2.lua
-				. > BuyOne_MIDI Editor Event filter - store preset 3.lua
-				. > BuyOne_MIDI Editor Event filter - store preset 4.lua
-				. > BuyOne_MIDI Editor Event filter - store preset 5.lua
-				. > BuyOne_MIDI Editor Event filter - store preset 6.lua
-				. > BuyOne_MIDI Editor Event filter - store preset 7.lua
-				. > BuyOne_MIDI Editor Event filter - store preset 8.lua
-				. > BuyOne_MIDI Editor Event filter - apply preset 1.lua
-				. > BuyOne_MIDI Editor Event filter - apply preset 2.lua
-				. > BuyOne_MIDI Editor Event filter - apply preset 3.lua
-				. > BuyOne_MIDI Editor Event filter - apply preset 4.lua
-				. > BuyOne_MIDI Editor Event filter - apply preset 5.lua
-				. > BuyOne_MIDI Editor Event filter - apply preset 6.lua
-				. > BuyOne_MIDI Editor Event filter - apply preset 7.lua
-				. > BuyOne_MIDI Editor Event filter - apply preset 8.lua
+			. > BuyOne_MIDI Editor Event filter - store preset 1.lua
+			. > BuyOne_MIDI Editor Event filter - store preset 2.lua
+			. > BuyOne_MIDI Editor Event filter - store preset 3.lua
+			. > BuyOne_MIDI Editor Event filter - store preset 4.lua
+			. > BuyOne_MIDI Editor Event filter - store preset 5.lua
+			. > BuyOne_MIDI Editor Event filter - store preset 6.lua
+			. > BuyOne_MIDI Editor Event filter - store preset 7.lua
+			. > BuyOne_MIDI Editor Event filter - store preset 8.lua
+			. > BuyOne_MIDI Editor Event filter - apply preset 1.lua
+			. > BuyOne_MIDI Editor Event filter - apply preset 2.lua
+			. > BuyOne_MIDI Editor Event filter - apply preset 3.lua
+			. > BuyOne_MIDI Editor Event filter - apply preset 4.lua
+			. > BuyOne_MIDI Editor Event filter - apply preset 5.lua
+			. > BuyOne_MIDI Editor Event filter - apply preset 6.lua
+			. > BuyOne_MIDI Editor Event filter - apply preset 7.lua
+			. > BuyOne_MIDI Editor Event filter - apply preset 8.lua
 About:	If this script file name is suffixed with META, when executed 
-			it will automatically spawn all individual scripts included 
-			in the package into the directory of the META script
-			and will import them into the Action list from that directory.
-			That's provided such scripts don't exist yet, if they do, then 
-			in order to recreate them they have to be deleted from the disk 
-			first, not necessarily from the Action list where their entries
-			may remain.  
+		it will automatically spawn all individual scripts included 
+		in the package into the directory of the META script
+		and will import them into the Action list from that directory.
+		That's provided such scripts don't exist yet, if they do, then 
+		in order to recreate them they have to be deleted from the disk 
+		first, not necessarily from the Action list where their entries
+		may remain.  
 
-			If there's no META suffix in this script file name it will 
-			perfom the operation indicated in its name.
+		If there's no META suffix in this script file name it will 
+		perfom the operation indicated in its name.
 
-			For being able to store or apply a preset the MIDI Editor 
-			or the Event filter don't have to be open, i.e. the scripts
-			can be installed in any section of the Action list, but the 
-			take whose content is going to be affected by the Event filter 
-			with the applied preset must be active in a selected item. 
+		For being able to store or apply a preset the MIDI Editor 
+		or the Event filter don't have to be open, i.e. the scripts
+		can be installed in any section of the Action list, but the 
+		take whose content is going to be affected by the Event filter 
+		with the applied preset must be active in a selected item. 
 
-			While the Event filter is closed, different Event filter preset
-			can be applied to different MIDI takes in a multi-take item.
-			However once Event filter is open, whatever settings are 
-			associated with the active take will automatically apply to 
-			all MIDI takes in the same item regardless of the preset applied
-			to them previously, WHICH DOESN'T MEAN that content of the 
-			inactive takes will be affected by Event filter settings applied 
-			to the content of the active take.
+		While the Event filter is closed, different Event filter preset
+		can be applied to different MIDI takes in a multi-take item.
+		However once Event filter is open, whatever settings are 
+		associated with the active take will automatically apply to 
+		all MIDI takes in the same item regardless of the preset applied
+		to them previously, WHICH DOESN'T MEAN that content of the 
+		inactive takes will be affected by Event filter settings applied 
+		to the content of the active take.
 
-			In the MIDI Editor to be able to execute any of the scripts 
-			included and at the same time open the Event filter use the 
-			following custom actions:
+		In the MIDI Editor to be able to execute any of the scripts 
+		included and at the same time open the Event filter use the 
+		following custom actions:
 
-			--|Filter: Enable/disable event filter and show/hide filter window...
-			--|BuyOne_MIDI Editor Event filter - store preset X.lua
+		--|Filter: Enable/disable event filter and show/hide filter window...
+		--|BuyOne_MIDI Editor Event filter - store preset X.lua
 
-			--|Filter: Enable/disable event filter and show/hide filter window...
-			--|BuyOne_MIDI Editor Event filter - apply preset X.lua
+		--|Filter: Enable/disable event filter and show/hide filter window...
+		--|BuyOne_MIDI Editor Event filter - apply preset X.lua
 
-			See also script BuyOne_MIDI Editor Event filter presets menu.lua
-			The presets stored by scripts of this package and by that menu 
-			script are separate.
+		See also script BuyOne_MIDI Editor Event filter presets menu.lua
+		The presets stored by scripts of this package and by that menu 
+		script are separate.
 
 ]]
 
