@@ -8,21 +8,21 @@ Licence: WTFPL
 REAPER: at least v5.962
 Provides: [main=main] .
 About: 	Alternative to REAPER's built-in take pitch shift
-			functionality meant to make item length follow
-			take pitch changes rather than keep it fixed like
-			REAPER does, so the behavior is similar to regular
-			audio resampling without involvement if time stretch
-			algos.
+		functionality meant to make item length follow
+		take pitch changes rather than keep it fixed like
+		REAPER does, so the behavior is similar to regular
+		audio resampling without involvement if time stretch
+		algos.
 
-			Basically the same as bound to the mouewheel custom action
+		Basically the same as bound to the mouewheel custom action
 
-			--| Action: Skip next action if CC parameter <0/mid
-			--| Xenakios/SWS: Nudge item pitch up (resampled) A
-			--| Action: Skip next action if CC parameter >0/mid
-			--| Xenakios/SWS: Nudge item pitch down (resampled) A
+		--| Action: Skip next action if CC parameter <0/mid
+		--| Xenakios/SWS: Nudge item pitch up (resampled) A
+		--| Action: Skip next action if CC parameter >0/mid
+		--| Xenakios/SWS: Nudge item pitch down (resampled) A
 
-			when Item pitch nudge value is set to 1 at
-			Extensions -> SWS/S&M -> Command parameters ... -> Nudges
+		when Item pitch nudge value is set to 1 at
+		Extensions -> SWS/S&M -> Command parameters ... -> Nudges
 
 --]]
 
