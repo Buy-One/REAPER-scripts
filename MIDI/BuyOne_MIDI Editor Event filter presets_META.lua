@@ -62,6 +62,9 @@ About:	If this script file name is suffixed with META, when executed
 		--|Filter: Enable/disable event filter and show/hide filter window...
 		--|BuyOne_MIDI Editor Event filter - apply preset X.lua
 
+		The individual scripts can be linked to toolbar buttons for quick
+		storage and applying of the presets.
+
 		See also script BuyOne_MIDI Editor Event filter presets menu.lua
 		The presets stored by scripts of this package and by that menu 
 		script are separate.
