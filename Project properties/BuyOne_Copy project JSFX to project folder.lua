@@ -526,7 +526,7 @@ function collect_container_fx(obj, cont_idx, recFX, t, update)
 	local ret, orig_name = fx.GetNamedConfigParm(obj, fx_idx, 'fx_name')
 	local patt = '^JS:.-%[(.-)%]'
 	name = name:match(patt) or orig_name:match(patt)
-		if name and not update or update and not FX_Is_Accessible(obj, fx_idx) then
+		if name and (not update or update and not FX_Is_Accessible(obj, fx_idx)) then
 		local path = not update and path..sep..'Effects'..sep..name or name
 			if not t[path] then
 			t[path] = not update and {assets={}, data={}, imported={}, opened={}} or ''
@@ -573,7 +573,7 @@ local sep = path:match('[\\/]')
 	-- so accounting for that
 	local patt1, patt2 = '^JS:.-%[(.-)%]', '^JS:.-<Project>/(.+)'
 	name = name:match(patt1) or name:match(patt2) or orig_name:match(patt1) or orig_name:match(patt2)
-		if name and not update or update and not FX_Is_Accessible(obj, i) then
+		if name and (not update or update and not FX_Is_Accessible(obj, i)) then
 		local path = not update and path..sep..'Effects'..sep..name or name
 			if not t[path] then
 			t[path] = not update and {assets={}, data={}, imported={}, opened={}} or ''
