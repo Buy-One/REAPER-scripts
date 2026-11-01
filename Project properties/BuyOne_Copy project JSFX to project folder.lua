@@ -496,21 +496,27 @@ function Loop_Over_FX_Container_Table(obj, t, t2, store, update)
 -- store is finction stemming from collect_container_fx()
 -- update is boolean stemming from collect_container_fx()
 
+local not_found = 0
+
 	-- target fx instances in a chain ignoring containers
 	for k, fx_idx in ipairs(t) do
 		if tonumber(fx_idx) then -- fx instance // if container, evaluation will be false since the value is a table
-		t = store(obj, fx_idx, t2, update)
+		local count
+		t, count = store(obj, fx_idx, t2, update)
+		not_found = not_found+count
 		end
 	end
 
 	-- target containers, ignoring fx instances
 	for k, cont in ipairs(t) do
 		if not tonumber(cont) then -- a table storing container index and its fx list
-		t = Loop_Over_FX_Container_Table(obj, cont[2], t2, store) -- go recursive to loop over container fx, cont[2] is the address of the nested table with container fx indices list, at cont[1] container own index is stored
+		local count
+		t, count = Loop_Over_FX_Container_Table(obj, cont[2], t2, store) -- go recursive to loop over container fx, cont[2] is the address of the nested table with container fx indices list, at cont[1] container own index is stored
+		not_found = not_found+count
 		end
 	end
 
-return t
+return t, not_found
 
 end
 
@@ -523,41 +529,56 @@ function collect_container_fx(obj, cont_idx, recFX, t, update)
 	local function store(obj, fx_idx, t, update)
 	local path = r.GetResourcePath()
 	local sep = path:match('[\\/]')
+	local not_found = 0
 	local ret, name = fx.GetFXName(obj, fx_idx, '')
 	local ret, orig_name = fx.GetNamedConfigParm(obj, fx_idx, 'fx_name')
-	local patt = '^JS:.-%[(.-)%]'
-	name = name:match(patt) or orig_name:match(patt)
+	-- if jsfx instance in fx chain was loaded from a copy local to project
+	-- its default name and its original name will both include <Project>/ prefix
+	-- so accounting for that
+	local patt1, patt2 = '^JS:.-%[(.-)%]', '^JS:.-<Project>/(.+)'
+	name = name:match(patt1) or name:match(patt2) or orig_name:match(patt1) or orig_name:match(patt2)
 		if name and (not update or update and not FX_Is_Accessible(obj, fx_idx)) then
 		local path = not update and path..sep..'Effects'..sep..name or name
-			if file_exists(path) and not t[path] then -- file_exists() validates paths of plugins in case they were deleted from their original location
-			t[path] = not update and {assets={}, data={}, imported={}, opened={}} or ''
-				if not update then
-				t[path] = get_JSFX_external_links(path, t[path])
+			if not t[path] then
+				if not file_exists(path) then -- file_exists() validates paths of plugins in case they were deleted from their original location
+				not_found = 1
+				else
+				t[path] = not update and {assets={}, data={}, imported={}, opened={}} or ''
+					if not update then
+					t[path] = get_JSFX_external_links(path, t[path])
+					end
 				end
 			end
 		end
-	return t
+	return t, not_found
 	end
 
 local build = tonumber(r.GetAppVersion():match('[%d%.]+'))
+local not_found = 0
 
 	if build >= 7 and build < 7.06 then
 	local Count = recFX and fx.GetRecCount or fx.GetCount
 	local cont_fx_t = Collect_All_Container_FX_Indices(obj, _, recFX, 0x2000000+cont_idx+1, Count(obj)+1)
-	t = Loop_Over_FX_Container_Table(obj, cont_fx_t, t, store, update)
+	t, not_found = Loop_Over_FX_Container_Table(obj, cont_fx_t, t, store, update)
 	elseif build >= 7.06 then
 	local ret, count = fx.GetNamedConfigParm(obj, cont_idx, 'container_count')
 		if count == '0' then return end
 		for i=0, count-1 do
 		local ret, fx_idx = fx.GetNamedConfigParm(obj, cont_idx, 'container_item.'..i)
-		t = fx.GetIOSize(obj, fx_idx) == 8 and collect_container_fx(obj, fx_idx, recFX, t, update) -- container, go recursive
-		or store(obj, fx_idx, t, update)
+		local count
+			if fx.GetIOSize(obj, fx_idx) == 8 then -- container, go recursive
+			t, count = collect_container_fx(obj, fx_idx, recFX, t, update)			
+			else
+			t, count = store(obj, fx_idx, t, update)
+			end
+		not_found = not_found+count
 		end
 	end
 
-return t
+return t, not_found
 
 end
+
 
 
 
@@ -565,6 +586,7 @@ end
 function collect(obj, t, input_fx, update)
 local path = r.GetResourcePath()
 local sep = path:match('[\\/]')
+local not_found = 0
 	for i = 0, fx.GetCount(obj, input_fx)-1 do
 	local i = input_fx and i+0x1000000 or i
 	local ret, name = fx.GetFXName(obj, i, '')
@@ -576,17 +598,21 @@ local sep = path:match('[\\/]')
 	name = name:match(patt1) or name:match(patt2) or orig_name:match(patt1) or orig_name:match(patt2)
 		if name and (not update or update and not FX_Is_Accessible(obj, i)) then
 		local path = not update and path..sep..'Effects'..sep..name or name
-			if file_exists(path) and not t[path] then -- file_exists() validates paths of plugins in case they were deleted from their original location
-			t[path] = not update and {assets={}, data={}, imported={}, opened={}} or ''
-				if not update then
-				t[path] = get_JSFX_external_links(path, t[path])
+			if not t[path] then
+				if not file_exists(path) then -- file_exists() validates paths of plugins in case they were deleted from their original location
+				not_found = not_found+1
+				else
+				t[path] = not update and {assets={}, data={}, imported={}, opened={}} or ''
+					if not update then
+					t[path] = get_JSFX_external_links(path, t[path])
+					end
 				end
 			end
 		elseif fx.GetIOSize(obj, i) == 8 then -- container
 		t = collect_container_fx(obj, i, input_fx, t, update)
 		end
 	end
-return t
+return t, not_found
 end
 
 
@@ -672,7 +698,7 @@ end
 
 local is_new_value, scr_path, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
 local scr_name = scr_path:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
-local update_instances = scr_name:lower():match('update broken JSFX')
+local update_instances = scr_name:lower():match('update broken jsfx')
 
 local t = {}
 local master = r.GetMasterTrack(0)
@@ -699,9 +725,10 @@ local master = r.GetMasterTrack(0)
 local build = tonumber(r.GetAppVersion():match('[%d%.]+'))
 local old = build < 6.37
 local proj, path = r.EnumProjects(-1)
-local err = not next(t) and (' '):rep(old and 3 or 0)..'no jsfx found in the project'
-..(old and '\n\n or their instances were renamed' or '')
-or #path == 0 and '   no saved project file \n\n and no project directory'
+local err = #path == 0 and '   no saved project file \n\n and no project directory'
+or not next(t) and (update_instances and space(3)..' no broken jsfx \n\n found in the project'
+or not_found == 0 and space(old and 3 or 0)..'no jsfx found in the project'..(old and '\n\n or their instances were renamed' or '')
+or not_found > 0 and 'project jsfx source files \n\n\t  weren\'t found, \n\n\t nothing to copy.')
 
 	if err then
 	Error_Tooltip('\n\n '..err..' \n\n', 1,1) -- caps, spaced true
@@ -769,7 +796,8 @@ r.RecursiveCreateDirectory(path, 0) -- create 'Effects' subfolder in the project
 		end
 
 	local open_directory = build >= 7.73 and open_directory or open_dir_in_file_browser
-		if r.MB('Wish to open project /Effects folder?', 'PROMPT', 4) == 6 then
+	local mess = not_found > 0 and 'Some JSFX source files weren\'t found\n\n'..space(13)..'so couldn\'t be copied.\n\n' or ''	
+		if r.MB(mess..' Wish to open project /Effects folder?', 'PROMPT', 4) == 6 then
 		open_directory(path)
 		end
 
