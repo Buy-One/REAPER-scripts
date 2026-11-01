@@ -277,7 +277,8 @@ end
 local fx = FX_Select_Function_Type()
 
 
--- used in Copy_File() and in the main routine
+-- used collect(), store() inside collect_container_fx(),
+-- in Copy_File() and in the main routine
 function file_exists(path)
 -- CROSS-PLATFORM
 local ok, mess, code = os.rename(path, path)
@@ -528,7 +529,7 @@ function collect_container_fx(obj, cont_idx, recFX, t, update)
 	name = name:match(patt) or orig_name:match(patt)
 		if name and (not update or update and not FX_Is_Accessible(obj, fx_idx)) then
 		local path = not update and path..sep..'Effects'..sep..name or name
-			if not t[path] then
+			if file_exists(path) and not t[path] then -- file_exists() validates paths of plugins in case they were deleted from their original location
 			t[path] = not update and {assets={}, data={}, imported={}, opened={}} or ''
 				if not update then
 				t[path] = get_JSFX_external_links(path, t[path])
@@ -575,7 +576,7 @@ local sep = path:match('[\\/]')
 	name = name:match(patt1) or name:match(patt2) or orig_name:match(patt1) or orig_name:match(patt2)
 		if name and (not update or update and not FX_Is_Accessible(obj, i)) then
 		local path = not update and path..sep..'Effects'..sep..name or name
-			if not t[path] then
+			if file_exists(path) and not t[path] then -- file_exists() validates paths of plugins in case they were deleted from their original location
 			t[path] = not update and {assets={}, data={}, imported={}, opened={}} or ''
 				if not update then
 				t[path] = get_JSFX_external_links(path, t[path])
