@@ -3,10 +3,10 @@ ReaScript name: BuyOne_Copy project JSFX to project folder.lua OR BuyOne_Update 
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
 Version: 1.2
-Changelog: 1.2 #Improved reliability of evaluation of JSFX instance being broken in
-				BuyOne_Update broken JSFX instances in the RPP file.lua script
-				#Fixed updating broken JSFX instances in 
-				BuyOne_Update broken JSFX instances in the RPP file.lua script
+Changelog: 1.2  #Improved reliability of evaluation of JSFX instance local to project being broken 
+			    in BuyOne_Update broken JSFX instances in the RPP file.lua script
+				#Fixed updating broken local to project JSFX instances  
+				in BuyOne_Update broken JSFX instances in the RPP file.lua script
 			1.1 #Added support for container FX
 				#Excluded FX in the Monitorong FX chain because they're global
 				#Enabled copying JSFX dependencies, i.e. image files, API libraries, data files,
