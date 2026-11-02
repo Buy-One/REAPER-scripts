@@ -2,15 +2,19 @@
 ReaScript name: BuyOne_Copy project JSFX to project folder.lua OR BuyOne_Update broken JSFX instances in the RPP file.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.1
-Changelog: 	#Added support for container FX
-			#Excluded FX in the Monitorong FX chain because they're global
-			#Enabled copying JSFX dependencies, i.e. image files, API libraries, data files,
-			/Data folder contents
-			#Added prompts and status messages
-			#Added a feature of copying this script into the project /Effects
-			folder under a different name (details see in 'About' text)
-			#Updated 'About' text
+Version: 1.2
+Changelog: 1.2 #Improved reliability of evaluation of JSFX instance being broken in
+				BuyOne_Update broken JSFX instances in the RPP file.lua script
+				#Fixed updating broken JSFX instances in 
+				BuyOne_Update broken JSFX instances in the RPP file.lua script
+			1.1 #Added support for container FX
+				#Excluded FX in the Monitorong FX chain because they're global
+				#Enabled copying JSFX dependencies, i.e. image files, API libraries, data files,
+				/Data folder contents
+				#Added prompts and status messages
+				#Added a feature of copying this script into the project /Effects
+				folder under a different name (details see in 'About' text)
+				#Updated 'About' text
 Licence: WTFPL
 REAPER: v6.37+ recommended
 Provides: [main=main,midi_editor] .
@@ -298,11 +302,21 @@ function FX_Is_Accessible(obj, fx_idx)
 
 	if fx.GetFloatingWindow(obj, fx_idx) then return true end -- if fx is open in a floating window it's 100% accessible
 
+-- offlined fx too cannot be open in a floating window
+-- so set online if necessary to prevent false positive
+local offline = fx.GetOffline(obj, fx_idx)
+	if offline then fx.SetOffline(obj, fx_idx, not offline) end
+	
 fx.Show(obj, fx_idx, 3) -- 3 show in floating window
-
-	if fx.GetFloatingWindow(obj, fx_idx) then -- restore state
+local ok
+	-- restore states
+	if fx.GetFloatingWindow(obj, fx_idx) then
 	fx.Show(obj, fx_idx, 2) -- close floating window
-	return true end
+	ok = 1
+	end
+	if offline then fx.SetOffline(obj, fx_idx, offline) end
+	
+return ok
 
 end
 
@@ -540,7 +554,7 @@ function collect_container_fx(obj, cont_idx, recFX, t, update)
 		if name and (not update or update and not FX_Is_Accessible(obj, fx_idx)) then
 		local path = not update and path..sep..'Effects'..sep..name or name
 			if not t[path] then
-				if not file_exists(path) then -- file_exists() validates paths of plugins in case they were deleted from their original location
+				if not update and not file_exists(path) then -- file_exists() validates paths of plugins in case they were deleted from their original location
 				not_found = 1
 				else
 				t[path] = not update and {assets={}, data={}, imported={}, opened={}} or ''
@@ -599,7 +613,7 @@ local not_found = 0
 		if name and (not update or update and not FX_Is_Accessible(obj, i)) then
 		local path = not update and path..sep..'Effects'..sep..name or name
 			if not t[path] then
-				if not file_exists(path) then -- file_exists() validates paths of plugins in case they were deleted from their original location
+				if not update and not file_exists(path) then -- file_exists() validates paths of plugins in case they were deleted from their original location
 				not_found = not_found+1
 				else
 				t[path] = not update and {assets={}, data={}, imported={}, opened={}} or ''
