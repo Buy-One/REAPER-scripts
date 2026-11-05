@@ -30,5 +30,5 @@ If you don't use `BuyOne_Script updater and installer.lua` to transfer user sett
 </br>
 </br>
 
-_REAPER is a DAW able to mimic the look and feel of other DAWs. If you so wish, with the ReaScript API, scheduled ProTools crashes can again be made integral part of your workflow._
+_REAPER is a DAW able to mimic the look and feel of other DAWs. If you so wish, with the ReaScript API, scheduled ProTools crashes can again be made integral part of your workflow._  
 _I vibe code, i mean i code when i get a vibe._
