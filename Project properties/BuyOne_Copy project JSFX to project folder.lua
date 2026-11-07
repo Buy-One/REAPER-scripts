@@ -2,8 +2,10 @@
 ReaScript name: BuyOne_Copy project JSFX to project folder.lua OR BuyOne_Update broken JSFX instances in the RPP file.lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.2
-Changelog: 1.2  #Improved reliability of evaluation of JSFX instance local to project being broken 
+Version: 1.3
+Changelog: 1.3 	#Improved compatibility with REAPER preferences
+				in BuyOne_Update broken JSFX instances in the RPP file.lua script
+		   1.2  #Improved reliability of evaluation of JSFX instance local to project being broken 
 			    in BuyOne_Update broken JSFX instances in the RPP file.lua script
 				#Fixed updating broken local to project JSFX instances  
 				in BuyOne_Update broken JSFX instances in the RPP file.lua script
@@ -273,10 +275,6 @@ local fx = {}
 return fx
 
 end
--- USE:
--- fx = FX_Select_Function_Type() -- run once at the beginning of the script
--- fx.AddByName(tr or take, name, instantiate) fx.CopyToTake(tr or take, fx_idx1, take, fx_idx2, false) etc.
-
 
 local fx = FX_Select_Function_Type()
 
@@ -288,6 +286,56 @@ function file_exists(path)
 local ok, mess, code = os.rename(path, path)
 return (ok or code == 13) and path -- 13 is error code for 'exists but permission denied' on some systems
 end
+
+
+
+function re_store_config_var(key, bit, disable, val) -- used in FX_Is_Accessible()
+-- requires either build 7.74 or sws extension
+-- key is string represnting reaper.ini key;
+-- bit is integer, the bit in the bitfield which matches the target preference
+-- see https://mespotin.uber.space/Ultraschall/Reaper_Config_Variables.html
+-- BUT NOT ALL VALUES ARE BITFIELDS,
+-- disable is boolean to disable preference if enabled
+-- and the argument assumes that disable means unsetting the bit in a bitfield,
+-- keep it false/nil if in order to disable a preference its bit must be set;
+-- val is the original value assosiated with the key
+-- which is returned at the storage stage and restored at the restoration stage;
+-- arg val must be nil in the storage stage while bit and disable args may be nil at the restoration stage
+
+	if not key or type(key) ~= 'string' then return end
+
+local old_build = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.74 -- where set_config_var_string() isn't supported
+
+	if old_build and not r.SNM_SetIntConfigVar then return end -- in older builds values can only be set with SWS extension API
+
+local ret, cur_val = r.get_config_var_string(key)
+
+	if not cur_val or #cur_val == 0 then return end
+
+local upd_val
+
+	if not val then -- get to store
+	local bit_set = cur_val+0&bit == bit
+		if not disable and not bit_set then
+		upd_val = cur_val+0 | bit -- set bit
+		elseif disable and bit_set then
+		upd_val = cur_val+0 ~ bit -- unset bit
+		end
+	end
+
+local set = old_build and {r.SNM_SetIntConfigVar, key, val}
+or {r.set_config_var_string, key, val, not val and 0 or 1} -- persist arg in set_config_var_string() depends on the stage, at the storage stage it's 0 so the value is not written into reaper.ini, otherwise 1 for the restored value to be written, OR PROBABLY since at the storage stage it's not written it will be preserved anyway so at the restoration stage 0 can be ued as well
+
+	if upd_val or val then -- update value in reaper.ini at the storage stage or restore
+	set[3] = val or upd_val -- update with the calculated value if val arg is nil, i.e. storage stage
+	set[1](table.unpack(set, 2)) -- unpack starting from index 2
+	end
+	if not val and upd_val then -- OR 'if upd_val' // only return at the storage stage provided the setting was updated
+	return cur_val+0
+	end
+
+end
+
 
 
 -- used in store() inside collect_container_fx() and in collect()
@@ -302,6 +350,31 @@ function FX_Is_Accessible(obj, fx_idx)
 
 	if fx.GetFloatingWindow(obj, fx_idx) then return true end -- if fx is open in a floating window it's 100% accessible
 
+local old_build = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.74 -- where set_config_var_string() isn't supported
+local sws = r.BR_Win32_GetForegroundWindow
+local ret, fx_pref = r.get_config_var_string('fxfloat_focus')
+local create_fx_undo = fx_pref+0&65536 ~= 65536 -- the setting is enabled when the bit is unset
+
+-- if the preference at Preferences -> Plugins -> Do not create undo points when closing FX windows
+-- is disabled AND 'Only allow one FX floating at a time' is enabled
+-- toggle them with re_store_config_var() for the duration of function execution
+-- to prevent creation of multiple undo points and auto-closing 
+-- of other fx foating windows when fx windows are toggled open and closed;
+-- if REAPER build the user runs doesn't support that function due to being old 
+-- or due to lack of the SWS extension and 'Do not create undo points' preference is disabled, 
+-- create a single custom undo point, the good thing about which 
+-- is that it won't multiply at repeated script executions
+-- and will only be created if the last action in the undo hitory is different
+-- so it will be created in-between other actions but won't inundate the undo history
+-- when the script is executed several times in a row to navigate between windows
+	if old_build and not sws and create_fx_undo then -- in older builds values can only be set with SWS extension API
+	r.Undo_BeginBlock() -- so initialize undo block
+	end
+
+-- disable
+re_store_config_var('fxfloat_focus', 65536, disable) -- Do not create undo points when closing FX windows', disable false because the preference must be enabled to prevent undo point creation // store original pref value and disable creation of undo point when fx windows are toggled // will only run if build is 7.74 or sws extension is installed
+re_store_config_var('fxfloat_focus', 2^24, 1) -- 'Only allow one FX floating at a time', disable true
+
 -- offlined fx too cannot be open in a floating window
 -- so set online if necessary to prevent false positive
 local offline = fx.GetOffline(obj, fx_idx)
@@ -315,10 +388,19 @@ local ok
 	ok = 1
 	end
 	if offline then fx.SetOffline(obj, fx_idx, offline) end
+
+	if old_build and not sws and create_fx_undo then -- in older builds values can only be set with SWS extension API
+	r.Undo_EndBlock('Toggle FX window open and closed',-1)
+	end
+
+-- restore original pref value, arg 2 and 3 a irrelevant here
+-- will only run if build is 7.74 or sws extension is installed
+re_store_config_var('fxfloat_focus', nil, nil, fx_pref) 
 	
 return ok
 
 end
+
 
 
 
