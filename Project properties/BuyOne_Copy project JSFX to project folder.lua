@@ -351,7 +351,7 @@ function FX_Is_Accessible(obj, fx_idx)
 	if fx.GetFloatingWindow(obj, fx_idx) then return true end -- if fx is open in a floating window it's 100% accessible
 
 local old_build = tonumber(r.GetAppVersion():match('[%d%.]+')) < 7.74 -- where set_config_var_string() isn't supported
-local sws = r.BR_Win32_GetForegroundWindow
+local sws = r.SNM_SetIntConfigVar
 local ret, fx_pref = r.get_config_var_string('fxfloat_focus')
 local create_fx_undo = fx_pref+0&65536 ~= 65536 -- the setting is enabled when the bit is unset
 
