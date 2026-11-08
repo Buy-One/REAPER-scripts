@@ -8,25 +8,28 @@ Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M if REAPER build is older than 7.06
 Provides: 	[main=main,midi_editor] .
-  				. > BuyOne_Freeze selected tracks to mono up to selected FX.lua
-  				. > BuyOne_Freeze selected tracks to stereo up to selected FX.lua
-  				. > BuyOne_Freeze selected tracks to multichannel up to selected FX.lua
-  				. > BuyOne_Freeze selected tracks to mono up to last active FX.lua
-  				. > BuyOne_Freeze selected tracks to stereo up to last active FX.lua
-  				. > BuyOne_Freeze selected tracks to multichannel up to last active FX.lua
+			. > BuyOne_Freeze selected tracks to mono up to selected FX.lua
+			. > BuyOne_Freeze selected tracks to stereo up to selected FX.lua
+			. > BuyOne_Freeze selected tracks to multichannel up to selected FX.lua
+			. > BuyOne_Freeze selected tracks to mono up to last active FX.lua
+			. > BuyOne_Freeze selected tracks to stereo up to last active FX.lua
+			. > BuyOne_Freeze selected tracks to multichannel up to last active FX.lua
 About:	If this script file name is suffixed with META, 
-  			when executed it will automatically spawn all 
-  			individual scripts included in the package into 
-  			the directory of the META script and will import 
-  			them into the Action list from that directory.
-  
-  			If there's no META suffix in this script file 
-  			name it will perfom the operation indicated in 
-  			its name.
-  
-  			In the scripts containing the phrase 
-  			'up to last active FX', active means not bypassed
-  			and not offline.
+		when executed it will automatically spawn all 
+		individual scripts included in the package into 
+		the directory of the META script and will import 
+		them into the Action list from that directory.
+
+		If there's no META suffix in this script file 
+		name it will perfom the operation indicated in 
+		its name.
+
+		The set of scripts makes actions only available
+		in the FX chain menu, available in the Action list.
+		
+		In the scripts containing the phrase 
+		'up to last active FX', active means not bypassed
+		and not offline.
 ]]
 
 
