@@ -319,10 +319,9 @@ function Err_mess() -- if chunk size limit is exceeded and SWS extension isn't i
 local sws_ext_err_mess = "            The size of the data requires\n\n  the SWS/S&M extension to handle them.\n\nIf it's installed then it needs to be updated.\n\n         After clicking \"OK\" a link to the\n\n SWS extension website will be provided\n\n\tThe script will now quit."
 local sws_ext_link = 'Get the SWS/S&M extension at\n\nhttps://www.sws-extension.org/\n\nOR\n\nhttps://github.com/reaper-oss/sws/tags'
 local resp = r.MB(sws_ext_err_mess,'ERROR',0)
-	if resp == 1 then r.Main_OnCommand(42663, 0) -- ReaScript: Show ReaScript console // to override preference at Plug-ins -> ReaScript -> Do not auto-open ReaScript console which was added in 7.28, while the action was added in 7.0
-	r.ShowConsoleMsg(sws_ext_link, r.ClearConsole()) return end
+	if resp == 1 then r.Main_OnCommand(42663, 0) end -- ReaScript: Show ReaScript console // to override preference at Plug-ins -> ReaScript -> Do not auto-open ReaScript console which was added in 7.28, while the action was added in 7.0
+r.ShowConsoleMsg(sws_ext_link, r.ClearConsole())
 end
-
 
 
 -- used in Apply_Preset()
