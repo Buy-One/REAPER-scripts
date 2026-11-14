@@ -26,7 +26,7 @@ jobs:
 
 # Runs a single command or a set of commands using the runners shell
       - name: Stage custom directory structure
-			working-directory: ${{ github.workspace }}
+        working-directory: ${{ github.workspace }}
         run: |
           mkdir -p "BuyOne Scripts"
 
@@ -35,7 +35,7 @@ jobs:
         # cp README.md LICENSE staging/docs/
         # cp config/prod.example.json staging/config/settings.json
 
-		 rsync -av --exclude='/BuyOne Scripts/' --exclude='/.git/' ./ "BuyOne Scripts/"
+        rsync -av --exclude='/BuyOne Scripts/' --exclude='/.git/' ./ "BuyOne Scripts/"
 
       - name: Create ZIP archive
         working-directory: ./staging
