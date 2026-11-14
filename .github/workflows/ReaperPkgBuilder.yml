@@ -7,7 +7,7 @@ on:
     branches: [ main ]
   release:
     types: [ published ]
-	
+
 # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch: # Allows manual runs from the Actions tab
 
@@ -34,8 +34,8 @@ jobs:
         # cp -r src/* "staging/myfolder"
         # cp README.md LICENSE staging/docs/
         # cp config/prod.example.json staging/config/settings.json
-        
-		    rsync -av --exclude='/BuyOne Scripts/' --exclude='/.git/' ./ "BuyOne Scripts/"
+
+		 rsync -av --exclude='/BuyOne Scripts/' --exclude='/.git/' ./ "BuyOne Scripts/"
 
       - name: Create ZIP archive
         working-directory: ./staging
