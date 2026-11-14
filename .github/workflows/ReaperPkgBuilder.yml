@@ -30,15 +30,14 @@ jobs:
         run: |
           mkdir -p "BuyOne Scripts"
 
-          # Copy specific files and folders into your custom layout			 
+          # Copy specific files and folders into your custom layout
+          rsync -av --exclude='/BuyOne Scripts/' --exclude='/.git/' ./ "BuyOne Scripts/"
         # cp -r src/* "staging/myfolder"
         # cp README.md LICENSE staging/docs/
-        # cp config/prod.example.json staging/config/settings.json
-
-        rsync -av --exclude='/BuyOne Scripts/' --exclude='/.git/' ./ "BuyOne Scripts/"
+        # cp config/prod.example.json staging/config/settings.json 
 
       - name: Create ZIP archive
-        working-directory: ./staging
+        working-directory: "./BuyOne Scripts"
         run: zip -r ../custom-package.zip .
 
       - name: Upload ZIP as workflow artifact
