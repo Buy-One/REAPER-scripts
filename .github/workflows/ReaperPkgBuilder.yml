@@ -38,7 +38,7 @@ jobs:
 
       - name: Create ZIP archive
         working-directory: "./BuyOne Scripts"
-        run: zip -r ../custom-package.zip .
+        run: zip -r "../BuyOne Scripts.ReaperPkg" .
 
       - name: Upload ZIP as workflow artifact
         uses: actions/upload-artifact@v4
