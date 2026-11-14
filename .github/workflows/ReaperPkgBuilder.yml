@@ -30,7 +30,7 @@ jobs:
           mkdir -p staging/BuyOne Scripts
 
           # Copy specific files and folders into your custom layout
-          cp -r REAPER-scripts/* staging/BuyOne Scripts/
+          cp -r Buy-One/REAPER-scripts/* staging/BuyOne Scripts/
           # cp README.md LICENSE staging/docs/
           # cp config/prod.example.json staging/config/settings.json
 
