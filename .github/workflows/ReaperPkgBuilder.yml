@@ -31,8 +31,7 @@ jobs:
           mkdir -p "BuyOne Scripts"
 
           # Copy specific files and folders into your custom layout
-          cp -r ./ "BuyOne Scripts"
-        # rsync -av --exclude='/BuyOne Scripts/' --exclude='/.git/' ./ "BuyOne Scripts/"
+          rsync -av --exclude='/BuyOne Scripts/' --exclude='/.git/' ./ "BuyOne Scripts/"
         # cp -r src/* "staging/myfolder"
         # cp README.md LICENSE staging/docs/
         # cp config/prod.example.json staging/config/settings.json 
