@@ -11,7 +11,7 @@ Lua scripts for Cockos' REAPER
 
 #### Manual  
 1. Download the repo zip archive via [THIS LINK](https://github.com/Buy-One/REAPER-scripts/archive/refs/heads/main.zip)
-2. Unpack into a subfolder in the REAPER /Scripts directory where you want them to reside. Preferably named after the scripts author for clarity.  
+2. Unpack into a subfolder in the REAPER `/Scripts` directory where you want them to reside. Preferably named after the scripts author for clarity.  
 3. Delete `BuyOne Scripts.ReaperPkg` file from that subfolder so it doesn't create clutter.  
 4. Import the scripts per script category folder into the `Main` section of the `Action list` via `New action -> Load ReaScript...` (the labels may differ depending on REAPER version).   
 Scripts in the `MIDI Editor` folder are meant for use in the MIDI Editor thus must be imported into the `MIDI Editor` section of the `Action list` exclusively or in additition to their import into the `Main` section.  
