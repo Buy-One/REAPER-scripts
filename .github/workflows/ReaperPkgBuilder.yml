@@ -16,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-       - name: Checkout additional repository
+      - name: Checkout additional repository
         uses: actions/checkout@v4
         with:
           repository: Buy-One/Dox
