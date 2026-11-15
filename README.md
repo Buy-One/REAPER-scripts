@@ -19,7 +19,7 @@ Scripts in the `Media Explorer` folder are meant for use in the `Media Explorer`
 
 #### Via REAPER package manager  
 Supported since REAPER build 7.86. Only useful for the first ever install or if you don't care about transferring your settings from the older to the newer versions of scripts.  
-1. Download [BuyOne Scripts.ReaperPkg](https://github.com/Buy-One/REAPER-scripts/blob/main/BuyOne%20Scripts.ReaperPkg) file (a zip archive with a custom extension).  
+1. Download [BuyOne Scripts.ReaperPkg](https://github.com/Buy-One/REAPER-scripts/raw/refs/heads/main/BuyOne%20Scripts.ReaperPkg) file (a zip archive with a custom extension).  
 2. Drop it into REAPER and install via the package manager interface which will open automatically. 
 
 #### Semi-automated  
