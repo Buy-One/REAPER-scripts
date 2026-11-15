@@ -13,7 +13,7 @@ Lua scripts for Cockos' REAPER
 
 Since REAPER 7.86, the scripts can be installed using reaper package manager.  
 Download [BuyOne Scripts.ReaperPkg](https://github.com/Buy-One/REAPER-scripts/blob/main/BuyOne%20Scripts.ReaperPkg) file (a zip archive with a custom extension), drop it into REAPER and install via the package manager interface.  
-**NOTE**: Installation via the REAPER package manager is only useful for the first ever install.  
+**NOTE**: Installation via the REAPER package manager is only useful for the first ever install or if you don't care about keeping your settings in the scripts which include them.  
 The only reliable way of updating scripts that include user settings and retaining your choices 
 is by using script updater and installer suggested above in which case the repo regular zip
 archive download from the **Download all** link is advised.
