@@ -37,6 +37,7 @@ jobs:
             --exclude='/Dox/' \
             --exclude='/BuyOne Scripts.ReaperPkg' \
             ./ "$RUNNER_TEMP/package/BuyOne Scripts/"
+          rsync -av \
             Dox/reaper-package-info.txt "$RUNNER_TEMP/package/BuyOne Scripts"
 
       # 4. Generate the Pkg archive
