@@ -20,22 +20,22 @@ jobs:
       # 2. Create temporary custom directory structure
       - name: Create custom directory structure
         run: |
-          mkdir -p "$RUNNER_TEMP/package/My Repo"
+          mkdir -p "$RUNNER_TEMP/package/BuyOne Scripts"
 
       # 3. Copy repository contents, excluding hidden files and directories
       - name: Populate custom directory
         run: |
           rsync -av \
             --exclude='.git' \
-            --exclude='/My Repo.Pkg' \
-            ./ "$RUNNER_TEMP/package/My Repo/"
+            --exclude='/BuyOne Scripts.ReaperPkg' \
+            ./ "$RUNNER_TEMP/package/BuyOne Scripts/"
 
       # 4. Generate the Pkg archive
       - name: Generate Pkg archive
         run: |
           cd "$RUNNER_TEMP/package"
-          rm -f "$GITHUB_WORKSPACE/My Repo.Pkg"
-          zip -qr "$GITHUB_WORKSPACE/My Repo.Pkg" "My Repo"
+          rm -f "$GITHUB_WORKSPACE/BuyOne Scripts.ReaperPkg"
+          zip -qr "$GITHUB_WORKSPACE/BuyOne Scripts.ReaperPkg" "BuyOne Scripts"
 
       # 5. Commit and push the generated archive
       - name: Upload Pkg archive to repository
@@ -43,11 +43,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add -- "My Repo.Pkg"
+          git add -- "BuyOne Scripts.ReaperPkg"
 
           if git diff --cached --quiet; then
             echo "No changes to the Pkg archive."
           else
-            git commit -m "Update My Repo.Pkg [skip ci]"
+            git commit -m "Update My BuyOne Scripts.ReaperPkg [skip ci]"
             git push
           fi
