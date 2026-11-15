@@ -1,0 +1,53 @@
+
+name: Build Custom Pkg Archive
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-pkg:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Create temporary custom directory structure
+      - name: Create custom directory structure
+        run: |
+          mkdir -p "$RUNNER_TEMP/package/My Repo"
+
+      # 3. Copy repository contents, excluding hidden files and directories
+      - name: Populate custom directory
+        run: |
+          rsync -av \
+            --exclude='.git' \
+            --exclude='/My Repo.Pkg' \
+            ./ "$RUNNER_TEMP/package/My Repo/"
+
+      # 4. Generate the Pkg archive
+      - name: Generate Pkg archive
+        run: |
+          cd "$RUNNER_TEMP/package"
+          rm -f "$GITHUB_WORKSPACE/My Repo.Pkg"
+          zip -qr "$GITHUB_WORKSPACE/My Repo.Pkg" "My Repo"
+
+      # 5. Commit and push the generated archive
+      - name: Upload Pkg archive to repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- "My Repo.Pkg"
+
+          if git diff --cached --quiet; then
+            echo "No changes to the Pkg archive."
+          else
+            git commit -m "Update My Repo.Pkg [skip ci]"
+            git push
+          fi
