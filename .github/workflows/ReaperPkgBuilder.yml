@@ -45,7 +45,7 @@ jobs:
         run: |
           cd "$RUNNER_TEMP/package"
           rm -f "$GITHUB_WORKSPACE/BuyOne Scripts.ReaperPkg"
-          zip -qr "$GITHUB_WORKSPACE/BuyOne Scripts.ReaperPkg" "BuyOne Scripts"
+          zip -qr "$GITHUB_WORKSPACE/BuyOne Scripts.ReaperPkg" "Scripts/BuyOne Scripts"
 
       # 5. Commit and push the generated archive
       - name: Upload Pkg archive to repository
