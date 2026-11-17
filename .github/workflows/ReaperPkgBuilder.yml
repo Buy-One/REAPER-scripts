@@ -44,14 +44,14 @@ jobs:
           rsync -av \
             Dox/reaper-package-info.txt \
             "Dox/reaper package notes.txt" \
-            "$RUNNER_TEMP/package/Scripts/BuyOne Scripts"
+            "$RUNNER_TEMP/package/"
 
       # 4. Generate the Pkg archive
       - name: Generate Pkg archive
         run: |
           cd "$RUNNER_TEMP/package"
           rm -f "$GITHUB_WORKSPACE/BuyOne Scripts.ReaperPkg"
-          zip -qr "$GITHUB_WORKSPACE/BuyOne Scripts.ReaperPkg" "Scripts/BuyOne Scripts"
+          zip -qr "$GITHUB_WORKSPACE/BuyOne Scripts.ReaperPkg" .
 
       # 5. Commit and push the generated archive
       - name: Upload Pkg archive to repository
