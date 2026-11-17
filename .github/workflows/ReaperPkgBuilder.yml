@@ -40,7 +40,7 @@ jobs:
             ./ "$RUNNER_TEMP/package/Scripts/BuyOne Scripts/"
           rsync -av \
             Dox/reaper-package-info.txt "$RUNNER_TEMP/package/Scripts/BuyOne Scripts"
-            Dox/reaper package notes.txt "$RUNNER_TEMP/package/Scripts/BuyOne Scripts"
+            "Dox/reaper package notes.txt" "$RUNNER_TEMP/package/Scripts/BuyOne Scripts"
 
       # 4. Generate the Pkg archive
       - name: Generate Pkg archive
