@@ -17,12 +17,12 @@ Lua scripts for Cockos' REAPER
 Scripts in the `MIDI Editor` folder are meant for use in the MIDI Editor thus must be imported into the `MIDI Editor` section of the `Action list` exclusively or in additition to their import into the `Main` section.  
 Scripts in the `Media Explorer` folder are meant for use in the `Media Explorer` and must be imported into the `Media Explorer` section of the `Action list` exclusively or in additition to their import into the `Main` section.
 
-<!--
+
 #### Via REAPER package manager  
 Supported since REAPER build 7.86. Only useful for the first ever install or if, when updating, you don't care about transferring your settings from the older to the newer versions of scripts.  
 1. Download [BuyOne Scripts.ReaperPkg](https://github.com/Buy-One/REAPER-scripts/raw/refs/heads/main/BuyOne%20Scripts.ReaperPkg) file (a zip archive with a custom extension).  
 2. Drop it into REAPER and install via the package manager interface which will open automatically. 
--->
+
 
 #### Semi-automated  
 Allows script batch installation and transfer of per script user settings from their older versions to the newer ones before updating the actual files. The only reliable way of updating scripts and retaining your user settings in scripts that include them. The scripts will be imported into the sections of the `Action list` designated for them by their author.  
