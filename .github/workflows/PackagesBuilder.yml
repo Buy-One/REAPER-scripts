@@ -4,7 +4,7 @@
 name: Build Zip & Custom Pkg Archive
 
 on:
-  push:
+# push:
   workflow_dispatch:
 
 # Prevent simultaneous runs from pushing to main
