@@ -1,7 +1,7 @@
 # Expects reaper-package-info.txt and reaper package notes.txt files
 # from /Dox repo
 
-name: Build Custom Pkg Archive
+name: Build Zip & Custom Pkg Archive
 
 on:
   push:
