@@ -3,9 +3,16 @@
 
 name: Build Custom Pkg Archive
 
+# push: - starts auto-run on every commit
+# workflow_dispatch: - manual run
 on:
-  push:
+# push:
   workflow_dispatch:
+
+# Prevent simultaneous runs from pushing to main
+concurrency:
+  group: package-build-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: write
