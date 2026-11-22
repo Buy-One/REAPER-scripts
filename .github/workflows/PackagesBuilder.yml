@@ -1,4 +1,4 @@
-# Expects reaper-package-info.txt and reaper package notes.txt files
+# Custom Pkg expects reaper-package-info.txt and reaper package notes.txt files
 # from /Dox repo
 
 name: Build Zip & Custom Pkg Archive
@@ -43,6 +43,7 @@ jobs:
             --exclude='/README.md' \
             --exclude='/BuyOne Scripts.zip' \
             ./ "$RUNNER_TEMP/package/Scripts/BuyOne Scripts/"
+            ./ "$RUNNER_TEMP/zip/BuyOne Scripts/"
           rsync -av \
             Dox/reaper-package-info.txt \
             "Dox/reaper package notes.txt" \
@@ -54,6 +55,7 @@ jobs:
           cd "$RUNNER_TEMP/package"
           rm -f "$GITHUB_WORKSPACE/BuyOne Scripts.ReaperPkg"
           zip -qr "$GITHUB_WORKSPACE/BuyOne Scripts.ReaperPkg" .
+          cd "$RUNNER_TEMP/zip"
           rm -f "$GITHUB_WORKSPACE/BuyOne Scripts.zip"
           zip -qr "$GITHUB_WORKSPACE/BuyOne Scripts.zip" .			 
 
