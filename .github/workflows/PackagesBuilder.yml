@@ -43,12 +43,18 @@ jobs:
             --exclude='/BuyOne Scripts.ReaperPkg' \
             --exclude='/README.md' \
             --exclude='/BuyOne Scripts.zip' \
-            ./ "$RUNNER_TEMP/package/Scripts/BuyOne Scripts/" \
-            ./ "$RUNNER_TEMP/zip/BuyOne Scripts/"
+            ./ "$RUNNER_TEMP/package/Scripts/BuyOne Scripts/"
           rsync -av \
             Dox/reaper-package-info.txt \
             "Dox/reaper package notes.txt" \
             "$RUNNER_TEMP/package/"
+          rsync -av \
+            --exclude='.*' \
+            --exclude='/Dox/' \
+            --exclude='/BuyOne Scripts.ReaperPkg' \
+            --exclude='/README.md' \
+            --exclude='/BuyOne Scripts.zip' \
+            ./ "$RUNNER_TEMP/zip/BuyOne Scripts/"
 
       # 4. Generate the Pkg archive
       - name: Generate Pkg archive
@@ -58,7 +64,7 @@ jobs:
           zip -qr "$GITHUB_WORKSPACE/BuyOne Scripts.ReaperPkg" .
           cd "$RUNNER_TEMP/zip"
           rm -f "$GITHUB_WORKSPACE/BuyOne Scripts.zip"
-          zip -qr "$GITHUB_WORKSPACE/BuyOne Scripts.zip" .			 
+          zip -qr "$GITHUB_WORKSPACE/BuyOne Scripts.zip" .
 
       # 5. Commit and push the generated archive
       - name: Upload Pkg archive to repository
@@ -66,20 +72,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add -- "BuyOne Scripts.ReaperPkg"
+          git add -- "BuyOne Scripts.ReaperPkg" "BuyOne Scripts.zip"
 
           if git diff --cached --quiet; then
-            echo "No changes to the Pkg archive."
+            echo "No changes to the archives."
           else
-            git commit -m "Update BuyOne Scripts.ReaperPkg [skip ci]"
+            git commit -m "Update the archives [skip ci]"
             git push
           fi
 
-          git add -- "BuyOne Scripts.zip"
-
-          if git diff --cached --quiet; then
-            echo "No changes to the Pkg archive."
-          else
-            git commit -m "Update BuyOne Scripts.zip [skip ci]"
-            git push
-          fi
