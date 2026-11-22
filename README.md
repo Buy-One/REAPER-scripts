@@ -10,7 +10,7 @@ Lua scripts for Cockos' REAPER
 ## Ways to install the entire repo
 
 #### Manual  
-1. Download the repo zip archive via [THIS LINK]((https://github.com/Buy-One/REAPER-scripts/raw/refs/heads/main/BuyOne%20Scripts.zip)
+1. Download the repo zip archive via [THIS LINK](https://github.com/Buy-One/REAPER-scripts/raw/refs/heads/main/BuyOne%20Scripts.zip)
 2. Unpack into the REAPER `/Scripts` directory.  
 3. Import the scripts per script category folder into the `Main` section of the `Action list` via `New action -> Load ReaScript...` (the labels may differ depending on REAPER version).   
 Scripts in the `MIDI Editor` folder are meant for use in the MIDI Editor thus must be imported into the `MIDI Editor` section of the `Action list` exclusively or in addition to their import into the `Main` section.  
@@ -25,7 +25,7 @@ Supported since REAPER build 7.86. Only useful for the first ever install or if,
 
 #### Semi-automated  
 Allows script batch installation and transfer of per script user settings from their older versions to the newer ones before updating the actual files. The only reliable way of updating scripts and retaining your user settings in scripts that include them. The scripts will be imported into the sections of the `Action list` designated for them by their author.  
-1. Download the repo zip archive via [THIS LINK]((https://github.com/Buy-One/REAPER-scripts/raw/refs/heads/main/BuyOne%20Scripts.zip)
+1. Download the repo zip archive via [THIS LINK](https://github.com/Buy-One/REAPER-scripts/raw/refs/heads/main/BuyOne%20Scripts.zip)
 2. Extract `BuyOne_Script updater and installer.lua` script from it and import into the `Main` section of the `Action list` via `New action -> Load ReaScript...` (the labels may differ depending on REAPER version).  
 3. Refer to the detailed instructions inside that script.
 
