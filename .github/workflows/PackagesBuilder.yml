@@ -1,0 +1,82 @@
+# Expects reaper-package-info.txt and reaper package notes.txt files
+# from /Dox repo
+
+name: Build Custom Pkg Archive
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-pkg:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Checkout additional repository
+        uses: actions/checkout@v4
+        with:
+          repository: Buy-One/Dox
+          ref: main
+          path: Dox
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # 2. Create temporary custom directory structure
+      - name: Create custom directory structure
+        run: |
+          mkdir -p "$RUNNER_TEMP/package/Scripts/BuyOne Scripts"
+
+      # 3. Copy repository contents, excluding hidden files and directories
+      # package config files are copied to the archive root
+      - name: Populate custom directory
+        run: |
+          rsync -av \
+            --exclude='.*' \
+            --exclude='/Dox/' \
+            --exclude='/BuyOne Scripts.ReaperPkg' \
+            --exclude='/README.md' \
+            --exclude='/BuyOne Scripts.zip' \
+            ./ "$RUNNER_TEMP/package/Scripts/BuyOne Scripts/"
+          rsync -av \
+            Dox/reaper-package-info.txt \
+            "Dox/reaper package notes.txt" \
+            "$RUNNER_TEMP/package/"
+
+      # 4. Generate the Pkg archive
+      - name: Generate Pkg archive
+        run: |
+          cd "$RUNNER_TEMP/package"
+          rm -f "$GITHUB_WORKSPACE/BuyOne Scripts.ReaperPkg"
+          zip -qr "$GITHUB_WORKSPACE/BuyOne Scripts.ReaperPkg" .
+          rm -f "$GITHUB_WORKSPACE/BuyOne Scripts.zip"
+          zip -qr "$GITHUB_WORKSPACE/BuyOne Scripts.zip" .			 
+
+      # 5. Commit and push the generated archive
+      - name: Upload Pkg archive to repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- "BuyOne Scripts.ReaperPkg"
+
+          if git diff --cached --quiet; then
+            echo "No changes to the Pkg archive."
+          else
+            git commit -m "Update BuyOne Scripts.ReaperPkg [skip ci]"
+            git push
+          fi
+
+          git add -- "BuyOne Scripts.zip"
+
+          if git diff --cached --quiet; then
+            echo "No changes to the Pkg archive."
+          else
+            git commit -m "Update BuyOne Scripts.zip [skip ci]"
+            git push
+          fi
