@@ -3,7 +3,7 @@
 
 name: Build Custom Pkg Archive
 
-# push: - starts auto-run on every commit
+# push: - starts auto-run on every commit // commented out
 # workflow_dispatch: - manual run
 on:
 # push:
