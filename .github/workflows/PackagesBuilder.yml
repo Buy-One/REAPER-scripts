@@ -31,6 +31,7 @@ jobs:
       - name: Create custom directory structure
         run: |
           mkdir -p "$RUNNER_TEMP/package/Scripts/BuyOne Scripts"
+          mkdir -p "$RUNNER_TEMP/zip/BuyOne Scripts"
 
       # 3. Copy repository contents, excluding hidden files and directories
       # package config files are copied to the archive root
