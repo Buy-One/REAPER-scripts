@@ -7,6 +7,11 @@ on:
   push:
   workflow_dispatch:
 
+# Prevent simultaneous runs from pushing to main
+concurrency:
+  group: package-build-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
