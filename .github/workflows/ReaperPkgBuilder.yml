@@ -6,7 +6,13 @@ name: Build Custom Pkg Archive
 # push: - starts auto-run on every commit // commented out
 # workflow_dispatch: - manual run
 on:
-# push:
+  push:
+    # Do not trigger auto-run when commits are pushed to the following files/folders
+    paths-ignore:
+      - '.github/workflows/**'
+      - 'BuyOne Scripts.ReaperPkg'
+      - 'BuyOne Scripts.zip'
+      - 'README.md'
   workflow_dispatch:
 
 # Prevent simultaneous runs from pushing to main
