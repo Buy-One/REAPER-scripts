@@ -9,8 +9,8 @@ REAPER: at least v5.962
 Extensions: SWS/S&M recommended, not mandatory
 Provides: [main=main,midi_editor] .
 About:	The new track is created immediately
-			above the frozen track whose FX chains
-			are being extracted.
+		above the frozen track whose FX chains
+		are being extracted.
 --]]
 
 
