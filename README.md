@@ -2,7 +2,7 @@
 Lua scripts for Cockos' REAPER
 </br>
 </br>
-[Complete list (323)](https://github.com/Buy-One/REAPER-scripts/wiki/SCRIPT-LIST)
+[Complete list (325)](https://github.com/Buy-One/REAPER-scripts/wiki/SCRIPT-LIST)
 </br>
 </br>
 **Many scripts feature user settings. Almost all include guide or description of features. Be sure to check those out and configure to your liking.**
