@@ -9,43 +9,43 @@ REAPER: at least v5.962
 Extensions: SWS/S&M recommended, not mandatory
 Provides: [main=main,midi_editor] .
 About:	The script displays a menu with freeze settings
-			and options and aims at exhausting all freeze
-			related operations.
+		and options and aims at exhausting all freeze
+		related operations.
 
-			The purpose of the settings is to change frozen
-			track profile to make it less intrusive in the
-			project and/or its frozen state more conspicuous
-			as well as to reduce CPU consumption by children
-			tracks of frozen folders.  
-			The settings are only applied to tracks that 
-			changed their state from unfrozen to frozen. 
-			If a track frozen without using this script is 
-			frozen again with it, its properties won't change 
-			to reflect the settings.  
-			Similarly, properties of a track frozen multiple
-			times with the script will only be restored when
-			it's unfrozen completely, i.e. all freeze 
-			iterations are undone.
+		The purpose of the settings is to change frozen
+		track profile to make it less intrusive in the
+		project and/or its frozen state more conspicuous
+		as well as to reduce CPU consumption by children
+		tracks of frozen folders.  
+		The settings are only applied to tracks that 
+		changed their state from unfrozen to frozen. 
+		If a track frozen without using this script is 
+		frozen again with it, its properties won't change 
+		to reflect the settings.  
+		Similarly, properties of a track frozen multiple
+		times with the script will only be restored when
+		it's unfrozen completely, i.e. all freeze 
+		iterations are undone.
 
-			Grayed out menu items indicate that conditions
-			required for operations triggred by them are not
-			met, i.e. no selected tracks, multiple selected
-			tracks, the only selected track is not frozen.
+		Grayed out menu items indicate that conditions
+		required for operations triggred by them are not
+		met, i.e. no selected tracks, multiple selected
+		tracks, the only selected track is not frozen.
 
-			The menu items which affect the settings are always 
-			accessible so that they could be changed at any time.
+		The menu items which affect the settings are always 
+		accessible so that they could be changed at any time.
 
-			When 'Extract frozen FX chain to a new track'
-			action is executed from the script menu, the new
-			track is created immediately above the selected
-			frozen track.
+		When 'Extract frozen FX chain to a new track'
+		action is executed from the script menu, the new
+		track is created immediately above the selected
+		frozen track.
 
-			When track is unfrozen the freeze files are deleted
-			from the disk.
+		When track is unfrozen the freeze files are deleted
+		from the disk.
 
-			The underscored characters in the menu items can be 
-			used to trigger the actions associated with them
-			from keyboard when the relevant menu is active.
+		The underscored characters in the menu items can be 
+		used to trigger the actions associated with them
+		from keyboard when the relevant menu is active.
 
 ]]
 
