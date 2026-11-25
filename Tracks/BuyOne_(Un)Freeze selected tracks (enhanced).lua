@@ -2,8 +2,9 @@
 ReaScript name: BuyOne_(Un)Freeze selected tracks (enhanced).lua
 Author: BuyOne
 Website: https://forum.cockos.com/member.php?u=134058 or https://github.com/Buy-One/REAPER-scripts/issues
-Version: 1.0
-Changelog: #Initial release
+Version: 1.1
+Changelog:	#Made checkmarks addition more reliable for some menu items
+			#Some refactoring that doesn't affect the functionality
 Licence: WTFPL
 REAPER: at least v5.962
 Extensions: SWS/S&M recommended, not mandatory
@@ -325,19 +326,60 @@ end
 
 
 
-function Get_Script_Settings_Section(scr_path)
-local sett_sect, sett_t, found = '', {}
+function Update_Script_Settings(scr_path, sett_t)
+-- sett_t is a table containing all settings as they were set via the menu
+-- in the order of their appearence in the USER SETTINGS section,
+-- or, if they weren't chaned via the menu, containing the original
+-- script settings in the order of their appearence in the USER SETTINGS section;
+-- relies on Esc() function
+
+local sett_sect, scr_sett_t, found = '', {}
+
 	for line in io.lines(scr_path) do
-		if line:match('----- USER SETTINGS ------') and #sett_t == 0 then found = 1
+		if line:match('----- USER SETTINGS ------') and #scr_sett_t == 0 then found = 1
 		elseif found and line:match('END OF USER SETTINGS') then break
 		elseif found then
 		sett_sect = sett_sect..(#sett_sect > 0 and '\n' or '')..line
 			if line:match('^[%u%w_]+%s*=%s*') then
-			sett_t[#sett_t+1] = line
+			scr_sett_t[#scr_sett_t+1] = line
 			end
 		end
 	end
-return sett_sect, sett_t
+
+-- update settings values retrieved from script with the values set via the menu and stored inside sett_t
+	for k, line in ipairs(scr_sett_t) do
+		if k < 3 then
+		line = line:match('.+=%s*%[%[')..sett_t[k]..']]' -- image file paths
+		else
+		line = line:match('.+=%s*"')..sett_t[k]..'"'
+		end
+	scr_sett_t[k] = line
+	end
+
+local updated_sect = sett_sect
+
+-- update retrieved script settings section with new values
+	for k, line in ipairs(scr_sett_t) do
+	local sett_var = line:match('^(%s*[%u%w_]+%s*=)')
+	line = line:gsub('%%', '%%%%')
+	local cnt
+	updated_sect = updated_sect:gsub(sett_var..'.-\n', line..'\n', 1)
+	end
+
+
+-- update script
+	if sett_sect ~= updated_sect then
+	local f = io.open(scr_path,'r')
+	local cont = f:read('*a')
+	f:close()
+	sett_sect = Esc(sett_sect)
+	updated_sect = updated_sect:gsub('%%', '%%%%')
+	cont = cont:gsub(sett_sect, updated_sect, 1)
+	local f = io.open(scr_path,'w')
+	f:write(cont)
+	f:close()
+	end
+
 end
 
 
@@ -1709,40 +1751,7 @@ local output = Reload_Menu_at_Same_Pos(sett_menu..'|'..act_menu, 1) -- keep_menu
 
 -- on script exit
 -- update script settings modified via the menu
-local sett_sect, scr_sett_t = Get_Script_Settings_Section(scr_path)
-
--- update settings values retrieved from script with the values set via the menu
-	for k, line in ipairs(scr_sett_t) do
-		if k < 3 then
-		line = line:match('.+=%s*%[%[')..sett_t[k]..']]' -- image file paths
-		else
-		line = line:match('.+=%s*"')..sett_t[k]..'"'
-		end
-	scr_sett_t[k] = line
-	end
-
-local updated_sect = sett_sect
-
--- update retrieved script settings section with new values
-	for k, line in ipairs(scr_sett_t) do
-	local sett_var = line:match('^(%s*[%u%w_]+%s*=)')
-	line = line:gsub('%%', '%%%%')
-	local cnt
-	updated_sect = updated_sect:gsub(sett_var..'.-\n', line..'\n', 1)
-	end
-
-
-	if sett_sect ~= updated_sect then
-	local f = io.open(scr_path,'r')
-	local cont = f:read('*a')
-	f:close()
-	sett_sect = Esc(sett_sect)
-	updated_sect = updated_sect:gsub('%%', '%%%%')
-	cont = cont:gsub(sett_sect, updated_sect, 1)
-	local f = io.open(scr_path,'w')
-	f:write(cont)
-	f:close()
-	end
+Update_Script_Settings(scr_path, sett_t)
 
 do r.defer(no_undo) end
 
