@@ -1568,7 +1568,6 @@ or TCP_LAYOUT_NAME:match('%S') and not find_layout(TCP_LAYOUT_NAME) and '\t   th
 	end
 
 local is_new_value, scr_path, sect_ID, cmd_ID, mode, resol, val, contextstr = r.get_action_context()
-local scr_name = scr_path:match('[^\\/]+_(.+)%.%w+') -- without path, scripter name & ext
 
 local sett_t = {TRACK_ICON_PATH, FROZEN_ITEM_IMAGE_PATH, TRACK_COLOR, TRACK_LABEL_PREFIX, TCP_LAYOUT_NAME, LOCK_TRACK_CONTROLS, MINIMIZE_TCP_AND_LOCK_HEIGHT, KEEP_ITEM_NAME_AFTER_FREEZING, DELETE_FROZEN_FILE_AFTER_UNFREEZNG, BYPASS_DESCENDANT_TRACK_FX, MUTE_DESCENDANT_TRACKS, COLLAPSE_DESCENDANT_TRACKS, UP_TO_SELECTED_FX, UP_TO_LAST_UNBYPASSED_AND_ONLINE_FX}
 
